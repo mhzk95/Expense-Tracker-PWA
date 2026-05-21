@@ -1,0 +1,51 @@
+{
+  "name": "Expense Tracker PWA",
+  "short_name": "Expenses",
+  "description": "A production-grade expense tracker Progressive Web App with offline support.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "lang": "en",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "/window.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Expense",
+      "short_name": "Add",
+      "description": "Quickly add a new expense transaction",
+      "url": "/transactions?action=add",
+      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Transactions",
+      "short_name": "History",
+      "description": "View all your past transactions",
+      "url": "/transactions",
+      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "View Budgets",
+      "short_name": "Budgets",
+      "description": "Check your budget progress",
+      "url": "/budgets",
+      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Reports",
+      "description": "View your spending analytics",
+      "url": "/analytics",
+      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+    }
+  ]
+}
