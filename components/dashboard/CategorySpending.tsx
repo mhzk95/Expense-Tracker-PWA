@@ -75,7 +75,7 @@ export function CategorySpending() {
                     {formatCurrency(cat.amount)}
                   </span>
                 </div>
-                
+
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full"
