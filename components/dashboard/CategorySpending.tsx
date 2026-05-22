@@ -1,21 +1,30 @@
 "use client";
 
 import { useTransactions } from "@/hooks/useTransactions";
-import { MOCK_CATEGORIES } from "@/lib/mock-data";
+import { useCategories } from "@/hooks/useCategories";
 import { formatCurrency } from "@/lib/utils/helpers";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/helpers";
 
 export function CategorySpending() {
-  const { transactions, loading } = useTransactions();
+  const { transactions, loading: txLoading } = useTransactions();
+  const { categories, loading: catLoading } = useCategories();
 
-  if (loading) {
+  if (txLoading || catLoading) {
     return <div className="h-64 rounded-2xl border border-slate-800/60 bg-slate-900/60 animate-pulse" />;
   }
 
-  // Filter only expenses
-  const expenses = transactions.filter((t) => t.type === "expense");
+  // Filter only expenses for current month
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const expenses = transactions.filter((t) => {
+    if (t.type !== "expense") return false;
+    const d = new Date(t.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
   const totalSpent = expenses.reduce((s, t) => s + t.amount, 0);
 
   // Group by category
@@ -31,7 +40,7 @@ export function CategorySpending() {
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5) // Top 5
     .map(([catId, amount]) => {
-      const categoryInfo = MOCK_CATEGORIES.find((c) => c.id === catId);
+      const categoryInfo = categories.find((c) => c.id === catId);
       return {
         id: catId,
         name: categoryInfo?.name || "Other",

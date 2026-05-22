@@ -7,15 +7,21 @@
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { MOCK_CATEGORIES } from "@/lib/mock-data";
 import { formatCurrency, formatDate } from "@/lib/utils/helpers";
 import { cn } from "@/lib/utils/helpers";
 import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Filter, Trash2 } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useCategories } from "@/hooks/useCategories";
 import { AddTransactionAction } from "@/components/dashboard/AddTransactionAction";
+import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 
 export default function TransactionsPage() {
-  const { transactions, loading, deleteTransaction } = useTransactions();
+  const { transactions: rawTransactions, loading: txLoading, deleteTransaction } = useTransactions();
+  const { categories, loading: catLoading } = useCategories();
+  
+  const loading = txLoading || catLoading;
+  
+  const transactions = [...rawTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <div className="space-y-6">
@@ -49,81 +55,69 @@ export default function TransactionsPage() {
         ) : (
           <div className="divide-y divide-slate-800/40">
             {transactions.map((txn) => {
-              const category = MOCK_CATEGORIES.find((c) => c.id === txn.categoryId);
+              const category = categories.find((c) => c.id === txn.categoryId);
               const isIncome = txn.type === "income";
               const isTransfer = txn.type === "transfer";
 
               return (
-                <div
-                  key={txn.id}
-                  className="group flex items-center gap-4 px-5 py-4 hover:bg-slate-800/30 transition-colors"
-                >
-                  {/* Icon */}
-                  <div
-                    className={cn(
-                      "flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center",
-                      isIncome
-                        ? "bg-emerald-500/15 text-emerald-400"
-                        : isTransfer
-                        ? "bg-blue-500/15 text-blue-400"
-                        : "bg-red-500/15 text-red-400"
-                    )}
-                  >
-                    {isIncome ? (
-                      <ArrowDownLeft className="h-5 w-5" />
-                    ) : isTransfer ? (
-                      <ArrowLeftRight className="h-5 w-5" />
-                    ) : (
-                      <ArrowUpRight className="h-5 w-5" />
-                    )}
-                  </div>
-
-                  {/* Details */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{txn.description}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-slate-500">{category?.name ?? "Other"}</span>
-                      <span className="text-slate-700">·</span>
-                      <span className="text-xs text-slate-500">{formatDate(txn.date, "medium")}</span>
-                      {txn.syncStatus === "pending" && (
-                        <span className="text-[10px] text-violet-400 uppercase tracking-wider bg-violet-500/10 px-1 rounded">
-                          Pending Sync
-                        </span>
+                <SwipeToDelete key={txn.id} onDelete={() => deleteTransaction(txn.id)}>
+                  <div className="flex items-center gap-4 px-5 py-4 w-full">
+                    {/* Icon */}
+                    <div
+                      className={cn(
+                        "flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center",
+                        isIncome
+                          ? "bg-emerald-500/15 text-emerald-400"
+                          : isTransfer
+                          ? "bg-blue-500/15 text-blue-400"
+                          : "bg-red-500/15 text-red-400"
+                      )}
+                    >
+                      {isIncome ? (
+                        <ArrowDownLeft className="h-5 w-5" />
+                      ) : isTransfer ? (
+                        <ArrowLeftRight className="h-5 w-5" />
+                      ) : (
+                        <ArrowUpRight className="h-5 w-5" />
                       )}
                     </div>
-                  </div>
 
-                  {/* Amount + status */}
-                  <div className="text-right">
-                    <p
-                      className={cn(
-                        "text-sm font-semibold tabular-nums",
-                        isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
-                      )}
-                    >
-                      {isIncome ? "+" : "−"}{formatCurrency(txn.amount, txn.currency)}
-                    </p>
-                    <span
-                      className={cn(
-                        "text-xs",
-                        txn.status === "completed" ? "text-slate-500" : "text-amber-400"
-                      )}
-                    >
-                      {txn.status}
-                    </span>
-                  </div>
+                    {/* Details */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{txn.description}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-slate-500">{category?.name ?? "Other"}</span>
+                        <span className="text-slate-700">·</span>
+                        <span className="text-xs text-slate-500">{formatDate(txn.date, "medium")}</span>
+                        {txn.syncStatus === "pending" && (
+                          <span className="text-[10px] text-violet-400 uppercase tracking-wider bg-violet-500/10 px-1 rounded">
+                            Pending Sync
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                  {/* Delete Action */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                    <button 
-                      onClick={() => deleteTransaction(txn.id)}
-                      className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                      title="Delete transaction"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {/* Amount + status */}
+                    <div className="text-right">
+                      <p
+                        className={cn(
+                          "text-sm font-semibold tabular-nums",
+                          isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                        )}
+                      >
+                        {isIncome ? "+" : "−"}{formatCurrency(txn.amount, txn.currency)}
+                      </p>
+                      <span
+                        className={cn(
+                          "text-xs",
+                          txn.status === "completed" ? "text-slate-500" : "text-amber-400"
+                        )}
+                      >
+                        {txn.status}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </SwipeToDelete>
               );
             })}
           </div>

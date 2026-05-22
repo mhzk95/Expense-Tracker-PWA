@@ -1,7 +1,7 @@
 import { syncQueueRepository } from "./syncQueueRepository";
 import { mockApiClient } from "@/lib/mock-api/client";
 import { getDB, SyncQueueItem } from "@/lib/db/indexeddb";
-import { getDropboxToken, uploadBackupToDropbox } from "@/lib/services/dropbox";
+import { hasDropboxConnection, uploadBackupToDropbox } from "@/lib/services/dropbox";
 
 class SyncEngine {
   private isSyncing = false;
@@ -26,7 +26,7 @@ class SyncEngine {
       window.dispatchEvent(new Event("sync:end"));
       
       // Auto-backup to Dropbox if token is available
-      if (getDropboxToken()) {
+      if (hasDropboxConnection()) {
         uploadBackupToDropbox().catch(err => console.error("Auto-backup failed", err));
       }
     }

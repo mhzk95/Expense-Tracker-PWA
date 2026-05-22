@@ -5,7 +5,6 @@
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { MOCK_TRANSACTIONS } from "@/lib/mock-data";
 import { formatCurrency, formatDate } from "@/lib/utils/helpers";
 import { RefreshCw, Plus, Calendar } from "lucide-react";
 import type { Metadata } from "next";
@@ -16,8 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default function RecurringPage() {
-  const recurringTransactions = MOCK_TRANSACTIONS.filter((t) => t.isRecurring);
-  const monthlyTotal = recurringTransactions.reduce((s, t) => s + t.amount, 0);
+  const recurringTransactions: any[] = [];
+  const monthlyTotal = 0;
 
   return (
     <div className="space-y-6">

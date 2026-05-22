@@ -69,6 +69,17 @@ export interface BudgetEntity {
   isDeleted: boolean;
 }
 
+export interface CategoryEntity {
+  id: string;
+  name: string;
+  type: "income" | "expense" | "transfer";
+  color?: string;
+  icon?: string;
+  syncStatus: "pending" | "synced" | "failed" | "conflict";
+  localVersion: number;
+  isDeleted: boolean;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
   syncQueue: {
     key: string;
@@ -88,6 +99,10 @@ interface ExpenseTrackerDB extends DBSchema {
     key: string;
     value: BudgetEntity;
   };
+  categories: {
+    key: string;
+    value: CategoryEntity;
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
@@ -99,7 +114,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 2, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 3, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const syncQueueStore = db.createObjectStore('syncQueue', { keyPath: 'id' });
@@ -113,6 +128,10 @@ export function getDB() {
         if (oldVersion < 2) {
           db.createObjectStore('accounts', { keyPath: 'id' });
           db.createObjectStore('budgets', { keyPath: 'id' });
+        }
+
+        if (oldVersion < 3) {
+          db.createObjectStore('categories', { keyPath: 'id' });
         }
       },
     });

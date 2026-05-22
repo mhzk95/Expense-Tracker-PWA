@@ -2,41 +2,65 @@
 
 import { useState, useEffect } from "react";
 import { 
-  getDropboxToken, 
-  setDropboxToken, 
-  removeDropboxToken,
+  hasDropboxConnection,
+  initiateDropboxLogin,
+  handleDropboxRedirect,
+  removeDropboxAuth,
   uploadBackupToDropbox,
   restoreBackupFromDropbox
 } from "@/lib/services/dropbox";
 import { Cloud, Save, Download, Trash2, CheckCircle2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function DropboxSettings() {
-  const [token, setToken] = useState("");
-  const [hasToken, setHasToken] = useState(false);
-  const [status, setStatus] = useState<"idle" | "syncing" | "restoring" | "success" | "error">("idle");
+  const [clientId, setClientId] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+  const [status, setStatus] = useState<"idle" | "authenticating" | "syncing" | "restoring" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const saved = getDropboxToken();
-    if (saved) {
-      setHasToken(true);
-      setToken(saved);
-    }
-  }, []);
+    setIsConnected(hasDropboxConnection());
 
-  const handleSaveToken = () => {
-    if (!token.trim()) return;
-    setDropboxToken(token.trim());
-    setHasToken(true);
-    setStatus("success");
-    setMessage("Token saved successfully.");
+    const code = searchParams.get("code");
+    if (code) {
+      completeAuth(code);
+    }
+  }, [searchParams]);
+
+  const completeAuth = async (code: string) => {
+    setStatus("authenticating");
+    setMessage("Connecting to Dropbox...");
+    
+    // The redirect URI must match exactly what was sent during authorization
+    const redirectUri = window.location.origin + window.location.pathname;
+    
+    const success = await handleDropboxRedirect(code, redirectUri);
+    if (success) {
+      setIsConnected(true);
+      setStatus("success");
+      setMessage("Dropbox connected successfully!");
+    } else {
+      setStatus("error");
+      setMessage("Failed to connect to Dropbox.");
+    }
+    
+    // Remove the ?code from URL
+    router.replace(window.location.pathname);
     setTimeout(() => setStatus("idle"), 3000);
   };
 
-  const handleRemoveToken = () => {
-    removeDropboxToken();
-    setHasToken(false);
-    setToken("");
+  const handleConnect = () => {
+    if (!clientId.trim()) return;
+    const redirectUri = window.location.origin + window.location.pathname;
+    initiateDropboxLogin(clientId.trim(), redirectUri);
+  };
+
+  const handleDisconnect = () => {
+    removeDropboxAuth();
+    setIsConnected(false);
+    setClientId("");
   };
 
   const handleManualBackup = async () => {
@@ -48,7 +72,7 @@ export function DropboxSettings() {
       setMessage("Backup uploaded successfully.");
     } else {
       setStatus("error");
-      setMessage("Failed to upload backup. Check token.");
+      setMessage("Failed to upload backup.");
     }
     setTimeout(() => setStatus("idle"), 5000);
   };
@@ -64,7 +88,7 @@ export function DropboxSettings() {
       setMessage("Data restored successfully!");
     } else {
       setStatus("error");
-      setMessage("Failed to restore data. Check token or file.");
+      setMessage("Failed to restore data.");
     }
     setTimeout(() => setStatus("idle"), 5000);
   };
@@ -81,24 +105,25 @@ export function DropboxSettings() {
         </div>
       </div>
 
-      {!hasToken ? (
+      {!isConnected ? (
         <div className="space-y-3">
           <p className="text-xs text-slate-500">
-            Paste your Dropbox Access Token here to enable automatic background backups of your local data.
+            Paste your Dropbox <strong>App Key</strong> to connect. The app will securely get a refresh token so it never logs you out.
           </p>
           <div className="flex gap-2">
             <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="sl.B... (Access Token)"
+              type="text"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              placeholder="App Key (Client ID)"
               className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-violet-500 outline-none"
             />
             <button
-              onClick={handleSaveToken}
-              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-xl transition-colors"
+              onClick={handleConnect}
+              disabled={status === "authenticating" || !clientId.trim()}
+              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
             >
-              Save
+              Connect
             </button>
           </div>
         </div>
@@ -110,9 +135,9 @@ export function DropboxSettings() {
               <span className="text-sm text-emerald-300 font-medium">Dropbox Connected</span>
             </div>
             <button 
-              onClick={handleRemoveToken}
+              onClick={handleDisconnect}
               className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-              title="Remove Connection"
+              title="Disconnect"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -136,13 +161,13 @@ export function DropboxSettings() {
               Restore
             </button>
           </div>
-
-          {status !== "idle" && (
-            <p className={`text-xs text-center font-medium ${status === "error" ? "text-red-400" : "text-emerald-400"}`}>
-              {message}
-            </p>
-          )}
         </div>
+      )}
+
+      {status !== "idle" && (
+        <p className={`text-xs text-center font-medium ${status === "error" ? "text-red-400" : "text-emerald-400"}`}>
+          {message}
+        </p>
       )}
     </div>
   );

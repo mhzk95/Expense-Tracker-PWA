@@ -62,6 +62,13 @@ export const NAV_ITEMS = [
     description: "Subscriptions and repeating payments",
   },
   {
+    id: "categories",
+    label: "Categories",
+    href: "/categories",
+    icon: "Target",
+    description: "Manage income and expense categories",
+  },
+  {
     id: "settings",
     label: "Settings",
     href: "/settings",
@@ -86,8 +93,8 @@ export const BOTTOM_NAV_ITEMS = [
 ] as const;
 
 /** Currency codes */
-export const DEFAULT_CURRENCY = "USD";
-export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "INR", "CAD", "AUD", "JPY"] as const;
+export const DEFAULT_CURRENCY = "INR";
+export const SUPPORTED_CURRENCIES = ["INR", "USD", "EUR", "GBP", "CAD", "AUD", "JPY"] as const;
 
 /** Local storage keys */
 export const STORAGE_KEYS = {

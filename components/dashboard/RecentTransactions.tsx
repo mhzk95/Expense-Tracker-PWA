@@ -5,7 +5,7 @@
  * Uses local IndexedDB data.
  */
 
-import { MOCK_CATEGORIES } from "@/lib/mock-data";
+import { useCategories } from "@/hooks/useCategories";
 import { formatCurrency, formatDate } from "@/lib/utils/helpers";
 import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
@@ -13,8 +13,10 @@ import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
 
 export function RecentTransactions() {
-  const { transactions, loading } = useTransactions();
-  const recent = transactions.slice(0, 5);
+  const { transactions, loading: txLoading } = useTransactions();
+  const { categories, loading: catLoading } = useCategories();
+  const recent = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+  const loading = txLoading || catLoading;
 
   return (
     <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden">
@@ -36,7 +38,7 @@ export function RecentTransactions() {
         ) : recent.length === 0 ? (
           <div className="p-5 text-sm text-slate-400">No transactions found.</div>
         ) : recent.map((txn) => {
-          const category = MOCK_CATEGORIES.find((c) => c.id === txn.categoryId);
+          const category = categories.find((c) => c.id === txn.categoryId);
           const isIncome = txn.type === "income";
           const isTransfer = txn.type === "transfer";
 

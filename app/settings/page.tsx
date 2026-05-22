@@ -6,6 +6,7 @@
 "use client";
 
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Suspense } from "react";
 import {
   Palette,
   Globe,
@@ -48,7 +49,9 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <PageHeader title="Settings" subtitle="Preferences and configuration" />
 
-      <DropboxSettings />
+      <Suspense fallback={<div className="animate-pulse h-32 bg-slate-800/60 rounded-2xl" />}>
+        <DropboxSettings />
+      </Suspense>
 
       {SETTINGS_SECTIONS.map((section) => (
         <div key={section.title} className="space-y-1 pt-4">

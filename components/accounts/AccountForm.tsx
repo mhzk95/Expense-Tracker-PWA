@@ -8,7 +8,7 @@ interface AccountFormProps {
 }
 
 export function AccountForm({ onSuccess }: AccountFormProps) {
-  const { addAccount } = useAccounts();
+  const { accounts, addAccount } = useAccounts();
   const [name, setName] = useState("");
   const [type, setType] = useState("checking");
   const [balance, setBalance] = useState("");
@@ -20,16 +20,31 @@ export function AccountForm({ onSuccess }: AccountFormProps) {
 
     setIsSubmitting(true);
     try {
+      let iconName = "Building2";
+      let colorHex = "#6366f1"; // Default violet
+
+      if (type === "savings") {
+        iconName = "PiggyBank";
+        colorHex = "#22c55e"; // Green
+      } else if (type === "credit_card") {
+        iconName = "CreditCard";
+        colorHex = "#f43f5e"; // Rose
+      } else if (type === "wallet") {
+        iconName = "Wallet";
+        colorHex = "#3b82f6"; // Blue
+      }
+
       await addAccount({
         id: crypto.randomUUID(),
         name,
         type,
         balance: Number(balance),
-        currency: "USD",
+        currency: "INR",
         status: "active",
         includeInNetWorth: true,
-        isDefault: false,
-        color: "#6366f1",
+        isDefault: accounts.length === 0, // Make it default if it's the first account
+        icon: iconName,
+        color: colorHex,
       });
       onSuccess();
     } catch (err) {
@@ -70,7 +85,7 @@ export function AccountForm({ onSuccess }: AccountFormProps) {
       <div>
         <label className="block text-xs font-medium text-slate-400 mb-1">Current Balance</label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
           <input
             type="number"
             step="0.01"

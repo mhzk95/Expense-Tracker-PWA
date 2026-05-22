@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { TransactionEntity } from "@/lib/db/indexeddb";
 import { transactionsRepository } from "@/lib/db/transactionsRepository";
-import { MOCK_TRANSACTIONS } from "@/lib/mock-data";
 
 export function useTransactions() {
   const [transactions, setTransactions] = useState<TransactionEntity[]>([]);
@@ -12,27 +11,7 @@ export function useTransactions() {
   const fetchTransactions = useCallback(async () => {
     try {
       const data = await transactionsRepository.getAll();
-      
-      // Auto-seed if empty for demo purposes
-      if (data.length === 0) {
-        for (const mt of MOCK_TRANSACTIONS) {
-          await transactionsRepository.add({
-            id: mt.id,
-            amount: mt.amount,
-            type: mt.type,
-            currency: mt.currency,
-            description: mt.description,
-            date: mt.date,
-            categoryId: mt.categoryId,
-            accountId: mt.accountId,
-            status: mt.status,
-          });
-        }
-        const seeded = await transactionsRepository.getAll();
-        setTransactions(seeded);
-      } else {
-        setTransactions(data);
-      }
+      setTransactions(data);
     } catch (error) {
       console.error("Failed to fetch transactions", error);
     } finally {

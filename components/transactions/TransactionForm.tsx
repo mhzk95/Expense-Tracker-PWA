@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
-import { MOCK_CATEGORIES } from "@/lib/mock-data";
+import { useCategories } from "@/hooks/useCategories";
+import { useAccounts } from "@/hooks/useAccounts";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -10,25 +11,38 @@ interface TransactionFormProps {
 
 export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const { addTransaction } = useTransactions();
+  const { categories } = useCategories();
+  const { accounts } = useAccounts();
   const [type, setType] = useState<"expense" | "income">("expense");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   
-  // Set default category based on type
-  const availableCategories = MOCK_CATEGORIES.filter(c => c.type === type);
-  const [categoryId, setCategoryId] = useState(availableCategories[0]?.id || "");
+  const availableCategories = categories.filter(c => c.type === type);
+  const [categoryId, setCategoryId] = useState("");
+  const [accountId, setAccountId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Set default category and account when loaded
+  useEffect(() => {
+    if (availableCategories.length > 0 && !categoryId) {
+      setCategoryId(availableCategories[0].id);
+    }
+    if (accounts.length > 0 && !accountId) {
+      setAccountId(accounts.find(a => a.isDefault)?.id || accounts[0].id);
+    }
+  }, [availableCategories, categoryId, accounts, accountId]);
 
   // Update category when type changes
   const handleTypeChange = (newType: "expense" | "income") => {
     setType(newType);
-    const newCategories = MOCK_CATEGORIES.filter(c => c.type === newType);
+    const newCategories = categories.filter(c => c.type === newType);
     setCategoryId(newCategories[0]?.id || "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || isNaN(Number(amount))) return;
+    if (!accountId) return; // Prevent submission without account
 
     setIsSubmitting(true);
     try {
@@ -36,12 +50,12 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         id: crypto.randomUUID(),
         amount: Number(amount),
         type,
-        currency: "USD",
+        currency: "INR",
         description: note || "New Transaction",
         date: new Date().toISOString(),
         note,
-        categoryId: categoryId || (type === "expense" ? "cat_food_dining" : "cat_income_salary"),
-        accountId: "acc_checking", // Still hardcoded for now, could be dynamic
+        categoryId: categoryId || "other",
+        accountId,
       });
       onSuccess();
     } catch (err) {
@@ -74,7 +88,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       <div>
         <label className="block text-xs font-medium text-slate-400 mb-1">Amount</label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
           <input
             type="number"
             step="0.01"
@@ -95,11 +109,35 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
           required
         >
-          {MOCK_CATEGORIES.filter((c) => c.type === type).map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
+          {categories.length === 0 ? (
+            <option value="" disabled>No categories available</option>
+          ) : (
+            categories.filter((c) => c.type === type).map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
+        <select
+          value={accountId}
+          onChange={(e) => setAccountId(e.target.value)}
+          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+          required
+        >
+          {accounts.length === 0 ? (
+            <option value="" disabled>No accounts available</option>
+          ) : (
+            accounts.map((acc) => (
+              <option key={acc.id} value={acc.id}>
+                {acc.name}
+              </option>
+            ))
+          )}
         </select>
       </div>
 

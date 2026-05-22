@@ -24,7 +24,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title="Dashboard"
-        subtitle="Your financial snapshot for May 2024"
+        subtitle={`Your financial snapshot for ${new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date())}`}
         action={
           <div className="flex items-center gap-2">
             <SyncStatusBadge />

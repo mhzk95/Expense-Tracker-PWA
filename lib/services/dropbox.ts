@@ -2,38 +2,157 @@ import { getDB } from "@/lib/db/indexeddb";
 
 const DROPBOX_UPLOAD_URL = "https://content.dropboxapi.com/2/files/upload";
 const DROPBOX_DOWNLOAD_URL = "https://content.dropboxapi.com/2/files/download";
+const DROPBOX_TOKEN_URL = "https://api.dropboxapi.com/oauth2/token";
+const DROPBOX_AUTH_URL = "https://www.dropbox.com/oauth2/authorize";
 
-export const getDropboxToken = () => {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("dropbox_sync_token");
+// Generate PKCE Challenge
+function generateCodeVerifier() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+}
+
+async function generateCodeChallenge(verifier: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const digest = await window.crypto.subtle.digest('SHA-256', data);
+  const base64Url = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return base64Url;
+}
+
+export const getDropboxClientId = () => typeof window !== "undefined" ? localStorage.getItem("dropbox_client_id") : null;
+export const setDropboxClientId = (id: string) => localStorage.setItem("dropbox_client_id", id);
+export const removeDropboxAuth = () => {
+  localStorage.removeItem("dropbox_client_id");
+  localStorage.removeItem("dropbox_refresh_token");
+  localStorage.removeItem("dropbox_access_token");
+  localStorage.removeItem("dropbox_token_expires_at");
 };
 
-export const setDropboxToken = (token: string) => {
-  localStorage.setItem("dropbox_sync_token", token);
+export const hasDropboxConnection = () => {
+  if (typeof window === "undefined") return false;
+  return !!localStorage.getItem("dropbox_refresh_token");
 };
 
-export const removeDropboxToken = () => {
-  localStorage.removeItem("dropbox_sync_token");
-};
+export async function initiateDropboxLogin(clientId: string, redirectUri: string) {
+  setDropboxClientId(clientId);
+  const verifier = generateCodeVerifier();
+  localStorage.setItem("dropbox_code_verifier", verifier);
+  const challenge = await generateCodeChallenge(verifier);
+  
+  const authUrl = new URL(DROPBOX_AUTH_URL);
+  authUrl.searchParams.append("client_id", clientId);
+  authUrl.searchParams.append("response_type", "code");
+  authUrl.searchParams.append("token_access_type", "offline");
+  authUrl.searchParams.append("code_challenge_method", "S256");
+  authUrl.searchParams.append("code_challenge", challenge);
+  authUrl.searchParams.append("redirect_uri", redirectUri);
+  
+  window.location.href = authUrl.toString();
+}
+
+export async function handleDropboxRedirect(code: string, redirectUri: string): Promise<boolean> {
+  const clientId = getDropboxClientId();
+  const verifier = localStorage.getItem("dropbox_code_verifier");
+  if (!clientId || !verifier) return false;
+
+  try {
+    const params = new URLSearchParams();
+    params.append("client_id", clientId);
+    params.append("grant_type", "authorization_code");
+    params.append("code", code);
+    params.append("code_verifier", verifier);
+    params.append("redirect_uri", redirectUri);
+
+    const res = await fetch(DROPBOX_TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params,
+    });
+
+    if (!res.ok) {
+      const errTxt = await res.text();
+      console.error("Token exchange failed:", errTxt);
+      throw new Error("Failed to exchange code");
+    }
+    const data = await res.json();
+    
+    if (data.refresh_token) {
+      localStorage.setItem("dropbox_refresh_token", data.refresh_token);
+    }
+    localStorage.setItem("dropbox_access_token", data.access_token);
+    localStorage.setItem("dropbox_token_expires_at", (Date.now() + (data.expires_in * 1000)).toString());
+    localStorage.removeItem("dropbox_code_verifier");
+    
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+export async function getValidAccessToken(): Promise<string | null> {
+  const accessToken = localStorage.getItem("dropbox_access_token");
+  const expiresAt = localStorage.getItem("dropbox_token_expires_at");
+  const refreshToken = localStorage.getItem("dropbox_refresh_token");
+  const clientId = getDropboxClientId();
+
+  if (!refreshToken || !clientId) return null;
+
+  // If token is valid for at least 5 more minutes
+  if (accessToken && expiresAt && Date.now() + 300000 < parseInt(expiresAt, 10)) {
+    return accessToken;
+  }
+
+  // Need to refresh
+  try {
+    const params = new URLSearchParams();
+    params.append("client_id", clientId);
+    params.append("grant_type", "refresh_token");
+    params.append("refresh_token", refreshToken);
+
+    const res = await fetch(DROPBOX_TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params,
+    });
+
+    if (!res.ok) throw new Error("Failed to refresh token");
+    const data = await res.json();
+    
+    localStorage.setItem("dropbox_access_token", data.access_token);
+    localStorage.setItem("dropbox_token_expires_at", (Date.now() + (data.expires_in * 1000)).toString());
+    
+    return data.access_token;
+  } catch (error) {
+    console.error("Refresh token error:", error);
+    return null;
+  }
+}
 
 /**
  * Gathers all local data and uploads it to Dropbox as backup.json
  */
 export async function uploadBackupToDropbox(): Promise<boolean> {
-  const token = getDropboxToken();
+  const token = await getValidAccessToken();
   if (!token) return false;
 
   try {
     const db = await getDB();
-    const transactions = await db.getAll("transactions");
-    const accounts = await db.getAll("accounts");
+    const allTransactions = await db.getAll("transactions");
+    const allAccounts = await db.getAll("accounts");
+    const allCategories = await db.getAll("categories");
 
     const backupData = {
-      version: 1,
+      version: 2,
       timestamp: new Date().toISOString(),
       data: {
-        transactions,
-        accounts,
+        transactions: allTransactions.filter((t: any) => !t.isDeleted),
+        accounts: allAccounts.filter((a: any) => !a.isDeleted),
+        categories: allCategories.filter((c: any) => !c.isDeleted),
       },
     };
 
@@ -71,7 +190,7 @@ export async function uploadBackupToDropbox(): Promise<boolean> {
  * Downloads backup.json from Dropbox and repopulates the local DB
  */
 export async function restoreBackupFromDropbox(): Promise<boolean> {
-  const token = getDropboxToken();
+  const token = await getValidAccessToken();
   if (!token) return false;
 
   try {
@@ -98,11 +217,12 @@ export async function restoreBackupFromDropbox(): Promise<boolean> {
     }
 
     const db = await getDB();
-    const tx = db.transaction(["transactions", "accounts"], "readwrite");
+    const tx = db.transaction(["transactions", "accounts", "categories"], "readwrite");
     
     // Clear existing
     await tx.objectStore("transactions").clear();
     await tx.objectStore("accounts").clear();
+    await tx.objectStore("categories").clear();
 
     // Insert backup
     const tStore = tx.objectStore("transactions");
@@ -115,11 +235,17 @@ export async function restoreBackupFromDropbox(): Promise<boolean> {
       await aStore.put(item);
     }
 
+    const cStore = tx.objectStore("categories");
+    for (const item of backupData.data.categories || []) {
+      await cStore.put(item);
+    }
+
     await tx.done;
 
     // Trigger UI refresh
     window.dispatchEvent(new Event("db:transactions:changed"));
     window.dispatchEvent(new Event("db:accounts:changed"));
+    window.dispatchEvent(new Event("db:categories:changed"));
     
     return true;
   } catch (error) {

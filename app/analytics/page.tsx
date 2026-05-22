@@ -2,12 +2,15 @@
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useTransactions } from "@/hooks/useTransactions";
-import { MOCK_CATEGORIES } from "@/lib/mock-data";
+import { useCategories } from "@/hooks/useCategories";
 import { formatCurrency } from "@/lib/utils/helpers";
 import { TrendingDown, TrendingUp, Filter } from "lucide-react";
 
 export default function AnalyticsPage() {
-  const { transactions, loading } = useTransactions();
+  const { transactions, loading: txLoading } = useTransactions();
+  const { categories, loading: catLoading } = useCategories();
+  
+  const loading = txLoading || catLoading;
 
   if (loading) {
     return (
@@ -42,7 +45,7 @@ export default function AnalyticsPage() {
   const sortedCategories = Object.entries(groupedExpenses)
     .sort(([, a], [, b]) => b - a)
     .map(([catId, amount]) => {
-      const categoryInfo = MOCK_CATEGORIES.find((c) => c.id === catId);
+      const categoryInfo = categories.find((c) => c.id === catId);
       return {
         id: catId,
         name: categoryInfo?.name || "Other",
