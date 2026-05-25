@@ -1,45 +1,52 @@
 import { getDB, AccountEntity } from "./indexeddb";
-import { syncQueueRepository } from "../sync/syncQueueRepository";
 
 export const accountsRepository = {
   async getAll(): Promise<AccountEntity[]> {
     const db = await getDB();
-    const all = await db.getAll("accounts");
-    return all.filter((a: AccountEntity) => !a.isDeleted);
+    const allAccounts = await db.getAll("accounts");
+    const validAccounts = allAccounts.filter((a: AccountEntity) => !a.isDeleted);
+    
+    // Calculate derived balance
+    const transactions = await db.getAll("transactions");
+    const validTransactions = transactions.filter((t: any) => !t.isDeleted && t.status !== "failed" && t.status !== "cancelled");
+
+    return validAccounts.map((account: AccountEntity) => {
+      let currentBalance = account.balance; // initial balance
+
+      for (const t of validTransactions) {
+        if (t.accountId === account.id) {
+          if (t.type === "income") currentBalance += t.amount;
+          else if (t.type === "expense") currentBalance -= t.amount;
+          else if (t.type === "transfer") currentBalance -= t.amount;
+        }
+        if (t.type === "transfer" && t.toAccountId === account.id) {
+          currentBalance += t.amount;
+        }
+      }
+
+      return {
+        ...account,
+        balance: currentBalance
+      };
+    });
   },
 
-  async add(account: Omit<AccountEntity, "syncStatus" | "localVersion" | "isDeleted">): Promise<void> {
+  async add(account: Omit<AccountEntity, "isDeleted">): Promise<void> {
     const db = await getDB();
     const newAcc: AccountEntity = {
       ...account,
-      syncStatus: "pending",
-      localVersion: 1,
       isDeleted: false,
     };
     
     // Save locally
     await db.put("accounts", newAcc);
 
-    // Queue for sync
-    await syncQueueRepository.add({
-      id: crypto.randomUUID(),
-      entityType: "account",
-      entityId: newAcc.id,
-      mutationType: "create",
-      payload: newAcc,
-      status: "pending",
-      retryCount: 0,
-      maxRetries: 3,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));
     }
   },
 
-  async update(id: string, updates: Partial<Omit<AccountEntity, "id" | "syncStatus" | "localVersion" | "isDeleted">>): Promise<void> {
+  async update(id: string, updates: Partial<Omit<AccountEntity, "id" | "isDeleted">>): Promise<void> {
     const db = await getDB();
     const existing = await db.get("accounts", id);
     if (!existing) throw new Error("Account not found");
@@ -47,24 +54,9 @@ export const accountsRepository = {
     const updatedAcc: AccountEntity = {
       ...existing,
       ...updates,
-      localVersion: existing.localVersion + 1,
-      syncStatus: "pending",
     };
 
     await db.put("accounts", updatedAcc);
-
-    await syncQueueRepository.add({
-      id: crypto.randomUUID(),
-      entityType: "account",
-      entityId: updatedAcc.id,
-      mutationType: "update",
-      payload: updatedAcc,
-      status: "pending",
-      retryCount: 0,
-      maxRetries: 3,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));
@@ -79,24 +71,9 @@ export const accountsRepository = {
     const deletedAcc: AccountEntity = {
       ...existing,
       isDeleted: true,
-      localVersion: existing.localVersion + 1,
-      syncStatus: "pending",
     };
 
     await db.put("accounts", deletedAcc);
-
-    await syncQueueRepository.add({
-      id: crypto.randomUUID(),
-      entityType: "account",
-      entityId: deletedAcc.id,
-      mutationType: "delete",
-      payload: { id: deletedAcc.id },
-      status: "pending",
-      retryCount: 0,
-      maxRetries: 3,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));

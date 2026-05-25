@@ -89,11 +89,6 @@ export default function TransactionsPage() {
                         <span className="text-xs text-slate-500">{category?.name ?? "Other"}</span>
                         <span className="text-slate-700">·</span>
                         <span className="text-xs text-slate-500">{formatDate(txn.date, "medium")}</span>
-                        {txn.syncStatus === "pending" && (
-                          <span className="text-[10px] text-violet-400 uppercase tracking-wider bg-violet-500/10 px-1 rounded">
-                            Pending Sync
-                          </span>
-                        )}
                       </div>
                     </div>
 

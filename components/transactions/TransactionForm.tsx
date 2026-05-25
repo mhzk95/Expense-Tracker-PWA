@@ -13,36 +13,42 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const { addTransaction } = useTransactions();
   const { categories } = useCategories();
   const { accounts } = useAccounts();
-  const [type, setType] = useState<"expense" | "income">("expense");
+  const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   
   const availableCategories = categories.filter(c => c.type === type);
   const [categoryId, setCategoryId] = useState("");
   const [accountId, setAccountId] = useState("");
+  const [toAccountId, setToAccountId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Set default category and account when loaded
   useEffect(() => {
-    if (availableCategories.length > 0 && !categoryId) {
+    if (availableCategories.length > 0 && (!categoryId || !availableCategories.find(c => c.id === categoryId))) {
       setCategoryId(availableCategories[0].id);
     }
-    if (accounts.length > 0 && !accountId) {
-      setAccountId(accounts.find(a => a.isDefault)?.id || accounts[0].id);
+    if (accounts.length > 0) {
+      if (!accountId) {
+        setAccountId(accounts.find(a => a.isDefault)?.id || accounts[0].id);
+      }
     }
   }, [availableCategories, categoryId, accounts, accountId]);
 
   // Update category when type changes
-  const handleTypeChange = (newType: "expense" | "income") => {
+  const handleTypeChange = (newType: "expense" | "income" | "transfer") => {
     setType(newType);
-    const newCategories = categories.filter(c => c.type === newType);
-    setCategoryId(newCategories[0]?.id || "");
+    if (newType !== "transfer") {
+      const newCategories = categories.filter(c => c.type === newType);
+      setCategoryId(newCategories[0]?.id || "");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || isNaN(Number(amount))) return;
     if (!accountId) return; // Prevent submission without account
+    if (type === "transfer" && (!toAccountId || accountId === toAccountId)) return;
 
     setIsSubmitting(true);
     try {
@@ -51,11 +57,12 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         amount: Number(amount),
         type,
         currency: "INR",
-        description: note || "New Transaction",
+        description: note || (type === "transfer" ? "Transfer" : "New Transaction"),
         date: new Date().toISOString(),
         note,
-        categoryId: categoryId || "other",
+        categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
+        toAccountId: type === "transfer" ? toAccountId : undefined,
       });
       onSuccess();
     } catch (err) {
@@ -83,6 +90,13 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         >
           Income
         </button>
+        <button
+          type="button"
+          onClick={() => handleTypeChange("transfer")}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${type === "transfer" ? "bg-blue-500/20 text-blue-400" : "text-slate-400"}`}
+        >
+          Transfer
+        </button>
       </div>
 
       <div>
@@ -101,54 +115,92 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
-          required
-        >
-          {categories.length === 0 ? (
-            <option value="" disabled>No categories available</option>
-          ) : (
-            categories.filter((c) => c.type === type).map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))
-          )}
-        </select>
-      </div>
+      {type !== "transfer" && (
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+            required
+          >
+            {categories.length === 0 ? (
+              <option value="" disabled>No categories available</option>
+            ) : (
+              categories.filter((c) => c.type === type).map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+      )}
 
-      <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
-        <select
-          value={accountId}
-          onChange={(e) => setAccountId(e.target.value)}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
-          required
-        >
-          {accounts.length === 0 ? (
-            <option value="" disabled>No accounts available</option>
-          ) : (
-            accounts.map((acc) => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name}
-              </option>
-            ))
-          )}
-        </select>
-      </div>
+      {type === "transfer" ? (
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">From Account</label>
+            <select
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+              required
+            >
+              {accounts.map((acc) => (
+                <option key={acc.id} value={acc.id}>
+                  {acc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">To Account</label>
+            <select
+              value={toAccountId}
+              onChange={(e) => setToAccountId(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+              required
+            >
+              <option value="" disabled>Select destination</option>
+              {accounts.filter(a => a.id !== accountId).map((acc) => (
+                <option key={acc.id} value={acc.id}>
+                  {acc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
+          <select
+            value={accountId}
+            onChange={(e) => setAccountId(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+            required
+          >
+            {accounts.length === 0 ? (
+              <option value="" disabled>No accounts available</option>
+            ) : (
+              accounts.map((acc) => (
+                <option key={acc.id} value={acc.id}>
+                  {acc.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+      )}
 
       <div>
         <label className="block text-xs font-medium text-slate-400 mb-1">Note (optional)</label>
-        <input
-          type="text"
+        <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
-          placeholder="What was this for?"
+          rows={3}
+          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none"
+          placeholder="E.g., John owes $20 for pizza, Sarah owes $15..."
         />
       </div>
 
@@ -157,7 +209,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         disabled={isSubmitting || !amount}
         className="w-full bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-xl py-3 mt-2 transition-colors disabled:opacity-50"
       >
-        {isSubmitting ? "Saving..." : `Save ${type === "expense" ? "Expense" : "Income"}`}
+        {isSubmitting ? "Saving..." : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
       </button>
     </form>
   );

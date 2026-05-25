@@ -29,6 +29,7 @@ import {
   Stethoscope,
   TrendingUp,
   Cloud,
+  BookImage,
 } from "lucide-react";
 
 /** Map icon name strings to Lucide components */
@@ -41,6 +42,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   RefreshCw,
   Settings,
   Cloud,
+  BookImage,
 };
 
 interface WebSidebarNavigationProps {

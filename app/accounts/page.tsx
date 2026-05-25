@@ -114,11 +114,6 @@ export default function AccountsPage() {
                             Default
                           </span>
                         )}
-                        {account.syncStatus === "pending" && (
-                          <span className="text-[10px] text-violet-400 uppercase tracking-wider bg-violet-500/10 px-1 rounded">
-                            Syncing
-                          </span>
-                        )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         {ACCOUNT_TYPE_LABELS[account.type] || "Account"}{account.institution ? ` · ${account.institution}` : ""}

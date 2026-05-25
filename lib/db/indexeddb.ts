@@ -1,22 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
-export interface SyncQueueItem {
-  id: string;
-  entityType: "transaction" | "account" | "budget" | "category" | "recurringRule" | "receipt";
-  entityId: string;
-  mutationType: "create" | "update" | "delete" | string;
-  payload: any;
-  status: "pending" | "syncing" | "synced" | "failed" | "conflict";
-  retryCount: number;
-  maxRetries: number;
-  errorMessage?: string | null;
-  conflictData?: any;
-  createdAt: string;
-  updatedAt: string;
-  lastAttemptAt?: string | null;
-  syncedAt?: string | null;
-}
-
 export interface TransactionEntity {
   id: string;
   amount: number;
@@ -27,10 +10,8 @@ export interface TransactionEntity {
   note?: string;
   categoryId?: string;
   accountId?: string;
+  toAccountId?: string;
   status?: string;
-  syncStatus: "pending" | "synced" | "failed" | "conflict";
-  localVersion: number;
-  remoteVersion?: number;
   isDeleted: boolean;
 }
 
@@ -47,8 +28,6 @@ export interface AccountEntity {
   icon?: string;
   includeInNetWorth: boolean;
   isDefault: boolean;
-  syncStatus: "pending" | "synced" | "failed" | "conflict";
-  localVersion: number;
   isDeleted: boolean;
 }
 
@@ -64,8 +43,6 @@ export interface BudgetEntity {
   rollover: boolean;
   alertThreshold?: number;
   color?: string;
-  syncStatus: "pending" | "synced" | "failed" | "conflict";
-  localVersion: number;
   isDeleted: boolean;
 }
 
@@ -75,21 +52,27 @@ export interface CategoryEntity {
   type: "income" | "expense" | "transfer";
   color?: string;
   icon?: string;
-  syncStatus: "pending" | "synced" | "failed" | "conflict";
-  localVersion: number;
   isDeleted: boolean;
 }
 
+export interface JournalEntity {
+  id: string;
+  date: string; // ISO String
+  title?: string;
+  content: string;
+  tags: string[];
+  photoUrls: string[]; // Base64 strings for now to keep JSON backup simple
+  linkedTransactionId?: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
-  syncQueue: {
-    key: string;
-    value: SyncQueueItem;
-    indexes: { "by-status": string };
-  };
   transactions: {
     key: string;
     value: TransactionEntity;
-    indexes: { "by-date": string, "by-syncStatus": string };
+    indexes: { "by-date": string };
   };
   accounts: {
     key: string;
@@ -103,35 +86,54 @@ interface ExpenseTrackerDB extends DBSchema {
     key: string;
     value: CategoryEntity;
   };
+  journalEntries: {
+    key: string;
+    value: JournalEntity;
+    indexes: { "by-date": string };
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
 
 export function getDB() {
   if (typeof window === "undefined") {
-    // Return a dummy promise for SSR
     return new Promise<any>(() => {});
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 3, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 5, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
-          const syncQueueStore = db.createObjectStore('syncQueue', { keyPath: 'id' });
-          syncQueueStore.createIndex('by-status', 'status');
-
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
           txStore.createIndex('by-date', 'date');
-          txStore.createIndex('by-syncStatus', 'syncStatus');
         }
         
         if (oldVersion < 2) {
-          db.createObjectStore('accounts', { keyPath: 'id' });
-          db.createObjectStore('budgets', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('accounts')) {
+            db.createObjectStore('accounts', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('budgets')) {
+            db.createObjectStore('budgets', { keyPath: 'id' });
+          }
         }
 
         if (oldVersion < 3) {
-          db.createObjectStore('categories', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('categories')) {
+            db.createObjectStore('categories', { keyPath: 'id' });
+          }
+        }
+
+        if (oldVersion < 4) {
+          if (db.objectStoreNames.contains('syncQueue' as any)) {
+            db.deleteObjectStore('syncQueue' as any);
+          }
+        }
+
+        if (oldVersion < 5) {
+          if (!db.objectStoreNames.contains('journalEntries')) {
+            const journalStore = db.createObjectStore('journalEntries', { keyPath: 'id' });
+            journalStore.createIndex('by-date', 'date');
+          }
         }
       },
     });

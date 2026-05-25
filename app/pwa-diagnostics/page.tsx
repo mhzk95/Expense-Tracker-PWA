@@ -60,14 +60,9 @@ function DiagnosticRow({ label, value, description, status = "info" }: Diagnosti
   );
 }
 
-import { useSyncQueue } from "@/hooks/useSyncQueue";
-import { useSyncEngine } from "@/hooks/useSyncEngine";
-
 export default function PWADiagnosticsPage() {
   const runtime = useAppRuntime();
   const install = useInstallPrompt();
-  const { pendingItems, failedItems, conflictItems, syncedItems } = useSyncQueue();
-  const { isSyncing, lastSyncAt } = useSyncEngine();
 
   if (!runtime.isBrowser) {
     return (
@@ -246,41 +241,6 @@ export default function PWADiagnosticsPage() {
           value: install.isInstalled,
           description: "App reports as installed",
           status: "ok" as const,
-        },
-      ],
-    },
-    {
-      title: "Sync Engine & Queue",
-      icon: Cloud,
-      rows: [
-        {
-          label: "Sync Engine Status",
-          value: isSyncing ? "Syncing..." : "Idle",
-          status: (isSyncing ? "warn" : "info") as "warn" | "info",
-        },
-        {
-          label: "Pending Queue",
-          value: String(pendingItems.length),
-          description: "Items waiting to sync",
-          status: (pendingItems.length > 0 ? "warn" : "ok") as "warn" | "ok",
-        },
-        {
-          label: "Failed & Conflicts",
-          value: `${failedItems.length} failed / ${conflictItems.length} conflicts`,
-          description: "Items needing resolution",
-          status: (failedItems.length > 0 || conflictItems.length > 0 ? "warn" : "ok") as "warn" | "ok",
-        },
-        {
-          label: "Synced Items",
-          value: String(syncedItems.length),
-          description: "Successfully processed items",
-          status: "info" as const,
-        },
-        {
-          label: "Last Sync Time",
-          value: lastSyncAt ? new Date(lastSyncAt).toLocaleTimeString() : "Never",
-          description: "Last sync:end event",
-          status: "info" as const,
         },
       ],
     },

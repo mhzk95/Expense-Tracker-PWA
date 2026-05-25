@@ -69,18 +69,18 @@ export const NAV_ITEMS = [
     description: "Manage income and expense categories",
   },
   {
+    id: "journal",
+    label: "Journal",
+    href: "/journal",
+    icon: "BookImage",
+    description: "Memories and life events",
+  },
+  {
     id: "settings",
     label: "Settings",
     href: "/settings",
     icon: "Settings",
     description: "App preferences and configuration",
-  },
-  {
-    id: "sync",
-    label: "Sync",
-    href: "/sync",
-    icon: "Cloud",
-    description: "Manage offline data sync",
   },
 ] as const;
 
@@ -88,6 +88,7 @@ export const NAV_ITEMS = [
 export const BOTTOM_NAV_ITEMS = [
   { id: "dashboard", label: "Home", href: "/", icon: "LayoutDashboard" },
   { id: "transactions", label: "Transactions", href: "/transactions", icon: "ArrowLeftRight" },
+  { id: "journal", label: "Journal", href: "/journal", icon: "BookImage" },
   { id: "analytics", label: "Analytics", href: "/analytics", icon: "BarChart3" },
   { id: "accounts", label: "Accounts", href: "/accounts", icon: "Wallet" },
 ] as const;

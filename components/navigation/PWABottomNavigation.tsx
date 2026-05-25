@@ -20,6 +20,7 @@ import {
   Target,
   BarChart3,
   Wallet,
+  BookImage,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -28,6 +29,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Target,
   BarChart3,
   Wallet,
+  BookImage,
 };
 
 export function PWABottomNavigation() {

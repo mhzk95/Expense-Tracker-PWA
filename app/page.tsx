@@ -11,7 +11,6 @@ import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { CategorySpending } from "@/components/dashboard/CategorySpending";
 import type { Metadata } from "next";
 
-import { SyncStatusBadge } from "@/components/sync/SyncStatusBadge";
 import { AddTransactionAction } from "@/components/dashboard/AddTransactionAction";
 
 export const metadata: Metadata = {
@@ -27,7 +26,6 @@ export default function DashboardPage() {
         subtitle={`Your financial snapshot for ${new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date())}`}
         action={
           <div className="flex items-center gap-2">
-            <SyncStatusBadge />
             <AddTransactionAction />
           </div>
         }

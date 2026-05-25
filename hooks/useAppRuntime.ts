@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DESKTOP_BREAKPOINT, ENABLE_APP_SHELL_FOR_MOBILE_DEVICE_BROWSER } from "@/lib/constants/app";
+import { hasDropboxConnection, uploadBackupToDropbox } from "@/lib/services/dropbox";
 
 export type DisplayMode =
   | "standalone"       // Installed PWA (homescreen launch)
@@ -176,10 +177,35 @@ export function useAppRuntime(): AppRuntime {
       standaloneQuery.addEventListener("change", handleDisplayModeChange);
     }
 
+    // Daily Auto-Backup Logic
+    const checkDailyBackup = async () => {
+      if (!hasDropboxConnection() || !navigator.onLine) return;
+      
+      const lastBackupStr = localStorage.getItem("last_dropbox_backup_time");
+      const now = Date.now();
+      
+      if (!lastBackupStr || now - parseInt(lastBackupStr, 10) > 24 * 60 * 60 * 1000) {
+        try {
+          const success = await uploadBackupToDropbox();
+          if (success) {
+            localStorage.setItem("last_dropbox_backup_time", now.toString());
+          }
+        } catch (e) {
+          console.error("Auto backup failed", e);
+        }
+      }
+    };
+    
+    // Check right away
+    checkDailyBackup();
+    // Then check every hour while the app remains open
+    const backupInterval = setInterval(checkDailyBackup, 60 * 60 * 1000);
+
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(backupInterval);
       if (standaloneQuery.removeEventListener) {
         standaloneQuery.removeEventListener("change", handleDisplayModeChange);
       }
