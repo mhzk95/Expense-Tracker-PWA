@@ -72,8 +72,8 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
         )}
       >
         {/* Logo mark */}
-        <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-          <TrendingUp className="h-5 w-5 text-white" />
+        <div className="flex-shrink-0 h-9 w-9 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-violet-500/20 bg-slate-900 border border-slate-800">
+          <img src="/icon-192x192.png" alt="ExpenseTracker Logo" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
           <div>

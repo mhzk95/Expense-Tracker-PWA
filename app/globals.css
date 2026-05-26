@@ -12,6 +12,61 @@
   --bottom-nav-height: 4rem;
 }
 
+/* ─── Theming System ───────────────────────────────────────────────────────── */
+/* 
+ * The app is built using Tailwind's default slate/white palette. 
+ * By overriding these core variables, we can reskin the entire app 
+ * without rewriting hundreds of React components. 
+ */
+:root[data-theme="light"] {
+  --color-slate-950: #f8fafc;
+  --color-slate-900: #f1f5f9;
+  --color-slate-800: #e2e8f0;
+  --color-slate-700: #cbd5e1;
+  --color-slate-600: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-400: #475569;
+  --color-slate-300: #334155;
+  --color-slate-200: #1e293b;
+  --color-slate-100: #0f172a;
+  --color-slate-50: #020617;
+  
+  --color-white: #020617;
+  --color-black: #ffffff;
+}
+
+:root[data-theme="amoled"] {
+  --color-slate-950: #000000;
+  --color-slate-900: #0a0a0a;
+  --color-slate-800: #121212;
+  --color-slate-700: #1a1a1a;
+  --color-slate-600: #262626;
+  --color-slate-500: #404040;
+  --color-slate-400: #525252;
+  --color-slate-300: #737373;
+  --color-slate-200: #a3a3a3;
+  --color-slate-100: #d4d4d4;
+  --color-slate-50: #fafafa;
+  --color-white: #ffffff;
+  --color-black: #000000;
+}
+
+:root[data-theme="navy"] {
+  --color-slate-950: #02040a;
+  --color-slate-900: #0a0f1c;
+  --color-slate-800: #111a2f;
+  --color-slate-700: #1e2b45;
+  --color-slate-600: #2e4163;
+  --color-slate-500: #425b82;
+  --color-slate-400: #5c78a3;
+  --color-slate-300: #7b98c4;
+  --color-slate-200: #a1bce3;
+  --color-slate-100: #cce3ff;
+  --color-slate-50: #f0f7ff;
+  --color-white: #ffffff;
+  --color-black: #000000;
+}
+
 /* ─── Base Resets ─────────────────────────────────────────────────────────── */
 *,
 *::before,
@@ -28,8 +83,8 @@ html {
 
 body {
   font-family: var(--font-inter);
-  background-color: #020617; /* slate-950 */
-  color: #f8fafc; /* slate-50 */
+  background-color: var(--color-slate-950);
+  color: var(--color-slate-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Prevent overscroll bounce on iOS in desktop/PWA mode */

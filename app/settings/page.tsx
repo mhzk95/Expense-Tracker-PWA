@@ -24,36 +24,58 @@ const SETTINGS_SECTIONS = [
     title: "Preferences",
     items: [
       { id: "theme", label: "Appearance", description: "Dark / Light / System", icon: Palette },
-      { id: "currency", label: "Default Currency", description: "USD — US Dollar", icon: Globe },
-      { id: "notifications", label: "Notifications", description: "Budget alerts, reminders", icon: Bell },
-    ],
-  },
-  {
-    title: "Privacy & Security",
-    items: [
-      { id: "security", label: "Security", description: "PIN, biometrics", icon: Lock },
-      { id: "data", label: "Data & Export", description: "Download your data as CSV", icon: Database },
-    ],
-  },
-  {
-    title: "Support",
-    items: [
-      { id: "help", label: "Help & FAQ", description: "Documentation and guides", icon: HelpCircle },
-      { id: "about", label: "About ExpenseTracker", description: "Version 1.0.0 (Phase 1)", icon: Info },
+      { id: "currency", label: "Default Currency", description: "Default currency for transactions", icon: Globe },
     ],
   },
 ];
 
+import { useState, useEffect } from "react";
+import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
+import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
+import { ThemeSelector } from "@/components/settings/ThemeSelector";
+
 export default function SettingsPage() {
+  const [currency, setCurrency] = useState("INR");
+  const [activeModal, setActiveModal] = useState<"currency" | null>(null);
+
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem(STORAGE_KEYS.CURRENCY) || "INR";
+    setCurrency(savedCurrency);
+  }, []);
+
+  const handleCurrencyChange = (newCurrency: string) => {
+    setCurrency(newCurrency);
+    localStorage.setItem(STORAGE_KEYS.CURRENCY, newCurrency);
+    // Dispatch an event so other parts of the app can update
+    window.dispatchEvent(new Event("app:currency:changed"));
+    setActiveModal(null);
+  };
+
+  const getSectionItems = () => [
+    {
+      title: "Regional",
+      items: [
+        { 
+          id: "currency", 
+          label: "Default Currency", 
+          description: currency, 
+          icon: Globe 
+        },
+      ],
+    }
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       <PageHeader title="Settings" subtitle="Preferences and configuration" />
 
       <Suspense fallback={<div className="animate-pulse h-32 bg-slate-800/60 rounded-2xl" />}>
         <DropboxSettings />
       </Suspense>
 
-      {SETTINGS_SECTIONS.map((section) => (
+      <ThemeSelector />
+
+      {getSectionItems().map((section) => (
         <div key={section.title} className="space-y-1 pt-4">
           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
             {section.title}
@@ -65,6 +87,7 @@ export default function SettingsPage() {
                 <button
                   key={item.id}
                   id={`settings-${item.id}-btn`}
+                  onClick={() => setActiveModal(item.id as "currency")}
                   className="w-full flex items-center gap-4 px-5 py-4 hover:bg-slate-800/40 transition-colors text-left group"
                 >
                   <div className="h-9 w-9 rounded-xl bg-slate-800/60 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-700/60 transition-colors">
@@ -81,6 +104,29 @@ export default function SettingsPage() {
           </div>
         </div>
       ))}
+
+      <AdaptiveOverlay 
+        isOpen={activeModal === "currency"} 
+        onClose={() => setActiveModal(null)} 
+        title="Default Currency"
+      >
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          {SUPPORTED_CURRENCIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => handleCurrencyChange(c)}
+              className={`w-full text-left px-4 py-3 rounded-xl transition-colors ${
+                currency === c ? "bg-violet-500/20 text-violet-400 border border-violet-500/30" : "bg-slate-900/60 text-white hover:bg-slate-800"
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{c}</span>
+                {currency === c && <div className="h-2 w-2 rounded-full bg-violet-400" />}
+              </div>
+            </button>
+          ))}
+        </div>
+      </AdaptiveOverlay>
     </div>
   );
 }

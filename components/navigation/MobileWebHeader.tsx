@@ -28,6 +28,8 @@ import {
   RefreshCw,
   Settings,
   Stethoscope,
+  BookImage,
+  ShieldAlert,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -38,6 +40,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Wallet,
   RefreshCw,
   Settings,
+  BookImage,
+  ShieldAlert,
 };
 
 /** Find the display label for the current route */
@@ -73,8 +77,8 @@ export function MobileWebHeader() {
       <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/60">
         {/* Brand + page title */}
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-            <TrendingUp className="h-4 w-4 text-white" />
+          <div className="h-7 w-7 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+            <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="text-white font-semibold text-sm">{pageTitle}</span>
         </div>
@@ -109,8 +113,8 @@ export function MobileWebHeader() {
           {/* Menu header */}
           <div className="flex items-center justify-between px-4 h-14 border-b border-slate-800/60">
             <div className="flex items-center gap-3">
-              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-                <TrendingUp className="h-4 w-4 text-white" />
+              <div className="h-7 w-7 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+                <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-white font-semibold text-sm">Menu</span>
             </div>

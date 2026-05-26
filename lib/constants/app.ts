@@ -55,13 +55,6 @@ export const NAV_ITEMS = [
     description: "Bank accounts and cards",
   },
   {
-    id: "recurring",
-    label: "Recurring",
-    href: "/recurring",
-    icon: "RefreshCw",
-    description: "Subscriptions and repeating payments",
-  },
-  {
     id: "categories",
     label: "Categories",
     href: "/categories",
