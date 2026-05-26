@@ -90,8 +90,9 @@ async function downloadFromTelegram(token: string, fileId: string): Promise<stri
     const pathData = await pathRes.json();
     if (!pathData.ok) return null;
     
-    // 2. Download actual file
-    const fileUrl = `https://api.telegram.org/file/bot${token}/${pathData.result.file_path}`;
+    // 2. Download actual file (Telegram's /file/ endpoint lacks CORS headers, so we use our local proxy)
+    const originalUrl = `https://api.telegram.org/file/bot${token}/${pathData.result.file_path}`;
+    const fileUrl = `/api/telegram-proxy?url=${encodeURIComponent(originalUrl)}`;
     const fileRes = await fetch(fileUrl);
     const blob = await fileRes.blob();
     
@@ -242,7 +243,8 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
     const pathData = await pathRes.json();
     if (!pathData.ok) throw new Error("Failed to get file path");
 
-    const fileUrl = `https://api.telegram.org/file/bot${token}/${pathData.result.file_path}`;
+    const originalUrl = `https://api.telegram.org/file/bot${token}/${pathData.result.file_path}`;
+    const fileUrl = `/api/telegram-proxy?url=${encodeURIComponent(originalUrl)}`;
     const fileRes = await fetch(fileUrl);
     const backupData = await fileRes.json();
 
