@@ -221,12 +221,13 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
       return false;
     }
 
-    // 2. Find the most recent document named backup.json
+    // 2. Find the most recent document
     const updates = updatesData.result.reverse();
     let fileId = null;
     for (const update of updates) {
-      if (update.message?.document?.file_name === "backup.json") {
-        fileId = update.message.document.file_id;
+      const msg = update.message || update.edited_message || update.channel_post;
+      if (msg?.document?.file_id) {
+        fileId = msg.document.file_id;
         break;
       }
     }
