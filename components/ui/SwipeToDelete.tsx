@@ -50,7 +50,13 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
       {/* Background Delete Button */}
       <div className="absolute inset-y-0 right-0 w-20 bg-red-500/90 flex items-center justify-center rounded-r-2xl transition-opacity">
         <button 
-          onClick={(e) => { e.stopPropagation(); onDelete(); setCurrentX(0); }} 
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            if (confirm("Are you sure you want to delete this item?")) {
+              onDelete(); 
+            }
+            setCurrentX(0); 
+          }} 
           className="w-full h-full flex items-center justify-center text-white hover:bg-red-600 transition-colors"
           title="Delete"
         >
@@ -73,7 +79,12 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
         {/* Desktop Hover Delete Icon (hidden on mobile) */}
         <div className="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity ml-2 pr-5">
           <button 
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              if (confirm("Are you sure you want to delete this item?")) {
+                onDelete(); 
+              }
+            }}
             className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
             title="Delete transaction"
           >

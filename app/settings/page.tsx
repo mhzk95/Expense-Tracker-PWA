@@ -6,7 +6,7 @@
 "use client";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import {
   Palette,
   Globe,
@@ -17,19 +17,7 @@ import {
   Info,
   ChevronRight,
 } from "lucide-react";
-import { DropboxSettings } from "@/components/settings/DropboxSettings";
-
-const SETTINGS_SECTIONS = [
-  {
-    title: "Preferences",
-    items: [
-      { id: "theme", label: "Appearance", description: "Dark / Light / System", icon: Palette },
-      { id: "currency", label: "Default Currency", description: "Default currency for transactions", icon: Globe },
-    ],
-  },
-];
-
-import { useState, useEffect } from "react";
+import { TelegramSettings } from "@/components/settings/TelegramSettings";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
@@ -70,7 +58,7 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="Preferences and configuration" />
 
       <Suspense fallback={<div className="animate-pulse h-32 bg-slate-800/60 rounded-2xl" />}>
-        <DropboxSettings />
+        <TelegramSettings />
       </Suspense>
 
       <ThemeSelector />
