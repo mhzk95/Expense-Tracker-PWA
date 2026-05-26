@@ -90,7 +90,7 @@ export const BOTTOM_NAV_ITEMS = [
   { id: "transactions", label: "Transactions", href: "/transactions", icon: "ArrowLeftRight" },
   { id: "journal", label: "Journal", href: "/journal", icon: "BookImage" },
   { id: "analytics", label: "Analytics", href: "/analytics", icon: "BarChart3" },
-  { id: "accounts", label: "Accounts", href: "/accounts", icon: "Wallet" },
+  { id: "more", label: "More", href: "#more", icon: "Menu" },
 ] as const;
 
 /** Currency codes */
