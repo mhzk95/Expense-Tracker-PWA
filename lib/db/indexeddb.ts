@@ -68,6 +68,16 @@ export interface JournalEntity {
   updatedAt: string;
 }
 
+export interface VaultEntity {
+  id: string;
+  title: string; // Stored in plain text so we can list them without decrypting everything, or we can encrypt it too. Let's keep title plain text.
+  ciphertext: string; // The encrypted notes/passwords
+  iv: string; // Initialization vector used for encryption
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
   transactions: {
     key: string;
@@ -91,6 +101,10 @@ interface ExpenseTrackerDB extends DBSchema {
     value: JournalEntity;
     indexes: { "by-date": string };
   };
+  vaultEntries: {
+    key: string;
+    value: VaultEntity;
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
@@ -101,7 +115,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 5, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 6, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -133,6 +147,12 @@ export function getDB() {
           if (!db.objectStoreNames.contains('journalEntries')) {
             const journalStore = db.createObjectStore('journalEntries', { keyPath: 'id' });
             journalStore.createIndex('by-date', 'date');
+          }
+        }
+
+        if (oldVersion < 6) {
+          if (!db.objectStoreNames.contains('vaultEntries')) {
+            db.createObjectStore('vaultEntries', { keyPath: 'id' });
           }
         }
       },

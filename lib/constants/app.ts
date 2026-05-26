@@ -76,6 +76,13 @@ export const NAV_ITEMS = [
     description: "Memories and life events",
   },
   {
+    id: "vault",
+    label: "Vault",
+    href: "/vault",
+    icon: "ShieldAlert",
+    description: "Secure, encrypted passwords and notes",
+  },
+  {
     id: "settings",
     label: "Settings",
     href: "/settings",

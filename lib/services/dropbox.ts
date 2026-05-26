@@ -133,6 +133,14 @@ export async function getValidAccessToken(): Promise<string | null> {
   }
 }
 
+const getBackupPath = () => process.env.NODE_ENV === "development" 
+  ? "/expense_tracker_backup_dev.json" 
+  : "/expense_tracker_backup.json";
+
+const getPhotosDir = () => process.env.NODE_ENV === "development"
+  ? "/photos_dev"
+  : "/photos";
+
 /**
  * Gathers all local data and uploads it to Dropbox as backup.json
  */
@@ -145,14 +153,60 @@ export async function uploadBackupToDropbox(): Promise<boolean> {
     const allTransactions = await db.getAll("transactions");
     const allAccounts = await db.getAll("accounts");
     const allCategories = await db.getAll("categories");
+    const allJournalEntries = await db.getAll("journalEntries");
+    const allVaultEntries = await db.getAll("vaultEntries");
+
+    const uploadedCache = JSON.parse(localStorage.getItem("et_uploaded_photos") || "[]");
+    const newUploaded = [...uploadedCache];
+    const photosDir = getPhotosDir();
+    const backupJournalEntries = JSON.parse(JSON.stringify(allJournalEntries.filter((j: any) => !j.isDeleted)));
+
+    for (const entry of backupJournalEntries) {
+      for (let i = 0; i < entry.photoUrls.length; i++) {
+        const url = entry.photoUrls[i];
+        if (url.startsWith("data:image")) {
+          const photoId = `${entry.id}_${i}`;
+          const photoPath = `${photosDir}/${photoId}.webp`;
+          
+          if (!uploadedCache.includes(photoId)) {
+            const blob = await fetch(url).then(res => res.blob());
+            const uploadRes = await fetch(DROPBOX_UPLOAD_URL, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Dropbox-API-Arg": JSON.stringify({
+                  path: photoPath,
+                  mode: "overwrite",
+                  autorename: false,
+                  mute: true,
+                }),
+                "Content-Type": "application/octet-stream",
+              },
+              body: blob,
+            });
+            
+            if (uploadRes.ok) {
+              if (!newUploaded.includes(photoId)) newUploaded.push(photoId);
+            } else {
+              console.error("Failed to upload photo", photoId);
+            }
+          }
+          entry.photoUrls[i] = photoPath;
+        }
+      }
+    }
+
+    localStorage.setItem("et_uploaded_photos", JSON.stringify(newUploaded));
 
     const backupData = {
-      version: 2,
+      version: 4,
       timestamp: new Date().toISOString(),
       data: {
         transactions: allTransactions.filter((t: any) => !t.isDeleted),
         accounts: allAccounts.filter((a: any) => !a.isDeleted),
         categories: allCategories.filter((c: any) => !c.isDeleted),
+        journalEntries: backupJournalEntries,
+        vaultEntries: allVaultEntries.filter((v: any) => !v.isDeleted),
       },
     };
 
@@ -163,7 +217,7 @@ export async function uploadBackupToDropbox(): Promise<boolean> {
       headers: {
         Authorization: `Bearer ${token}`,
         "Dropbox-API-Arg": JSON.stringify({
-          path: "/expense_tracker_backup.json",
+          path: getBackupPath(),
           mode: "overwrite",
           autorename: false,
           mute: true,
@@ -199,7 +253,7 @@ export async function restoreBackupFromDropbox(): Promise<boolean> {
       headers: {
         Authorization: `Bearer ${token}`,
         "Dropbox-API-Arg": JSON.stringify({
-          path: "/expense_tracker_backup.json",
+          path: getBackupPath(),
         }),
       },
     });
@@ -216,13 +270,49 @@ export async function restoreBackupFromDropbox(): Promise<boolean> {
       throw new Error("Invalid backup format");
     }
 
+    const photosDir = getPhotosDir();
+    const uploadedCache = JSON.parse(localStorage.getItem("et_uploaded_photos") || "[]");
+    const newUploaded = [...uploadedCache];
+    const backupJournalEntries = backupData.data.journalEntries || [];
+
+    for (const entry of backupJournalEntries) {
+      for (let i = 0; i < entry.photoUrls.length; i++) {
+        const url = entry.photoUrls[i];
+        if (url.startsWith(photosDir)) {
+          const downloadRes = await fetch(DROPBOX_DOWNLOAD_URL, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Dropbox-API-Arg": JSON.stringify({ path: url }),
+            },
+          });
+          
+          if (downloadRes.ok) {
+            const blob = await downloadRes.blob();
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+            entry.photoUrls[i] = base64;
+            
+            const photoId = url.split('/').pop()?.replace('.webp', '');
+            if (photoId && !newUploaded.includes(photoId)) newUploaded.push(photoId);
+          }
+        }
+      }
+    }
+    localStorage.setItem("et_uploaded_photos", JSON.stringify(newUploaded));
+
     const db = await getDB();
-    const tx = db.transaction(["transactions", "accounts", "categories"], "readwrite");
+    const tx = db.transaction(["transactions", "accounts", "categories", "journalEntries", "vaultEntries"], "readwrite");
     
     // Clear existing
     await tx.objectStore("transactions").clear();
     await tx.objectStore("accounts").clear();
     await tx.objectStore("categories").clear();
+    await tx.objectStore("journalEntries").clear();
+    await tx.objectStore("vaultEntries").clear();
 
     // Insert backup
     const tStore = tx.objectStore("transactions");
@@ -240,12 +330,24 @@ export async function restoreBackupFromDropbox(): Promise<boolean> {
       await cStore.put(item);
     }
 
+    const jStore = tx.objectStore("journalEntries");
+    for (const item of backupJournalEntries) {
+      await jStore.put(item);
+    }
+
+    const vStore = tx.objectStore("vaultEntries");
+    for (const item of backupData.data.vaultEntries || []) {
+      await vStore.put(item);
+    }
+
     await tx.done;
 
     // Trigger UI refresh
     window.dispatchEvent(new Event("db:transactions:changed"));
     window.dispatchEvent(new Event("db:accounts:changed"));
     window.dispatchEvent(new Event("db:categories:changed"));
+    window.dispatchEvent(new Event("db:journal:changed"));
+    window.dispatchEvent(new Event("db:vault:changed"));
     
     return true;
   } catch (error) {

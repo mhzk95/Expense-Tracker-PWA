@@ -40,13 +40,37 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      setPhotoUrls([...photoUrls, base64]);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const MAX_WIDTH = 1600;
+      const MAX_HEIGHT = 1600;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width = Math.round((width * MAX_HEIGHT) / height);
+          height = MAX_HEIGHT;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+        // Compress as webp
+        const compressedDataUrl = canvas.toDataURL("image/webp", 0.75);
+        setPhotoUrls([...photoUrls, compressedDataUrl]);
+      }
     };
-    reader.readAsDataURL(file);
+    img.src = URL.createObjectURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,11 +79,18 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
     setIsSubmitting(true);
     try {
+      // Auto-extract hashtags from content
+      const hashtagRegex = /#[\w\u00C0-\u024F]+/g;
+      const extractedTags = (content.match(hashtagRegex) || []).map(t => t.replace('#', '').toLowerCase());
+      
+      // Combine with manual tags and remove duplicates
+      const finalTags = Array.from(new Set([...tags.map(t => t.toLowerCase()), ...extractedTags]));
+
       await addEntry({
         id: crypto.randomUUID(),
         date: new Date().toISOString(),
         content,
-        tags,
+        tags: finalTags,
         photoUrls,
         linkedTransactionId: linkedTransactionId || undefined,
       });
@@ -136,7 +167,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
       <div>
         <label className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-2">
           <LinkIcon className="w-3 h-3" />
-          Link to a Transaction (Optional)
+          Link to a Recent Transaction (Optional)
         </label>
         <select
           value={linkedTransactionId}
@@ -144,7 +175,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
         >
           <option value="">No linked transaction</option>
-          {transactions.map((txn) => (
+          {transactions.slice(0, 50).map((txn) => (
             <option key={txn.id} value={txn.id}>
               {new Date(txn.date).toLocaleDateString()} - {txn.description} ({txn.amount})
             </option>
