@@ -6,6 +6,7 @@ import { MobileWebHeader } from "@/components/navigation/MobileWebHeader";
 import { PWABottomNavigation } from "@/components/navigation/PWABottomNavigation";
 import { RuntimeModeBadge } from "@/components/pwa/RuntimeModeBadge";
 import { InstallPromptBanner } from "@/components/pwa/InstallPromptBanner";
+import { PwaUpdatePrompt } from "@/components/pwa/PwaUpdatePrompt";
 import type { ReactNode } from "react";
 
 interface AppShellProps {
@@ -36,6 +37,7 @@ export function AppShell({ children }: AppShellProps) {
         </div>
         {/* <RuntimeModeBadge position="bottom-right" /> */}
         <InstallPromptBanner />
+        <PwaUpdatePrompt />
       </div>
     );
   }
@@ -63,6 +65,7 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* <RuntimeModeBadge position="top-right" /> */}
       <InstallPromptBanner />
+      <PwaUpdatePrompt />
     </div>
   );
 }
