@@ -11,47 +11,29 @@ import { formatDate } from "@/lib/utils/helpers";
 import { VaultEntity } from "@/lib/db/indexeddb";
 
 export default function VaultPage() {
-  const { entries, loading, isUnlocked, hasSetupPin, setupPin, unlock, lock, readEntry, deleteEntry } = useVault();
+  const { entries, loading, isUnlocked, hasBiometricsSetup, setupBiometrics, unlockWithBiometrics, lock, readEntry, deleteEntry } = useVault();
   
-  const [pinInput, setPinInput] = useState("");
-  const [confirmPinInput, setConfirmPinInput] = useState("");
   const [pinError, setPinError] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewingEntry, setViewingEntry] = useState<{title: string, text: string} | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handlePinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBiometricAction = async () => {
     setPinError("");
     setIsProcessing(true);
-
-    if (!hasSetupPin) {
-      if (pinInput.length < 6) {
-        setPinError("PIN must be at least 6 digits.");
-        setIsProcessing(false);
-        return;
-      }
-      if (pinInput !== confirmPinInput) {
-        setPinError("PINs do not match.");
-        setIsProcessing(false);
-        return;
-      }
-      try {
-        await setupPin(pinInput);
-        setPinInput("");
-        setConfirmPinInput("");
-      } catch (err) {
-        setPinError("Failed to setup PIN.");
-      }
-    } else {
-      const success = await unlock(pinInput);
-      if (success) {
-        setPinInput("");
+    try {
+      if (!hasBiometricsSetup) {
+        const ok = await setupBiometrics();
+        if (!ok) setPinError("Biometric setup was cancelled or failed.");
       } else {
-        setPinError("Incorrect PIN.");
+        const ok = await unlockWithBiometrics();
+        if (!ok) setPinError("Failed to unlock.");
       }
+    } catch (err: any) {
+      setPinError(err.message || "Biometric error.");
+    } finally {
+      setIsProcessing(false);
     }
-    setIsProcessing(false);
   };
 
   const handleRead = async (entry: VaultEntity) => {
@@ -98,58 +80,29 @@ export default function VaultPage() {
         <div className="max-w-md mx-auto pt-10">
           <div className="bg-slate-900/60 border border-slate-800/60 rounded-3xl p-8 text-center">
             <div className="w-20 h-20 bg-violet-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              {hasSetupPin ? <Lock className="w-10 h-10 text-violet-400" /> : <ShieldAlert className="w-10 h-10 text-emerald-400" />}
+              {hasBiometricsSetup ? <Lock className="w-10 h-10 text-violet-400" /> : <ShieldAlert className="w-10 h-10 text-emerald-400" />}
             </div>
             
             <h2 className="text-xl font-bold text-white mb-2">
-              {hasSetupPin ? "Unlock Vault" : "Setup Master PIN"}
+              {hasBiometricsSetup ? "Unlock Vault" : "Setup Biometric Vault"}
             </h2>
             <p className="text-sm text-slate-400 mb-8">
-              {hasSetupPin 
-                ? "Enter your 6-digit PIN to decrypt your secure notes." 
-                : "Create a 6-digit PIN. This will be used to mathematically encrypt your secrets locally before saving. Do not forget it!"}
+              {hasBiometricsSetup 
+                ? "Use FaceID / TouchID to decrypt your secure notes." 
+                : "Register your device's biometrics (FaceID/TouchID) to seamlessly encrypt and secure your vault."}
             </p>
 
-            <form onSubmit={handlePinSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={6}
-                  value={pinInput}
-                  onChange={(e) => setPinInput(e.target.value)}
-                  placeholder={hasSetupPin ? "Enter 6-digit PIN" : "Create 6-digit PIN"}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-4 text-center tracking-[0.5em] text-xl font-mono text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                  autoFocus
-                />
-              </div>
-
-              {!hasSetupPin && (
-                <div>
-                  <input
-                    type="password"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    value={confirmPinInput}
-                    onChange={(e) => setConfirmPinInput(e.target.value)}
-                    placeholder="Confirm PIN"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-4 text-center tracking-[0.5em] text-xl font-mono text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                  />
-                </div>
-              )}
-
+            <div className="space-y-4">
               {pinError && <p className="text-red-400 text-sm">{pinError}</p>}
-
+              
               <button
-                type="submit"
-                disabled={isProcessing || !pinInput || (!hasSetupPin && !confirmPinInput)}
+                onClick={handleBiometricAction}
+                disabled={isProcessing}
                 className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl py-4 transition-colors disabled:opacity-50"
               >
-                {isProcessing ? "Decrypting..." : hasSetupPin ? "Unlock" : "Setup Vault"}
+                {isProcessing ? "Authenticating..." : hasBiometricsSetup ? "Unlock with Biometrics" : "Enable Biometrics"}
               </button>
-            </form>
+            </div>
           </div>
         </div>
       ) : (

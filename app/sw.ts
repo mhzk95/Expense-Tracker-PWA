@@ -1,5 +1,6 @@
 import { defaultCache } from "@serwist/next/worker";
-import { installSerwist, NetworkOnly } from "@serwist/sw";
+import { installSerwist } from "@serwist/sw";
+import { NetworkOnly } from "serwist";
 import { BackgroundSyncPlugin } from "@serwist/background-sync";
 
 const bgSyncPlugin = new BackgroundSyncPlugin("telegramSyncQueue", {

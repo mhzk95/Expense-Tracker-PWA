@@ -14,11 +14,14 @@ export function useVault() {
   const [isUnlocked, setIsUnlocked] = useState(globalIsUnlocked);
   const [cryptoKey, setCryptoKey] = useState<CryptoKey | null>(globalCryptoKey);
   const [hasSetupPin, setHasSetupPin] = useState(false);
+  const [hasBiometricsSetup, setHasBiometricsSetup] = useState(false);
 
   // Check if a salt exists to determine if PIN is set up
   useEffect(() => {
     const salt = localStorage.getItem("et_vault_salt");
     setHasSetupPin(!!salt);
+    const bioKey = localStorage.getItem("et_vault_biometric_key");
+    setHasBiometricsSetup(!!bioKey);
   }, []);
 
   const fetchEntries = useCallback(async () => {
@@ -107,6 +110,58 @@ export function useVault() {
     setIsUnlocked(false);
   };
 
+  const setupBiometrics = async () => {
+    if (!window.PublicKeyCredential) throw new Error("Biometrics not supported");
+    
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: "Expense Tracker Vault", id: window.location.hostname },
+        user: {
+          id: crypto.getRandomValues(new Uint8Array(16)),
+          name: "local-user",
+          displayName: "Vault User"
+        },
+        pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+          userVerification: "required"
+        },
+        timeout: 60000
+      }
+    });
+
+    if (credential) {
+       const generatedPin = crypto.randomUUID() + crypto.randomUUID();
+       localStorage.setItem("et_vault_biometric_key", generatedPin);
+       await setupPin(generatedPin);
+       setHasBiometricsSetup(true);
+       return true;
+    }
+    return false;
+  };
+
+  const unlockWithBiometrics = async () => {
+    if (!window.PublicKeyCredential) throw new Error("Biometrics not supported");
+    
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rpId: window.location.hostname,
+        userVerification: "required",
+        timeout: 60000
+      }
+    });
+
+    if (assertion) {
+       const key = localStorage.getItem("et_vault_biometric_key");
+       if (key) {
+         return await unlock(key);
+       }
+    }
+    return false;
+  };
+
   const addEntry = async (title: string, secretContent: string) => {
     if (!cryptoKey) throw new Error("Vault is locked");
     const { ciphertext, iv } = await encryptData(secretContent, cryptoKey);
@@ -141,6 +196,9 @@ export function useVault() {
     hasSetupPin,
     setupPin,
     unlock,
+    setupBiometrics,
+    unlockWithBiometrics,
+    hasBiometricsSetup,
     lock,
     readEntry,
     addEntry,
