@@ -60,7 +60,7 @@ export function StatCard({
         {/* Text */}
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-          <p className="mt-1.5 text-2xl font-bold text-white tracking-tight truncate">
+          <p className="mt-1.5 text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
             {rawValue !== undefined ? (
               <CountUp 
                 end={rawValue} 
