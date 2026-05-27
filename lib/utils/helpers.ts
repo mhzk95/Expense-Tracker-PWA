@@ -98,3 +98,17 @@ export function getInitials(name: string): string {
     .join("")
     .toUpperCase();
 }
+
+/**
+ * Triggers haptic feedback on supported devices.
+ * @param pattern - Duration in ms or array of durations. [50] for success, [50, 50, 50] for error.
+ */
+export function vibrate(pattern: number | number[] = [50]): void {
+  if (typeof window !== "undefined" && navigator.vibrate) {
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {
+      // Ignore errors if API is restricted
+    }
+  }
+}

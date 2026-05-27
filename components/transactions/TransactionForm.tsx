@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
+import { vibrate } from "@/lib/utils/helpers";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -64,9 +65,11 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
       });
+      vibrate([50]);
       onSuccess();
     } catch (err) {
       console.error(err);
+      vibrate([50, 50, 50]);
     } finally {
       setIsSubmitting(false);
     }

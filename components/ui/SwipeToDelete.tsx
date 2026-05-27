@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Trash2 } from "lucide-react";
+import { vibrate } from "@/lib/utils/helpers";
 
 interface SwipeToDeleteProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
     setIsDragging(false);
     if (currentX <= -50) {
       setCurrentX(-80); // Snap open
+      vibrate([10]); // subtle tick when snapping open
     } else {
       setCurrentX(0); // Snap back
     }
@@ -52,8 +54,10 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
         <button 
           onClick={(e) => { 
             e.stopPropagation(); 
+            vibrate([50, 50, 50]); // warning pattern
             if (confirm("Are you sure you want to delete this item?")) {
               onDelete(); 
+              vibrate([50]); // success
             }
             setCurrentX(0); 
           }} 
@@ -81,8 +85,10 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
           <button 
             onClick={(e) => { 
               e.stopPropagation(); 
+              vibrate([50, 50, 50]);
               if (confirm("Are you sure you want to delete this item?")) {
                 onDelete(); 
+                vibrate([50]);
               }
             }}
             className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"

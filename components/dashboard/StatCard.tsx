@@ -3,15 +3,17 @@
  * Displays a label, value, optional trend indicator, and icon.
  */
 
-import { cn } from "@/lib/utils/helpers";
+import { cn, formatCurrency } from "@/lib/utils/helpers";
 import type { ReactNode } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import CountUp from "react-countup";
 
 type TrendDirection = "up" | "down" | "neutral";
 
 interface StatCardProps {
   label: string;
   value: string;
+  rawValue?: number;
   /** E.g. "+12.5% vs last month" */
   trend?: string;
   trendDirection?: TrendDirection;
@@ -24,6 +26,7 @@ interface StatCardProps {
 export function StatCard({
   label,
   value,
+  rawValue,
   trend,
   trendDirection = "neutral",
   icon,
@@ -57,7 +60,17 @@ export function StatCard({
         {/* Text */}
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-          <p className="mt-1.5 text-2xl font-bold text-white tracking-tight truncate">{value}</p>
+          <p className="mt-1.5 text-2xl font-bold text-white tracking-tight truncate">
+            {rawValue !== undefined ? (
+              <CountUp 
+                end={rawValue} 
+                duration={1.5} 
+                formattingFn={(val) => formatCurrency(val)}
+              />
+            ) : (
+              value
+            )}
+          </p>
           {trend && (
             <div className={cn("mt-1.5 flex items-center gap-1 text-xs font-medium", trendColor)}>
               <TrendIcon className="h-3 w-3" />

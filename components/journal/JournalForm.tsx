@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useJournal } from "@/hooks/useJournal";
 import { useTransactions } from "@/hooks/useTransactions";
 import { X, Image as ImageIcon, Link as LinkIcon } from "lucide-react";
+import { vibrate } from "@/lib/utils/helpers";
 
 interface JournalFormProps {
   onSuccess: () => void;
@@ -95,9 +96,11 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         photoUrls,
         linkedTransactionId: linkedTransactionId || undefined,
       });
+      vibrate([50]);
       onSuccess();
     } catch (err) {
       console.error(err);
+      vibrate([50, 50, 50]);
     } finally {
       setIsSubmitting(false);
     }

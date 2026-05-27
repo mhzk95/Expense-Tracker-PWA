@@ -52,6 +52,13 @@
       "description": "View your spending analytics",
       "url": "/analytics",
       "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "New Journal Entry",
+      "short_name": "Journal",
+      "description": "Quickly write a new journal entry",
+      "url": "/journal?action=add",
+      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
     }
   ]
 }

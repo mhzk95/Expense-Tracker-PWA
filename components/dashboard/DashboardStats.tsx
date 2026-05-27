@@ -72,6 +72,7 @@ export function DashboardStats() {
       <StatCard
         label="Net Worth"
         value={formatCurrency(netWorth)}
+        rawValue={netWorth}
         trend={""}
         trendDirection="neutral"
         icon={<Wallet className="h-5 w-5 text-white" />}
@@ -80,6 +81,7 @@ export function DashboardStats() {
       <StatCard
         label="Monthly Income"
         value={formatCurrency(monthlyIncome)}
+        rawValue={monthlyIncome}
         trend={formatTrend(incomeTrend)}
         trendDirection={incomeTrend > 0 ? "up" : incomeTrend < 0 ? "down" : "neutral"}
         icon={<TrendingUp className="h-5 w-5 text-white" />}
@@ -88,6 +90,7 @@ export function DashboardStats() {
       <StatCard
         label="Monthly Expenses"
         value={formatCurrency(monthlyExpenses)}
+        rawValue={monthlyExpenses}
         trend={formatTrend(expenseTrend)}
         trendDirection={expenseTrend < 0 ? "up" : expenseTrend > 0 ? "down" : "neutral"}
         icon={<TrendingDown className="h-5 w-5 text-white" />}
@@ -96,6 +99,7 @@ export function DashboardStats() {
       <StatCard
         label="Total Savings"
         value={formatCurrency(totalAssets)}
+        rawValue={totalAssets}
         trend={""}
         trendDirection="neutral"
         icon={<PiggyBank className="h-5 w-5 text-white" />}

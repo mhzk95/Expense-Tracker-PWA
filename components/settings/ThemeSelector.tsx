@@ -25,11 +25,31 @@ export function ThemeSelector() {
     setActiveTheme(newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
     
+    let isDark = newTheme === "dark" || newTheme === "amoled" || newTheme === "navy";
     if (newTheme === "system") {
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
     } else {
       document.documentElement.setAttribute("data-theme", newTheme);
+    }
+    
+    // Update PWA status bar dynamically
+    const darkColor = "#020617";
+    const lightColor = "#ffffff";
+    const amoledColor = "#000000";
+    const navyColor = "#02040a";
+    
+    let themeColor = lightColor;
+    if (isDark) {
+       themeColor = darkColor;
+       if (newTheme === "amoled") themeColor = amoledColor;
+       if (newTheme === "navy") themeColor = navyColor;
+    }
+
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.removeAttribute("media");
+      metaThemeColor.setAttribute("content", themeColor);
     }
   };
 
