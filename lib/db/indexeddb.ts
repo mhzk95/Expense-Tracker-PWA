@@ -105,6 +105,10 @@ interface ExpenseTrackerDB extends DBSchema {
     key: string;
     value: VaultEntity;
   };
+  syncMetadata: {
+    key: string;
+    value: any;
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
@@ -115,7 +119,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 6, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 7, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -153,6 +157,12 @@ export function getDB() {
         if (oldVersion < 6) {
           if (!db.objectStoreNames.contains('vaultEntries')) {
             db.createObjectStore('vaultEntries', { keyPath: 'id' });
+          }
+        }
+
+        if (oldVersion < 7) {
+          if (!db.objectStoreNames.contains('syncMetadata')) {
+            db.createObjectStore('syncMetadata');
           }
         }
       },

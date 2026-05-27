@@ -14,7 +14,7 @@ export const setTelegramAuth = (chatId: string, messageId: string) => {
 export const removeTelegramAuth = () => {
   localStorage.removeItem("telegram_chat_id");
   localStorage.removeItem("telegram_message_id");
-  localStorage.removeItem("et_uploaded_photos");
+  getDB().then(db => db.delete("syncMetadata", "et_uploaded_photos"));
 };
 
 export const hasTelegramConnection = () => {
@@ -117,7 +117,7 @@ export async function uploadBackupToTelegram(): Promise<{ success: boolean; erro
     const allJournalEntries = await db.getAll("journalEntries");
     const allVaultEntries = await db.getAll("vaultEntries");
 
-    const photoMap = JSON.parse(localStorage.getItem("et_telegram_photo_map") || "{}");
+    const photoMap = await db.get("syncMetadata", "et_telegram_photo_map") || {};
     const backupJournalEntries = allJournalEntries.filter((j: any) => !j.isDeleted).map((entry: any) => ({
       ...entry,
       tags: [...entry.tags],
@@ -155,7 +155,7 @@ export async function uploadBackupToTelegram(): Promise<{ success: boolean; erro
       }
     }
 
-    localStorage.setItem("et_telegram_photo_map", JSON.stringify(photoMap));
+    await db.put("syncMetadata", photoMap, "et_telegram_photo_map");
 
     // Construct backup JSON
     const backupData = {
@@ -267,8 +267,9 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
     }
 
     // 4. Register Photos in Uploaded Cache without downloading
+    const db = await getDB();
     const backupJournalEntries = backupData.data.journalEntries || [];
-    const uploadedCache = JSON.parse(localStorage.getItem("et_uploaded_photos") || "[]");
+    const uploadedCache = await db.get("syncMetadata", "et_uploaded_photos") || [];
     const newUploaded = [...uploadedCache];
 
     for (const entry of backupJournalEntries) {
@@ -281,10 +282,9 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
       }
     }
 
-    localStorage.setItem("et_uploaded_photos", JSON.stringify(newUploaded));
+    await db.put("syncMetadata", newUploaded, "et_uploaded_photos");
 
     // 5. Restore Database
-    const db = await getDB();
     const tx = db.transaction(["transactions", "accounts", "categories", "journalEntries", "vaultEntries"], "readwrite");
 
     await tx.objectStore("transactions").clear();

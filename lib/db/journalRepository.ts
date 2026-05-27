@@ -7,6 +7,29 @@ export const journalRepository = {
     return all.filter((j: JournalEntity) => !j.isDeleted).sort((a: JournalEntity, b: JournalEntity) => new Date(b.date).getTime() - new Date(a.date).getTime());
   },
 
+  async getPaginated(limit: number, offset: number = 0): Promise<JournalEntity[]> {
+    const db = await getDB();
+    const tx = db.transaction("journalEntries", "readonly");
+    const index = tx.store.index("by-date");
+    let cursor = await index.openCursor(null, "prev");
+    
+    const results: JournalEntity[] = [];
+    let skipped = 0;
+    
+    while (cursor && results.length < limit) {
+      if (!cursor.value.isDeleted) {
+        if (skipped < offset) {
+          skipped++;
+        } else {
+          results.push(cursor.value);
+        }
+      }
+      cursor = await cursor.continue();
+    }
+    
+    return results;
+  },
+
   async add(entry: Omit<JournalEntity, "isDeleted" | "createdAt" | "updatedAt">): Promise<void> {
     const db = await getDB();
     const newEntry: JournalEntity = {

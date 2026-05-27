@@ -1,5 +1,10 @@
 import { defaultCache } from "@serwist/next/worker";
-import { installSerwist } from "@serwist/sw";
+import { installSerwist, NetworkOnly } from "@serwist/sw";
+import { BackgroundSyncPlugin } from "@serwist/background-sync";
+
+const bgSyncPlugin = new BackgroundSyncPlugin("telegramSyncQueue", {
+  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours
+});
 
 declare global {
   interface WorkerGlobalScope {
@@ -14,7 +19,15 @@ installSerwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  runtimeCaching: [
+    {
+      matcher: /^https:\/\/api\.telegram\.org\/bot.*/,
+      handler: new NetworkOnly({
+        plugins: [bgSyncPlugin],
+      }),
+    },
+    ...defaultCache,
+  ],
   fallbacks: {
     entries: [
       {
