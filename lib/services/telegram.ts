@@ -111,10 +111,10 @@ async function downloadFromTelegram(token: string, fileId: string): Promise<stri
 /**
  * Gathers all local data and uploads it to Telegram
  */
-export async function uploadBackupToTelegram(): Promise<boolean> {
+export async function uploadBackupToTelegram(): Promise<{ success: boolean; error?: string }> {
   const token = getTelegramToken();
   const chatId = getTelegramChatId();
-  if (!token || !chatId) return false;
+  if (!token || !chatId) return { success: false, error: "Missing token or Chat ID" };
 
   try {
     const db = await getDB();
@@ -142,6 +142,8 @@ export async function uploadBackupToTelegram(): Promise<boolean> {
             if (file_id) {
               entry.photoUrls[i] = `telegram:${file_id}`;
               if (!newUploaded.includes(photoId)) newUploaded.push(photoId);
+            } else {
+              throw new Error(`Failed to upload photo for entry ${entry.id}`);
             }
           }
         }
@@ -180,7 +182,14 @@ export async function uploadBackupToTelegram(): Promise<boolean> {
         body: formData,
       });
       const data = await res.json();
-      if (!data.ok) throw new Error("Failed to edit backup message");
+      if (!data.ok) {
+        if (data.description?.includes("message to edit not found")) {
+          // If message was deleted, fallback to creating a new one instead of failing
+          localStorage.removeItem("telegram_message_id");
+          return await uploadBackupToTelegram(); 
+        }
+        throw new Error(data.description || "Failed to edit backup message");
+      }
     } else {
       // Create new message and save message_id
       const formData = new FormData();
@@ -192,16 +201,16 @@ export async function uploadBackupToTelegram(): Promise<boolean> {
         body: formData,
       });
       const data = await res.json();
-      if (!data.ok) throw new Error("Failed to send backup message");
+      if (!data.ok) throw new Error(data.description || "Failed to send backup message");
       
       localStorage.setItem("telegram_message_id", data.result.message_id.toString());
     }
 
     setLastBackupTime(new Date().toISOString());
-    return true;
-  } catch (error) {
+    return { success: true };
+  } catch (error: any) {
     console.error("Error uploading backup:", error);
-    return false;
+    return { success: false, error: error.message || "Unknown error occurred" };
   }
 }
 

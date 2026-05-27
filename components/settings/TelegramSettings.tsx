@@ -61,14 +61,14 @@ export function TelegramSettings() {
   const handleManualBackup = async () => {
     setStatus("syncing");
     setMessage("Uploading backup to Telegram...");
-    const success = await uploadBackupToTelegram();
-    if (success) {
+    const res = await uploadBackupToTelegram();
+    if (res.success) {
       setStatus("success");
       setMessage("Backup uploaded successfully.");
       setLastBackupTime(getLastBackupTime());
     } else {
       setStatus("error");
-      setMessage("Failed to upload backup.");
+      setMessage(`Failed to upload: ${res.error}`);
     }
     setTimeout(() => setStatus("idle"), 5000);
   };
