@@ -5,6 +5,8 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
 import { vibrate } from "@/lib/utils/helpers";
+import { Camera, Loader2 } from "lucide-react";
+import Tesseract from "tesseract.js";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -23,6 +25,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [accountId, setAccountId] = useState("");
   const [toAccountId, setToAccountId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
 
   // Set default category and account when loaded
   useEffect(() => {
@@ -75,6 +78,34 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     }
   };
 
+  const handleScanReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsScanning(true);
+    try {
+      const { data: { text } } = await Tesseract.recognize(file, 'eng');
+      
+      const amountMatch = text.match(/(?:total|amount|due|balance|sum)[\s\$:]*([\d,\.]+\d)/i) || text.match(/[\$₹€£][\s]*([\d,\.]+\d)/);
+      if (amountMatch) {
+         const amountStr = amountMatch[1].replace(/,/g, '');
+         if (!isNaN(Number(amountStr))) {
+           setAmount(amountStr);
+           vibrate([50, 50]);
+         } else {
+           alert("Found text, but couldn't parse as number.");
+         }
+      } else {
+         alert("Could not automatically detect the total amount.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error scanning receipt.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Type Toggle */}
@@ -103,7 +134,14 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Amount</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-xs font-medium text-slate-400">Amount</label>
+          <label className="flex items-center gap-1.5 text-xs text-violet-400 font-medium cursor-pointer hover:text-violet-300">
+            {isScanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+            <span>{isScanning ? "Scanning..." : "Scan Receipt"}</span>
+            <input type="file" accept="image/*" capture="environment" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
+          </label>
+        </div>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
           <input
