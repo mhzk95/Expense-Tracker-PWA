@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { CategorySpending } from "@/components/dashboard/CategorySpending";
+import { SpendingHeatmap } from "@/components/dashboard/SpendingHeatmap";
 import type { Metadata } from "next";
 
 import { AddTransactionAction } from "@/components/dashboard/AddTransactionAction";
@@ -49,6 +50,12 @@ export default function DashboardPage() {
           <CategorySpending />
         </section>
       </div>
+      
+      {/* ── Heatmap ──────────────────────────────────────────────────────── */}
+      <section aria-labelledby="heatmap-heading">
+        <h2 id="heatmap-heading" className="sr-only">Spending Heatmap</h2>
+        <SpendingHeatmap />
+      </section>
     </div>
   );
 }

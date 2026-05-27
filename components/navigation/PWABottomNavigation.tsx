@@ -120,7 +120,7 @@ export function PWABottomNavigation() {
 
       {/* ── Bottom Navigation Bar ───────────────────────────────────────── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/60"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/80 backdrop-blur-xl border-t border-slate-800/60 shadow-[0_-8px_30px_rgb(0,0,0,0.12)]"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         aria-label="Bottom navigation"
       >

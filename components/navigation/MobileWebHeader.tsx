@@ -74,7 +74,7 @@ export function MobileWebHeader() {
   return (
     <>
       {/* ── Header bar ──────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/60">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
         {/* Brand + page title */}
         <div className="flex items-center gap-3">
           <div className="h-7 w-7 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
