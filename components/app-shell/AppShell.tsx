@@ -9,6 +9,7 @@ import { InstallPromptBanner } from "@/components/pwa/InstallPromptBanner";
 import { PwaUpdatePrompt } from "@/components/pwa/PwaUpdatePrompt";
 import { AutoBackupManager } from "@/components/pwa/AutoBackupManager";
 import { CommandBar } from "@/components/ui/CommandBar";
+import { useAutoSync } from "@/hooks/useAutoSync";
 import type { ReactNode } from "react";
 
 interface AppShellProps {
@@ -17,6 +18,9 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const runtime = useAppRuntime();
+
+  // Enable global background syncing
+  useAutoSync();
 
   if (!runtime.isBrowser) {
     return (

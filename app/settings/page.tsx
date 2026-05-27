@@ -21,6 +21,7 @@ import { TelegramSettings } from "@/components/settings/TelegramSettings";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
+import { CloudSyncSettings } from "@/components/settings/CloudSyncSettings";
 
 export default function SettingsPage() {
   const [currency, setCurrency] = useState("INR");
@@ -60,6 +61,8 @@ export default function SettingsPage() {
       <Suspense fallback={<div className="animate-pulse h-32 bg-slate-800/60 rounded-2xl" />}>
         <TelegramSettings />
       </Suspense>
+
+      <CloudSyncSettings />
 
       <ThemeSelector />
 

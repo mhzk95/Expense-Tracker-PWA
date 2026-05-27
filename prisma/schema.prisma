@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      NextAuthAccount[]
+  sessions      Session[]
+  
+  // App data
+  transactions  Transaction[]
+  bankAccounts  Account[]
+  categories    Category[]
+  budgets       Budget[]
+  journals      Journal[]
+  vaults        Vault[]
+}
+
+model NextAuthAccount {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---- App Models ----
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  name              String
+  type              String
+  balance           Float
+  currency          String
+  status            String
+  institution       String?
+  lastFour          String?
+  color             String?
+  icon              String?
+  includeInNetWorth Boolean @default(true)
+  isDefault         Boolean @default(false)
+  isDeleted         Boolean @default(false)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  amount      Float
+  type        String
+  currency    String
+  date        DateTime
+  description String
+  note        String?
+  categoryId  String?
+  accountId   String?
+  toAccountId String?
+  status      String?
+  isDeleted   Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        String  @id @default(uuid())
+  userId    String
+  name      String
+  type      String
+  color     String?
+  icon      String?
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Budget {
+  id             String  @id @default(uuid())
+  userId         String
+  name           String
+  categoryId     String
+  amount         Float
+  currency       String
+  period         String
+  startDate      DateTime
+  status         String
+  rollover       Boolean @default(false)
+  alertThreshold Float?
+  color          String?
+  isDeleted      Boolean @default(false)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Journal {
+  id                  String   @id @default(uuid())
+  userId              String
+  date                DateTime
+  title               String?
+  content             String
+  tags                String[]
+  photoUrls           String[]
+  linkedTransactionId String?
+  isDeleted           Boolean  @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Vault {
+  id         String   @id @default(uuid())
+  userId     String
+  title      String
+  ciphertext String
+  iv         String
+  isDeleted  Boolean  @default(false)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
