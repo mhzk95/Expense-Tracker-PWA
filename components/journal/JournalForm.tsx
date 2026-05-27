@@ -17,7 +17,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
   const [content, setContent] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<(string | Blob)[]>([]);
   const [linkedTransactionId, setLinkedTransactionId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,8 +66,9 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
       if (ctx) {
         ctx.drawImage(img, 0, 0, width, height);
         // Compress as webp
-        const compressedDataUrl = canvas.toDataURL("image/webp", 0.75);
-        setPhotoUrls([...photoUrls, compressedDataUrl]);
+        canvas.toBlob((blob) => {
+          if (blob) setPhotoUrls(prev => [...prev, blob]);
+        }, "image/webp", 0.75);
       }
     };
     img.src = URL.createObjectURL(file);
@@ -139,9 +140,11 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
       {photoUrls.length > 0 && (
         <div className="flex gap-2 overflow-x-auto py-2">
-          {photoUrls.map((url, idx) => (
+          {photoUrls.map((url, idx) => {
+            const src = typeof url === 'string' ? url : URL.createObjectURL(url);
+            return (
             <div key={idx} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-slate-700">
-              <img src={url} alt="Upload preview" className="w-full h-full object-cover" />
+              <img src={src} alt="Upload preview" className="w-full h-full object-cover" />
               <button 
                 type="button" 
                 onClick={() => setPhotoUrls(photoUrls.filter((_, i) => i !== idx))}
@@ -150,7 +153,8 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
                 <X className="w-3 h-3" />
               </button>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

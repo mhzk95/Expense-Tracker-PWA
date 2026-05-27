@@ -9,6 +9,7 @@ import { Plus, Image as ImageIcon, Link as LinkIcon, Trash2, X } from "lucide-re
 import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { JournalForm } from "@/components/journal/JournalForm";
+import { TelegramLazyImage } from "@/components/ui/TelegramLazyImage";
 
 export default function JournalPage() {
   const { entries, loading, deleteEntry } = useJournal();
@@ -107,11 +108,15 @@ export default function JournalPage() {
                   <div className="bg-slate-900/60 border border-slate-800/60 rounded-2xl overflow-hidden w-full">
                     {/* Photos */}
                     {entry.photoUrls.length > 0 && (
-                      <div 
-                        className="w-full aspect-[4/3] bg-black cursor-pointer"
-                        onClick={() => setLightboxImage(entry.photoUrls[0])}
-                      >
-                        <img src={entry.photoUrls[0]} alt="Journal attachment" className="w-full h-full object-cover" />
+                      <div className="w-full aspect-[4/3] bg-black">
+                        <TelegramLazyImage 
+                          url={entry.photoUrls[0]} 
+                          alt="Journal attachment" 
+                          className="w-full h-full object-cover cursor-pointer" 
+                          onClick={(src) => setLightboxImage(src)}
+                          entryId={entry.id}
+                          photoIndex={0}
+                        />
                       </div>
                     )}
                     

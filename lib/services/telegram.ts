@@ -50,12 +50,12 @@ export const setLastBackupTime = (time: string) => {
 async function uploadToTelegram(token: string, chatId: string, blob: Blob, filename: string): Promise<string | null> {
   const formData = new FormData();
   formData.append("chat_id", chatId);
-  
+
   // If the file is a photo, use sendPhoto so it appears as an image, not a sticker
   const isPhoto = filename.endsWith(".jpg") || filename.endsWith(".webp") || filename.endsWith(".png");
   const endpoint = isPhoto ? "sendPhoto" : "sendDocument";
   const fieldName = isPhoto ? "photo" : "document";
-  
+
   // Telegram strictly enforces .webp as stickers in sendDocument. 
   // By sending it via sendPhoto (and renaming the extension to .jpg just to be safe), 
   // Telegram processes it as a beautiful standard image gallery item!
@@ -83,25 +83,18 @@ async function uploadToTelegram(token: string, chatId: string, blob: Blob, filen
 /**
  * Fetches a file as a Base64 string from a Telegram file_id
  */
-async function downloadFromTelegram(token: string, fileId: string): Promise<string | null> {
+export async function downloadFromTelegram(token: string, fileId: string): Promise<Blob | null> {
   try {
     // 1. Get file path
     const pathRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
     const pathData = await pathRes.json();
     if (!pathData.ok) return null;
-    
+
     // 2. Download actual file (Telegram's /file/ endpoint lacks CORS headers, so we use our local proxy)
     const originalUrl = `https://api.telegram.org/file/bot${token}/${pathData.result.file_path}`;
     const fileUrl = `/api/telegram-proxy?url=${encodeURIComponent(originalUrl)}`;
     const fileRes = await fetch(fileUrl);
-    const blob = await fileRes.blob();
-    
-    // 3. Convert to base64
-    return await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
+    return await fileRes.blob();
   } catch (error) {
     console.error("Error downloading from telegram:", error);
     return null;
@@ -124,33 +117,45 @@ export async function uploadBackupToTelegram(): Promise<{ success: boolean; erro
     const allJournalEntries = await db.getAll("journalEntries");
     const allVaultEntries = await db.getAll("vaultEntries");
 
-    const uploadedCache = JSON.parse(localStorage.getItem("et_uploaded_photos") || "[]");
-    const newUploaded = [...uploadedCache];
-    const backupJournalEntries = JSON.parse(JSON.stringify(allJournalEntries.filter((j: any) => !j.isDeleted)));
+    const photoMap = JSON.parse(localStorage.getItem("et_telegram_photo_map") || "{}");
+    const backupJournalEntries = allJournalEntries.filter((j: any) => !j.isDeleted).map((entry: any) => ({
+      ...entry,
+      tags: [...entry.tags],
+      photoUrls: [...entry.photoUrls]
+    }));
 
     // Upload new photos to Telegram
     for (const entry of backupJournalEntries) {
       for (let i = 0; i < entry.photoUrls.length; i++) {
         const url = entry.photoUrls[i];
-        if (url.startsWith("data:image")) {
+        if (url instanceof Blob || (typeof url === 'string' && url.startsWith("data:image"))) {
           const photoId = `${entry.id}_${i}`;
-          
-          if (!uploadedCache.includes(photoId)) {
-            const blob = await fetch(url).then(res => res.blob());
+
+          if (!photoMap[photoId]) {
+            const blob = url instanceof Blob ? url : await fetch(url).then(res => res.blob());
             const file_id = await uploadToTelegram(token, chatId, blob, `${photoId}.webp`);
-            
+
             if (file_id) {
               entry.photoUrls[i] = `telegram:${file_id}`;
-              if (!newUploaded.includes(photoId)) newUploaded.push(photoId);
+              photoMap[photoId] = file_id;
             } else {
-              throw new Error(`Failed to upload photo for entry ${entry.id}`);
+              // Convert to base64 so it can be in JSON backup if upload fails
+              if (url instanceof Blob) {
+                entry.photoUrls[i] = await new Promise((resolve) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result as string);
+                  reader.readAsDataURL(url);
+                });
+              }
             }
+          } else {
+            entry.photoUrls[i] = `telegram:${photoMap[photoId]}`;
           }
         }
       }
     }
 
-    localStorage.setItem("et_uploaded_photos", JSON.stringify(newUploaded));
+    localStorage.setItem("et_telegram_photo_map", JSON.stringify(photoMap));
 
     // Construct backup JSON
     const backupData = {
@@ -186,7 +191,7 @@ export async function uploadBackupToTelegram(): Promise<{ success: boolean; erro
         if (data.description?.includes("message to edit not found")) {
           // If message was deleted, fallback to creating a new one instead of failing
           localStorage.removeItem("telegram_message_id");
-          return await uploadBackupToTelegram(); 
+          return await uploadBackupToTelegram();
         }
         throw new Error(data.description || "Failed to edit backup message");
       }
@@ -202,7 +207,7 @@ export async function uploadBackupToTelegram(): Promise<{ success: boolean; erro
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.description || "Failed to send backup message");
-      
+
       localStorage.setItem("telegram_message_id", data.result.message_id.toString());
     }
 
@@ -261,7 +266,7 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
       throw new Error("Invalid backup format");
     }
 
-    // 4. Download Photos
+    // 4. Register Photos in Uploaded Cache without downloading
     const backupJournalEntries = backupData.data.journalEntries || [];
     const uploadedCache = JSON.parse(localStorage.getItem("et_uploaded_photos") || "[]");
     const newUploaded = [...uploadedCache];
@@ -270,23 +275,18 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
       for (let i = 0; i < entry.photoUrls.length; i++) {
         const url = entry.photoUrls[i];
         if (url.startsWith("telegram:")) {
-          const photoFileId = url.replace("telegram:", "");
-          const base64 = await downloadFromTelegram(token, photoFileId);
-          if (base64) {
-            entry.photoUrls[i] = base64;
-            const photoId = `${entry.id}_${i}`;
-            if (!newUploaded.includes(photoId)) newUploaded.push(photoId);
-          }
+          const photoId = `${entry.id}_${i}`;
+          if (!newUploaded.includes(photoId)) newUploaded.push(photoId);
         }
       }
     }
-    
+
     localStorage.setItem("et_uploaded_photos", JSON.stringify(newUploaded));
 
     // 5. Restore Database
     const db = await getDB();
     const tx = db.transaction(["transactions", "accounts", "categories", "journalEntries", "vaultEntries"], "readwrite");
-    
+
     await tx.objectStore("transactions").clear();
     await tx.objectStore("accounts").clear();
     await tx.objectStore("categories").clear();
@@ -316,7 +316,7 @@ export async function restoreBackupFromTelegram(): Promise<boolean> {
     window.dispatchEvent(new Event("db:categories:changed"));
     window.dispatchEvent(new Event("db:journal:changed"));
     window.dispatchEvent(new Event("db:vault:changed"));
-    
+
     return true;
   } catch (error) {
     console.error("Error restoring backup:", error);

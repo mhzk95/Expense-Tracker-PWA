@@ -61,7 +61,7 @@ export interface JournalEntity {
   title?: string;
   content: string;
   tags: string[];
-  photoUrls: string[]; // Base64 strings for now to keep JSON backup simple
+  photoUrls: (string | Blob)[]; // Base64 strings, telegram file_ids, or raw Blobs
   linkedTransactionId?: string;
   isDeleted: boolean;
   createdAt: string;
