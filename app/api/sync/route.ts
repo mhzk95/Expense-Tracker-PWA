@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     // 1. PUSH: Upsert local data to Postgres
     // Note: We use a transaction to ensure all entities are saved atomically.
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Upsert Accounts
       for (const item of accounts) {
         await tx.account.upsert({
