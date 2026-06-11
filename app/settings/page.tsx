@@ -7,6 +7,7 @@
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Suspense, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import {
   Palette,
   Globe,
@@ -21,8 +22,10 @@ import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
 import { CloudSyncSettings } from "@/components/settings/CloudSyncSettings";
+import { TelegramSettings } from "@/components/settings/TelegramSettings";
 
 export default function SettingsPage() {
+  const { data: session } = useSession();
   const [currency, setCurrency] = useState("INR");
   const [activeModal, setActiveModal] = useState<"currency" | null>(null);
 
@@ -58,6 +61,8 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="Preferences and configuration" />
 
       <CloudSyncSettings />
+
+      {session && <TelegramSettings />}
 
       <ThemeSelector />
 
