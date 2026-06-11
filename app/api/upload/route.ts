@@ -11,16 +11,16 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const file = formData.get("file") as Blob | null;
-    const chatId = formData.get("chat_id") as string | null;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
     const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (!botToken || !chatId) {
-       return NextResponse.json({ error: "Telegram bot token or chat ID missing" }, { status: 500 });
+       return NextResponse.json({ error: "Telegram bot token or chat ID missing in .env" }, { status: 500 });
     }
 
     const tgFormData = new FormData();

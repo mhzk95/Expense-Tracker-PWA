@@ -17,6 +17,37 @@ export async function syncWithCloud() {
     const allJournalEntries = await db.getAll("journalEntries");
     const allVaultEntries = await db.getAll("vaultEntries");
 
+    // Upload pending journal photos to Telegram CDN via /api/upload
+    for (const entry of allJournalEntries) {
+      let updated = false;
+      for (let i = 0; i < entry.photoUrls.length; i++) {
+        const url = entry.photoUrls[i];
+        if (url instanceof Blob || (typeof url === 'string' && url.startsWith("data:image"))) {
+          const formData = new FormData();
+          const blob = url instanceof Blob ? url : await fetch(url).then(r => r.blob());
+          formData.append("file", blob);
+          
+          try {
+            const upRes = await fetch("/api/upload", { method: "POST", body: formData });
+            if (upRes.ok) {
+              const { file_id } = await upRes.json();
+              if (file_id) {
+                entry.photoUrls[i] = `telegram:${file_id}`;
+                updated = true;
+              }
+            }
+          } catch (e) {
+            console.error("Failed to upload photo to telegram CDN", e);
+          }
+        }
+      }
+      if (updated) {
+        const tx = db.transaction("journalEntries", "readwrite");
+        await tx.objectStore("journalEntries").put(entry);
+        await tx.done;
+      }
+    }
+
     const payload = {
       lastSyncAt: lastSyncAt || null,
       transactions: allTransactions,

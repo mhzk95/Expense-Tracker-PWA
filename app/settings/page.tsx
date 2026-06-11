@@ -17,7 +17,6 @@ import {
   Info,
   ChevronRight,
 } from "lucide-react";
-import { TelegramSettings } from "@/components/settings/TelegramSettings";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
@@ -57,10 +56,6 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 pb-20">
       <PageHeader title="Settings" subtitle="Preferences and configuration" />
-
-      <Suspense fallback={<div className="animate-pulse h-32 bg-slate-800/60 rounded-2xl" />}>
-        <TelegramSettings />
-      </Suspense>
 
       <CloudSyncSettings />
 

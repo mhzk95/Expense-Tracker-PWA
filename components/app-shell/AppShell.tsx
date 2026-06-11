@@ -7,7 +7,6 @@ import { PWABottomNavigation } from "@/components/navigation/PWABottomNavigation
 import { RuntimeModeBadge } from "@/components/pwa/RuntimeModeBadge";
 import { InstallPromptBanner } from "@/components/pwa/InstallPromptBanner";
 import { PwaUpdatePrompt } from "@/components/pwa/PwaUpdatePrompt";
-import { AutoBackupManager } from "@/components/pwa/AutoBackupManager";
 import { CommandBar } from "@/components/ui/CommandBar";
 import { useAutoSync } from "@/hooks/useAutoSync";
 import type { ReactNode } from "react";
@@ -44,7 +43,6 @@ export function AppShell({ children }: AppShellProps) {
         {/* <RuntimeModeBadge position="bottom-right" /> */}
         <InstallPromptBanner />
         <PwaUpdatePrompt />
-        <AutoBackupManager />
       </div>
     );
   }
@@ -73,7 +71,6 @@ export function AppShell({ children }: AppShellProps) {
       {/* <RuntimeModeBadge position="top-right" /> */}
       <InstallPromptBanner />
       <PwaUpdatePrompt />
-      <AutoBackupManager />
       <CommandBar />
     </div>
   );
