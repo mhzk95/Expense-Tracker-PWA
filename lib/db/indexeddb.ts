@@ -78,6 +78,51 @@ export interface VaultEntity {
   updatedAt: string;
 }
 
+export interface ResearchTopicEntity {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SavedItemEntity {
+  id: string;
+  topicId?: string;
+  type: string;
+  url?: string;
+  title?: string;
+  content?: string;
+  imageUrl?: string;
+  domain?: string;
+  ocrText?: string;
+  tags: string[];
+  isPinned: boolean;
+  isArchived: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReminderEntity {
+  id: string;
+  title: string;
+  notes?: string;
+  priority: string;
+  contextTags: string[];
+  dueDate?: string;
+  isRecurring: boolean;
+  recurrence?: string;
+  status: string;
+  isDeleted: boolean;
+  linkedItemId?: string;
+  linkedItemType?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
   transactions: {
     key: string;
@@ -105,6 +150,18 @@ interface ExpenseTrackerDB extends DBSchema {
     key: string;
     value: VaultEntity;
   };
+  researchTopics: {
+    key: string;
+    value: ResearchTopicEntity;
+  };
+  savedItems: {
+    key: string;
+    value: SavedItemEntity;
+  };
+  reminders: {
+    key: string;
+    value: ReminderEntity;
+  };
   syncMetadata: {
     key: string;
     value: any;
@@ -119,7 +176,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 7, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 8, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -163,6 +220,18 @@ export function getDB() {
         if (oldVersion < 7) {
           if (!db.objectStoreNames.contains('syncMetadata')) {
             db.createObjectStore('syncMetadata');
+          }
+        }
+
+        if (oldVersion < 8) {
+          if (!db.objectStoreNames.contains('researchTopics')) {
+            db.createObjectStore('researchTopics', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('savedItems')) {
+            db.createObjectStore('savedItems', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('reminders')) {
+            db.createObjectStore('reminders', { keyPath: 'id' });
           }
         }
       },

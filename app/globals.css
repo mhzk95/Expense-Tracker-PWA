@@ -197,3 +197,29 @@ body {
 .animate-fade-in {
   animation: fadeIn 150ms ease-out;
 }
+
+/* ─── Red Alert Protocol ──────────────────────────────────────────────────── */
+@keyframes red-strobe {
+  0% { box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0); }
+  50% { box-shadow: inset 0 0 100px 5px rgba(220, 38, 38, 0.4); }
+  100% { box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+body.red-alert {
+  /* Override core theme vars to an aggressive crimson palette */
+  --color-slate-950: #2b0000;
+  --color-slate-900: #450a0a;
+  --color-slate-800: #7f1d1d;
+  --color-slate-700: #991b1b;
+  --color-slate-600: #b91c1c;
+  --color-slate-500: #dc2626;
+  --color-slate-400: #ef4444;
+  --color-slate-300: #f87171;
+  --color-slate-200: #fca5a5;
+  --color-slate-100: #fecaca;
+  --color-slate-50: #fee2e2;
+  
+  /* Apply the strobe effect */
+  animation: red-strobe 3s infinite ease-in-out;
+  border: 2px solid #dc2626;
+}

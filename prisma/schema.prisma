@@ -10,37 +10,40 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String            @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?           @unique
   password      String?
   emailVerified DateTime?
   image         String?
   accounts      NextAuthAccount[]
   sessions      Session[]
-  
+
   // App data
-  transactions  Transaction[]
-  bankAccounts  Account[]
-  categories    Category[]
-  budgets       Budget[]
-  journals      Journal[]
-  vaults        Vault[]
+  transactions   Transaction[]
+  bankAccounts   Account[]
+  categories     Category[]
+  budgets        Budget[]
+  journals       Journal[]
+  vaults         Vault[]
+  researchTopics ResearchTopic[]
+  savedItems     SavedItem[]
+  reminders      Reminder[]
 }
 
 model NextAuthAccount {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -80,11 +83,11 @@ model Account {
   includeInNetWorth Boolean @default(true)
   isDefault         Boolean @default(false)
   isDeleted         Boolean @default(false)
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Transaction {
@@ -100,12 +103,12 @@ model Transaction {
   accountId   String?
   toAccountId String?
   status      String?
-  isDeleted   Boolean @default(false)
+  isDeleted   Boolean  @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -120,11 +123,11 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Budget {
-  id             String  @id @default(uuid())
+  id             String   @id @default(uuid())
   userId         String
   name           String
   categoryId     String
@@ -133,15 +136,15 @@ model Budget {
   period         String
   startDate      DateTime
   status         String
-  rollover       Boolean @default(false)
+  rollover       Boolean  @default(false)
   alertThreshold Float?
   color          String?
-  isDeleted      Boolean @default(false)
+  isDeleted      Boolean  @default(false)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Journal {
@@ -154,23 +157,82 @@ model Journal {
   photoUrls           String[]
   linkedTransactionId String?
   isDeleted           Boolean  @default(false)
-  
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
 
-  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Vault {
-  id         String   @id @default(uuid())
+  id         String  @id @default(uuid())
   userId     String
   title      String
   ciphertext String
   iv         String
+  isDeleted  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ResearchTopic {
+  id          String  @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  status      String  @default("active")
+  isDeleted   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedItems SavedItem[]
+}
+
+model SavedItem {
+  id         String   @id @default(uuid())
+  userId     String
+  topicId    String?
+  type       String // "link", "text", "image", "screenshot", "quote", "note"
+  url        String?
+  title      String?
+  content    String?
+  imageUrl   String?
+  domain     String?
+  ocrText    String?
+  tags       String[]
+  isPinned   Boolean  @default(false)
+  isArchived Boolean  @default(false)
   isDeleted  Boolean  @default(false)
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic ResearchTopic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+}
+
+model Reminder {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  notes       String?
+  priority    String // "low", "medium", "high", "critical"
+  contextTags String[]
+  dueDate     DateTime?
+  isRecurring Boolean   @default(false)
+  recurrence  String? // e.g., "daily", "weekly"
+  status      String    @default("pending") // "pending", "completed"
+  isDeleted      Boolean   @default(false)
+  linkedItemId   String?
+  linkedItemType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

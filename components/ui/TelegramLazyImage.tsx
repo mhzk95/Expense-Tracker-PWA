@@ -14,16 +14,41 @@ interface Props {
 
 export function TelegramLazyImage({ url, alt, className, onClick, entryId, photoIndex }: Props) {
   const isTelegram = typeof url === 'string' && url.startsWith("telegram:");
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(isTelegram ? null : (typeof url === 'string' ? url : URL.createObjectURL(url)));
+  
+  let initialSrc = null;
+  if (!isTelegram) {
+    if (typeof url === 'string') {
+      initialSrc = url;
+    } else if (url && (url instanceof Blob)) {
+      initialSrc = URL.createObjectURL(url);
+    }
+  }
+
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(initialSrc);
   const [loading, setLoading] = useState(false);
 
-  if (!isTelegram || loadedSrc) {
+  if (!isTelegram) {
+    if (!loadedSrc) {
+       // Invalid object fallback
+       return <div className={`flex items-center justify-center bg-slate-800/50 border border-red-500/20 text-red-400 text-xs rounded-lg ${className}`}>Corrupted Image</div>;
+    }
     return (
       <img 
-        src={loadedSrc!} 
+        src={loadedSrc} 
         alt={alt} 
         className={className} 
-        onClick={() => onClick?.(loadedSrc!)}
+        onClick={() => onClick?.(loadedSrc)}
+      />
+    );
+  }
+
+  if (loadedSrc) {
+    return (
+      <img 
+        src={loadedSrc} 
+        alt={alt} 
+        className={className} 
+        onClick={() => onClick?.(loadedSrc)}
       />
     );
   }

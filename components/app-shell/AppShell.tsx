@@ -9,6 +9,9 @@ import { InstallPromptBanner } from "@/components/pwa/InstallPromptBanner";
 import { PwaUpdatePrompt } from "@/components/pwa/PwaUpdatePrompt";
 import { CommandBar } from "@/components/ui/CommandBar";
 import { useAutoSync } from "@/hooks/useAutoSync";
+import { useReminders } from "@/hooks/useReminders";
+import { useLocalPushScheduler } from "@/hooks/useLocalPushScheduler";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 
 interface AppShellProps {
@@ -17,9 +20,43 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const runtime = useAppRuntime();
+  const { reminders } = useReminders();
 
   // Enable global background syncing
   useAutoSync();
+  
+  // Enable native push scheduler for reminders
+  useLocalPushScheduler();
+
+  // RED ALERT PROTOCOL
+  useEffect(() => {
+    const criticalTasks = reminders.filter(r => r.status === "pending" && r.priority === "critical");
+    
+    if (criticalTasks.length > 0) {
+      document.body.classList.add("red-alert");
+      
+      // Debounce telegram alerts to once every hour per session to avoid spam
+      const lastAlertTime = sessionStorage.getItem("et_last_telegram_alert");
+      const now = Date.now();
+      
+      if (!lastAlertTime || now - parseInt(lastAlertTime) > 3600000) {
+        sessionStorage.setItem("et_last_telegram_alert", now.toString());
+        
+        fetch("/api/telegram-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: criticalTasks[0].title,
+            tags: criticalTasks[0].contextTags,
+            id: criticalTasks[0].id
+          })
+        }).catch(e => console.error("Failed to send telegram nudge", e));
+      }
+    } else {
+      document.body.classList.remove("red-alert");
+    }
+    return () => document.body.classList.remove("red-alert");
+  }, [reminders]);
 
   if (!runtime.isBrowser) {
     return (

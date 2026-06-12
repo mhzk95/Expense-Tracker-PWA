@@ -81,11 +81,43 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
     setIsSubmitting(true);
     try {
-      // Auto-extract hashtags from content
+      // 1. Upload any Blobs to the server first
+      const uploadedUrls: string[] = [];
+      for (const photo of photoUrls) {
+        if (typeof photo === 'string') {
+          uploadedUrls.push(photo);
+        } else {
+          // It's a Blob, upload it
+          const formData = new FormData();
+          formData.append("file", photo, "journal-photo.webp");
+          
+          const uploadRes = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          
+          if (!uploadRes.ok) {
+            throw new Error("Failed to upload photo. Are you offline?");
+          }
+          
+          const uploadData = await uploadRes.json();
+          // The API returns { file_id: ... }
+          if (uploadData.file_id) {
+            uploadedUrls.push(`telegram:${uploadData.file_id}`);
+          } else if (uploadData.url) {
+            uploadedUrls.push(uploadData.url);
+          }
+        }
+      }
+
+      // Filter out any potential undefined/null values
+      const safeUrls = uploadedUrls.filter(Boolean);
+
+      // 2. Auto-extract hashtags from content
       const hashtagRegex = /#[\w\u00C0-\u024F]+/g;
       const extractedTags = (content.match(hashtagRegex) || []).map(t => t.replace('#', '').toLowerCase());
       
-      // Combine with manual tags and remove duplicates
+      // 3. Combine with manual tags and remove duplicates
       const finalTags = Array.from(new Set([...tags.map(t => t.toLowerCase()), ...extractedTags]));
 
       await addEntry({
@@ -93,13 +125,14 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         date: new Date().toISOString(),
         content,
         tags: finalTags,
-        photoUrls,
+        photoUrls: safeUrls,
         linkedTransactionId: linkedTransactionId || undefined,
       });
       vibrate([50]);
       onSuccess();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || "Failed to save entry");
       vibrate([50, 50, 50]);
     } finally {
       setIsSubmitting(false);

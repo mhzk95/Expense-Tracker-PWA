@@ -11,9 +11,11 @@ interface AccountCardProps {
   icon: any;
   typeLabel: string;
   onDelete: () => void;
+  onEdit?: () => void;
+  isDeletable?: boolean;
 }
 
-export function AccountCard({ account, icon: Icon, typeLabel, onDelete }: AccountCardProps) {
+export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, isDeletable = true }: AccountCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -129,22 +131,36 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete }: Accoun
         </div>
       </motion.div>
       
-      {/* Delete Action (Desktop overlay) */}
-      <div className="absolute -top-2 -right-2 z-10 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Actions (Desktop overlay) */}
+      <div className="absolute -top-2 -right-2 z-10 hidden md:flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button 
           onClick={(e) => { 
             e.stopPropagation();
-            vibrate([50, 50, 50]);
-            if (confirm("Are you sure you want to delete this account?")) {
-               onDelete();
-               vibrate([50]);
-            }
+            vibrate([50]);
+            onEdit?.();
           }}
-          className="p-2.5 text-white bg-red-500 rounded-full shadow-lg hover:bg-red-600 transition-colors"
-          title="Delete account"
+          className="p-2.5 text-white bg-slate-700 rounded-full shadow-lg hover:bg-slate-600 transition-colors"
+          title="Edit account"
         >
-          <Trash2 className="w-4 h-4" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
         </button>
+
+        {isDeletable && (
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation();
+              vibrate([50, 50, 50]);
+              if (confirm("Are you sure you want to delete this account?")) {
+                 onDelete();
+                 vibrate([50]);
+              }
+            }}
+            className="p-2.5 text-white bg-red-500 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+            title="Delete account"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   );

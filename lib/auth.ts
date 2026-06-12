@@ -14,22 +14,43 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        const fs = require('fs');
+        const log = (msg: string) => fs.appendFileSync('auth-debug.log', msg + '\n');
         
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
-        
-        if (!user || !user.password) {
-          throw new Error("Invalid email or password");
-        }
+        try {
+          log('--- Authorize called ---');
+          log('Credentials: ' + JSON.stringify({ email: credentials?.email, hasPassword: !!credentials?.password }));
+          
+          if (!credentials?.email || !credentials?.password) {
+            log('Missing credentials');
+            return null;
+          }
+          
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          });
+          
+          log('User found: ' + (user ? user.id : 'null'));
+          
+          if (!user || !user.password) {
+            log('User not found or no password');
+            throw new Error("Invalid email or password");
+          }
 
-        const isMatch = await bcrypt.compare(credentials.password, user.password);
-        if (!isMatch) {
-          throw new Error("Invalid email or password");
-        }
+          const isMatch = await bcrypt.compare(credentials.password, user.password);
+          log('Password match: ' + isMatch);
+          
+          if (!isMatch) {
+            log('Password mismatch');
+            throw new Error("Invalid email or password");
+          }
 
-        return { id: user.id, name: user.name, email: user.email };
+          log('Authorize success');
+          return { id: user.id, name: user.name, email: user.email };
+        } catch (error: any) {
+          log('Error in authorize: ' + error.message);
+          throw error;
+        }
       }
     })
   ],

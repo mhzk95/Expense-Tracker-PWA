@@ -40,6 +40,8 @@ export default function RegisterPage() {
         if (!signInRes?.error) {
           router.push("/");
           router.refresh();
+        } else {
+          toast.error("Auto-login failed: " + signInRes.error);
         }
       }
     } catch (error) {

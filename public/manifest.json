@@ -62,7 +62,7 @@
     }
   ],
   "share_target": {
-    "action": "/transactions?action=add",
+    "action": "/research?action=save",
     "method": "GET",
     "params": {
       "title": "title",

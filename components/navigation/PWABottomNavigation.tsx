@@ -26,7 +26,9 @@ import {
   Settings,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Link2,
+  Bell
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -39,6 +41,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldAlert,
   Settings,
   Menu,
+  Link2,
+  Bell
 };
 
 export function PWABottomNavigation() {

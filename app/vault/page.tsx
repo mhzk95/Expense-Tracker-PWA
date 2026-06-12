@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useVault } from "@/hooks/useVault";
 import { Lock, Unlock, Plus, Shield, ShieldCheck, ShieldAlert, KeyRound, Eye } from "lucide-react";
@@ -11,19 +11,36 @@ import { formatDate } from "@/lib/utils/helpers";
 import { VaultEntity } from "@/lib/db/indexeddb";
 
 export default function VaultPage() {
-  const { entries, loading, isUnlocked, hasBiometricsSetup, setupBiometrics, unlockWithBiometrics, lock, readEntry, deleteEntry } = useVault();
+  const { entries, loading, isUnlocked, hasSetupPin, hasManualPin, setupPin, changePin, unlock, hasBiometricsSetup, setupBiometrics, unlockWithBiometrics, lock, readEntry, deleteEntry, resetVault } = useVault();
   
   const [pinError, setPinError] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewingEntry, setViewingEntry] = useState<{title: string, text: string} | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [pinInput, setPinInput] = useState("");
+  // Determine default tab based on what's set up
+  const [activeTab, setActiveTab] = useState<"biometric" | "pin">("biometric");
+
+  // Sync activeTab when the vault state loads from localStorage
+  useEffect(() => {
+    if (hasBiometricsSetup) {
+      setActiveTab("biometric");
+    } else if (hasManualPin) {
+      setActiveTab("pin");
+    }
+  }, [hasBiometricsSetup, hasManualPin]);
 
   const handleBiometricAction = async () => {
     setPinError("");
     setIsProcessing(true);
     try {
       if (!hasBiometricsSetup) {
-        const ok = await setupBiometrics();
+        // If they already have a manual PIN, pass it so it gets reused
+        const currentPin = hasManualPin && pinInput ? pinInput : undefined;
+        // Wait, if they are setting up biometrics and they HAVE a manual PIN, they MUST provide it or be unlocked!
+        // Actually, if they are setting up Biometrics, they just use it.
+        const ok = await setupBiometrics(currentPin);
         if (!ok) setPinError("Biometric setup was cancelled or failed.");
       } else {
         const ok = await unlockWithBiometrics();
@@ -31,6 +48,27 @@ export default function VaultPage() {
       }
     } catch (err: any) {
       setPinError(err.message || "Biometric error.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePinAction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pinInput) return;
+    setPinError("");
+    setIsProcessing(true);
+    try {
+      if (!hasSetupPin) {
+        await setupPin(pinInput, true);
+        setPinInput("");
+      } else {
+        const ok = await unlock(pinInput);
+        if (!ok) setPinError("Invalid PIN.");
+        else setPinInput("");
+      }
+    } catch (err: any) {
+      setPinError(err.message || "PIN error.");
     } finally {
       setIsProcessing(false);
     }
@@ -78,30 +116,168 @@ export default function VaultPage() {
 
       {!isUnlocked ? (
         <div className="max-w-md mx-auto pt-10">
-          <div className="bg-slate-900/60 border border-slate-800/60 rounded-3xl p-8 text-center">
+          <div className="bg-slate-900/60 border border-slate-800/60 rounded-3xl p-8 text-center relative overflow-hidden">
             <div className="w-20 h-20 bg-violet-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              {hasBiometricsSetup ? <Lock className="w-10 h-10 text-violet-400" /> : <ShieldAlert className="w-10 h-10 text-emerald-400" />}
+              {(hasBiometricsSetup || hasManualPin) ? <Lock className="w-10 h-10 text-violet-400" /> : <ShieldAlert className="w-10 h-10 text-emerald-400" />}
             </div>
             
             <h2 className="text-xl font-bold text-white mb-2">
-              {hasBiometricsSetup ? "Unlock Vault" : "Setup Biometric Vault"}
+              {!hasSetupPin ? "Setup Vault" : "Unlock Vault"}
             </h2>
-            <p className="text-sm text-slate-400 mb-8">
-              {hasBiometricsSetup 
-                ? "Use FaceID / TouchID to decrypt your secure notes." 
-                : "Register your device's biometrics (FaceID/TouchID) to seamlessly encrypt and secure your vault."}
-            </p>
+            
+            {!hasSetupPin ? (
+              <p className="text-sm text-slate-400 mb-8">
+                Choose how you want to secure your vault. You can enable the other method later.
+              </p>
+            ) : (
+              <p className="text-sm text-slate-400 mb-8">
+                {activeTab === "biometric" ? "Use FaceID / TouchID to decrypt your secure notes." : "Enter your PIN to decrypt your secure notes."}
+              </p>
+            )}
 
             <div className="space-y-4">
               {pinError && <p className="text-red-400 text-sm">{pinError}</p>}
               
-              <button
-                onClick={handleBiometricAction}
-                disabled={isProcessing}
-                className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl py-4 transition-colors disabled:opacity-50"
-              >
-                {isProcessing ? "Authenticating..." : hasBiometricsSetup ? "Unlock with Biometrics" : "Enable Biometrics"}
-              </button>
+              {!hasSetupPin ? (
+                // Setup Mode
+                <div className="space-y-6">
+                  <button
+                    onClick={handleBiometricAction}
+                    disabled={isProcessing}
+                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl py-4 transition-colors disabled:opacity-50"
+                  >
+                    {isProcessing ? "Authenticating..." : "Setup Biometrics"}
+                  </button>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800"></div></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-900 px-2 text-slate-500">Or use PIN</span></div>
+                  </div>
+                  <form onSubmit={handlePinAction} className="flex gap-2">
+                    <input
+                      type="password"
+                      value={pinInput}
+                      onChange={e => setPinInput(e.target.value)}
+                      placeholder="Enter a secure PIN"
+                      className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      required
+                    />
+                    <button type="submit" disabled={isProcessing || !pinInput} className="bg-slate-800 hover:bg-slate-700 text-white px-4 rounded-xl font-medium transition-colors">
+                      Save
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                // Unlock Mode
+                <>
+                  {activeTab === "biometric" ? (
+                    <button
+                      onClick={handleBiometricAction}
+                      disabled={isProcessing}
+                      className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl py-4 transition-colors disabled:opacity-50"
+                    >
+                      {isProcessing ? "Authenticating..." : "Unlock with Biometrics"}
+                    </button>
+                  ) : (
+                    <form onSubmit={handlePinAction} className="flex gap-2">
+                      <input
+                        type="password"
+                        value={pinInput}
+                        onChange={e => setPinInput(e.target.value)}
+                        placeholder="Enter your PIN"
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500 text-center tracking-[0.3em] font-mono text-lg"
+                        required
+                        autoFocus
+                      />
+                      <button type="submit" disabled={isProcessing || !pinInput} className="bg-violet-600 hover:bg-violet-500 text-white px-6 rounded-xl font-medium transition-colors">
+                        Unlock
+                      </button>
+                    </form>
+                  )}
+
+                  <div className="flex justify-between items-center mt-6">
+                    {/* Reset Button (Bottom Left) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm("Are you sure? This will delete all encrypted data in your vault and reset biometrics/PIN.")) {
+                          resetVault();
+                          setPinError("");
+                        }
+                      }}
+                      className="text-slate-500 hover:text-red-400 text-xs font-medium transition-colors"
+                    >
+                      Reset Vault
+                    </button>
+
+                    {/* Toggle / Setup Button (Bottom Right) */}
+                    {!hasBiometricsSetup ? (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const pin = prompt("Enter your current PIN to enable biometrics:");
+                          if (pin) {
+                            setIsProcessing(true);
+                            try {
+                              const isValid = await unlock(pin);
+                              if (isValid) {
+                                await setupBiometrics(pin);
+                                alert("Biometrics enabled successfully!");
+                              } else {
+                                setPinError("Invalid PIN entered for setup.");
+                              }
+                            } catch (e: any) {
+                              setPinError(e.message || "Failed to setup biometrics");
+                            } finally {
+                              setIsProcessing(false);
+                            }
+                          }
+                        }}
+                        className="text-violet-400 hover:text-violet-300 text-xs font-medium transition-colors"
+                      >
+                        Enable Biometrics
+                      </button>
+                    ) : !hasManualPin ? (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const pin = prompt("Enter a new manual PIN:");
+                          if (pin) {
+                            setIsProcessing(true);
+                            try {
+                              // If they only have biometrics, they must authenticate first to change PIN
+                              const authOk = await unlockWithBiometrics();
+                              if (authOk) {
+                                await changePin(pin);
+                                alert("PIN enabled successfully!");
+                              } else {
+                                setPinError("Biometric authentication failed.");
+                              }
+                            } catch (e: any) {
+                              setPinError(e.message || "Failed to setup PIN");
+                            } finally {
+                              setIsProcessing(false);
+                            }
+                          }
+                        }}
+                        className="text-violet-400 hover:text-violet-300 text-xs font-medium transition-colors"
+                      >
+                        Enable PIN
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(activeTab === "biometric" ? "pin" : "biometric");
+                          setPinError("");
+                        }}
+                        className="text-violet-400 hover:text-violet-300 text-xs font-medium transition-colors"
+                      >
+                        {activeTab === "biometric" ? "Use PIN instead" : "Use Biometrics instead"}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

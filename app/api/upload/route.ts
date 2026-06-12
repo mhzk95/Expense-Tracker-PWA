@@ -17,15 +17,15 @@ export async function POST(request: Request) {
     }
 
     const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 
     if (!botToken || !chatId) {
-       return NextResponse.json({ error: "Telegram bot token or chat ID missing in .env" }, { status: 500 });
+      return NextResponse.json({ error: "Telegram bot token or chat ID missing in .env" }, { status: 500 });
     }
 
     const tgFormData = new FormData();
     tgFormData.append("chat_id", chatId);
-    
+
     // Pass generic filename so telegram accepts it as an image
     tgFormData.append("photo", file, "image.jpg");
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     });
 
     const data = await res.json();
-    
+
     if (!data.ok) {
       return NextResponse.json({ error: data.description }, { status: 500 });
     }

@@ -5,13 +5,14 @@ import { useAccounts } from "@/hooks/useAccounts";
 
 interface AccountFormProps {
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export function AccountForm({ onSuccess }: AccountFormProps) {
-  const { accounts, addAccount } = useAccounts();
-  const [name, setName] = useState("");
-  const [type, setType] = useState("checking");
-  const [balance, setBalance] = useState("");
+export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
+  const { accounts, addAccount, updateAccount } = useAccounts();
+  const [name, setName] = useState(initialData?.name || "");
+  const [type, setType] = useState(initialData?.type || "checking");
+  const [balance, setBalance] = useState(initialData?.balance?.toString() || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,32 +21,47 @@ export function AccountForm({ onSuccess }: AccountFormProps) {
 
     setIsSubmitting(true);
     try {
-      let iconName = "Building2";
-      let colorHex = "#6366f1"; // Default violet
+      let iconName = initialData?.icon || "Building2";
+      let colorHex = initialData?.color || "#6366f1"; // Default violet
 
-      if (type === "savings") {
-        iconName = "PiggyBank";
-        colorHex = "#22c55e"; // Green
-      } else if (type === "credit_card") {
-        iconName = "CreditCard";
-        colorHex = "#f43f5e"; // Rose
-      } else if (type === "wallet") {
-        iconName = "Wallet";
-        colorHex = "#3b82f6"; // Blue
+      if (!initialData || initialData.type !== type) {
+        if (type === "savings") {
+          iconName = "PiggyBank";
+          colorHex = "#22c55e"; // Green
+        } else if (type === "credit_card") {
+          iconName = "CreditCard";
+          colorHex = "#f43f5e"; // Rose
+        } else if (type === "wallet") {
+          iconName = "Wallet";
+          colorHex = "#3b82f6"; // Blue
+        } else if (type === "checking") {
+          iconName = "Building2";
+          colorHex = "#6366f1"; // Default violet
+        }
       }
 
-      await addAccount({
-        id: crypto.randomUUID(),
-        name,
-        type,
-        balance: Number(balance),
-        currency: "INR",
-        status: "active",
-        includeInNetWorth: true,
-        isDefault: accounts.length === 0, // Make it default if it's the first account
-        icon: iconName,
-        color: colorHex,
-      });
+      if (initialData) {
+        await updateAccount(initialData.id, {
+          name,
+          type,
+          balance: Number(balance),
+          icon: iconName,
+          color: colorHex,
+        });
+      } else {
+        await addAccount({
+          id: crypto.randomUUID(),
+          name,
+          type,
+          balance: Number(balance),
+          currency: "INR",
+          status: "active",
+          includeInNetWorth: true,
+          isDefault: accounts.length === 0, // Make it default if it's the first account
+          icon: iconName,
+          color: colorHex,
+        });
+      }
       onSuccess();
     } catch (err) {
       console.error(err);

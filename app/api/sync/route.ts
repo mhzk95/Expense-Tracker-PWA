@@ -19,6 +19,9 @@ export async function POST(request: Request) {
       budgets = [], 
       journalEntries = [], 
       vaultEntries = [],
+      researchTopics = [],
+      savedItems = [],
+      reminders = [],
       lastSyncAt
     } = data;
 
@@ -64,8 +67,13 @@ export async function POST(request: Request) {
       
       // Upsert Journal Entries
       for (const item of journalEntries) {
+        const validPhotoUrls = Array.isArray(item.photoUrls) 
+          ? item.photoUrls.filter((url: any) => typeof url === 'string')
+          : [];
+
         const itemData = { 
           ...item, 
+          photoUrls: validPhotoUrls,
           date: new Date(item.date), 
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
           updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
@@ -92,6 +100,52 @@ export async function POST(request: Request) {
           update: itemData
         });
       }
+
+      // Upsert Research Topics
+      for (const item of researchTopics) {
+        const itemData = { 
+          ...item,
+          createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+          updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+          userId 
+        };
+        await tx.researchTopic.upsert({
+          where: { id: item.id },
+          create: itemData,
+          update: itemData
+        });
+      }
+
+      // Upsert Saved Items
+      for (const item of savedItems) {
+        const itemData = { 
+          ...item,
+          createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+          updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+          userId 
+        };
+        await tx.savedItem.upsert({
+          where: { id: item.id },
+          create: itemData,
+          update: itemData
+        });
+      }
+
+      // Upsert Reminders
+      for (const item of reminders) {
+        const itemData = { 
+          ...item,
+          dueDate: item.dueDate ? new Date(item.dueDate) : null,
+          createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+          updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+          userId 
+        };
+        await tx.reminder.upsert({
+          where: { id: item.id },
+          create: itemData,
+          update: itemData
+        });
+      }
     });
 
     // 2. PULL: Get data modified since lastSyncAt from Postgres
@@ -103,7 +157,10 @@ export async function POST(request: Request) {
       pulledBudgets,
       pulledTransactions,
       pulledJournals,
-      pulledVaults
+      pulledVaults,
+      pulledResearchTopics,
+      pulledSavedItems,
+      pulledReminders
     ] = await Promise.all([
       prisma.account.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
       prisma.category.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
@@ -111,6 +168,9 @@ export async function POST(request: Request) {
       prisma.transaction.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
       prisma.journal.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
       prisma.vault.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
+      prisma.researchTopic.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
+      prisma.savedItem.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
+      prisma.reminder.findMany({ where: { userId, updatedAt: { gt: pullSince } } }),
     ]);
 
     return NextResponse.json({
@@ -123,6 +183,9 @@ export async function POST(request: Request) {
         transactions: pulledTransactions,
         journalEntries: pulledJournals,
         vaultEntries: pulledVaults,
+        researchTopics: pulledResearchTopics,
+        savedItems: pulledSavedItems,
+        reminders: pulledReminders,
       }
     });
 

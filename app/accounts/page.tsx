@@ -5,15 +5,19 @@
  * Phase 7: Live IndexedDB data.
  */
 
+import { useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils/helpers";
 import { cn } from "@/lib/utils/helpers";
 import { Building2, CreditCard, PiggyBank, TrendingUp, Trash2, Wallet } from "lucide-react";
 import { useAccounts } from "@/hooks/useAccounts";
+import { useTransactions } from "@/hooks/useTransactions";
 import { AddAccountAction } from "@/components/accounts/AddAccountAction";
 import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AccountCard } from "@/components/accounts/AccountCard";
+import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
+import { AccountForm } from "@/components/accounts/AccountForm";
 
 const ACCOUNT_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   Building2,
@@ -35,6 +39,8 @@ const ACCOUNT_TYPE_LABELS: Record<string, string> = {
 
 export default function AccountsPage() {
   const { accounts, loading, deleteAccount } = useAccounts();
+  const { transactions } = useTransactions();
+  const [editingAccount, setEditingAccount] = useState<any>(null);
 
   const totalAssets = accounts.filter((a) => a.balance > 0 && a.includeInNetWorth)
     .reduce((s, a) => s + a.balance, 0);
@@ -89,6 +95,9 @@ export default function AccountsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
             {accounts.map((account) => {
               const Icon = ACCOUNT_ICONS[account.icon ?? "Building2"] ?? Building2;
+              
+              // Only allow deletion if no transactions are linked to this account
+              const isDeletable = !transactions.some(t => t.accountId === account.id || t.toAccountId === account.id);
 
               return (
                 <div key={account.id} className="w-full">
@@ -96,7 +105,9 @@ export default function AccountsPage() {
                      account={account} 
                      icon={Icon} 
                      typeLabel={ACCOUNT_TYPE_LABELS[account.type] || "Account"}
-                     onDelete={() => deleteAccount(account.id)} 
+                     onDelete={() => deleteAccount(account.id)}
+                     onEdit={() => setEditingAccount(account)}
+                     isDeletable={isDeletable}
                    />
                 </div>
               );
@@ -104,6 +115,15 @@ export default function AccountsPage() {
           </div>
         </>
       )}
+
+      <AdaptiveOverlay isOpen={!!editingAccount} onClose={() => setEditingAccount(null)} title="Edit Account">
+        {editingAccount && (
+          <AccountForm 
+            initialData={editingAccount} 
+            onSuccess={() => setEditingAccount(null)} 
+          />
+        )}
+      </AdaptiveOverlay>
     </div>
   );
 }

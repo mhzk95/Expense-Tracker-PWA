@@ -15,6 +15,7 @@ export function useVault() {
   const [cryptoKey, setCryptoKey] = useState<CryptoKey | null>(globalCryptoKey);
   const [hasSetupPin, setHasSetupPin] = useState(false);
   const [hasBiometricsSetup, setHasBiometricsSetup] = useState(false);
+  const [hasManualPin, setHasManualPin] = useState(false);
 
   // Check if a salt exists to determine if PIN is set up
   useEffect(() => {
@@ -22,6 +23,8 @@ export function useVault() {
     setHasSetupPin(!!salt);
     const bioKey = localStorage.getItem("et_vault_biometric_key");
     setHasBiometricsSetup(!!bioKey);
+    const manualPin = localStorage.getItem("et_vault_has_manual_pin");
+    setHasManualPin(!!manualPin);
   }, []);
 
   const fetchEntries = useCallback(async () => {
@@ -55,8 +58,8 @@ export function useVault() {
   };
 
   // Setup a new PIN for the first time
-  const setupPin = async (pin: string) => {
-    if (hasSetupPin) throw new Error("PIN already setup. You cannot change it without losing data currently.");
+  const setupPin = async (pin: string, isManual = false) => {
+    if (hasSetupPin) throw new Error("PIN already setup.");
     const salt = generateSalt();
     localStorage.setItem("et_vault_salt", salt);
     
@@ -67,6 +70,11 @@ export function useVault() {
     const { ciphertext, iv } = await encryptData("VAULT_VERIFIED", key);
     localStorage.setItem("et_vault_verify_cipher", ciphertext);
     localStorage.setItem("et_vault_verify_iv", iv);
+
+    if (isManual) {
+      localStorage.setItem("et_vault_has_manual_pin", "true");
+      setHasManualPin(true);
+    }
 
     globalCryptoKey = key;
     globalIsUnlocked = true;
@@ -110,7 +118,65 @@ export function useVault() {
     setIsUnlocked(false);
   };
 
-  const setupBiometrics = async () => {
+  const resetVault = async () => {
+    localStorage.removeItem("et_vault_salt");
+    localStorage.removeItem("et_vault_biometric_key");
+    localStorage.removeItem("et_vault_verify_cipher");
+    localStorage.removeItem("et_vault_verify_iv");
+    localStorage.removeItem("et_vault_has_manual_pin");
+    setHasSetupPin(false);
+    setHasBiometricsSetup(false);
+    setHasManualPin(false);
+    lock();
+    // Clear all entries to start fresh
+    const allEntries = await vaultRepository.getAll();
+    for (const entry of allEntries) {
+      await vaultRepository.softDelete(entry.id);
+    }
+    setEntries([]);
+  };
+
+  const changePin = async (newPin: string) => {
+    if (!cryptoKey) throw new Error("Vault must be unlocked to change PIN");
+    
+    // Decrypt all entries in memory
+    const decryptedEntries = await Promise.all(
+      entries.map(async (e) => ({
+        ...e,
+        secretContent: await readEntry(e)
+      }))
+    );
+
+    // Generate new salt & key
+    const salt = generateSalt();
+    const newKey = await deriveKeyFromPin(newPin, salt);
+    
+    // Re-encrypt all entries
+    for (const e of decryptedEntries) {
+      const { ciphertext, iv } = await encryptData(e.secretContent, newKey);
+      await vaultRepository.update(e.id, { ciphertext, iv });
+    }
+
+    // Update verify payloads
+    const { ciphertext, iv } = await encryptData("VAULT_VERIFIED", newKey);
+    localStorage.setItem("et_vault_salt", salt);
+    localStorage.setItem("et_vault_verify_cipher", ciphertext);
+    localStorage.setItem("et_vault_verify_iv", iv);
+    localStorage.setItem("et_vault_has_manual_pin", "true");
+
+    // If biometrics is already enabled, update the biometric key
+    if (hasBiometricsSetup) {
+      localStorage.setItem("et_vault_biometric_key", newPin);
+    }
+
+    globalCryptoKey = newKey;
+    setCryptoKey(newKey);
+    setHasSetupPin(true);
+    setHasManualPin(true);
+    fetchEntries();
+  };
+
+  const setupBiometrics = async (currentPin?: string) => {
     if (!window.PublicKeyCredential) throw new Error("Biometrics not supported");
     
     const credential = await navigator.credentials.create({
@@ -132,9 +198,13 @@ export function useVault() {
     });
 
     if (credential) {
-       const generatedPin = crypto.randomUUID() + crypto.randomUUID();
-       localStorage.setItem("et_vault_biometric_key", generatedPin);
-       await setupPin(generatedPin);
+       // If they already have a PIN, use it. Otherwise generate a random one.
+       const targetPin = currentPin || (crypto.randomUUID() + crypto.randomUUID());
+       localStorage.setItem("et_vault_biometric_key", targetPin);
+       
+       if (!hasSetupPin) {
+         await setupPin(targetPin, false);
+       }
        setHasBiometricsSetup(true);
        return true;
     }
@@ -194,7 +264,9 @@ export function useVault() {
     loading,
     isUnlocked,
     hasSetupPin,
+    hasManualPin,
     setupPin,
+    changePin,
     unlock,
     setupBiometrics,
     unlockWithBiometrics,
@@ -204,5 +276,6 @@ export function useVault() {
     addEntry,
     updateEntry,
     deleteEntry,
+    resetVault,
   };
 }

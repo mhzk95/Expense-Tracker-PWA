@@ -1,0 +1,15 @@
+--- Authorize called ---
+Credentials: {"email":"zakeer0412@gmail.com","hasPassword":true}
+User found: null
+User not found or no password
+Error in authorize: Invalid email or password
+--- Authorize called ---
+Credentials: {"email":"zakeer0412@gmail.com","hasPassword":true}
+User found: cmq9k17aa0000e598jag2hem9
+Password match: true
+Authorize success
+--- Authorize called ---
+Credentials: {"email":"zakeer0412@gmail.com","hasPassword":true}
+User found: cmq9k17aa0000e598jag2hem9
+Password match: true
+Authorize success

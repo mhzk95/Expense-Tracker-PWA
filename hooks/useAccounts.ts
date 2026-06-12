@@ -36,6 +36,10 @@ export function useAccounts() {
     await accountsRepository.add(acc);
   };
 
+  const updateAccount = async (id: string, updates: Partial<Omit<AccountEntity, "id" | "syncStatus" | "localVersion" | "isDeleted">>) => {
+    await accountsRepository.update(id, updates);
+  };
+
   const deleteAccount = async (id: string) => {
     await accountsRepository.softDelete(id);
   };
@@ -44,6 +48,7 @@ export function useAccounts() {
     accounts,
     loading,
     addAccount,
+    updateAccount,
     deleteAccount,
   };
 }
