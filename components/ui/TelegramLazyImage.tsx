@@ -22,6 +22,13 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
     } else if (url && (url instanceof Blob)) {
       initialSrc = URL.createObjectURL(url);
     }
+  } else {
+    // Check if we just uploaded it and cached it
+    if (typeof window !== "undefined") {
+      try {
+        initialSrc = sessionStorage.getItem(url as string) || null;
+      } catch (e) {}
+    }
   }
 
   const [loadedSrc, setLoadedSrc] = useState<string | null>(initialSrc);

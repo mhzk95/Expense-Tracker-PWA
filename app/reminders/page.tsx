@@ -201,7 +201,12 @@ export default function RemindersPage() {
                     type="datetime-local" 
                     value={newTaskDueDate}
                     onChange={(e) => setNewTaskDueDate(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full"
+                    onClick={(e) => {
+                      try {
+                        if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
+                      } catch (err) {}
+                    }}
+                    className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full cursor-pointer"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -339,7 +344,12 @@ export default function RemindersPage() {
                                             type="datetime-local" 
                                             value={notesEditDueDate}
                                             onChange={(e) => setNotesEditDueDate(e.target.value)}
-                                            className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full"
+                                            onClick={(e) => {
+                                              try {
+                                                if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
+                                              } catch (err) {}
+                                            }}
+                                            className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full cursor-pointer"
                                           />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -402,7 +412,7 @@ export default function RemindersPage() {
                                           if (reminder.dueDate) {
                                             // Format for datetime-local input (YYYY-MM-DDThh:mm)
                                             const d = new Date(reminder.dueDate);
-                                            const tzOffset = d.getTimezoneOffset() * 60000; // offset in milliseconds
+                                            const tzOffset = d.getTimezoneOffset() * 60000;
                                             const localISOTime = (new Date(d.getTime() - tzOffset)).toISOString().slice(0, 16);
                                             setNotesEditDueDate(localISOTime);
                                           } else {

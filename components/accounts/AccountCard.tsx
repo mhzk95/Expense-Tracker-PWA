@@ -117,15 +117,35 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
                 {account.lastFour ? `•••• •••• •••• ${account.lastFour}` : "•••• •••• •••• ••••"}
               </p>
             </div>
-            <div className="flex justify-between items-end">
-              <p className="text-white font-mono text-3xl font-bold tracking-tighter">
+            <div className="flex justify-between items-end gap-2">
+              <p className="text-white font-mono text-3xl font-bold tracking-tighter truncate">
                 {formatCurrency(account.balance, account.currency)}
               </p>
-              {account.isDefault && (
-                <span className="text-[10px] px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm font-medium tracking-wide">
-                  Default
-                </span>
-              )}
+              <div className="flex items-center gap-2 shrink-0">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); vibrate([50]); onEdit?.(); }} 
+                  className="p-2 text-white/70 hover:text-white bg-white/10 rounded-full backdrop-blur-sm md:hidden transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                </button>
+                {isDeletable && (
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      vibrate([50, 50, 50]);
+                      if (confirm("Are you sure you want to delete this account?")) onDelete();
+                    }} 
+                    className="p-2 text-red-300 hover:text-red-200 bg-red-500/20 rounded-full backdrop-blur-sm md:hidden transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                {account.isDefault && (
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm font-medium tracking-wide">
+                    Default
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

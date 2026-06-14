@@ -103,7 +103,21 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           const uploadData = await uploadRes.json();
           // The API returns { file_id: ... }
           if (uploadData.file_id) {
-            uploadedUrls.push(`telegram:${uploadData.file_id}`);
+            const fileKey = `telegram:${uploadData.file_id}`;
+            uploadedUrls.push(fileKey);
+            
+            // Cache locally so it shows immediately after upload without downloading
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              try {
+                if (reader.result) {
+                  sessionStorage.setItem(fileKey, reader.result as string);
+                }
+              } catch (e) {
+                // Ignore quota exceeded
+              }
+            };
+            reader.readAsDataURL(photo);
           } else if (uploadData.url) {
             uploadedUrls.push(uploadData.url);
           }
