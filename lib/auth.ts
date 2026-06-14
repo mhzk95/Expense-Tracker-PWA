@@ -14,15 +14,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const fs = require('fs');
-        const log = (msg: string) => fs.appendFileSync('auth-debug.log', msg + '\n');
-        
         try {
-          log('--- Authorize called ---');
-          log('Credentials: ' + JSON.stringify({ email: credentials?.email, hasPassword: !!credentials?.password }));
+          console.log('--- Authorize called ---');
           
           if (!credentials?.email || !credentials?.password) {
-            log('Missing credentials');
+            console.log('Missing credentials');
             return null;
           }
           
@@ -30,25 +26,25 @@ export const authOptions: NextAuthOptions = {
             where: { email: credentials.email }
           });
           
-          log('User found: ' + (user ? user.id : 'null'));
+          console.log('User found: ' + (user ? user.id : 'null'));
           
           if (!user || !user.password) {
-            log('User not found or no password');
+            console.log('User not found or no password');
             throw new Error("Invalid email or password");
           }
 
           const isMatch = await bcrypt.compare(credentials.password, user.password);
-          log('Password match: ' + isMatch);
+          console.log('Password match: ' + isMatch);
           
           if (!isMatch) {
-            log('Password mismatch');
+            console.log('Password mismatch');
             throw new Error("Invalid email or password");
           }
 
-          log('Authorize success');
+          console.log('Authorize success');
           return { id: user.id, name: user.name, email: user.email };
         } catch (error: any) {
-          log('Error in authorize: ' + error.message);
+          console.error('Error in authorize: ' + error.message);
           throw error;
         }
       }

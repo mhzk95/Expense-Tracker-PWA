@@ -57,7 +57,7 @@ export function CommandBar() {
   const parseNLP = (text: string) => {
     // 1. Check if it's a URL -> Research Item
     if (text.trim().match(/^https?:\/\//i)) {
-      return { type: "research", url: text.trim(), description: "Save to Inbox" };
+      return { type: "link", url: text.trim(), description: "Save to Inbox" };
     }
 
     // 2. Check if it's a reminder
@@ -114,7 +114,7 @@ export function CommandBar() {
     
     setIsSubmitting(true);
     try {
-      if (parsed.type === "research" || parsed.type === "note" || parsed.type === "quote") {
+      if (parsed.type === "link" || parsed.type === "note" || parsed.type === "quote") {
         let domain = "";
         if (parsed.url) {
           try {
