@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { downloadFromTelegram, getTelegramToken } from "@/lib/services/telegram";
 import { CloudDownload, Loader2 } from "lucide-react";
-import { getDB } from "@/lib/db/indexeddb";
+import { getDB, getImageCacheDB } from "@/lib/db/indexeddb";
 
 interface Props {
   url: string | Blob;
@@ -23,16 +23,23 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
       initialSrc = URL.createObjectURL(url);
     }
   } else {
-    // Check if we just uploaded it and cached it
-    if (typeof window !== "undefined") {
-      try {
-        initialSrc = sessionStorage.getItem(url as string) || null;
-      } catch (e) {}
-    }
+    // Initial sync check (will be overwritten if ImageCacheDB has it)
   }
 
   const [loadedSrc, setLoadedSrc] = useState<string | null>(initialSrc);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isTelegram) {
+      getImageCacheDB().then(async (db) => {
+        if (!db) return;
+        const cachedBlob = await db.get('images', url as string);
+        if (cachedBlob) {
+          setLoadedSrc(URL.createObjectURL(cachedBlob));
+        }
+      }).catch(() => {});
+    }
+  }, [url, isTelegram]);
 
   if (!isTelegram) {
     if (!loadedSrc) {
@@ -74,6 +81,9 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
     if (blob) {
       const objectUrl = URL.createObjectURL(blob);
       setLoadedSrc(objectUrl);
+      
+      // Save permanently to dedicated image cache
+      getImageCacheDB().then(db => db?.put('images', blob, url as string)).catch(() => {});
       
       if (entryId && photoIndex !== undefined) {
         getDB().then(async (db) => {

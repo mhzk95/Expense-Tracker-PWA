@@ -5,6 +5,7 @@ import { useJournal } from "@/hooks/useJournal";
 import { useTransactions } from "@/hooks/useTransactions";
 import { X, Image as ImageIcon, Link as LinkIcon } from "lucide-react";
 import { vibrate } from "@/lib/utils/helpers";
+import { getImageCacheDB } from "@/lib/db/indexeddb";
 
 interface JournalFormProps {
   onSuccess: () => void;
@@ -106,18 +107,8 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
             const fileKey = `telegram:${uploadData.file_id}`;
             uploadedUrls.push(fileKey);
             
-            // Cache locally so it shows immediately after upload without downloading
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              try {
-                if (reader.result) {
-                  sessionStorage.setItem(fileKey, reader.result as string);
-                }
-              } catch (e) {
-                // Ignore quota exceeded
-              }
-            };
-            reader.readAsDataURL(photo);
+            // Cache locally so it shows immediately across app restarts
+            getImageCacheDB().then(db => db?.put('images', photo, fileKey)).catch(() => {});
           } else if (uploadData.url) {
             uploadedUrls.push(uploadData.url);
           }

@@ -239,3 +239,18 @@ export function getDB() {
   }
   return dbPromise;
 }
+
+let imageCacheDbPromise: Promise<IDBPDatabase<any>> | null = null;
+export function getImageCacheDB() {
+  if (typeof window === "undefined") {
+    return new Promise<any>(() => {});
+  }
+  if (!imageCacheDbPromise) {
+    imageCacheDbPromise = openDB('ImageCacheDB', 1, {
+      upgrade(db) {
+        db.createObjectStore('images');
+      }
+    });
+  }
+  return imageCacheDbPromise;
+}

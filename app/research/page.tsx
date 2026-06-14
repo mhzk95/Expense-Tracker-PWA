@@ -33,42 +33,52 @@ function ResearchContent() {
     const action = searchParams.get("action");
     const url = searchParams.get("url");
     const text = searchParams.get("text");
+    const title = searchParams.get("title");
     
-    const contentUrl = url || (text && text.match(/^https?:\/\//i) ? text : null);
+    if (action !== "save" || (!url && !text && !title)) return;
 
-    if (action === "save" && contentUrl && processedShareUrl.current !== contentUrl) {
-      processedShareUrl.current = contentUrl; // Ensure we only process this exact share once per mount
-      
-      const title = searchParams.get("title");
+    const signature = `${url}-${text}-${title}`;
+    if (processedShareUrl.current === signature) return;
+    processedShareUrl.current = signature; // Ensure we only process this exact share once per mount
+    
+    const extractUrl = (str: string | null) => {
+      if (!str) return null;
+      const match = str.match(/https?:\/\/[^\s]+/i);
+      return match ? match[0] : null;
+    };
 
-      let domain = "";
+    const contentUrl = url || extractUrl(text) || extractUrl(title);
+    const itemType = contentUrl ? "link" : "note";
+
+    let domain = "";
+    if (contentUrl) {
       try {
         domain = new URL(contentUrl).hostname.replace("www.", "");
       } catch(e) {}
-
-      const newItemId = crypto.randomUUID();
-      
-      // Save immediately to ensure no data loss
-      addItem({
-        id: newItemId,
-        type: "link",
-        url: contentUrl,
-        domain: domain || undefined,
-        title: title || "Shared Link",
-        content: text || ""
-      } as any);
-      
-      vibrate([50, 50]);
-      
-      // Open the interactive Pro Clipper modal
-      setShareItem({
-        id: newItemId,
-        url: contentUrl,
-        domain: domain || undefined,
-        title: title || "Shared Link",
-        content: text || ""
-      });
     }
+
+    const newItemId = crypto.randomUUID();
+    
+    // Save immediately to ensure no data loss
+    addItem({
+      id: newItemId,
+      type: itemType,
+      url: contentUrl || undefined,
+      domain: domain || undefined,
+      title: title || (contentUrl ? "Shared Link" : "Shared Note"),
+      content: text || ""
+    } as any);
+    
+    vibrate([50, 50]);
+    
+    // Open the interactive Pro Clipper modal
+    setShareItem({
+      id: newItemId,
+      url: contentUrl || undefined,
+      domain: domain || undefined,
+      title: title || (contentUrl ? "Shared Link" : "Shared Note"),
+      content: text || ""
+    });
   }, [searchParams, addItem]);
 
   const closeShareModal = () => {
