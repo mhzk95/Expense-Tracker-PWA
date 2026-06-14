@@ -25,6 +25,12 @@ export async function POST(request: Request) {
       lastSyncAt
     } = data;
 
+    // Helper to remove IndexedDB-only fields
+    const cleanItem = (item: any) => {
+      const { syncStatus, localVersion, remoteVersion, ...rest } = item;
+      return rest;
+    };
+
     // 1. PUSH: Upsert local data to Postgres
     // Note: We use a transaction to ensure all entities are saved atomically.
     await prisma.$transaction(async (tx: any) => {
@@ -32,8 +38,8 @@ export async function POST(request: Request) {
       for (const item of accounts) {
         await tx.account.upsert({
           where: { id: item.id },
-          create: { ...item, userId },
-          update: { ...item, userId }
+          create: { ...cleanItem(item), userId },
+          update: { ...cleanItem(item), userId }
         });
       }
       
@@ -41,8 +47,8 @@ export async function POST(request: Request) {
       for (const item of categories) {
         await tx.category.upsert({
           where: { id: item.id },
-          create: { ...item, userId },
-          update: { ...item, userId }
+          create: { ...cleanItem(item), userId },
+          update: { ...cleanItem(item), userId }
         });
       }
       
@@ -50,14 +56,14 @@ export async function POST(request: Request) {
       for (const item of budgets) {
         await tx.budget.upsert({
           where: { id: item.id },
-          create: { ...item, startDate: new Date(item.startDate), userId },
-          update: { ...item, startDate: new Date(item.startDate), userId }
+          create: { ...cleanItem(item), startDate: new Date(item.startDate), userId },
+          update: { ...cleanItem(item), startDate: new Date(item.startDate), userId }
         });
       }
       
       // Upsert Transactions
       for (const item of transactions) {
-        const itemData = { ...item, date: new Date(item.date), userId };
+        const itemData = { ...cleanItem(item), date: new Date(item.date), userId };
         await tx.transaction.upsert({
           where: { id: item.id },
           create: itemData,
@@ -72,7 +78,7 @@ export async function POST(request: Request) {
           : [];
 
         const itemData = { 
-          ...item, 
+          ...cleanItem(item), 
           photoUrls: validPhotoUrls,
           date: new Date(item.date), 
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
@@ -89,7 +95,7 @@ export async function POST(request: Request) {
       // Upsert Vault Entries
       for (const item of vaultEntries) {
         const itemData = { 
-          ...item,
+          ...cleanItem(item),
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
           updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
           userId 
@@ -104,7 +110,7 @@ export async function POST(request: Request) {
       // Upsert Research Topics
       for (const item of researchTopics) {
         const itemData = { 
-          ...item,
+          ...cleanItem(item),
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
           updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
           userId 
@@ -119,7 +125,7 @@ export async function POST(request: Request) {
       // Upsert Saved Items
       for (const item of savedItems) {
         const itemData = { 
-          ...item,
+          ...cleanItem(item),
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
           updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),
           userId 
@@ -134,7 +140,7 @@ export async function POST(request: Request) {
       // Upsert Reminders
       for (const item of reminders) {
         const itemData = { 
-          ...item,
+          ...cleanItem(item),
           dueDate: item.dueDate ? new Date(item.dueDate) : null,
           createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
           updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date(),

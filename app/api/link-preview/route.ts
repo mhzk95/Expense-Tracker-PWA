@@ -21,7 +21,12 @@ export async function GET(request: Request) {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch URL: ${res.statusText}`);
+      console.warn(`Link preview blocked by target server (${res.status}): ${url}`);
+      return NextResponse.json({
+        title: '',
+        description: '',
+        image: '',
+      });
     }
 
     const html = await res.text();
