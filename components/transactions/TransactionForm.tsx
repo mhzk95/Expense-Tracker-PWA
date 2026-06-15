@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
 import { vibrate } from "@/lib/utils/helpers";
-import { Camera, Loader2 } from "lucide-react";
-import Tesseract from "tesseract.js";
+import { Camera, Loader2, Sparkles, Receipt } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -14,7 +15,7 @@ interface TransactionFormProps {
 
 export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const { addTransaction } = useTransactions();
-  const { categories } = useCategories();
+  const { categories, addCategory } = useCategories();
   const { accounts } = useAccounts();
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState("");
@@ -26,6 +27,29 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [toAccountId, setToAccountId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  // Restore draft from sessionStorage if modal was accidentally closed
+  useEffect(() => {
+    const draft = sessionStorage.getItem("tx_draft");
+    if (draft) {
+      try {
+        const parsed = JSON.parse(draft);
+        if (parsed.amount) setAmount(parsed.amount);
+        if (parsed.note) setNote(parsed.note);
+        if (parsed.type) setType(parsed.type);
+      } catch (e) {}
+    }
+  }, []);
+
+  // Save draft to prevent data loss
+  useEffect(() => {
+    if (amount || note) {
+      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, note, type }));
+    }
+  }, [amount, note, type]);
 
   // Set default category and account when loaded
   useEffect(() => {
@@ -46,6 +70,22 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       const newCategories = categories.filter(c => c.type === newType);
       setCategoryId(newCategories[0]?.id || "");
     }
+    setIsCreatingCategory(false);
+  };
+
+  const handleQuickAddCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    const newId = crypto.randomUUID();
+    await addCategory({
+      id: newId,
+      name: newCategoryName.trim(),
+      type: type === "transfer" ? "expense" : type,
+      color: "#8B5CF6", // Default to violet
+      icon: "tag"
+    });
+    setCategoryId(newId);
+    setIsCreatingCategory(false);
+    setNewCategoryName("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,6 +108,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
       });
+      sessionStorage.removeItem("tx_draft"); // Clear draft on success
       vibrate([50]);
       onSuccess();
     } catch (err) {
@@ -84,23 +125,40 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     
     setIsScanning(true);
     try {
-      const { data: { text } } = await Tesseract.recognize(file, 'eng');
+      // Extract Base64 and MimeType
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.readAsDataURL(file);
+      });
+      const base64Img = await base64Promise;
+      const mimeType = file.type;
+
+      const res = await fetch("/api/ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Img, mimeType })
+      });
       
-      const amountMatch = text.match(/(?:total|amount|due|balance|sum)[\s\$:]*([\d,\.]+\d)/i) || text.match(/[\$₹€£][\s]*([\d,\.]+\d)/);
-      if (amountMatch) {
-         const amountStr = amountMatch[1].replace(/,/g, '');
-         if (!isNaN(Number(amountStr))) {
-           setAmount(amountStr);
-           vibrate([50, 50]);
-         } else {
-           alert("Found text, but couldn't parse as number.");
-         }
-      } else {
-         alert("Could not automatically detect the total amount.");
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "OCR Failed");
       }
-    } catch (err) {
+      
+      if (data.total) {
+        setAmount(data.total.toString());
+        vibrate([50, 50]);
+      } else {
+        alert("Could not detect the total amount.");
+      }
+
+      if (data.items) {
+        setNote(data.items);
+      }
+    } catch (err: any) {
       console.error(err);
-      alert("Error scanning receipt.");
+      alert(err.message || "Error scanning receipt. Ensure the API is reachable.");
     } finally {
       setIsScanning(false);
     }
@@ -139,7 +197,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           <label className="flex items-center gap-1.5 text-xs text-violet-400 font-medium cursor-pointer hover:text-violet-300">
             {isScanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
             <span>{isScanning ? "Scanning..." : "Scan Receipt"}</span>
-            <input type="file" accept="image/*" capture="environment" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
+            <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
           </label>
         </div>
         <div className="relative">
@@ -161,9 +219,16 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
           <select
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === "NEW") {
+                setIsCreatingCategory(true);
+                setCategoryId("");
+              } else {
+                setCategoryId(e.target.value);
+              }
+            }}
             className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
-            required
+            required={!isCreatingCategory}
           >
             {categories.length === 0 ? (
               <option value="" disabled>No categories available</option>
@@ -174,7 +239,33 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                 </option>
               ))
             )}
+            <option value="NEW" className="text-violet-400 font-medium">+ Add New Category</option>
           </select>
+          
+          {/* Inline Category Creator */}
+          <AnimatePresence>
+            {isCreatingCategory && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }} 
+                animate={{ height: "auto", opacity: 1 }} 
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden mt-2"
+              >
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={newCategoryName} 
+                    onChange={e => setNewCategoryName(e.target.value)} 
+                    placeholder="New category name..." 
+                    autoFocus
+                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-violet-500 outline-none" 
+                  />
+                  <button type="button" onClick={handleQuickAddCategory} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 transition-colors rounded-lg text-white text-sm font-medium shadow-lg shadow-violet-500/20">Add</button>
+                  <button type="button" onClick={() => setIsCreatingCategory(false)} className="px-3 py-2 bg-slate-800 hover:bg-slate-700 transition-colors rounded-lg text-slate-300 text-sm">Cancel</button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -192,7 +283,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                 <option key={acc.id} value={acc.id}>
                   {acc.name}
                 </option>
-              ))}
+              ))!}
             </select>
           </div>
           <div>
@@ -252,6 +343,59 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       >
         {isSubmitting ? "Saving..." : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
       </button>
+
+      {/* AI Scanning Engaging Overlay - Blocks interaction & prevents data loss */}
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {isScanning && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex flex-col items-center justify-center"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", bounce: 0.5 }}
+                className="relative mb-8"
+              >
+                {/* Outer pulsing rings */}
+                <div className="absolute inset-0 rounded-full border-4 border-violet-500/20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                <div className="absolute inset-[-20px] rounded-full border-2 border-fuchsia-500/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite_0.5s]" />
+                
+                {/* Center orb */}
+                <div className="relative bg-gradient-to-br from-violet-600 to-fuchsia-600 h-24 w-24 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 rounded-full border-t-2 border-r-2 border-white/30"
+                  />
+                  <Sparkles className="h-10 w-10 text-white animate-pulse" />
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-center space-y-3 px-6"
+              >
+                <h3 className="text-2xl font-bold text-white tracking-tight">AI Vision Engine</h3>
+                <div className="flex items-center justify-center gap-2 text-violet-300">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <p className="text-sm font-medium">Extracting totals and itemizing receipt...</p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </form>
   );
 }

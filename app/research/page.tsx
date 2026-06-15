@@ -236,141 +236,164 @@ function ResearchContent() {
               <p className="text-sm text-slate-400">{searchQuery ? "Try searching for a different keyword." : (activeTopicId ? "Move items here from your inbox." : "Save links or notes to see them here.")}</p>
             </div>
           ) : (
-            <motion.div layout className={view === "grid" ? "columns-1 sm:columns-2 lg:columns-3 gap-4" : "space-y-4"}>
-              <AnimatePresence mode="popLayout">
-              {displayedItems.sort((a, b) => Number(b.isPinned) - Number(a.isPinned)).map(item => {
-                const isImage = item.type === "image" || item.type === "screenshot";
-                const isQuote = item.type === "quote";
-                const isNote = item.type === "note" || item.type === "text";
-                const isLink = item.type === "link";
-                const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
+            <div className="space-y-8">
+              {/* Separate Pinned and Unpinned Items */}
+              {(() => {
+                const pinnedItems = displayedItems.filter(i => i.isPinned);
+                const otherItems = displayedItems.filter(i => !i.isPinned);
+                
+                const renderMasonry = (itemsToRender: typeof displayedItems) => (
+                  <motion.div layout className={view === "grid" ? "columns-1 sm:columns-2 lg:columns-3 gap-4" : "space-y-4"}>
+                    <AnimatePresence mode="popLayout">
+                    {itemsToRender.map(item => {
+                      const isImage = item.type === "image" || item.type === "screenshot";
+                      const isQuote = item.type === "quote";
+                      const isNote = item.type === "note" || item.type === "text";
+                      const isLink = item.type === "link";
+                      const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
-                return (
-                  <AnimatedCard key={item.id} className={`${view === "grid" ? "mb-4 inline-block w-full" : "w-full"} break-inside-avoid relative group p-4 bg-slate-900/60 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.1)]' : 'border-slate-800'} rounded-2xl flex flex-col justify-between overflow-hidden transition-colors hover:border-slate-700`}>
-                    
-                    {/* Action Bar (Top Right) */}
-                    <div className="absolute top-3 right-3 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10">
-                      <button 
-                        onClick={() => {
-                          addReminder({
-                            id: crypto.randomUUID(),
-                            title: `Review: ${item.title || "Research Item"}`,
-                            priority: "medium",
-                            contextTags: ["research"],
-                            isRecurring: false,
-                            status: "pending",
-                            dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(), // Tomorrow
-                            linkedItemId: item.id,
-                            linkedItemType: "research"
-                          });
-                          vibrate([50]);
-                        }}
-                        className="p-1.5 bg-slate-800/80 backdrop-blur-md text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 rounded-full transition-colors"
-                        title="Remind me tomorrow"
-                      >
-                        <Bell className="h-3.5 w-3.5" />
-                      </button>
-                      <button 
-                        onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
-                        className={`p-1.5 rounded-full backdrop-blur-md ${item.isPinned ? 'bg-violet-500/80 text-white' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'}`}
-                      >
-                        <Pin className="h-3.5 w-3.5" />
-                      </button>
-                      <button 
-                        onClick={() => deleteItem(item.id)}
-                        className="p-1.5 bg-slate-800/80 backdrop-blur-md text-red-400 hover:bg-red-500/20 rounded-full"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center gap-2 mb-3 pr-16">
-                        <div className="p-2 bg-violet-500/20 text-violet-400 rounded-lg shrink-0">
-                          {isLink && <Link2 className="h-4 w-4" />}
-                          {isNote && <FileText className="h-4 w-4" />}
-                          {isImage && <div className="h-4 w-4 rounded-sm border-2 border-violet-400" />}
-                          {isQuote && <div className="h-4 w-4 font-serif italic font-bold text-center leading-none">"</div>}
-                        </div>
-                        {item.domain && (
-                          <div className="flex items-center gap-1.5 overflow-hidden">
-                            <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-4 h-4 rounded-sm" alt="" />
-                            <span className="text-xs font-medium text-slate-400 truncate">{item.domain}</span>
+                      return (
+                        <AnimatedCard key={item.id} className={`${view === "grid" ? "mb-4 inline-block w-full" : "w-full"} break-inside-avoid relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
+                          
+                          {/* Action Bar (Top Right) */}
+                          <div className={`absolute top-3 right-3 flex gap-2 transition-opacity z-10 ${item.isPinned ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
+                            <button 
+                              onClick={() => {
+                                addReminder({
+                                  id: crypto.randomUUID(),
+                                  title: `Review: ${item.title || "Research Item"}`,
+                                  priority: "medium",
+                                  contextTags: ["research"],
+                                  isRecurring: false,
+                                  status: "pending",
+                                  dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(),
+                                  linkedItemId: item.id,
+                                  linkedItemType: "research"
+                                });
+                                vibrate([50]);
+                              }}
+                              className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-blue-400 rounded-full transition-colors"
+                              title="Remind me tomorrow"
+                            >
+                              <Bell className="h-4 w-4" />
+                            </button>
+                            <button 
+                              onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
+                              className={`p-2 rounded-full backdrop-blur-md transition-colors ${item.isPinned ? 'bg-violet-500 text-white' : 'bg-slate-900/80 text-slate-400 hover:text-white'}`}
+                            >
+                              <Pin className="h-4 w-4" />
+                            </button>
+                            <button 
+                              onClick={() => deleteItem(item.id)}
+                              className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-red-400 rounded-full transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
-                        )}
-                        {item.topicId && searchQuery && (
-                          <span className="ml-auto text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate max-w-[80px]">
-                            {topics.find(t => t.id === item.topicId)?.title}
-                          </span>
-                        )}
-                      </div>
 
-                      {item.imageUrl && (isImage || isLink) ? (
-                        <div className="mb-3 rounded-xl overflow-hidden bg-slate-800 relative aspect-video">
-                          <img src={item.imageUrl} alt={item.title || "Image"} className="object-cover w-full h-full" />
-                        </div>
-                      ) : null}
+                          {/* Flush Image at the Top */}
+                          {item.imageUrl && (isImage || isLink) && (
+                            <div className="w-full relative max-h-64 overflow-hidden border-b border-slate-800/50 bg-slate-950">
+                              <img src={item.imageUrl} alt={item.title || "Image"} className="w-full object-cover" style={{ objectPosition: "top" }} />
+                            </div>
+                          )}
 
-                      {isQuote ? (
-                        <blockquote className="text-lg text-slate-200 font-serif italic mb-3 border-l-2 border-violet-500/30 pl-3 py-1 pr-12">
-                          "{item.content}"
-                        </blockquote>
-                      ) : (
-                        <>
-                          <h3 className="text-white font-medium mb-1.5 leading-snug line-clamp-2 pr-12">{item.title}</h3>
-                          {item.content && !isImage && <p className="text-sm text-slate-400 line-clamp-3">{item.content}</p>}
-                        </>
-                      )}
+                          {/* Content Area */}
+                          <div className="p-5">
+                            <div className="flex items-center gap-2 mb-3 pr-24">
+                              {item.domain && (
+                                <div className="flex items-center gap-1.5 overflow-hidden bg-slate-800/50 px-2 py-1 rounded-md">
+                                  <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-3.5 h-3.5 rounded-sm" alt="" />
+                                  <span className="text-xs font-medium text-slate-300 truncate">{item.domain}</span>
+                                </div>
+                              )}
+                              {item.topicId && searchQuery && (
+                                <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider truncate max-w-[80px]">
+                                  {topics.find(t => t.id === item.topicId)?.title}
+                                </span>
+                              )}
+                            </div>
 
-                      {/* OCR Text Display (Collapsed Snippet) */}
-                      {item.ocrText && (
-                        <div className="mt-2 p-2 bg-slate-950/50 rounded-lg border border-slate-800/50">
-                          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-wider">Extracted Text</p>
-                          <p className="text-xs text-slate-400 line-clamp-2 italic">"{item.ocrText}"</p>
-                        </div>
-                      )}
+                            {isQuote ? (
+                              <blockquote className="text-lg text-slate-200 font-serif italic mb-3 border-l-4 border-violet-500/50 pl-4 py-1 pr-4">
+                                "{item.content}"
+                              </blockquote>
+                            ) : (
+                              <>
+                                <h3 className={`text-white font-medium mb-2 leading-snug ${view === "grid" ? "text-lg" : "text-xl"} pr-10`}>{item.title}</h3>
+                                {item.content && !isImage && <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">{item.content}</p>}
+                              </>
+                            )}
 
-                      {item.url && isLink && (
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 mt-3 w-fit">
-                          Visit Link <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
+                            {/* OCR Text Display */}
+                            {item.ocrText && (
+                              <div className="mt-4 p-3 bg-slate-950/40 rounded-xl border border-slate-800/50">
+                                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1.5 tracking-wider flex items-center gap-1"><FileText className="h-3 w-3" /> Extracted Text</p>
+                                <p className="text-xs text-slate-400 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
+                              </div>
+                            )}
 
-                      {/* Topic Auto-Suggest Pills */}
-                      {!item.topicId && !searchQuery && (
-                        <div className="mt-4 pt-3 border-t border-slate-800/50">
-                          <p className="text-[10px] text-slate-500 font-medium mb-2 uppercase tracking-wider">Suggest filing to:</p>
-                          <div className="flex flex-wrap gap-2 items-center">
-                            {suggestedTopics.map(t => (
-                              <button 
-                                key={t.id} 
-                                onClick={() => updateItem(item.id, { topicId: t.id })}
-                                className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 bg-slate-800 hover:bg-violet-500/20 hover:text-violet-300 text-slate-300 rounded-md transition-colors border border-slate-700/50"
-                              >
-                                {t.title} <ArrowRight className="h-3 w-3 opacity-50" />
-                              </button>
-                            ))}
-                            {topics.length > suggestedTopics.length && (
-                              <select 
-                                className="bg-transparent border border-slate-700/50 text-[11px] font-medium text-slate-400 rounded-md px-2 py-1 outline-none focus:border-violet-500"
-                                value=""
-                                onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
-                              >
-                                <option value="" disabled>More...</option>
-                                {topics.filter(t => !suggestedTopics.find(s => s.id === t.id)).map(t => (
-                                  <option key={t.id} value={t.id}>{t.title}</option>
-                                ))}
-                              </select>
+                            {item.url && isLink && (
+                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mt-4 text-xs font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-3 py-1.5 rounded-lg transition-colors">
+                                Visit Link <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+
+                            {/* Topic Auto-Suggest Pills */}
+                            {!item.topicId && !searchQuery && (
+                              <div className="mt-5 pt-4 border-t border-slate-800/50">
+                                <p className="text-[10px] text-slate-500 font-medium mb-2.5 uppercase tracking-wider">Suggest filing to:</p>
+                                <div className="flex flex-wrap gap-2 items-center">
+                                  {suggestedTopics.map(t => (
+                                    <button 
+                                      key={t.id} 
+                                      onClick={() => updateItem(item.id, { topicId: t.id })}
+                                      className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 bg-slate-800 hover:bg-violet-500 text-slate-300 hover:text-white rounded-lg transition-colors"
+                                    >
+                                      {t.title} <ArrowRight className="h-3 w-3 opacity-50" />
+                                    </button>
+                                  ))}
+                                  {topics.length > suggestedTopics.length && (
+                                    <select 
+                                      className="bg-transparent border border-slate-700 text-xs font-medium text-slate-400 rounded-lg px-2 py-1.5 outline-none focus:border-violet-500"
+                                      value=""
+                                      onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
+                                    >
+                                      <option value="" disabled>More...</option>
+                                      {topics.filter(t => !suggestedTopics.find(s => s.id === t.id)).map(t => (
+                                        <option key={t.id} value={t.id}>{t.title}</option>
+                                      ))}
+                                    </select>
+                                  )}
+                                </div>
+                              </div>
                             )}
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  </AnimatedCard>
+                        </AnimatedCard>
+                      );
+                    })}
+                    </AnimatePresence>
+                  </motion.div>
                 );
-              })}
-              </AnimatePresence>
-            </motion.div>
+
+                return (
+                  <>
+                    {pinnedItems.length > 0 && (
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-1">Pinned</h4>
+                        {renderMasonry(pinnedItems)}
+                      </div>
+                    )}
+                    {otherItems.length > 0 && (
+                      <div>
+                        {pinnedItems.length > 0 && <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 mt-6 px-1">Others</h4>}
+                        {renderMasonry(otherItems)}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
           )}
         </>
       )}
