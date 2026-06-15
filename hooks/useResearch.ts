@@ -67,7 +67,7 @@ export function useResearch() {
           const preview = await res.json();
           // Update only if it doesn't already have a title/image explicitly provided
           const updates: Partial<SavedItemEntity> = {};
-          if (preview.title && (!newItem.title || newItem.title === "Saved Link" || newItem.title === "Shared Link")) {
+          if (preview.title && (!newItem.title || newItem.title === "Saved Item" || newItem.title === "Saved Link" || newItem.title === "Shared Link")) {
             updates.title = preview.title;
           }
           if (preview.description && !newItem.content) {

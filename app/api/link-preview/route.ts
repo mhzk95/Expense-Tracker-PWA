@@ -10,6 +10,10 @@ export async function GET(request: Request) {
   }
 
   try {
+    let title = '';
+    let description = '';
+    let image = '';
+
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -21,25 +25,30 @@ export async function GET(request: Request) {
     });
 
     if (!res.ok) {
-      console.warn(`Link preview blocked by target server (${res.status}): ${url}`);
-      return NextResponse.json({
-        title: '',
-        description: '',
-        image: '',
-      });
+      console.warn(`Direct fetch blocked (${res.status}): ${url}. Falling back to Microlink API.`);
+      // Fallback to Microlink API to bypass Cloudflare/WAF IP blocks
+      const mlRes = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+      if (mlRes.ok) {
+        const mlData = await mlRes.json();
+        if (mlData.status === 'success' && mlData.data) {
+          title = mlData.data.title || '';
+          description = mlData.data.description || '';
+          image = mlData.data.image?.url || mlData.data.logo?.url || '';
+        }
+      }
+    } else {
+      const html = await res.text();
+      const $ = cheerio.load(html);
+
+      const getMetaTag = (name: string) => 
+        $(`meta[property='og:${name}']`).attr('content') ||
+        $(`meta[name='twitter:${name}']`).attr('content') ||
+        $(`meta[name='${name}']`).attr('content');
+
+      title = getMetaTag('title') || $('title').text() || '';
+      description = getMetaTag('description') || '';
+      image = getMetaTag('image') || '';
     }
-
-    const html = await res.text();
-    const $ = cheerio.load(html);
-
-    const getMetaTag = (name: string) => 
-      $(`meta[property='og:${name}']`).attr('content') ||
-      $(`meta[name='twitter:${name}']`).attr('content') ||
-      $(`meta[name='${name}']`).attr('content');
-
-    const title = getMetaTag('title') || $('title').text() || '';
-    const description = getMetaTag('description') || '';
-    const image = getMetaTag('image') || '';
 
     return NextResponse.json({
       title: title.trim(),
