@@ -103,7 +103,7 @@ export const BOTTOM_NAV_ITEMS = [
   { id: "dashboard", label: "Home", href: "/", icon: "LayoutDashboard" },
   { id: "transactions", label: "Transactions", href: "/transactions", icon: "ArrowLeftRight" },
   { id: "journal", label: "Journal", href: "/journal", icon: "BookImage" },
-  { id: "analytics", label: "Analytics", href: "/analytics", icon: "BarChart3" },
+  { id: "research", label: "Research", href: "/research", icon: "Link2" },
   { id: "more", label: "More", href: "#more", icon: "Menu" },
 ] as const;
 

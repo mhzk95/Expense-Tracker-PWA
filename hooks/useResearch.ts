@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getDB, ResearchTopicEntity, SavedItemEntity } from "@/lib/db/indexeddb";
+import { getDB, ResearchTopicEntity, SavedItemEntity, pushSyncAction } from "@/lib/db/indexeddb";
 
 export function useResearch() {
   const [topics, setTopics] = useState<ResearchTopicEntity[]>([]);
@@ -36,7 +36,9 @@ export function useResearch() {
   const addTopic = async (topic: Omit<ResearchTopicEntity, "createdAt" | "updatedAt" | "isDeleted">) => {
     const db = await getDB();
     const now = new Date().toISOString();
-    await db.put("researchTopics", { ...topic, isDeleted: false, createdAt: now, updatedAt: now });
+    const newTopic = { ...topic, isDeleted: false, createdAt: now, updatedAt: now };
+    await db.put("researchTopics", newTopic);
+    await pushSyncAction("RESEARCH_TOPIC", "CREATE", newTopic);
     fetchData();
     window.dispatchEvent(new CustomEvent("db:research:changed"));
   };
@@ -56,6 +58,7 @@ export function useResearch() {
     };
     
     await db.put("savedItems", newItem);
+    await pushSyncAction("SAVED_ITEM", "CREATE", newItem);
     fetchData();
     window.dispatchEvent(new CustomEvent("db:research:changed"));
 
@@ -107,7 +110,9 @@ export function useResearch() {
     const db = await getDB();
     const existing = await db.get("researchTopics", id);
     if (!existing) return;
-    await db.put("researchTopics", { ...existing, ...updates, updatedAt: new Date().toISOString() });
+    const updatedTopic = { ...existing, ...updates, updatedAt: new Date().toISOString() };
+    await db.put("researchTopics", updatedTopic);
+    await pushSyncAction("RESEARCH_TOPIC", "UPDATE", updatedTopic);
     fetchData();
     window.dispatchEvent(new CustomEvent("db:research:changed"));
   };
@@ -116,7 +121,9 @@ export function useResearch() {
     const db = await getDB();
     const existing = await db.get("savedItems", id);
     if (!existing) return;
-    await db.put("savedItems", { ...existing, ...updates, updatedAt: new Date().toISOString() });
+    const updatedItem = { ...existing, ...updates, updatedAt: new Date().toISOString() };
+    await db.put("savedItems", updatedItem);
+    await pushSyncAction("SAVED_ITEM", "UPDATE", updatedItem);
     fetchData();
     window.dispatchEvent(new CustomEvent("db:research:changed"));
   };

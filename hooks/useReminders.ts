@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getDB, ReminderEntity } from "@/lib/db/indexeddb";
+import { getDB, ReminderEntity, pushSyncAction } from "@/lib/db/indexeddb";
 
 export function useReminders() {
   const [reminders, setReminders] = useState<ReminderEntity[]>([]);
@@ -40,6 +40,7 @@ export function useReminders() {
       updatedAt: now,
     };
     await db.put("reminders", newItem);
+    await pushSyncAction("REMINDER", "CREATE", newItem);
     fetchReminders();
     window.dispatchEvent(new CustomEvent("db:reminders:changed"));
   };
@@ -55,6 +56,7 @@ export function useReminders() {
       updatedAt: new Date().toISOString(),
     };
     await db.put("reminders", updated);
+    await pushSyncAction("REMINDER", "UPDATE", updated);
     fetchReminders();
     window.dispatchEvent(new CustomEvent("db:reminders:changed"));
   };

@@ -242,139 +242,191 @@ function ResearchContent() {
                 const pinnedItems = displayedItems.filter(i => i.isPinned);
                 const otherItems = displayedItems.filter(i => !i.isPinned);
                 
-                const renderMasonry = (itemsToRender: typeof displayedItems) => (
-                  <motion.div layout className={view === "grid" ? "columns-1 sm:columns-2 lg:columns-3 gap-4" : "space-y-4"}>
-                    <AnimatePresence mode="popLayout">
-                    {itemsToRender.map(item => {
-                      const isImage = item.type === "image" || item.type === "screenshot";
-                      const isQuote = item.type === "quote";
-                      const isNote = item.type === "note" || item.type === "text";
-                      const isLink = item.type === "link";
-                      const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
+                const renderMasonry = (itemsToRender: typeof displayedItems) => {
+                  const renderCard = (item: typeof displayedItems[0]) => {
+                    const isImage = item.type === "image" || item.type === "screenshot";
+                    const isQuote = item.type === "quote";
+                    const isNote = item.type === "note" || item.type === "text";
+                    const isLink = item.type === "link";
+                    const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
-                      return (
-                        <AnimatedCard key={item.id} className={`${view === "grid" ? "mb-4 inline-block w-full" : "w-full"} break-inside-avoid relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
-                          
-                          {/* Action Bar (Top Right) */}
-                          <div className={`absolute top-3 right-3 flex gap-2 transition-opacity z-10 ${item.isPinned ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
-                            <button 
-                              onClick={() => {
-                                addReminder({
-                                  id: crypto.randomUUID(),
-                                  title: `Review: ${item.title || "Research Item"}`,
-                                  priority: "medium",
-                                  contextTags: ["research"],
-                                  isRecurring: false,
-                                  status: "pending",
-                                  dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(),
-                                  linkedItemId: item.id,
-                                  linkedItemType: "research"
-                                });
-                                vibrate([50]);
-                              }}
-                              className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-blue-400 rounded-full transition-colors"
-                              title="Remind me tomorrow"
-                            >
-                              <Bell className="h-4 w-4" />
-                            </button>
-                            <button 
-                              onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
-                              className={`p-2 rounded-full backdrop-blur-md transition-colors ${item.isPinned ? 'bg-violet-500 text-white' : 'bg-slate-900/80 text-slate-400 hover:text-white'}`}
-                            >
-                              <Pin className="h-4 w-4" />
-                            </button>
-                            <button 
-                              onClick={() => deleteItem(item.id)}
-                              className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-red-400 rounded-full transition-colors"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                    return (
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "w-full" : "w-full"} relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-xl sm:rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
+                        
+                        {/* Action Bar (Top Right) */}
+                        <div className={`absolute top-3 right-3 flex gap-2 transition-opacity z-10 ${item.isPinned ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
+                          <button 
+                            onClick={() => {
+                              addReminder({
+                                id: crypto.randomUUID(),
+                                title: `Review: ${item.title || "Research Item"}`,
+                                priority: "medium",
+                                contextTags: ["research"],
+                                isRecurring: false,
+                                status: "pending",
+                                dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(),
+                                linkedItemId: item.id,
+                                linkedItemType: "research"
+                              });
+                              vibrate([50]);
+                            }}
+                            className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-blue-400 rounded-full transition-colors shadow-sm"
+                            title="Remind me tomorrow"
+                          >
+                            <Bell className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
+                            className={`p-2 rounded-full backdrop-blur-md transition-colors shadow-sm ${item.isPinned ? 'bg-violet-500 text-white' : 'bg-slate-900/80 text-slate-400 hover:text-white'}`}
+                          >
+                            <Pin className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => deleteItem(item.id)}
+                            className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-red-400 rounded-full transition-colors shadow-sm"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        {/* Flush Image at the Top */}
+                        {item.imageUrl && (isImage || isLink) && (
+                          <div className="w-full relative max-h-48 sm:max-h-64 overflow-hidden border-b border-slate-800/50 bg-slate-950">
+                            <img src={item.imageUrl} alt={item.title || "Image"} className="w-full object-cover" style={{ objectPosition: "top" }} />
+                          </div>
+                        )}
+
+                        {/* Content Area */}
+                        <div className="p-3 sm:p-5">
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 pr-16 sm:pr-24">
+                            {item.domain && (
+                              <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden bg-slate-800/50 px-1.5 sm:px-2 py-1 rounded-md">
+                                <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm" alt="" />
+                                <span className="text-[10px] sm:text-xs font-medium text-slate-300 truncate">{item.domain}</span>
+                              </div>
+                            )}
+                            {item.topicId && searchQuery && (
+                              <span className="text-[9px] sm:text-[10px] font-bold text-violet-400 uppercase tracking-wider truncate max-w-[60px] sm:max-w-[80px]">
+                                {topics.find(t => t.id === item.topicId)?.title}
+                              </span>
+                            )}
                           </div>
 
-                          {/* Flush Image at the Top */}
-                          {item.imageUrl && (isImage || isLink) && (
-                            <div className="w-full relative max-h-64 overflow-hidden border-b border-slate-800/50 bg-slate-950">
-                              <img src={item.imageUrl} alt={item.title || "Image"} className="w-full object-cover" style={{ objectPosition: "top" }} />
+                          {isQuote ? (
+                            <blockquote className="text-sm sm:text-lg text-slate-200 font-serif italic mb-2 sm:mb-3 border-l-4 border-violet-500/50 pl-3 py-1 pr-2 line-clamp-4">
+                              "{item.content}"
+                            </blockquote>
+                          ) : (
+                            <>
+                              <h3 className={`text-white font-medium mb-1.5 sm:mb-2 leading-snug ${view === "grid" ? "text-sm sm:text-lg line-clamp-2" : "text-base sm:text-xl"} pr-6 sm:pr-10`}>{item.title}</h3>
+                              {item.content && !isImage && <p className={`text-xs sm:text-sm text-slate-400 leading-relaxed whitespace-pre-wrap ${view === "grid" ? "line-clamp-3 sm:line-clamp-4" : ""}`}>{item.content}</p>}
+                            </>
+                          )}
+
+                          {/* OCR Text Display */}
+                          {item.ocrText && (
+                            <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-slate-950/40 rounded-xl border border-slate-800/50">
+                              <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold mb-1 sm:mb-1.5 tracking-wider flex items-center gap-1"><FileText className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> Extracted Text</p>
+                              <p className="text-[10px] sm:text-xs text-slate-400 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
                             </div>
                           )}
 
-                          {/* Content Area */}
-                          <div className="p-5">
-                            <div className="flex items-center gap-2 mb-3 pr-24">
-                              {item.domain && (
-                                <div className="flex items-center gap-1.5 overflow-hidden bg-slate-800/50 px-2 py-1 rounded-md">
-                                  <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-3.5 h-3.5 rounded-sm" alt="" />
-                                  <span className="text-xs font-medium text-slate-300 truncate">{item.domain}</span>
-                                </div>
-                              )}
-                              {item.topicId && searchQuery && (
-                                <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider truncate max-w-[80px]">
-                                  {topics.find(t => t.id === item.topicId)?.title}
-                                </span>
-                              )}
+                          {item.url && isLink && (
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mt-3 sm:mt-4 text-[10px] sm:text-xs font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-colors">
+                              Visit Link <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            </a>
+                          )}
+
+                          {/* Topic Auto-Suggest Pills */}
+                          {!item.topicId && !searchQuery && (
+                            <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-800/50">
+                              <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium mb-2 sm:mb-2.5 uppercase tracking-wider">Suggest filing to:</p>
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
+                                {suggestedTopics.map(t => (
+                                  <button 
+                                    key={t.id} 
+                                    onClick={() => updateItem(item.id, { topicId: t.id })}
+                                    className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-medium px-2 py-1 sm:px-2.5 sm:py-1.5 bg-slate-800 hover:bg-violet-500 text-slate-300 hover:text-white rounded-lg transition-colors"
+                                  >
+                                    {t.title} <ArrowRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-50" />
+                                  </button>
+                                ))}
+                                {topics.length > suggestedTopics.length && (
+                                  <select 
+                                    className="bg-transparent border border-slate-700 text-[10px] sm:text-xs font-medium text-slate-400 rounded-lg px-1.5 py-1 sm:px-2 sm:py-1.5 outline-none focus:border-violet-500"
+                                    value=""
+                                    onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
+                                  >
+                                    <option value="" disabled>More...</option>
+                                    {topics.filter(t => !suggestedTopics.find(s => s.id === t.id)).map(t => (
+                                      <option key={t.id} value={t.id}>{t.title}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
                             </div>
+                          )}
+                        </div>
+                      </AnimatedCard>
+                    );
+                  };
 
-                            {isQuote ? (
-                              <blockquote className="text-lg text-slate-200 font-serif italic mb-3 border-l-4 border-violet-500/50 pl-4 py-1 pr-4">
-                                "{item.content}"
-                              </blockquote>
-                            ) : (
-                              <>
-                                <h3 className={`text-white font-medium mb-2 leading-snug ${view === "grid" ? "text-lg" : "text-xl"} pr-10`}>{item.title}</h3>
-                                {item.content && !isImage && <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">{item.content}</p>}
-                              </>
-                            )}
+                  if (view !== "grid") {
+                    return (
+                      <motion.div layout className="space-y-4">
+                        <AnimatePresence mode="popLayout">
+                          {itemsToRender.map(renderCard)}
+                        </AnimatePresence>
+                      </motion.div>
+                    );
+                  }
 
-                            {/* OCR Text Display */}
-                            {item.ocrText && (
-                              <div className="mt-4 p-3 bg-slate-950/40 rounded-xl border border-slate-800/50">
-                                <p className="text-[10px] text-slate-500 uppercase font-bold mb-1.5 tracking-wider flex items-center gap-1"><FileText className="h-3 w-3" /> Extracted Text</p>
-                                <p className="text-xs text-slate-400 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
-                              </div>
-                            )}
+                  // 2-Column Split (Mobile)
+                  const col2_1 = itemsToRender.filter((_, i) => i % 2 === 0);
+                  const col2_2 = itemsToRender.filter((_, i) => i % 2 !== 0);
 
-                            {item.url && isLink && (
-                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mt-4 text-xs font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-3 py-1.5 rounded-lg transition-colors">
-                                Visit Link <ExternalLink className="h-3 w-3" />
-                              </a>
-                            )}
+                  // 3-Column Split (Desktop)
+                  const col3_1 = itemsToRender.filter((_, i) => i % 3 === 0);
+                  const col3_2 = itemsToRender.filter((_, i) => i % 3 === 1);
+                  const col3_3 = itemsToRender.filter((_, i) => i % 3 === 2);
 
-                            {/* Topic Auto-Suggest Pills */}
-                            {!item.topicId && !searchQuery && (
-                              <div className="mt-5 pt-4 border-t border-slate-800/50">
-                                <p className="text-[10px] text-slate-500 font-medium mb-2.5 uppercase tracking-wider">Suggest filing to:</p>
-                                <div className="flex flex-wrap gap-2 items-center">
-                                  {suggestedTopics.map(t => (
-                                    <button 
-                                      key={t.id} 
-                                      onClick={() => updateItem(item.id, { topicId: t.id })}
-                                      className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 bg-slate-800 hover:bg-violet-500 text-slate-300 hover:text-white rounded-lg transition-colors"
-                                    >
-                                      {t.title} <ArrowRight className="h-3 w-3 opacity-50" />
-                                    </button>
-                                  ))}
-                                  {topics.length > suggestedTopics.length && (
-                                    <select 
-                                      className="bg-transparent border border-slate-700 text-xs font-medium text-slate-400 rounded-lg px-2 py-1.5 outline-none focus:border-violet-500"
-                                      value=""
-                                      onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
-                                    >
-                                      <option value="" disabled>More...</option>
-                                      {topics.filter(t => !suggestedTopics.find(s => s.id === t.id)).map(t => (
-                                        <option key={t.id} value={t.id}>{t.title}</option>
-                                      ))}
-                                    </select>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </AnimatedCard>
-                      );
-                    })}
-                    </AnimatePresence>
-                  </motion.div>
-                );
+                  return (
+                    <motion.div layout>
+                      {/* Mobile 2-Column Masonry */}
+                      <div className="flex sm:hidden gap-3 items-start">
+                        <div className="flex-1 flex flex-col gap-3">
+                          <AnimatePresence mode="popLayout">
+                            {col2_1.map(renderCard)}
+                          </AnimatePresence>
+                        </div>
+                        <div className="flex-1 flex flex-col gap-3">
+                          <AnimatePresence mode="popLayout">
+                            {col2_2.map(renderCard)}
+                          </AnimatePresence>
+                        </div>
+                      </div>
+
+                      {/* Desktop 3-Column Masonry */}
+                      <div className="hidden sm:flex gap-4 items-start">
+                        <div className="flex-1 flex flex-col gap-4">
+                          <AnimatePresence mode="popLayout">
+                            {col3_1.map(renderCard)}
+                          </AnimatePresence>
+                        </div>
+                        <div className="flex-1 flex flex-col gap-4">
+                          <AnimatePresence mode="popLayout">
+                            {col3_2.map(renderCard)}
+                          </AnimatePresence>
+                        </div>
+                        <div className="flex-1 flex flex-col gap-4">
+                          <AnimatePresence mode="popLayout">
+                            {col3_3.map(renderCard)}
+                          </AnimatePresence>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                };
 
                 return (
                   <>

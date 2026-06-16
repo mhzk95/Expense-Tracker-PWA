@@ -1,4 +1,4 @@
-import { getDB, VaultEntity } from "./indexeddb";
+import { getDB, VaultEntity, pushSyncAction } from "./indexeddb";
 
 export const vaultRepository = {
   async getAll(): Promise<VaultEntity[]> {
@@ -17,6 +17,7 @@ export const vaultRepository = {
     };
     
     await db.put("vaultEntries", newEntry);
+    await pushSyncAction("VAULT", "CREATE", newEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:vault:changed"));
@@ -35,6 +36,7 @@ export const vaultRepository = {
     };
 
     await db.put("vaultEntries", updatedEntry);
+    await pushSyncAction("VAULT", "UPDATE", updatedEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:vault:changed"));
@@ -53,6 +55,7 @@ export const vaultRepository = {
     };
 
     await db.put("vaultEntries", deletedEntry);
+    await pushSyncAction("VAULT", "DELETE", deletedEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:vault:changed"));

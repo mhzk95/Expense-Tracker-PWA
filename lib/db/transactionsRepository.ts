@@ -1,4 +1,4 @@
-import { getDB, TransactionEntity } from "./indexeddb";
+import { getDB, TransactionEntity, pushSyncAction } from "./indexeddb";
 
 export const transactionsRepository = {
   async getAll(): Promise<TransactionEntity[]> {
@@ -39,6 +39,7 @@ export const transactionsRepository = {
     
     // Save locally
     await db.put("transactions", newTx);
+    await pushSyncAction("TRANSACTION", "CREATE", newTx);
 
     // Notify UI of DB change
     if (typeof window !== "undefined") {
@@ -57,6 +58,7 @@ export const transactionsRepository = {
     };
 
     await db.put("transactions", updatedTx);
+    await pushSyncAction("TRANSACTION", "UPDATE", updatedTx);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:transactions:changed"));
@@ -74,6 +76,7 @@ export const transactionsRepository = {
     };
 
     await db.put("transactions", deletedTx);
+    await pushSyncAction("TRANSACTION", "DELETE", deletedTx);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:transactions:changed"));

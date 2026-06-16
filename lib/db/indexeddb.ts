@@ -61,11 +61,18 @@ export interface JournalEntity {
   title?: string;
   content: string;
   tags: string[];
-  photoUrls: (string | Blob)[]; // Base64 strings, telegram file_ids, or raw Blobs
+  photoUrls: any[]; // Base64 strings, telegram file_ids, or raw Blobs
   linkedTransactionId?: string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  // Enrichment fields (all optional — backward compatible)
+  mood?: string;           // e.g., "Happy 😊"
+  event?: string;          // e.g., "Dinner with friends"
+  location?: string;       // JSON string: {lat, lng, place_name, city, country}
+  audioFileId?: any;       // Now accepts string or Blob
+  audioDurationMs?: number;
+  waveformData?: number[]; // amplitude values generated client-side
 }
 
 export interface VaultEntity {
@@ -123,6 +130,18 @@ export interface ReminderEntity {
   updatedAt: string;
 }
 
+export type ActionType = "CREATE" | "UPDATE" | "DELETE" | "UPLOAD_MEDIA";
+
+export interface SyncAction {
+  id: string;
+  entity: string; // e.g., 'TRANSACTION', 'JOURNAL', 'ACCOUNT'
+  actionType: ActionType;
+  payload: any;
+  timestamp: number;
+  status: "pending" | "syncing" | "failed";
+  retryCount: number;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
   transactions: {
     key: string;
@@ -166,6 +185,11 @@ interface ExpenseTrackerDB extends DBSchema {
     key: string;
     value: any;
   };
+  sync_queue: {
+    key: string;
+    value: SyncAction;
+    indexes: { "by-timestamp": number };
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
@@ -176,7 +200,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 8, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 10, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -234,6 +258,16 @@ export function getDB() {
             db.createObjectStore('reminders', { keyPath: 'id' });
           }
         }
+        if (oldVersion < 9) {
+          // No new object stores needed — JournalEntity fields are just optional properties.
+          // IndexedDB schema is schemaless for object values, so existing entries remain valid.
+        }
+        if (oldVersion < 10) {
+          if (!db.objectStoreNames.contains('sync_queue')) {
+            const syncStore = db.createObjectStore('sync_queue', { keyPath: 'id' });
+            syncStore.createIndex('by-timestamp', 'timestamp');
+          }
+        }
       },
     });
   }
@@ -253,4 +287,32 @@ export function getImageCacheDB() {
     });
   }
   return imageCacheDbPromise;
+}
+
+/**
+ * Pushes an action to the sync_queue for offline-first processing.
+ */
+export async function pushSyncAction(
+  entity: string,
+  actionType: ActionType,
+  payload: any
+): Promise<void> {
+  try {
+    const db = await getDB();
+    if (!db) return;
+
+    const action: SyncAction = {
+      id: crypto.randomUUID(),
+      entity,
+      actionType,
+      payload,
+      timestamp: Date.now(),
+      status: "pending",
+      retryCount: 0,
+    };
+
+    await db.put('sync_queue', action);
+  } catch (err) {
+    console.error("Failed to push sync action:", err);
+  }
 }

@@ -1,4 +1,4 @@
-import { getDB, AccountEntity } from "./indexeddb";
+import { getDB, AccountEntity, pushSyncAction } from "./indexeddb";
 
 export const accountsRepository = {
   async getAll(): Promise<AccountEntity[]> {
@@ -38,8 +38,8 @@ export const accountsRepository = {
       isDeleted: false,
     };
     
-    // Save locally
     await db.put("accounts", newAcc);
+    await pushSyncAction("ACCOUNT", "CREATE", newAcc);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));
@@ -57,6 +57,7 @@ export const accountsRepository = {
     };
 
     await db.put("accounts", updatedAcc);
+    await pushSyncAction("ACCOUNT", "UPDATE", updatedAcc);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));
@@ -74,6 +75,7 @@ export const accountsRepository = {
     };
 
     await db.put("accounts", deletedAcc);
+    await pushSyncAction("ACCOUNT", "DELETE", deletedAcc);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:accounts:changed"));

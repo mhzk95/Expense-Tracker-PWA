@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { syncWithCloud } from "@/lib/services/cloudSync";
+import { drainSyncQueue, pullCloudData } from "@/lib/services/cloudSync";
 
 export function useAutoSync() {
   const { data: session } = useSession();
@@ -23,8 +23,10 @@ export function useAutoSync() {
       
       syncTimeout.current = setTimeout(async () => {
         try {
-          console.log("[AutoSync] Triggering background sync...");
-          await syncWithCloud();
+          console.log("[AutoSync] Draining action queue...");
+          await drainSyncQueue();
+          console.log("[AutoSync] Pulling latest data...");
+          await pullCloudData("ALL", 500);
         } catch (error) {
           console.error("[AutoSync] Failed:", error);
         }
@@ -52,8 +54,21 @@ export function useAutoSync() {
     const handleOnline = () => triggerSync();
     window.addEventListener("online", handleOnline);
 
-    // Initial sync on app load
-    triggerSync();
+    // Initial prioritized sync on app load
+    const doInitialSync = async () => {
+      try {
+        console.log("[AutoSync] Initial priority pull (metadata)...");
+        // Pull small, critical entities first to unblock the UI instantly
+        await pullCloudData("accounts,categories,budgets,reminders", 1000);
+        
+        // Then start the normal drain + full pull
+        triggerSync();
+      } catch (e) {
+        console.error("Initial sync failed", e);
+      }
+    };
+    
+    doInitialSync();
 
     return () => {
       if (syncTimeout.current) clearTimeout(syncTimeout.current);

@@ -1,4 +1,4 @@
-import { getDB, CategoryEntity } from "./indexeddb";
+import { getDB, CategoryEntity, pushSyncAction } from "./indexeddb";
 import { generateId } from "../utils/helpers";
 
 class CategoriesRepository {
@@ -24,6 +24,7 @@ class CategoriesRepository {
     };
 
     await db.put("categories", newCategory);
+    await pushSyncAction("CATEGORY", "CREATE", newCategory);
 
     // Trigger local events
     if (typeof window !== "undefined") {
@@ -45,6 +46,7 @@ class CategoriesRepository {
     };
 
     await db.put("categories", updatedCategory);
+    await pushSyncAction("CATEGORY", "UPDATE", updatedCategory);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:categories:changed"));
@@ -65,6 +67,7 @@ class CategoriesRepository {
     };
 
     await db.put("categories", updatedCategory);
+    await pushSyncAction("CATEGORY", "DELETE", updatedCategory);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:categories:changed"));

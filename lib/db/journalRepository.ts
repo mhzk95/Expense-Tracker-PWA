@@ -1,4 +1,4 @@
-import { getDB, JournalEntity } from "./indexeddb";
+import { getDB, JournalEntity, pushSyncAction } from "./indexeddb";
 
 export const journalRepository = {
   async getAll(): Promise<JournalEntity[]> {
@@ -40,6 +40,7 @@ export const journalRepository = {
     };
     
     await db.put("journalEntries", newEntry);
+    await pushSyncAction("JOURNAL", "CREATE", newEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:journal:changed"));
@@ -58,6 +59,7 @@ export const journalRepository = {
     };
 
     await db.put("journalEntries", updatedEntry);
+    await pushSyncAction("JOURNAL", "UPDATE", updatedEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:journal:changed"));
@@ -76,6 +78,7 @@ export const journalRepository = {
     };
 
     await db.put("journalEntries", deletedEntry);
+    await pushSyncAction("JOURNAL", "DELETE", deletedEntry);
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("db:journal:changed"));
