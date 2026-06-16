@@ -61,7 +61,10 @@ export default function TransactionsPage() {
 
               return (
                 <SwipeToDelete key={txn.id} onDelete={() => deleteTransaction(txn.id)}>
-                  <div className="flex items-center gap-4 px-5 py-4 w-full">
+                  <div className={cn(
+                    "flex items-center gap-4 px-5 py-4 w-full transition-all duration-300",
+                    txn.needsReview && "border-l-[3px] border-amber-500/80 bg-gradient-to-r from-amber-500/5 to-transparent shadow-[-4px_0_15px_-5px_rgba(245,158,11,0.3)]"
+                  )}>
                     {/* Icon */}
                     <div
                       className={cn(

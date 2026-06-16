@@ -42,10 +42,10 @@ export default function AccountsPage() {
   const { transactions } = useTransactions();
   const [editingAccount, setEditingAccount] = useState<any>(null);
 
-  const totalAssets = accounts.filter((a) => a.balance > 0 && a.includeInNetWorth)
+  const totalAssets = accounts.filter((a) => a.balance > 0 && a.includeInNetWorth && !a.excludeFromNetWorth)
     .reduce((s, a) => s + a.balance, 0);
   const totalLiabilities = Math.abs(
-    accounts.filter((a) => a.balance < 0 && a.includeInNetWorth)
+    accounts.filter((a) => a.balance < 0 && a.includeInNetWorth && !a.excludeFromNetWorth)
       .reduce((s, a) => s + a.balance, 0)
   );
   const netWorth = totalAssets - totalLiabilities;

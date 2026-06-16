@@ -12,6 +12,7 @@ export interface TransactionEntity {
   accountId?: string;
   toAccountId?: string;
   status?: string;
+  needsReview?: boolean;
   isDeleted: boolean;
 }
 
@@ -27,6 +28,7 @@ export interface AccountEntity {
   color?: string;
   icon?: string;
   includeInNetWorth: boolean;
+  excludeFromNetWorth?: boolean;
   isDefault: boolean;
   isDeleted: boolean;
 }

@@ -118,10 +118,15 @@ export async function drainSyncQueue() {
                   if (file_id) {
                     action.payload.photoUrls[i] = `telegram:${file_id}`;
                     updated = true;
+                  } else {
+                    throw new Error("No file_id returned from upload");
                   }
+                } else {
+                  throw new Error(`Upload failed with status ${upRes.status}`);
                 }
               } catch (e) {
                 console.error("Failed to upload photo to telegram CDN", e);
+                throw e; // Halt sync queue
               }
             }
           }
@@ -139,10 +144,15 @@ export async function drainSyncQueue() {
               if (file_id) {
                 action.payload.audioFileId = `telegram:${file_id}`;
                 updated = true;
+              } else {
+                throw new Error("No file_id returned from upload");
               }
+            } else {
+              throw new Error(`Upload failed with status ${upRes.status}`);
             }
           } catch (e) {
             console.error("Failed to upload audio to telegram CDN", e);
+            throw e; // Halt sync queue
           }
         }
 

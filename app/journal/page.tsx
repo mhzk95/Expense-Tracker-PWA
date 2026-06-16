@@ -1,18 +1,5 @@
 "use client";
 
-/**
- * Journal Page — "AI Memory Journal" redesign
- *
- * Timeline-based feed grouped by date, with:
- * - Cover image (flush, 4:3)
- * - Audio player with static waveform
- * - Mood / event / location badges
- * - Inline tag chips
- *
- * Preserves all existing architecture: IndexedDB local-first,
- * Telegram CDN for media, Supabase via /api/sync.
- */
-
 import { useState, useRef, useEffect } from "react";
 import { useJournal } from "@/hooks/useJournal";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -32,26 +19,33 @@ import {
   Trash2,
   Link as LinkIcon,
   MoreVertical,
-  ChevronDown,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/helpers";
 
 // ─── Audio Player ─────────────────────────────────────────────────────────────
 
 function AudioPlayer({ fileId, durationMs, waveformData }: {
-  fileId: string;
+  fileId: any;
   durationMs?: number;
   waveformData?: number[];
 }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [src, setSrc] = useState<string>("");
 
-  const telegramFileId = fileId.replace("telegram:", "");
+  useEffect(() => {
+    if (fileId instanceof Blob) {
+      setSrc(URL.createObjectURL(fileId));
+    } else if (typeof fileId === "string") {
+      const telegramFileId = fileId.replace("telegram:", "");
+      setSrc(`/api/image/${encodeURIComponent(telegramFileId)}`);
+    }
+  }, [fileId]);
 
   const toggle = async () => {
+    if (!src) return;
     if (!audioRef.current) {
-      const src = `/api/image/${encodeURIComponent(telegramFileId)}`;
       audioRef.current = new Audio(src);
       audioRef.current.ontimeupdate = () => {
         const dur = audioRef.current!.duration || (durationMs ? durationMs / 1000 : 1);
@@ -70,36 +64,36 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
 
   useEffect(() => () => { audioRef.current?.pause(); }, []);
 
-  const bars = waveformData && waveformData.length > 0 ? waveformData : Array.from({ length: 40 }, () => Math.random() * 0.6 + 0.2);
-  const barCount = 40;
+  const bars = waveformData && waveformData.length > 0 ? waveformData : Array.from({ length: 24 }, () => Math.random() * 0.6 + 0.2);
+  const barCount = 24;
   const step = Math.max(1, Math.floor(bars.length / barCount));
   const displayBars = Array.from({ length: barCount }, (_, i) => bars[i * step] ?? 0.3);
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className="flex items-center gap-3 bg-slate-950/60 rounded-xl px-3 py-2.5">
+    <div className="flex items-center gap-1 sm:gap-1.5 mt-1.5 bg-slate-950/60 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1.5 border border-slate-800/40 w-fit max-w-full overflow-hidden">
       <button
-        onClick={toggle}
-        className="w-8 h-8 rounded-full bg-violet-600 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-md"
+        onClick={(e) => { e.stopPropagation(); toggle(); }}
+        className="w-5 h-5 rounded-full bg-violet-600 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-colors shadow-md"
       >
         {playing
-          ? <Pause className="w-3.5 h-3.5 text-white" />
-          : <Play className="w-3.5 h-3.5 text-white fill-white" />
+          ? <Pause className="w-2.5 h-2.5 text-white" />
+          : <Play className="w-2.5 h-2.5 text-white fill-white" />
         }
       </button>
 
       {/* Waveform bars */}
-      <div className="flex items-center gap-0.5 flex-1 h-7">
+      <div className="flex items-center gap-[1px] sm:gap-[2px] h-4">
         {displayBars.map((amp, i) => (
           <div
             key={i}
-            className={`flex-1 rounded-full transition-colors ${i < activeCount ? "bg-violet-400" : "bg-slate-700"}`}
-            style={{ height: `${Math.max(3, amp * 28)}px` }}
+            className={`w-[2px] rounded-full transition-colors ${i < activeCount ? "bg-violet-400" : "bg-slate-700"}`}
+            style={{ height: `${Math.max(3, amp * 16)}px` }}
           />
         ))}
       </div>
 
-      <span className="text-xs font-mono text-slate-500 flex-shrink-0">
+      <span className="text-[10px] font-mono text-slate-500 flex-shrink-0 ml-1">
         {formatDuration(durationMs ?? 0)}
       </span>
     </div>
@@ -113,7 +107,6 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
   linkedTxn: any;
   onDelete: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [lightbox, setLightbox] = useState(false);
 
@@ -128,72 +121,70 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
   };
 
   const locationDisplay = getLocationDisplay();
-  const contentIsLong = entry.content.length > 180;
-  const displayContent = contentIsLong && !expanded ? entry.content.slice(0, 180) + "…" : entry.content;
+  const photos = entry.photoUrls || [];
+  const tags = entry.tags || [];
 
   return (
-    <div className="flex gap-3 sm:gap-4">
-      {/* Timeline dot */}
-      <div className="flex flex-col items-center pt-1 flex-shrink-0">
-        <div className="w-2.5 h-2.5 rounded-full bg-violet-500 ring-2 ring-violet-500/30 mt-1" />
-        <div className="flex-1 w-px bg-gradient-to-b from-violet-500/30 to-transparent mt-2 min-h-[40px]" />
+    <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-5 group w-full overflow-hidden">
+      {/* Left Column: Time & Timeline Line */}
+      <div className="w-[45px] sm:w-[60px] flex-shrink-0 flex flex-col items-end relative">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end">
+          <span className="text-[9px] sm:text-[10px] font-medium text-slate-500 flex-shrink-0">{time}</span>
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-violet-500 ring-2 ring-violet-500/30 z-10 flex-shrink-0" />
+        </div>
+        {/* The continuous line extending down */}
+        <div className="absolute right-[2px] sm:right-[3px] top-5 sm:top-6 bottom-[-20px] sm:bottom-[-28px] w-px bg-slate-800/60" />
       </div>
 
-      {/* Card */}
-      <div className="flex-1 bg-slate-900/70 border border-slate-800/60 rounded-2xl overflow-hidden mb-5 hover:border-slate-700/60 transition-colors">
-        {/* Cover Image */}
-        {entry.photoUrls.length > 0 && typeof entry.photoUrls[0] === "string" && (
+      {/* Right Column: Card */}
+      <div className="flex-1 min-w-0 bg-slate-900/70 rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border border-slate-800/60 hover:border-slate-700/60 transition-colors flex gap-2 sm:gap-3 relative">
+        {/* Cover Image Thumbnail (Left) */}
+        {photos.length > 0 && (
           <div
-            className="w-full aspect-[4/3] bg-black cursor-pointer relative overflow-hidden"
+            className="w-[70px] h-[80px] sm:w-[100px] sm:h-[110px] bg-black flex-shrink-0 cursor-pointer relative rounded-lg sm:rounded-xl overflow-hidden"
             onClick={() => setLightbox(true)}
           >
             <TelegramLazyImage
-              url={entry.photoUrls[0] as string}
+              url={photos[0]}
               alt="Memory"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               entryId={entry.id}
               photoIndex={0}
             />
-            {/* Photo count badge */}
-            {entry.photoUrls.length > 1 && (
-              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full">
-                +{entry.photoUrls.length - 1}
+            {photos.length > 1 && (
+              <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-medium px-1.5 py-0.5 rounded-full">
+                +{photos.length - 1}
               </div>
             )}
           </div>
         )}
 
-        <div className="p-4">
-          {/* Header: time + mood + menu */}
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-medium text-slate-500">{time}</span>
-              {entry.mood && (
-                <span className="text-xs font-medium text-slate-300 bg-slate-800/60 px-2 py-0.5 rounded-full">
-                  {entry.mood}
-                </span>
-              )}
-            </div>
+        {/* Content (Right) */}
+        <div className="flex-1 min-w-0 py-1 pr-1">
+          {/* Title & Menu */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-white font-semibold text-sm truncate">
+              {entry.title || (entry.event || "Memory")}
+            </h3>
             <div className="relative flex-shrink-0">
               <button
                 onClick={() => setShowMenu(v => !v)}
-                className="p-1.5 text-slate-600 hover:text-slate-300 rounded-lg hover:bg-slate-800 transition-colors relative z-20"
+                className="p-0.5 text-slate-600 hover:text-slate-300 rounded-md transition-colors"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
               {showMenu && (
                 <>
-                  {/* Invisible overlay for outside click to close */}
                   <div 
                     className="fixed inset-0 z-20" 
                     onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
                   />
-                  <div className="absolute right-0 top-8 z-30 bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden min-w-[120px]">
+                  <div className="absolute right-0 top-6 z-30 bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden min-w-[100px]">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-slate-800 transition-colors"
+                      className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-slate-800 transition-colors font-medium"
                     >
-                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                      <Trash2 className="w-3 h-3" /> Delete
                     </button>
                   </div>
                 </>
@@ -201,76 +192,49 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
             </div>
           </div>
 
-          {/* Title */}
-          {entry.title && (
-            <h3 className="text-white font-semibold text-base mb-1.5">{entry.title}</h3>
-          )}
-
-          {/* Location + Event badges */}
-          {(locationDisplay || entry.event) && (
-            <div className="flex items-center gap-2 mb-2.5 flex-wrap">
-              {locationDisplay && (
-                <div className="flex items-center gap-1 text-xs text-slate-400">
-                  <MapPin className="w-3 h-3 text-violet-400" />
-                  {locationDisplay}
-                </div>
-              )}
-              {entry.event && (
-                <div className="text-xs text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded-full">
-                  {entry.event}
-                </div>
-              )}
+          {/* Location */}
+          {locationDisplay && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <MapPin className="w-3 h-3 text-violet-400 flex-shrink-0" />
+              <span className="text-[11px] text-slate-400 truncate">{locationDisplay}</span>
             </div>
           )}
 
-          {/* Content */}
+          {/* Description */}
           {entry.content && (
-            <div>
-              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                {displayContent}
-              </p>
-              {contentIsLong && (
-                <button
-                  onClick={() => setExpanded(v => !v)}
-                  className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 mt-1.5 transition-colors"
-                >
-                  {expanded ? "Show less" : "Read more"}
-                  <ChevronDown className={`w-3 h-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Audio player */}
-          {entry.audioFileId && (
-            <div className="mt-3">
-              <AudioPlayer
-                fileId={entry.audioFileId}
-                durationMs={entry.audioDurationMs}
-                waveformData={entry.waveformData}
-              />
-            </div>
+            <p className="text-[11px] text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
+              {entry.content}
+            </p>
           )}
 
           {/* Tags */}
-          {entry.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
-              {entry.tags.map(tag => (
-                <span key={tag} className="text-xs font-medium text-violet-400/80">
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {tags.map(tag => (
+                <span key={tag} className="text-[10px] font-medium text-violet-400/80 bg-violet-400/10 px-1.5 py-0.5 rounded-md border border-violet-400/20">
                   #{tag}
                 </span>
               ))}
             </div>
           )}
 
+          {/* Audio player */}
+          {entry.audioFileId && (
+            <AudioPlayer
+              fileId={entry.audioFileId}
+              durationMs={entry.audioDurationMs}
+              waveformData={entry.waveformData}
+            />
+          )}
+
           {/* Linked transaction */}
           {linkedTxn && (
-            <div className="mt-3 p-2.5 bg-slate-950/60 rounded-xl border border-slate-800/50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <LinkIcon className="w-3 h-3 text-slate-500" />
-                <span className="text-xs text-slate-400 truncate">{linkedTxn.description}</span>
+            <div className="mt-2 py-1 px-2 bg-slate-950/60 rounded-lg border border-slate-800/50 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <LinkIcon className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                <span className="text-[10px] text-slate-400 truncate">{linkedTxn.description}</span>
               </div>
-              <span className="text-xs font-bold text-white flex-shrink-0 ml-2">
+              <span className="text-[10px] font-bold text-white flex-shrink-0 ml-2">
                 {formatCurrency(linkedTxn.amount, linkedTxn.currency)}
               </span>
             </div>
@@ -288,7 +252,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
             <X className="w-5 h-5" />
           </button>
           <TelegramLazyImage
-            url={entry.photoUrls[0] as string}
+            url={photos[0]}
             alt="Full"
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             entryId={entry.id}
@@ -331,17 +295,17 @@ export default function JournalPage() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
 
-  const allTags = Array.from(new Set(entries.flatMap(e => e.tags)));
+  const allTags = Array.from(new Set(entries.flatMap(e => e.tags || [])));
 
   const filteredEntries = entries.filter(e => {
-    if (selectedTag && !e.tags.includes(selectedTag)) return false;
+    if (selectedTag && !(e.tags || []).includes(selectedTag)) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const qTag = q.replace(/^#/, "");
       if (
-        !e.content.toLowerCase().includes(q) &&
-        !e.title?.toLowerCase().includes(q) &&
-        !e.tags.some(t => t.toLowerCase().includes(qTag))
+        !(e.content || "").toLowerCase().includes(q) &&
+        !(e.title || "").toLowerCase().includes(q) &&
+        !(e.tags || []).some(t => t.toLowerCase().includes(qTag))
       ) return false;
     }
     return true;
@@ -351,7 +315,7 @@ export default function JournalPage() {
 
   return (
     <div className="min-h-screen pb-24">
-      {/* Header */}
+      {/* Header (Reverted to Old Style) */}
       <div className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/40 px-4 pt-4 pb-3">
         <div className="flex items-center justify-between mb-1">
           <div>
@@ -372,7 +336,7 @@ export default function JournalPage() {
 
         {/* Search bar (collapsible) */}
         {showSearch && (
-          <div className="relative mt-3 mb-1">
+          <div className="relative mt-3 mb-1 animate-in slide-in-from-top-2 fade-in duration-200">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               autoFocus
@@ -420,11 +384,14 @@ export default function JournalPage() {
       </div>
 
       {/* Timeline Feed */}
-      <div className="px-4 pt-6">
+      <div className="px-4 pt-6 overflow-hidden">
         {loading ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-slate-900/60 border border-slate-800/40 rounded-2xl h-48 animate-pulse" />
+              <div key={i} className="flex gap-3">
+                <div className="w-[60px] flex-shrink-0" />
+                <div className="flex-1 h-[130px] bg-slate-900/60 border border-slate-800/40 rounded-2xl animate-pulse" />
+              </div>
             ))}
           </div>
         ) : filteredEntries.length === 0 ? (
@@ -436,7 +403,7 @@ export default function JournalPage() {
             <p className="text-slate-500 text-sm mb-6">Capture your first memory with a photo, voice note, or reflection.</p>
             <button
               onClick={() => setIsFormOpen(true)}
-              className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-xl transition-colors"
+              className="px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-xl transition-colors shadow-md"
             >
               Capture a memory
             </button>
@@ -444,9 +411,9 @@ export default function JournalPage() {
         ) : (
           <div>
             {groups.map(group => (
-              <div key={group.label}>
+              <div key={group.label} className="mb-2 relative">
                 {/* Date label */}
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4 ml-[72px]">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     {group.label}
                   </span>
@@ -454,17 +421,19 @@ export default function JournalPage() {
                 </div>
 
                 {/* Entries */}
-                {group.entries.map(entry => (
-                  <EntryCard
-                    key={entry.id}
-                    entry={entry}
-                    linkedTxn={entry.linkedTransactionId
-                      ? transactions.find(t => t.id === entry.linkedTransactionId)
-                      : null
-                    }
-                    onDelete={() => deleteEntry(entry.id)}
-                  />
-                ))}
+                <div>
+                  {group.entries.map((entry, idx) => (
+                    <EntryCard
+                      key={entry.id}
+                      entry={entry}
+                      linkedTxn={entry.linkedTransactionId
+                        ? transactions.find(t => t.id === entry.linkedTransactionId)
+                        : null
+                      }
+                      onDelete={() => deleteEntry(entry.id)}
+                    />
+                  ))}
+                </div>
               </div>
             ))}
           </div>

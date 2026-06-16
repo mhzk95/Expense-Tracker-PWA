@@ -16,7 +16,7 @@ function ResearchContent() {
   const router = useRouter();
   const { items, topics, addItem, updateItem, deleteItem, addTopic } = useResearch();
   const { addReminder } = useReminders();
-  
+
   const [view, setView] = useState<"grid" | "list">("grid");
   const [activeTab, setActiveTab] = useState<"inbox" | "topics">("inbox");
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
@@ -34,13 +34,13 @@ function ResearchContent() {
     const url = searchParams.get("url");
     const text = searchParams.get("text");
     const title = searchParams.get("title");
-    
+
     if (action !== "save" || (!url && !text && !title)) return;
 
     const signature = `${url}-${text}-${title}`;
     if (processedShareUrl.current === signature) return;
     processedShareUrl.current = signature; // Ensure we only process this exact share once per mount
-    
+
     const extractUrl = (str: string | null) => {
       if (!str) return null;
       const match = str.match(/https?:\/\/[^\s]+/i);
@@ -54,11 +54,11 @@ function ResearchContent() {
     if (contentUrl) {
       try {
         domain = new URL(contentUrl).hostname.replace("www.", "");
-      } catch(e) {}
+      } catch (e) { }
     }
 
     const newItemId = crypto.randomUUID();
-    
+
     // Save immediately to ensure no data loss
     addItem({
       id: newItemId,
@@ -68,9 +68,9 @@ function ResearchContent() {
       title: title || (contentUrl ? "Shared Link" : "Shared Note"),
       content: text || ""
     } as any);
-    
+
     vibrate([50, 50]);
-    
+
     // Open the interactive Pro Clipper modal
     setShareItem({
       id: newItemId,
@@ -90,7 +90,7 @@ function ResearchContent() {
   const getSuggestedTopics = (itemTitle: string, itemContent: string) => {
     if (topics.length === 0) return [];
     const text = `${itemTitle} ${itemContent}`.toLowerCase();
-    
+
     // Very simple keyword matching for auto-suggest
     const matches = topics.map(t => {
       let score = 0;
@@ -139,9 +139,9 @@ function ResearchContent() {
       {/* Global Search Bar */}
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-        <input 
-          type="text" 
-          placeholder="Search topics, links, text, and images..." 
+        <input
+          type="text"
+          placeholder="Search topics, links, text, and images..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-slate-900/80 border border-slate-800 focus:border-violet-500 rounded-2xl py-3 pl-11 pr-10 text-white placeholder:text-slate-500 outline-none transition-all shadow-sm"
@@ -155,14 +155,14 @@ function ResearchContent() {
 
       {!searchQuery && !activeTopicId && (
         <div className="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800/60 mb-6">
-          <button 
-            onClick={() => setActiveTab("inbox")} 
+          <button
+            onClick={() => setActiveTab("inbox")}
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "inbox" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-300"}`}
           >
             <Inbox className="h-4 w-4" /> Inbox
           </button>
-          <button 
-            onClick={() => setActiveTab("topics")} 
+          <button
+            onClick={() => setActiveTab("topics")}
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "topics" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-300"}`}
           >
             <Folder className="h-4 w-4" /> Topics
@@ -181,7 +181,7 @@ function ResearchContent() {
         <div className="grid grid-cols-2 gap-4">
           {isCreatingTopic ? (
             <div className="flex flex-col items-center justify-center p-5 bg-slate-900/60 border border-violet-500 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.1)]">
-              <input 
+              <input
                 autoFocus
                 type="text"
                 value={newTopicName}
@@ -241,7 +241,7 @@ function ResearchContent() {
               {(() => {
                 const pinnedItems = displayedItems.filter(i => i.isPinned);
                 const otherItems = displayedItems.filter(i => !i.isPinned);
-                
+
                 const renderMasonry = (itemsToRender: typeof displayedItems) => {
                   const renderCard = (item: typeof displayedItems[0]) => {
                     const isImage = item.type === "image" || item.type === "screenshot";
@@ -251,11 +251,11 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "w-full" : "w-full"} relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-xl sm:rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
-                        
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-xl sm:rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
+
                         {/* Action Bar (Top Right) */}
                         <div className={`absolute top-3 right-3 flex gap-2 transition-opacity z-10 ${item.isPinned ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
-                          <button 
+                          <button
                             onClick={() => {
                               addReminder({
                                 id: crypto.randomUUID(),
@@ -275,13 +275,13 @@ function ResearchContent() {
                           >
                             <Bell className="h-4 w-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
                             className={`p-2 rounded-full backdrop-blur-md transition-colors shadow-sm ${item.isPinned ? 'bg-violet-500 text-white' : 'bg-slate-900/80 text-slate-400 hover:text-white'}`}
                           >
                             <Pin className="h-4 w-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => deleteItem(item.id)}
                             className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-red-400 rounded-full transition-colors shadow-sm"
                           >
@@ -291,8 +291,8 @@ function ResearchContent() {
 
                         {/* Flush Image at the Top */}
                         {item.imageUrl && (isImage || isLink) && (
-                          <div className="w-full relative max-h-48 sm:max-h-64 overflow-hidden border-b border-slate-800/50 bg-slate-950">
-                            <img src={item.imageUrl} alt={item.title || "Image"} className="w-full object-cover" style={{ objectPosition: "top" }} />
+                          <div className="w-full relative h-48 sm:h-64 shrink-0 overflow-hidden border-b border-slate-800/50 bg-slate-950">
+                            <img src={item.imageUrl} alt={item.title || "Image"} className="w-full h-full object-cover" style={{ objectPosition: "top" }} />
                           </div>
                         )}
 
@@ -318,7 +318,7 @@ function ResearchContent() {
                             </blockquote>
                           ) : (
                             <>
-                              <h3 className={`text-white font-medium mb-1.5 sm:mb-2 leading-snug ${view === "grid" ? "text-sm sm:text-lg line-clamp-2" : "text-base sm:text-xl"} pr-6 sm:pr-10`}>{item.title}</h3>
+                              <h3 className={`text-white break-all font-medium mb-1.5 sm:mb-2 leading-snug ${view === "grid" ? "text-sm sm:text-lg line-clamp-2" : "text-base sm:text-xl"} pr-6 sm:pr-10`}>{item.title}</h3>
                               {item.content && !isImage && <p className={`text-xs sm:text-sm text-slate-400 leading-relaxed whitespace-pre-wrap ${view === "grid" ? "line-clamp-3 sm:line-clamp-4" : ""}`}>{item.content}</p>}
                             </>
                           )}
@@ -343,8 +343,8 @@ function ResearchContent() {
                               <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium mb-2 sm:mb-2.5 uppercase tracking-wider">Suggest filing to:</p>
                               <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
                                 {suggestedTopics.map(t => (
-                                  <button 
-                                    key={t.id} 
+                                  <button
+                                    key={t.id}
                                     onClick={() => updateItem(item.id, { topicId: t.id })}
                                     className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-medium px-2 py-1 sm:px-2.5 sm:py-1.5 bg-slate-800 hover:bg-violet-500 text-slate-300 hover:text-white rounded-lg transition-colors"
                                   >
@@ -352,7 +352,7 @@ function ResearchContent() {
                                   </button>
                                 ))}
                                 {topics.length > suggestedTopics.length && (
-                                  <select 
+                                  <select
                                     className="bg-transparent border border-slate-700 text-[10px] sm:text-xs font-medium text-slate-400 rounded-lg px-1.5 py-1 sm:px-2 sm:py-1.5 outline-none focus:border-violet-500"
                                     value=""
                                     onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
@@ -381,49 +381,11 @@ function ResearchContent() {
                     );
                   }
 
-                  // 2-Column Split (Mobile)
-                  const col2_1 = itemsToRender.filter((_, i) => i % 2 === 0);
-                  const col2_2 = itemsToRender.filter((_, i) => i % 2 !== 0);
-
-                  // 3-Column Split (Desktop)
-                  const col3_1 = itemsToRender.filter((_, i) => i % 3 === 0);
-                  const col3_2 = itemsToRender.filter((_, i) => i % 3 === 1);
-                  const col3_3 = itemsToRender.filter((_, i) => i % 3 === 2);
-
                   return (
-                    <motion.div layout>
-                      {/* Mobile 2-Column Masonry */}
-                      <div className="flex sm:hidden gap-3 items-start">
-                        <div className="flex-1 flex flex-col gap-3">
-                          <AnimatePresence mode="popLayout">
-                            {col2_1.map(renderCard)}
-                          </AnimatePresence>
-                        </div>
-                        <div className="flex-1 flex flex-col gap-3">
-                          <AnimatePresence mode="popLayout">
-                            {col2_2.map(renderCard)}
-                          </AnimatePresence>
-                        </div>
-                      </div>
-
-                      {/* Desktop 3-Column Masonry */}
-                      <div className="hidden sm:flex gap-4 items-start">
-                        <div className="flex-1 flex flex-col gap-4">
-                          <AnimatePresence mode="popLayout">
-                            {col3_1.map(renderCard)}
-                          </AnimatePresence>
-                        </div>
-                        <div className="flex-1 flex flex-col gap-4">
-                          <AnimatePresence mode="popLayout">
-                            {col3_2.map(renderCard)}
-                          </AnimatePresence>
-                        </div>
-                        <div className="flex-1 flex flex-col gap-4">
-                          <AnimatePresence mode="popLayout">
-                            {col3_3.map(renderCard)}
-                          </AnimatePresence>
-                        </div>
-                      </div>
+                    <motion.div layout className="columns-2 lg:columns-3 gap-3 sm:gap-4">
+                      <AnimatePresence mode="popLayout">
+                        {itemsToRender.map(renderCard)}
+                      </AnimatePresence>
                     </motion.div>
                   );
                 };
@@ -464,7 +426,7 @@ function ResearchContent() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="p-2.5 bg-violet-500/20 text-violet-400 rounded-xl shrink-0 mt-1">
                   <Link2 className="h-5 w-5" />
@@ -485,7 +447,7 @@ function ResearchContent() {
               <div>
                 <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Quick File To Topic</label>
                 <div className="flex flex-wrap gap-2 items-center">
-                  <button 
+                  <button
                     onClick={() => {
                       updateItem(shareItem.id, { topicId: undefined });
                       closeShareModal();
@@ -495,7 +457,7 @@ function ResearchContent() {
                     Leave in Inbox
                   </button>
                   {getSuggestedTopics(shareItem.title, shareItem.content).map(t => (
-                    <button 
+                    <button
                       key={t.id}
                       onClick={() => {
                         updateItem(shareItem.id, { topicId: t.id });
@@ -508,7 +470,7 @@ function ResearchContent() {
                     </button>
                   ))}
                   {topics.length > getSuggestedTopics(shareItem.title, shareItem.content).length && (
-                    <select 
+                    <select
                       className="bg-slate-800 border border-slate-700 text-sm font-medium text-slate-300 rounded-lg px-3 py-1.5 outline-none focus:border-violet-500"
                       value=""
                       onChange={(e) => {
@@ -527,7 +489,7 @@ function ResearchContent() {
 
               <div>
                 <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Add Note or Tags</label>
-                <textarea 
+                <textarea
                   placeholder="e.g. #design Check out the hero section..."
                   className="w-full h-20 bg-slate-950 border border-slate-800 focus:border-violet-500 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 outline-none resize-none transition-colors"
                   onBlur={(e) => {
@@ -535,7 +497,7 @@ function ResearchContent() {
                     if (text) {
                       // Extract hashtags
                       const hashtags = text.match(/#[\w-]+/g)?.map(t => t.slice(1)) || [];
-                      updateItem(shareItem.id, { 
+                      updateItem(shareItem.id, {
                         content: (shareItem.content ? shareItem.content + "\n\n" : "") + text,
                         tags: hashtags
                       });

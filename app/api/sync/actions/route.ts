@@ -51,6 +51,10 @@ export async function POST(request: Request) {
         itemData.photoUrls = Array.isArray(itemData.photoUrls) 
           ? itemData.photoUrls.filter((url: any) => typeof url === 'string')
           : [];
+        
+        if (itemData.audioFileId && typeof itemData.audioFileId !== 'string') {
+          itemData.audioFileId = null;
+        }
       }
 
       // Map the entity string to the corresponding Prisma model

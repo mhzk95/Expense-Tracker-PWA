@@ -13,6 +13,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState(initialData?.type || "checking");
   const [balance, setBalance] = useState(initialData?.balance?.toString() || "");
+  const [excludeFromNetWorth, setExcludeFromNetWorth] = useState(initialData?.excludeFromNetWorth || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,6 +48,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           balance: Number(balance),
           icon: iconName,
           color: colorHex,
+          excludeFromNetWorth,
         });
       } else {
         await addAccount({
@@ -57,6 +59,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           currency: "INR",
           status: "active",
           includeInNetWorth: true,
+          excludeFromNetWorth,
           isDefault: accounts.length === 0, // Make it default if it's the first account
           icon: iconName,
           color: colorHex,
@@ -111,6 +114,26 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             placeholder="0.00"
             required
           />
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+        <div>
+          <label className="block text-sm font-medium text-white">Exclude from Net Worth</label>
+          <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+            Ideal for uncounted physical cash or petty cash. Spendings from this account will not affect your overall net worth.
+          </p>
+        </div>
+        <div className="flex-shrink-0 ml-4">
+          <button
+            type="button"
+            onClick={() => setExcludeFromNetWorth(!excludeFromNetWorth)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${excludeFromNetWorth ? 'bg-amber-500' : 'bg-slate-700'}`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${excludeFromNetWorth ? 'translate-x-5' : 'translate-x-0'}`}
+            />
+          </button>
         </div>
       </div>
 

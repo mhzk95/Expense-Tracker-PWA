@@ -25,6 +25,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [categoryId, setCategoryId] = useState("");
   const [accountId, setAccountId] = useState("");
   const [toAccountId, setToAccountId] = useState("");
+  const [needsReview, setNeedsReview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
 
@@ -107,6 +108,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
+        needsReview,
       });
       sessionStorage.removeItem("tx_draft"); // Clear draft on success
       vibrate([50]);
@@ -334,6 +336,26 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none"
           placeholder="E.g., John owes $20 for pizza, Sarah owes $15..."
         />
+      </div>
+
+      <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
+        <div>
+          <label className="block text-sm font-medium text-amber-500">Needs Review</label>
+          <p className="text-[10px] text-amber-500/70 mt-0.5 leading-tight">
+            Flag this transaction to double-check amounts or wait for friend confirmations.
+          </p>
+        </div>
+        <div className="flex-shrink-0 ml-4">
+          <button
+            type="button"
+            onClick={() => setNeedsReview(!needsReview)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${needsReview ? 'bg-amber-500' : 'bg-slate-700'}`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${needsReview ? 'translate-x-5' : 'translate-x-0'}`}
+            />
+          </button>
+        </div>
       </div>
 
       <button

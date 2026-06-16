@@ -13,12 +13,12 @@ export function DashboardStats() {
   const loading = txLoading || accLoading;
 
   // Compute summary stats from real accounts and REAL transactions
-  const totalAssets = accounts.filter((a) => a.balance > 0).reduce(
+  const totalAssets = accounts.filter((a) => a.balance > 0 && !a.excludeFromNetWorth).reduce(
     (s, a) => s + a.balance,
     0
   );
   const totalLiabilities = Math.abs(
-    accounts.filter((a) => a.balance < 0).reduce((s, a) => s + a.balance, 0)
+    accounts.filter((a) => a.balance < 0 && !a.excludeFromNetWorth).reduce((s, a) => s + a.balance, 0)
   );
   const netWorth = totalAssets - totalLiabilities;
 
