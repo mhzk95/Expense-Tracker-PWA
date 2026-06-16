@@ -69,37 +69,40 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const token = getTelegramToken();
-    if (!token) {
-      alert("Telegram token missing. Please connect Telegram in settings.");
-      return;
-    }
     
     setLoading(true);
     const fileId = (url as string).replace("telegram:", "");
-    const blob = await downloadFromTelegram(token, fileId);
-    if (blob) {
-      const objectUrl = URL.createObjectURL(blob);
-      setLoadedSrc(objectUrl);
-      
-      // Save permanently to dedicated image cache
-      getImageCacheDB().then(db => db?.put('images', blob, url as string)).catch(() => {});
-      
-      if (entryId && photoIndex !== undefined) {
-        getDB().then(async (db) => {
-          const tx = db.transaction("journalEntries", "readwrite");
-          const store = tx.objectStore("journalEntries");
-          const entry = await store.get(entryId);
-          if (entry) {
-            entry.photoUrls[photoIndex] = blob;
-            await store.put(entry);
-          }
-        }).catch(console.error);
+    
+    try {
+      const res = await fetch(`/api/image/${fileId}`);
+      if (res.ok) {
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        setLoadedSrc(objectUrl);
+        
+        // Save permanently to dedicated image cache
+        getImageCacheDB().then(db => db?.put('images', blob, url as string)).catch(() => {});
+        
+        if (entryId && photoIndex !== undefined) {
+          getDB().then(async (db) => {
+            const tx = db.transaction("journalEntries", "readwrite");
+            const store = tx.objectStore("journalEntries");
+            const entry = await store.get(entryId);
+            if (entry) {
+              entry.photoUrls[photoIndex] = blob;
+              await store.put(entry);
+            }
+          }).catch(console.error);
+        }
+      } else {
+        alert("Failed to download image from Telegram. (Server error)");
       }
-    } else {
+    } catch (error) {
+      console.error(error);
       alert("Failed to download image from Telegram.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

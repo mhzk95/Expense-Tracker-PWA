@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
     const wants = (entity: string) => requestedEntities.includes("ALL") || requestedEntities.includes(entity);
 
-    const queries: Promise<any>[] = [];
+    const queries: any[] = [];
     const keys: string[] = [];
 
     const addQuery = (key: string, model: any) => {
@@ -56,7 +56,12 @@ export async function GET(request: Request) {
     addQuery("savedItems", prisma.savedItem);
     addQuery("reminders", prisma.reminder);
 
-    const results = await Promise.all(queries);
+    let results: any[] = [];
+    if (queries.length > 0) {
+      // Execute read queries in a single transaction to prevent eating 9 concurrent connections
+      // and hitting the EMAXCONNSESSION limit (pool size 15).
+      results = await prisma.$transaction(queries);
+    }
     
     const data: Record<string, any[]> = {};
     let hasMore = false;

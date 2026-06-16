@@ -51,15 +51,7 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
 
   const toggle = async () => {
     if (!audioRef.current) {
-      // Stream via the existing telegram-proxy endpoint
-      const pathRes = await fetch(
-        `/api/telegram-proxy?file_id=${encodeURIComponent(telegramFileId)}`
-      );
-      // If that fails, try getting the URL first
-      const urlRes = await fetch(
-        `/api/image/${encodeURIComponent(telegramFileId)}`
-      );
-      const src = urlRes.ok ? (await urlRes.json()).url : `/api/telegram-proxy?file_id=${telegramFileId}`;
+      const src = `/api/image/${encodeURIComponent(telegramFileId)}`;
       audioRef.current = new Audio(src);
       audioRef.current.ontimeupdate = () => {
         const dur = audioRef.current!.duration || (durationMs ? durationMs / 1000 : 1);

@@ -7,6 +7,8 @@ import { drainSyncQueue, pullCloudData } from "@/lib/services/cloudSync";
 export function useAutoSync() {
   const { data: session } = useSession();
   const syncTimeout = useRef<NodeJS.Timeout | null>(null);
+  const lastFocusSync = useRef<number>(0);
+  const hasRunInitialSync = useRef<boolean>(false);
 
   useEffect(() => {
     // Only auto-sync if the user is authenticated
@@ -46,22 +48,29 @@ export function useAutoSync() {
       window.addEventListener(event, triggerSync);
     });
 
-    // 2. Sync on app regaining focus
-    const handleFocus = () => triggerSync();
+    // 2. Sync on app regaining focus (throttled to max once per minute)
+    const handleFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusSync.current > 60000) {
+        lastFocusSync.current = now;
+        triggerSync();
+      }
+    };
     window.addEventListener("focus", handleFocus);
 
     // 3. Sync on coming back online
     const handleOnline = () => triggerSync();
     window.addEventListener("online", handleOnline);
 
-    // Initial prioritized sync on app load
+    // Initial prioritized sync on app load (Run only once)
     const doInitialSync = async () => {
+      if (hasRunInitialSync.current) return;
+      hasRunInitialSync.current = true;
+
+      
       try {
         console.log("[AutoSync] Initial priority pull (metadata)...");
-        // Pull small, critical entities first to unblock the UI instantly
         await pullCloudData("accounts,categories,budgets,reminders", 1000);
-        
-        // Then start the normal drain + full pull
         triggerSync();
       } catch (e) {
         console.error("Initial sync failed", e);
