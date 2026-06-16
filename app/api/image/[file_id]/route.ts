@@ -32,8 +32,18 @@ export async function GET(
     console.log(`[ImageAPI] Fetching file_id: ${file_id}`);
 
     // 1. Get file path from Telegram
-    const pathRes = await fetch(`https://api.telegram.org/bot${botToken}/getFile?file_id=${file_id}`);
-    const pathData = await pathRes.json();
+    let pathRes;
+    let pathData;
+    try {
+      pathRes = await fetch(`https://api.telegram.org/bot${botToken}/getFile?file_id=${file_id}`);
+      pathData = await pathRes.json();
+    } catch (fetchErr: any) {
+      console.error("[ImageAPI] Network Error connecting to Telegram:", fetchErr.message);
+      if (fetchErr.message?.includes('ENOTFOUND')) {
+         return new NextResponse("DNS Error: Cannot resolve api.telegram.org. If Telegram is blocked in your region, ensure your Node.js process is routed through a VPN or proxy.", { status: 502 });
+      }
+      throw fetchErr;
+    }
     
     if (!pathData.ok) {
       console.error(`[ImageAPI] Telegram getFile failed:`, pathData);
