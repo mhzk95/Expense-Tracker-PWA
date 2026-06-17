@@ -27,38 +27,31 @@
   "shortcuts": [
     {
       "name": "Add Expense",
-      "short_name": "Add",
-      "description": "Quickly add a new expense transaction",
+      "short_name": "Expense",
+      "description": "Log a new transaction",
       "url": "/transactions?action=add",
-      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/shortcut-expense.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
-      "name": "Transactions",
-      "short_name": "History",
-      "description": "View all your past transactions",
-      "url": "/transactions",
-      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "View Budgets",
-      "short_name": "Budgets",
-      "description": "Check your budget progress",
-      "url": "/budgets",
-      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "Analytics",
-      "short_name": "Reports",
-      "description": "View your spending analytics",
-      "url": "/analytics",
-      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "New Journal Entry",
+      "name": "Capture Memory",
       "short_name": "Journal",
-      "description": "Quickly write a new journal entry",
+      "description": "Write a new journal entry",
       "url": "/journal?action=add",
-      "icons": [{ "src": "/window.svg", "sizes": "192x192 512x512", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/shortcut-journal.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Save Research",
+      "short_name": "Research",
+      "description": "Open research clipping tool",
+      "url": "/research",
+      "icons": [{ "src": "/shortcut-research.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "New Reminder",
+      "short_name": "Reminder",
+      "description": "Set a new reminder",
+      "url": "/reminders",
+      "icons": [{ "src": "/shortcut-reminder.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ],
   "share_target": {

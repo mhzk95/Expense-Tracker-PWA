@@ -6,9 +6,11 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatDate } from "@/lib/utils/helpers";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { JournalForm } from "@/components/journal/JournalForm";
+import { AmbientBackground } from "@/components/journal/AmbientBackground";
 import { TelegramLazyImage } from "@/components/ui/TelegramLazyImage";
 import { JournalEntity } from "@/lib/db/indexeddb";
 import { formatDuration } from "@/hooks/useAudioRecorder";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Search,
@@ -125,11 +127,11 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
   const tags = entry.tags || [];
 
   return (
-    <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-5 group w-full overflow-hidden">
+    <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-5 group w-full overflow-hidden relative">
       {/* Left Column: Time & Timeline Line */}
-      <div className="w-[45px] sm:w-[60px] flex-shrink-0 flex flex-col items-end relative">
+      <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
         <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end">
-          <span className="text-[9px] sm:text-[10px] font-medium text-slate-500 flex-shrink-0">{time}</span>
+          <span className="text-[9px] sm:text-[10px] font-medium text-slate-500 flex-shrink-0 whitespace-nowrap">{time}</span>
           <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-violet-500 ring-2 ring-violet-500/30 z-10 flex-shrink-0" />
         </div>
         {/* The continuous line extending down */}
@@ -137,7 +139,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       </div>
 
       {/* Right Column: Card */}
-      <div className="flex-1 min-w-0 bg-slate-900/70 rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border border-slate-800/60 hover:border-slate-700/60 transition-colors flex gap-2 sm:gap-3 relative">
+      <div className="flex-1 min-w-0 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all flex gap-2 sm:gap-3 relative shadow-lg shadow-black/20">
         {/* Cover Image Thumbnail (Left) */}
         {photos.length > 0 && (
           <div
@@ -291,6 +293,7 @@ export default function JournalPage() {
   const { entries, loading, deleteEntry } = useJournal();
   const { transactions } = useTransactions();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -314,9 +317,11 @@ export default function JournalPage() {
   const groups = groupByDate(filteredEntries);
 
   return (
-    <div className="min-h-screen pb-24">
-      {/* Header (Reverted to Old Style) */}
-      <div className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/40 px-4 pt-4 pb-3">
+    <div className="pb-32 min-h-screen relative overflow-hidden flex flex-col">
+      <AmbientBackground />
+      
+      {/* Sticky Header / Search Area */}
+      <div className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md pt-4 pb-2 px-2 sm:px-4 border-b border-slate-800/60">
         <div className="flex items-center justify-between mb-1">
           <div>
             <h1 className="text-2xl font-bold text-white">Journal</h1>
@@ -384,9 +389,9 @@ export default function JournalPage() {
       </div>
 
       {/* Timeline Feed */}
-      <div className="px-4 pt-6 overflow-hidden">
+      <div className="px-1 sm:px-4 pt-4 sm:pt-6 overflow-hidden flex-1">
         {loading ? (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 px-2 sm:px-0">
             {[1, 2, 3].map(i => (
               <div key={i} className="flex gap-3">
                 <div className="w-[60px] flex-shrink-0" />
@@ -410,32 +415,48 @@ export default function JournalPage() {
           </div>
         ) : (
           <div>
-            {groups.map(group => (
-              <div key={group.label} className="mb-2 relative">
-                {/* Date label */}
-                <div className="flex items-center gap-3 mb-4 ml-[72px]">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    {group.label}
-                  </span>
-                  <div className="flex-1 h-px bg-slate-800/60" />
-                </div>
+            {groups.map(group => {
+              const isCollapsed = collapsedDays[group.label];
+              return (
+                <div key={group.label} className="mb-2 relative">
+                  {/* Date label */}
+                  <button 
+                    onClick={() => setCollapsedDays(prev => ({ ...prev, [group.label]: !prev[group.label] }))}
+                    className="flex items-center gap-3 mb-4 ml-[65px] sm:ml-[85px] w-full text-left group/btn"
+                  >
+                    <span className="text-xs font-semibold text-slate-500 group-hover/btn:text-slate-400 transition-colors uppercase tracking-wider flex items-center gap-1">
+                      {group.label}
+                    </span>
+                    <div className="flex-1 h-px bg-slate-800/60 group-hover/btn:bg-slate-700/60 transition-colors mr-4 sm:mr-8" />
+                  </button>
 
-                {/* Entries */}
-                <div>
-                  {group.entries.map((entry, idx) => (
-                    <EntryCard
-                      key={entry.id}
-                      entry={entry}
-                      linkedTxn={entry.linkedTransactionId
-                        ? transactions.find(t => t.id === entry.linkedTransactionId)
-                        : null
-                      }
-                      onDelete={() => deleteEntry(entry.id)}
-                    />
-                  ))}
+                  {/* Entries (Animated) */}
+                  <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        {group.entries.map((entry, idx) => (
+                          <EntryCard
+                            key={entry.id}
+                            entry={entry}
+                            linkedTxn={entry.linkedTransactionId
+                              ? transactions.find(t => t.id === entry.linkedTransactionId)
+                              : null
+                            }
+                            onDelete={() => deleteEntry(entry.id)}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useResearch } from "@/hooks/useResearch";
-import { Link2, LayoutGrid, List, FileText, ExternalLink, Trash2, Folder, FolderPlus, Pin, Inbox, ChevronLeft, ArrowRight, Search, X, Bell } from "lucide-react";
+import { Link2, LayoutGrid, List, FileText, ExternalLink, Trash2, Folder, FolderPlus, Pin, Inbox, ChevronLeft, ArrowRight, Search, X, Bell, MoreHorizontal } from "lucide-react";
 import { vibrate } from "@/lib/utils/helpers";
 import Fuse from "fuse.js";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,6 +21,7 @@ function ResearchContent() {
   const [activeTab, setActiveTab] = useState<"inbox" | "topics">("inbox");
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const [shareItem, setShareItem] = useState<any>(null);
   const [isEditingDetails, setIsEditingDetails] = useState(false);
@@ -76,7 +77,7 @@ function ResearchContent() {
         content: text || ""
       } as any);
 
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50]);
+      vibrate([50, 50]);
 
       // Open the interactive Pro Clipper modal
       setShareItem({
@@ -152,7 +153,7 @@ function ResearchContent() {
             imageUrl: imageBlobUrl || undefined,
           } as any);
 
-          if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50]);
+          vibrate([50, 50]);
 
           // Open the interactive Pro Clipper modal
           setShareItem({
@@ -174,7 +175,6 @@ function ResearchContent() {
 
   const closeShareModal = () => {
     setShareItem(null);
-    processedShareUrl.current = null; // reset just in case
     router.replace("/research");
   };
 
@@ -344,40 +344,65 @@ function ResearchContent() {
                     return (
                       <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-xl sm:rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
 
-                        {/* Action Bar (Top Right) */}
-                        <div className={`absolute top-3 right-3 flex gap-2 transition-opacity z-10 ${item.isPinned ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
-                          <button
-                            onClick={() => {
-                              addReminder({
-                                id: crypto.randomUUID(),
-                                title: `Review: ${item.title || "Research Item"}`,
-                                priority: "medium",
-                                contextTags: ["research"],
-                                isRecurring: false,
-                                status: "pending",
-                                dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(),
-                                linkedItemId: item.id,
-                                linkedItemType: "research"
-                              });
-                              vibrate([50]);
-                            }}
-                            className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-blue-400 rounded-full transition-colors shadow-sm"
-                            title="Remind me tomorrow"
+                        {/* Action Menu Toggle (Mobile & Hover) */}
+                        <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
+                          <button 
+                            onClick={(e) => { e.preventDefault(); setOpenMenuId(openMenuId === item.id ? null : item.id); }}
+                            className="p-1.5 sm:p-2 bg-slate-900/90 backdrop-blur-md text-slate-400 hover:text-white rounded-full shadow-md border border-slate-700/50 transition-colors"
                           >
-                            <Bell className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4 sm:h-4 sm:w-4" />
                           </button>
-                          <button
-                            onClick={() => updateItem(item.id, { isPinned: !item.isPinned })}
-                            className={`p-2 rounded-full backdrop-blur-md transition-colors shadow-sm ${item.isPinned ? 'bg-violet-500 text-white' : 'bg-slate-900/80 text-slate-400 hover:text-white'}`}
-                          >
-                            <Pin className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => deleteItem(item.id)}
-                            className="p-2 bg-slate-900/80 backdrop-blur-md text-slate-400 hover:text-red-400 rounded-full transition-colors shadow-sm"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+
+                          {openMenuId === item.id && (
+                            <div className="absolute right-0 top-full mt-2 w-40 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  updateItem(item.id, { isPinned: !item.isPinned });
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium hover:bg-slate-700 text-slate-200 transition-colors"
+                              >
+                                <Pin className="h-4 w-4" /> {item.isPinned ? "Unpin Item" : "Pin Item"}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if(confirm("Add a reminder to review this tomorrow?")) {
+                                    addReminder({
+                                      id: crypto.randomUUID(),
+                                      title: `Review: ${item.title || "Research Item"}`,
+                                      priority: "medium",
+                                      contextTags: ["research"],
+                                      isRecurring: false,
+                                      status: "pending",
+                                      dueDate: new Date(new Date().setHours(new Date().getHours() + 24)).toISOString(),
+                                      linkedItemId: item.id,
+                                      linkedItemType: "research"
+                                    });
+                                    vibrate([50]);
+                                  }
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium hover:bg-slate-700 text-slate-200 transition-colors"
+                              >
+                                <Bell className="h-4 w-4" /> Add Reminder
+                              </button>
+                              <div className="h-px bg-slate-700/50 my-1"></div>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if(confirm("Are you sure you want to delete this item?")) {
+                                    deleteItem(item.id);
+                                  }
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium hover:bg-red-500/20 text-red-400 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" /> Delete Item
+                              </button>
+                            </div>
+                          )}
                         </div>
 
                         {/* Flush Image at the Top */}
@@ -519,9 +544,15 @@ function ResearchContent() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-violet-500/20 text-violet-400 rounded-xl shrink-0 mt-1">
-                  <Link2 className="h-5 w-5" />
-                </div>
+                {shareItem.imageUrl ? (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+                    <img src={shareItem.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="p-2.5 bg-violet-500/20 text-violet-400 rounded-xl shrink-0 mt-1">
+                    <Link2 className="h-5 w-5" />
+                  </div>
+                )}
                 <div>
                   <div className="flex items-start justify-between gap-4">
                     {isEditingDetails ? (
@@ -626,6 +657,19 @@ function ResearchContent() {
                         tags: hashtags
                       });
                     }
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Extracted Text (OCR)</label>
+                <textarea
+                  placeholder="Paste or extract any text from image..."
+                  className="w-full h-16 bg-slate-950 border border-slate-800 focus:border-violet-500 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 outline-none resize-none transition-colors"
+                  value={shareItem.ocrText || ""}
+                  onChange={(e) => {
+                    setShareItem({ ...shareItem, ocrText: e.target.value });
+                    updateItem(shareItem.id, { ocrText: e.target.value });
                   }}
                 />
               </div>

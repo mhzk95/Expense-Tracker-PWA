@@ -47,20 +47,20 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children }: AdaptiveOv
       {/* Container */}
       <div 
         className={cn(
-          "relative bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden transition-all duration-300 transform",
+          "relative bg-slate-950/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-300 transform",
           isBottomSheet 
-            ? "w-full max-w-lg mt-auto rounded-t-2xl border-b-0 self-end translate-y-0" 
-            : "w-[90%] max-w-md rounded-2xl scale-100",
+            ? "w-full max-w-lg mt-auto rounded-t-3xl border-b-0 self-end translate-y-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]" 
+            : "w-[90%] max-w-md rounded-3xl scale-100 shadow-[0_10px_50px_rgba(0,0,0,0.5)]",
         )}
       >
         {isBottomSheet && (
           <div className="flex justify-center pt-3 pb-1 w-full">
-            <div className="h-1.5 w-12 bg-slate-700 rounded-full" />
+            <div className="h-1.5 w-12 bg-white/20 rounded-full" />
           </div>
         )}
         
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
-          <h2 className="text-lg font-semibold text-white">{title}</h2>
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <h2 className="text-lg font-semibold text-white drop-shadow-sm">{title}</h2>
           {!isBottomSheet && (
             <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
               <X className="w-5 h-5" />
