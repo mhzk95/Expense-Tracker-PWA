@@ -7,9 +7,11 @@ import { vibrate } from "@/lib/utils/helpers";
 interface SwipeToDeleteProps {
   children: React.ReactNode;
   onDelete: () => void;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
+export function SwipeToDelete({ children, onDelete, className = "", style }: SwipeToDeleteProps) {
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -48,29 +50,12 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
   }, [currentX]);
 
   return (
-    <div className="relative w-full overflow-hidden group">
-      {/* Background Delete Button */}
-      <div className="absolute inset-y-0 right-0 w-20 bg-red-500/90 flex items-center justify-center rounded-r-2xl transition-opacity">
-        <button 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            vibrate([50, 50, 50]); // warning pattern
-            if (confirm("Are you sure you want to delete this item?")) {
-              onDelete(); 
-              vibrate([50]); // success
-            }
-            setCurrentX(0); 
-          }} 
-          className="w-full h-full flex items-center justify-center text-white hover:bg-red-600 transition-colors"
-          title="Delete"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
-      </div>
+    <div className={`relative w-full overflow-hidden group ${className}`} style={style}>
+
 
       {/* Swipeable Content */}
       <div 
-        className="relative bg-slate-900 w-full transition-transform flex items-center"
+        className="relative w-full transition-transform flex items-center bg-transparent"
         style={{ transform: `translateX(${currentX}px)`, transition: isDragging ? "none" : "transform 0.2s cubic-bezier(0.32, 0.72, 0, 1)" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -78,6 +63,25 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
       >
         <div className="flex-1 min-w-0">
           {children}
+        </div>
+
+        {/* Swipe Delete Button (Mobile) - Positioned completely off-screen to the right */}
+        <div className="absolute top-0 bottom-0 left-full w-20 bg-red-500/80 backdrop-blur-xl flex items-center justify-center">
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              vibrate([50, 50, 50]); // warning pattern
+              if (confirm("Are you sure you want to delete this item?")) {
+                onDelete(); 
+                vibrate([50]); // success
+              }
+              setCurrentX(0); 
+            }} 
+            className="w-full h-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+            title="Delete"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
         </div>
         
         {/* Desktop Hover Delete Icon (hidden on mobile) */}

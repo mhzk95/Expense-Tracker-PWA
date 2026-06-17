@@ -14,6 +14,8 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { AddTransactionAction } from "@/components/dashboard/AddTransactionAction";
 import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { AmbientBackground } from "@/components/journal/AmbientBackground";
 
 export default function TransactionsPage() {
   const { transactions: rawTransactions, loading: txLoading, deleteTransaction } = useTransactions();
@@ -25,6 +27,7 @@ export default function TransactionsPage() {
 
   return (
     <div className="space-y-6">
+      <AmbientBackground variant="transactions" />
       <PageHeader
         title="Transactions"
         subtitle={loading ? "Loading..." : `${transactions.length} transactions this month`}
@@ -43,7 +46,7 @@ export default function TransactionsPage() {
       />
 
       {/* Transaction list */}
-      <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden">
+      <GlassCard>
         {loading ? (
           <div className="p-10 text-center text-slate-400">Loading transactions...</div>
         ) : transactions.length === 0 ? (
@@ -53,18 +56,28 @@ export default function TransactionsPage() {
             action={<AddTransactionAction />}
           />
         ) : (
-          <div className="divide-y divide-slate-800/40">
+          <div className="divide-y divide-white/5">
             {transactions.map((txn) => {
               const category = categories.find((c) => c.id === txn.categoryId);
               const isIncome = txn.type === "income";
               const isTransfer = txn.type === "transfer";
 
               return (
-                <SwipeToDelete key={txn.id} onDelete={() => deleteTransaction(txn.id)}>
-                  <div className={cn(
-                    "flex items-center gap-4 px-5 py-4 w-full transition-all duration-300",
-                    txn.needsReview && "border-l-[3px] border-amber-500/80 bg-gradient-to-r from-amber-500/5 to-transparent shadow-[-4px_0_15px_-5px_rgba(245,158,11,0.3)]"
-                  )}>
+                <SwipeToDelete 
+                  key={txn.id} 
+                  onDelete={() => deleteTransaction(txn.id)}
+                  className={cn(
+                    "transition-all duration-300 hover:bg-white/5",
+                    txn.needsReview && "border-l-[3px] border-amber-500/80 bg-gradient-to-r from-amber-500/5 to-transparent"
+                  )}
+                  style={{ 
+                    boxShadow: [
+                      category ? `inset -20px 0 30px -20px ${category.color}80, inset -2px 0 0 0 ${category.color}` : '',
+                      txn.needsReview ? `-4px 0 15px -5px rgba(245,158,11,0.3)` : ''
+                    ].filter(Boolean).join(', ') || undefined
+                  }}
+                >
+                  <div className="flex items-center gap-4 px-5 py-4 w-full">
                     {/* Icon */}
                     <div
                       className={cn(
@@ -89,9 +102,9 @@ export default function TransactionsPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">{txn.description}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-slate-500">{category?.name ?? "Other"}</span>
-                        <span className="text-slate-700">·</span>
-                        <span className="text-xs text-slate-500">{formatDate(txn.date, "medium")}</span>
+                        <span className="text-xs text-slate-400">{category?.name ?? "Other"}</span>
+                        <span className="text-slate-600">·</span>
+                        <span className="text-xs text-slate-400">{formatDate(txn.date, "medium")}</span>
                       </div>
                     </div>
 
@@ -120,7 +133,7 @@ export default function TransactionsPage() {
             })}
           </div>
         )}
-      </div>
+      </GlassCard>
     </div>
   );
 }

@@ -35,7 +35,7 @@ export default function RecurringPage() {
       />
 
       {/* Summary card */}
-      <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 p-5 flex items-center gap-4">
+      <div className="glass-card p-5 flex items-center gap-4">
         <div className="h-12 w-12 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0">
           <RefreshCw className="h-6 w-6 text-blue-400" />
         </div>
@@ -63,7 +63,7 @@ export default function RecurringPage() {
           {recurringTransactions.map((txn) => (
             <div
               key={txn.id}
-              className="flex items-center gap-4 rounded-2xl border border-slate-800/60 bg-slate-900/60 p-4 hover:border-slate-700/60 transition-all"
+              className="flex items-center gap-4 glass-card p-4 interactive"
             >
               <div className="h-10 w-10 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
                 <RefreshCw className="h-5 w-5 text-blue-400" />

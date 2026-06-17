@@ -114,6 +114,31 @@ export function ThemeSelector() {
           );
         })}
       </div>
+
+      <div className="pt-6">
+        <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-1 mb-3">
+          Active Color Palette
+        </h3>
+        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none px-1">
+          {THEMES.find(t => t.id === activeTheme) && [
+            { label: "Background", color: THEMES.find(t => t.id === activeTheme)!.bg },
+            { label: "Surface", color: THEMES.find(t => t.id === activeTheme)!.surface },
+            { label: "Primary", color: THEMES.find(t => t.id === activeTheme)!.primary },
+            { label: "Success", color: "#10b981" },
+            { label: "Danger", color: "#ef4444" },
+            { label: "Warning", color: "#f59e0b" },
+          ].map((c) => (
+            <div key={c.label} className="flex flex-col items-center gap-1.5 flex-shrink-0">
+              <div 
+                className="w-10 h-10 rounded-full shadow-inner ring-1 ring-white/10" 
+                style={{ background: c.color }}
+              />
+              <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wider">{c.label}</span>
+              <span className="text-[8px] text-slate-500 font-mono">{c.color}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

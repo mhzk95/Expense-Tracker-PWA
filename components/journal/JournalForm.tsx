@@ -91,6 +91,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
     // Parse EXIF in the background using exifr's optimized file reader (only reads first 64kb)
     exifr.parse(file, { tiff: true, exif: true, gps: true }).then(async (exif) => {
+      console.log("EXIF Extraction Result:", exif);
       if (exif) {
         if (exif.DateTimeOriginal || exif.CreateDate) {
           const dateObj = new Date(exif.DateTimeOriginal || exif.CreateDate);
@@ -103,8 +104,11 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         if (exif.latitude && exif.longitude) {
           setLocationLoading(true);
           try {
-            const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${exif.latitude}&lon=${exif.longitude}&format=json`, {
-              headers: { 'Accept-Language': 'en' }
+            const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${exif.latitude}&lon=${exif.longitude}&format=json&email=support@expense-tracker.com`, {
+              headers: { 
+                'Accept-Language': 'en',
+                'User-Agent': 'ExpenseTrackerPWA/1.0'
+              }
             });
             const geo = await r.json();
             const place = geo.address?.suburb || geo.address?.neighbourhood || geo.address?.city_district || "";

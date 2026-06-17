@@ -11,6 +11,7 @@ import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 export function RecentTransactions() {
   const { transactions, loading: txLoading } = useTransactions();
@@ -19,9 +20,9 @@ export function RecentTransactions() {
   const loading = txLoading || catLoading;
 
   return (
-    <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden">
+    <GlassCard className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/60">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
         <h2 className="text-sm font-semibold text-white">Recent Transactions</h2>
         <Link
           href="/transactions"
@@ -32,7 +33,7 @@ export function RecentTransactions() {
       </div>
 
       {/* Transaction rows */}
-      <div className="divide-y divide-slate-800/40">
+      <div className="divide-y divide-white/5 flex-1 flex flex-col justify-between">
         {loading ? (
           <div className="p-5 text-sm text-slate-400">Loading transactions...</div>
         ) : recent.length === 0 ? (
@@ -45,7 +46,8 @@ export function RecentTransactions() {
           return (
             <div
               key={txn.id}
-              className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-800/30 transition-colors"
+              className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors"
+              style={category ? { boxShadow: `inset -20px 0 30px -20px ${category.color}80, inset -2px 0 0 0 ${category.color}` } : undefined}
             >
               {/* Type icon */}
               <div
@@ -71,7 +73,7 @@ export function RecentTransactions() {
               {/* Description + category */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">{txn.description}</p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-400 mt-0.5">
                   {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "short")}
                 </p>
               </div>
@@ -90,6 +92,6 @@ export function RecentTransactions() {
           );
         })}
       </div>
-    </div>
+    </GlassCard>
   );
 }

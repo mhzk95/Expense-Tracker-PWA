@@ -10,6 +10,7 @@ import Fuse from "fuse.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { useReminders } from "@/hooks/useReminders";
+import { AmbientBackground } from "@/components/journal/AmbientBackground";
 
 function ResearchContent() {
   const searchParams = useSearchParams();
@@ -167,6 +168,8 @@ function ResearchContent() {
 
         } catch (err) {
           console.error("Failed to process IDB share", err);
+        } finally {
+          window.history.replaceState(null, '', '/research');
         }
       };
       processIdbShare();
@@ -216,6 +219,7 @@ function ResearchContent() {
 
   return (
     <div className="space-y-6 pb-20">
+      <AmbientBackground variant="research" />
       <PageHeader
         title={searchQuery ? "Search Results" : (activeTopicId ? topics.find(t => t.id === activeTopicId)?.title || "Topic" : "Research Hub")}
         subtitle={searchQuery ? `${displayedItems.length} matches` : (activeTopicId ? `${displayedItems.length} items` : `${items.filter(i => !i.topicId).length} in Inbox`)}
@@ -245,7 +249,7 @@ function ResearchContent() {
       </div>
 
       {!searchQuery && !activeTopicId && (
-        <div className="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800/60 mb-6">
+        <div className="flex glass-card p-1 mb-6">
           <button
             onClick={() => setActiveTab("inbox")}
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "inbox" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-300"}`}
@@ -271,7 +275,7 @@ function ResearchContent() {
       {!searchQuery && activeTab === "topics" && !activeTopicId && (
         <div className="grid grid-cols-2 gap-4">
           {isCreatingTopic ? (
-            <div className="flex flex-col items-center justify-center p-5 bg-slate-900/60 border border-violet-500 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+            <div className="flex flex-col items-center justify-center p-5 glass-card border border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
               <input
                 autoFocus
                 type="text"
@@ -294,7 +298,7 @@ function ResearchContent() {
               <p className="text-[10px] text-slate-500">Press Enter to save</p>
             </div>
           ) : (
-            <button onClick={() => setIsCreatingTopic(true)} className="flex flex-col items-center justify-center p-6 bg-slate-900/40 border border-dashed border-slate-700 hover:border-violet-500 hover:bg-violet-500/5 rounded-2xl transition-all group">
+            <button onClick={() => setIsCreatingTopic(true)} className="flex flex-col items-center justify-center p-6 glass-card !border-dashed !border-white/20 interactive group">
               <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-violet-500/20 text-slate-400 group-hover:text-violet-400 mb-3 transition-colors">
                 <FolderPlus className="h-5 w-5" />
               </div>
@@ -305,7 +309,7 @@ function ResearchContent() {
           {topics.map(topic => {
             const count = items.filter(i => i.topicId === topic.id && !i.isArchived).length;
             return (
-              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-5 bg-slate-900/60 border border-slate-800 hover:border-violet-500/30 rounded-2xl transition-all text-left group">
+              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-5 glass-card interactive text-left group">
                 <div className="p-2.5 bg-violet-500/10 text-violet-400 rounded-xl mb-3">
                   <Folder className="h-5 w-5" />
                 </div>
@@ -321,7 +325,7 @@ function ResearchContent() {
       {(searchQuery || activeTab === "inbox" || activeTopicId) && (
         <>
           {displayedItems.length === 0 ? (
-            <div className="text-center p-10 bg-slate-900/50 rounded-2xl border border-slate-800/60">
+            <div className="text-center p-10 glass-card">
               <Search className="h-10 w-10 text-slate-500 mx-auto mb-4" />
               <h3 className="text-white font-medium mb-1">{searchQuery ? "No matching results" : (activeTopicId ? "Topic is empty" : "Inbox is empty")}</h3>
               <p className="text-sm text-slate-400">{searchQuery ? "Try searching for a different keyword." : (activeTopicId ? "Move items here from your inbox." : "Save links or notes to see them here.")}</p>
@@ -342,7 +346,7 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group bg-slate-900 border ${item.isPinned ? 'border-violet-500/50 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : 'border-slate-800 hover:shadow-lg hover:shadow-slate-900/50'} rounded-xl sm:rounded-2xl flex flex-col justify-between overflow-hidden transition-all duration-300`}>
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group glass-card interactive flex flex-col justify-between overflow-hidden transition-all duration-300 ${item.isPinned ? 'ring-1 ring-violet-500 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : ''}`}>
 
                         {/* Action Menu Toggle (Mobile & Hover) */}
                         <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>

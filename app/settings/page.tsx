@@ -98,7 +98,7 @@ export default function SettingsPage() {
           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
             {section.title}
           </h2>
-          <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden divide-y divide-slate-800/40">
+          <div className="glass-card divide-y divide-white/5">
             {section.items.map((item) => {
               const Icon = item.icon;
               return (
@@ -128,7 +128,7 @@ export default function SettingsPage() {
           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
             Device
           </h2>
-          <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden">
+          <div className="glass-card">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-4">
                 <div className={`h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${notificationPermission === "granted" ? "bg-violet-500/20" : "bg-slate-800/60"}`}>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
               key={c}
               onClick={() => handleCurrencyChange(c)}
               className={`w-full text-left px-4 py-3 rounded-xl transition-colors ${
-                currency === c ? "bg-violet-500/20 text-violet-400 border border-violet-500/30" : "bg-slate-900/60 text-white hover:bg-slate-800"
+                currency === c ? "bg-violet-500/20 text-violet-400 border border-violet-500/30" : "glass-card text-white interactive"
               }`}
             >
               <div className="flex justify-between items-center">

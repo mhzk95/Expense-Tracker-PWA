@@ -69,7 +69,7 @@ export default function CategoriesPage() {
       />
 
       {isAdding && (
-        <div className="p-5 bg-slate-900/80 border border-slate-800/60 rounded-2xl mb-6">
+        <div className="p-5 glass-card mb-6">
           <h3 className="text-sm font-semibold text-white mb-4">
             {editingId ? "Edit Category" : "New Category"}
           </h3>
@@ -155,7 +155,7 @@ export default function CategoriesPage() {
           if (grouped.length === 0) return null;
 
           return (
-            <div key={groupType} className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden">
+            <div key={groupType} className="glass-card">
               <div className="px-4 py-3 bg-slate-950/50 border-b border-slate-800/60">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                   {groupType} Categories
@@ -163,7 +163,12 @@ export default function CategoriesPage() {
               </div>
               <div className="divide-y divide-slate-800/40">
                 {grouped.map((cat) => (
-                  <SwipeToDelete key={cat.id} onDelete={() => deleteCategory(cat.id)}>
+                  <SwipeToDelete 
+                    key={cat.id} 
+                    onDelete={() => deleteCategory(cat.id)}
+                    className="transition-colors hover:bg-white/5"
+                    style={{ boxShadow: `inset -20px 0 30px -20px ${cat.color}80, inset -2px 0 0 0 ${cat.color}` }}
+                  >
                     <div className="flex items-center gap-3 px-5 py-4 w-full">
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -187,7 +192,7 @@ export default function CategoriesPage() {
         })}
 
         {!loading && categories.length === 0 && !isAdding && (
-          <div className="text-center p-10 bg-slate-900/60 border border-slate-800/60 rounded-2xl">
+          <div className="text-center p-10 glass-card">
             <Target className="w-8 h-8 text-slate-600 mx-auto mb-3" />
             <h3 className="text-sm font-medium text-white mb-1">No Categories</h3>
             <p className="text-xs text-slate-400 mb-4">Add your first category to start tracking.</p>

@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/utils/helpers";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/helpers";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 export function CategorySpending() {
   const { transactions, loading: txLoading } = useTransactions();
@@ -51,8 +52,8 @@ export function CategorySpending() {
     });
 
   return (
-    <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 overflow-hidden flex flex-col h-full">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/60">
+    <GlassCard className="flex flex-col h-full">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
         <h2 className="text-sm font-semibold text-white">Where your money goes</h2>
         <Link
           href="/analytics"
@@ -85,7 +86,7 @@ export function CategorySpending() {
                   </span>
                 </div>
 
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-slate-800/50 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -99,6 +100,6 @@ export function CategorySpending() {
           </div>
         )}
       </div>
-    </div>
+    </GlassCard>
   );
 }

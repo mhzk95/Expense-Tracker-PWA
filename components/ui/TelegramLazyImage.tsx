@@ -119,13 +119,13 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
         <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 via-transparent to-purple-500 mix-blend-overlay opacity-50" />
       </div>
       
-      <div className="relative z-10 flex flex-col items-center gap-2 text-white">
+      <div className="relative z-10 flex flex-col items-center gap-1.5 text-white">
         {loading ? (
-          <Loader2 className="w-8 h-8 animate-spin text-white/80" />
+          <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-white/80" />
         ) : (
           <>
-            <CloudDownload className="w-8 h-8 text-white/80 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-medium text-white/90 bg-black/40 px-3 py-1 rounded-full backdrop-blur-md border border-white/10 shadow-xl">
+            <CloudDownload className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 group-hover:scale-110 transition-transform" />
+            <span className="text-[9px] sm:text-[10px] font-medium text-white/90 bg-black/40 px-1.5 py-0.5 rounded-full backdrop-blur-md border border-white/10 shadow-xl truncate max-w-[80%]">
               Tap to download
             </span>
           </>

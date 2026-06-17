@@ -116,7 +116,7 @@ export default function VaultPage() {
 
       {!isUnlocked ? (
         <div className="max-w-md mx-auto pt-10">
-          <div className="bg-slate-900/60 border border-slate-800/60 rounded-3xl p-8 text-center relative overflow-hidden">
+          <div className="glass-card p-8 text-center relative">
             <div className="w-20 h-20 bg-violet-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               {(hasBiometricsSetup || hasManualPin) ? <Lock className="w-10 h-10 text-violet-400" /> : <ShieldAlert className="w-10 h-10 text-emerald-400" />}
             </div>
@@ -276,7 +276,7 @@ export default function VaultPage() {
           </div>
 
           {entries.length === 0 ? (
-            <div className="text-center py-16 px-4 bg-slate-900/40 rounded-2xl border border-slate-800/40 border-dashed">
+            <div className="text-center py-16 px-4 glass-card !border-dashed !border-white/20">
               <div className="w-16 h-16 bg-slate-800/60 rounded-full flex items-center justify-center mx-auto mb-4">
                 <KeyRound className="w-8 h-8 text-slate-500" />
               </div>
@@ -287,7 +287,7 @@ export default function VaultPage() {
             <div className="space-y-3">
               {entries.map(entry => (
                 <SwipeToDelete key={entry.id} onDelete={() => deleteEntry(entry.id)}>
-                  <div className="bg-slate-900/60 border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between w-full">
+                  <div className="glass-card p-4 flex items-center justify-between w-full">
                     <div>
                       <h3 className="text-white font-medium text-left">{entry.title}</h3>
                       <p className="text-xs text-slate-500 text-left mt-1">Saved {formatDate(entry.createdAt, "short")}</p>

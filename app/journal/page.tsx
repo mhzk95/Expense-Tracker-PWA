@@ -139,7 +139,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       </div>
 
       {/* Right Column: Card */}
-      <div className="flex-1 min-w-0 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all flex gap-2 sm:gap-3 relative shadow-lg shadow-black/20">
+      <div className="flex-1 min-w-0 glass-card rounded-2xl interactive p-2 sm:p-2.5 flex gap-2 sm:gap-3 relative">
         {/* Cover Image Thumbnail (Left) */}
         {photos.length > 0 && (
           <div
@@ -181,7 +181,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
                     className="fixed inset-0 z-20" 
                     onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
                   />
-                  <div className="absolute right-0 top-6 z-30 bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden min-w-[100px]">
+                  <div className="absolute right-0 top-6 z-30 glass-card min-w-[100px]">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-slate-800 transition-colors font-medium"
@@ -395,7 +395,7 @@ export default function JournalPage() {
             {[1, 2, 3].map(i => (
               <div key={i} className="flex gap-3">
                 <div className="w-[60px] flex-shrink-0" />
-                <div className="flex-1 h-[130px] bg-slate-900/60 border border-slate-800/40 rounded-2xl animate-pulse" />
+                <div className="flex-1 h-[130px] glass-card animate-pulse" />
               </div>
             ))}
           </div>

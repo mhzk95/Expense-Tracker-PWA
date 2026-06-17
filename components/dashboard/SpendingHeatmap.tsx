@@ -3,6 +3,7 @@
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMemo } from "react";
 import { formatCurrency } from "@/lib/utils/helpers";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 export function SpendingHeatmap() {
   const { transactions } = useTransactions();
@@ -48,12 +49,12 @@ export function SpendingHeatmap() {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 p-6 overflow-hidden">
+    <GlassCard className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Spending Heatmap (Last 365 Days)</h3>
       </div>
       
-      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         <div className="flex gap-[3px] min-w-max pr-4">
           {weeks.map((week, wIdx) => (
             <div key={wIdx} className="flex flex-col gap-[3px]">
@@ -79,6 +80,6 @@ export function SpendingHeatmap() {
         </div>
         <span>More</span>
       </div>
-    </div>
+    </GlassCard>
   );
 }

@@ -73,7 +73,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full bg-slate-950 text-white antialiased font-sans">
+      <body className="h-full bg-slate-950 text-white antialiased font-sans relative">
+        {/* Global Ambient Luminescence for Glassmorphism */}
+        <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-slate-950">
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-[var(--color-primary)]/20 rounded-full mix-blend-screen filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '8s' }} />
+          <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] bg-indigo-500/10 rounded-full mix-blend-screen filter blur-[150px] opacity-40 animate-pulse" style={{ animationDuration: '12s' }} />
+          <div className="absolute -bottom-[20%] left-[20%] w-[40%] h-[40%] bg-fuchsia-500/10 rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse" style={{ animationDuration: '10s' }} />
+        </div>
         {/*
          * AppShell is a Client Component.
          * It detects the runtime environment and renders the correct shell:

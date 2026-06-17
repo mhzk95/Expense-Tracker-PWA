@@ -193,7 +193,7 @@ export default function RemindersPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex flex-wrap items-center gap-3 bg-slate-900/50 p-3 rounded-2xl border border-slate-800 overflow-hidden"
+                className="flex flex-wrap items-center gap-3 glass-card p-3"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-[200px]">
                   <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
@@ -232,7 +232,7 @@ export default function RemindersPage() {
       )}
 
       {filteredReminders.length === 0 && filter === "pending" ? (
-        <div className="text-center p-12 bg-slate-900/40 rounded-3xl border border-slate-800/60 shadow-inner">
+        <div className="text-center p-12 glass-card shadow-inner">
           <div className="h-16 w-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-700/50">
             <CheckCircle2 className="h-8 w-8 text-emerald-500/80" />
           </div>
@@ -261,10 +261,10 @@ export default function RemindersPage() {
                 <AnimatePresence mode="popLayout">
                   {items.map((reminder: any) => (
                     <AnimatedCard key={reminder.id} className="w-full relative group">
-                      <div className={`p-4 rounded-2xl border flex items-start gap-4 transition-all ${
-                        reminder.priority === 'critical' ? 'bg-red-950/20 border-red-900/40 hover:border-red-500/50' :
-                        reminder.priority === 'high' ? 'bg-orange-950/20 border-orange-900/40 hover:border-orange-500/50' :
-                        'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                      <div className={`p-4 flex items-start gap-4 transition-all ${
+                        reminder.priority === 'critical' ? 'glass-card rounded-2xl interactive ring-1 ring-red-500/50 bg-red-950/10' :
+                        reminder.priority === 'high' ? 'glass-card rounded-2xl interactive ring-1 ring-orange-500/50 bg-orange-950/10' :
+                        'glass-card rounded-2xl interactive'
                       }`}>
                         <button 
                           onClick={() => updateReminder(reminder.id, { status: reminder.status === 'pending' ? 'completed' : 'pending' })}

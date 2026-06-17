@@ -18,6 +18,7 @@ import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { AccountForm } from "@/components/accounts/AccountForm";
+import { GlassCard } from "@/components/ui/GlassCard";
 
 const ACCOUNT_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   Building2,
@@ -69,7 +70,7 @@ export default function AccountsPage() {
       ) : (
         <>
           {/* Net worth summary */}
-          <div className="rounded-2xl border border-slate-800/60 bg-gradient-to-br from-violet-950/60 to-slate-900/60 p-6">
+          <GlassCard className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-violet-400" />
@@ -79,17 +80,17 @@ export default function AccountsPage() {
                 <p className="text-3xl font-bold text-white mt-0.5">{formatCurrency(netWorth)}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800/40">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
               <div>
-                <p className="text-xs text-slate-500">Total Assets</p>
+                <p className="text-xs text-slate-400">Total Assets</p>
                 <p className="text-lg font-semibold text-emerald-400 mt-0.5">{formatCurrency(totalAssets)}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Total Liabilities</p>
+                <p className="text-xs text-slate-400">Total Liabilities</p>
                 <p className="text-lg font-semibold text-red-400 mt-0.5">{formatCurrency(totalLiabilities)}</p>
               </div>
             </div>
-          </div>
+          </GlassCard>
 
           {/* Account cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
