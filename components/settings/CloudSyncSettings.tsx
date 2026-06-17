@@ -68,7 +68,25 @@ export function CloudSyncSettings() {
           
           {status !== "loading" && (
             <button
-              onClick={() => session ? signOut() : signIn()}
+              onClick={async () => {
+                if (session) {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  try {
+                    const cacheKeys = await caches.keys();
+                    for (const key of cacheKeys) {
+                      await caches.delete(key);
+                    }
+                  } catch (e) {}
+                  
+                  const req = indexedDB.deleteDatabase("ExpenseTrackerDB");
+                  req.onsuccess = () => signOut();
+                  req.onerror = () => signOut();
+                  req.onblocked = () => signOut();
+                } else {
+                  signIn();
+                }
+              }}
               className="text-xs font-medium text-violet-400 hover:text-violet-300 px-3 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 transition-colors"
             >
               {session ? "Sign Out" : "Sign In"}

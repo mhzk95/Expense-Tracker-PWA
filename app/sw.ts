@@ -90,3 +90,38 @@ self.addEventListener('notificationclick', (event: any) => {
     })
   );
 });
+
+self.addEventListener('fetch', (event: any) => {
+  const url = new URL(event.request.url);
+  if (event.request.method === 'POST' && url.pathname === '/api/share-target') {
+    event.respondWith((async () => {
+      try {
+        const formData = await event.request.formData();
+        const title = formData.get('share_title') || '';
+        const text = formData.get('share_text') || '';
+        const shareUrl = formData.get('share_url') || '';
+        const files = formData.getAll('share_files');
+        
+        // Save to IndexedDB
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          const req = indexedDB.open('ExpenseTrackerDB');
+          req.onerror = () => reject(req.error);
+          req.onsuccess = () => resolve(req.result);
+        });
+        
+        const tx = db.transaction('syncMetadata', 'readwrite');
+        const store = tx.objectStore('syncMetadata');
+        await new Promise((resolve, reject) => {
+          const req = store.put({ title, text, url: shareUrl, files, timestamp: Date.now() }, 'share_payload');
+          req.onsuccess = resolve;
+          req.onerror = reject;
+        });
+        
+        return Response.redirect('/research?shared=true', 303);
+      } catch (err) {
+        console.error('Share Target Error:', err);
+        return Response.redirect('/research?share_error=true', 303);
+      }
+    })());
+  }
+});

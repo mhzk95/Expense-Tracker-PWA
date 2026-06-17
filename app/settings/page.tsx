@@ -18,7 +18,9 @@ import {
   Info,
   ChevronRight,
   Trash2,
+  ShieldAlert,
 } from "lucide-react";
+import { useVault } from "@/hooks/useVault";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
@@ -28,6 +30,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
+  const { resetVault } = useVault();
   const [currency, setCurrency] = useState("INR");
   const [activeModal, setActiveModal] = useState<"currency" | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | "unsupported">("default");
@@ -155,6 +158,32 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      <div className="space-y-1 pt-4">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4" />
+          Security
+        </h2>
+        <div className="rounded-2xl border border-red-900/60 bg-red-950/20 overflow-hidden">
+          <button
+            onClick={() => {
+              if (confirm("Are you sure? This will delete all encrypted data in your vault and reset biometrics/PIN.")) {
+                resetVault();
+                alert("Vault has been reset.");
+              }
+            }}
+            className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-900/40 transition-colors text-left group"
+          >
+            <div className="h-9 w-9 rounded-xl bg-red-900/60 flex items-center justify-center flex-shrink-0 group-hover:bg-red-800/60 transition-colors">
+              <Lock className="h-4.5 w-4.5 text-red-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-red-400">Reset Vault</p>
+              <p className="text-xs text-red-500 mt-0.5 truncate">Delete all secure notes and reset PIN</p>
+            </div>
+          </button>
+        </div>
+      </div>
 
       <div className="space-y-1 pt-4">
         <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2 flex items-center gap-2">

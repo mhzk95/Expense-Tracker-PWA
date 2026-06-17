@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useReminders } from "@/hooks/useReminders";
 import { useResearch } from "@/hooks/useResearch";
-import { Bell, CheckCircle2, Clock, AlertTriangle, AlertCircle, Plus, Calendar, X, Link2, Flag, ArrowUpCircle } from "lucide-react";
+import { Bell, CheckCircle2, Clock, AlertTriangle, AlertCircle, Plus, Calendar, X, Link2, Flag, ArrowUpCircle, Trash2 } from "lucide-react";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -434,16 +434,23 @@ export default function RemindersPage() {
                         </div>
 
                         {/* Actions */}
-                        {reminder.status === "pending" && (
-                          <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                          {reminder.status === "pending" && (
                             <button 
                               onClick={() => setSnoozeOpenId(snoozeOpenId === reminder.id ? null : reminder.id)}
                               className="p-1.5 bg-slate-800 text-slate-400 hover:bg-violet-500/20 hover:text-violet-400 rounded-full transition-colors"
                             >
                               <Clock className="h-4 w-4" />
                             </button>
+                          )}
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); deleteReminder(reminder.id); }}
+                            className="p-1.5 bg-slate-800 text-slate-400 hover:bg-red-500/20 hover:text-red-400 rounded-full transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                             
-                            {snoozeOpenId === reminder.id && (
+                          {snoozeOpenId === reminder.id && (
                               <motion.div 
                                 initial={{ opacity: 0, scale: 0.9, x: 10 }}
                                 animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -462,7 +469,6 @@ export default function RemindersPage() {
                               </motion.div>
                             )}
                           </div>
-                        )}
                       </div>
                     </AnimatedCard>
                   ))}

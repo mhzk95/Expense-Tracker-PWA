@@ -62,12 +62,19 @@
     }
   ],
   "share_target": {
-    "action": "/research?action=save",
-    "method": "GET",
+    "action": "/api/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
     "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
+      "title": "share_title",
+      "text": "share_text",
+      "url": "share_url",
+      "files": [
+        {
+          "name": "share_files",
+          "accept": ["image/*", "video/*", "audio/*", "text/*", "application/*"]
+        }
+      ]
     }
   }
 }

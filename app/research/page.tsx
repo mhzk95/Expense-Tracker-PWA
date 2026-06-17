@@ -23,6 +23,7 @@ function ResearchContent() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [shareItem, setShareItem] = useState<any>(null);
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
   const processedShareUrl = useRef<string | null>(null);
 
   const [isCreatingTopic, setIsCreatingTopic] = useState(false);
@@ -31,54 +32,142 @@ function ResearchContent() {
   // Handle Web Share Target
   useEffect(() => {
     const action = searchParams.get("action");
-    const url = searchParams.get("url");
-    const text = searchParams.get("text");
-    const title = searchParams.get("title");
+    const isSharedIdb = searchParams.get("shared") === "true";
+    
+    // 1. Check for legacy query param share
+    if (action === "save") {
+      const url = searchParams.get("url");
+      const text = searchParams.get("text");
+      const title = searchParams.get("title");
 
-    if (action !== "save" || (!url && !text && !title)) return;
+      if (!url && !text && !title) return;
 
-    const signature = `${url}-${text}-${title}`;
-    if (processedShareUrl.current === signature) return;
-    processedShareUrl.current = signature; // Ensure we only process this exact share once per mount
+      const signature = `query-${url}-${text}-${title}`;
+      if (processedShareUrl.current === signature) return;
+      processedShareUrl.current = signature;
 
-    const extractUrl = (str: string | null) => {
-      if (!str) return null;
-      const match = str.match(/https?:\/\/[^\s]+/i);
-      return match ? match[0] : null;
-    };
+      const extractUrl = (str: string | null) => {
+        if (!str) return null;
+        const match = str.match(/https?:\/\/[^\s]+/i);
+        return match ? match[0] : null;
+      };
 
-    const contentUrl = url || extractUrl(text) || extractUrl(title);
-    const itemType = contentUrl ? "link" : "note";
+      const contentUrl = url || extractUrl(text) || extractUrl(title);
+      const itemType = contentUrl ? "link" : "note";
 
-    let domain = "";
-    if (contentUrl) {
-      try {
-        domain = new URL(contentUrl).hostname.replace("www.", "");
-      } catch (e) { }
+      let domain = "";
+      if (contentUrl) {
+        try {
+          domain = new URL(contentUrl).hostname.replace("www.", "");
+        } catch (e) { }
+      }
+
+      const newItemId = crypto.randomUUID();
+
+      // Save immediately
+      addItem({
+        id: newItemId,
+        type: itemType,
+        url: contentUrl || undefined,
+        domain: domain || undefined,
+        title: title || (contentUrl ? "Shared Link" : "Shared Note"),
+        content: text || ""
+      } as any);
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50]);
+
+      // Open the interactive Pro Clipper modal
+      setShareItem({
+        id: newItemId,
+        url: contentUrl || undefined,
+        domain: domain || undefined,
+        title: title || (contentUrl ? "Shared Link" : "Shared Note"),
+        content: text || ""
+      });
+      return;
     }
 
-    const newItemId = crypto.randomUUID();
+    // 2. Check for IDB share (intercepted by SW)
+    if (isSharedIdb) {
+      if (processedShareUrl.current === "idb-share") return;
+      processedShareUrl.current = "idb-share";
 
-    // Save immediately to ensure no data loss
-    addItem({
-      id: newItemId,
-      type: itemType,
-      url: contentUrl || undefined,
-      domain: domain || undefined,
-      title: title || (contentUrl ? "Shared Link" : "Shared Note"),
-      content: text || ""
-    } as any);
+      const processIdbShare = async () => {
+        try {
+          const { getDB } = await import('@/lib/db/indexeddb');
+          const db = await getDB();
+          const tx = db.transaction('syncMetadata', 'readwrite');
+          const store = tx.objectStore('syncMetadata');
+          const payload = await store.get('share_payload');
+          
+          if (!payload) return;
+          
+          // Clear payload so we don't re-process later
+          await store.delete('share_payload');
+          await tx.done;
 
-    vibrate([50, 50]);
+          const extractUrl = (str: string | null) => {
+            if (!str) return null;
+            const match = str.match(/https?:\/\/[^\s]+/i);
+            return match ? match[0] : null;
+          };
 
-    // Open the interactive Pro Clipper modal
-    setShareItem({
-      id: newItemId,
-      url: contentUrl || undefined,
-      domain: domain || undefined,
-      title: title || (contentUrl ? "Shared Link" : "Shared Note"),
-      content: text || ""
-    });
+          const contentUrl = payload.url || extractUrl(payload.text as string) || extractUrl(payload.title as string);
+          const itemType = contentUrl ? "link" : "note";
+
+          let domain = "";
+          if (contentUrl) {
+            try {
+              domain = new URL(contentUrl).hostname.replace("www.", "");
+            } catch (e) { }
+          }
+
+          const newItemId = crypto.randomUUID();
+
+          let imageBlobUrl = "";
+          if (payload.files && payload.files.length > 0) {
+            const file = payload.files[0];
+            try {
+              const buffer = await file.arrayBuffer();
+              const base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+              imageBlobUrl = `data:${file.type};base64,${base64}`;
+            } catch (e) {
+              console.error("Failed to process shared image file", e);
+            }
+          }
+
+          const finalTitle = payload.title || (contentUrl ? "Shared Link" : "Shared Note");
+          const finalContent = payload.text || "";
+
+          // Save immediately
+          addItem({
+            id: newItemId,
+            type: itemType,
+            url: contentUrl || undefined,
+            domain: domain || undefined,
+            title: finalTitle,
+            content: finalContent,
+            imageUrl: imageBlobUrl || undefined,
+          } as any);
+
+          if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50]);
+
+          // Open the interactive Pro Clipper modal
+          setShareItem({
+            id: newItemId,
+            url: contentUrl || undefined,
+            domain: domain || undefined,
+            title: finalTitle,
+            content: finalContent,
+            imageUrl: imageBlobUrl || undefined,
+          });
+
+        } catch (err) {
+          console.error("Failed to process IDB share", err);
+        }
+      };
+      processIdbShare();
+    }
   }, [searchParams, addItem]);
 
   const closeShareModal = () => {
@@ -432,13 +521,46 @@ function ResearchContent() {
                   <Link2 className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium line-clamp-2 leading-snug">{shareItem.title}</h3>
-                  {shareItem.domain && (
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <img src={`https://www.google.com/s2/favicons?domain=${shareItem.domain}&sz=32`} className="w-3.5 h-3.5 rounded-sm" alt="" />
-                      <span className="text-xs text-slate-400">{shareItem.domain}</span>
-                    </div>
-                  )}
+                  <div className="flex items-start justify-between gap-4">
+                    {isEditingDetails ? (
+                      <div className="w-full space-y-2">
+                        <input
+                          type="text"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-sm text-white focus:border-violet-500 outline-none"
+                          value={shareItem.title || ""}
+                          onChange={(e) => {
+                            setShareItem({ ...shareItem, title: e.target.value });
+                            updateItem(shareItem.id, { title: e.target.value });
+                          }}
+                          placeholder="Title"
+                        />
+                        <input
+                          type="text"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-sm text-white focus:border-violet-500 outline-none"
+                          value={shareItem.imageUrl || ""}
+                          onChange={(e) => {
+                            setShareItem({ ...shareItem, imageUrl: e.target.value });
+                            updateItem(shareItem.id, { imageUrl: e.target.value });
+                          }}
+                          placeholder="Image URL"
+                        />
+                        <button onClick={() => setIsEditingDetails(false)} className="text-xs text-violet-400 font-medium">Done Editing</button>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <h3 className="text-white font-medium line-clamp-2 leading-snug">{shareItem.title}</h3>
+                          {shareItem.domain && (
+                            <div className="flex items-center gap-1.5 mt-2">
+                              <img src={`https://www.google.com/s2/favicons?domain=${shareItem.domain}&sz=32`} className="w-3.5 h-3.5 rounded-sm" alt="" />
+                              <span className="text-xs text-slate-400">{shareItem.domain}</span>
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => setIsEditingDetails(true)} className="text-xs text-violet-400 whitespace-nowrap hover:text-violet-300">Edit</button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

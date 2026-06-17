@@ -152,16 +152,16 @@ export default function VaultPage() {
                     <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800"></div></div>
                     <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-900 px-2 text-slate-500">Or use PIN</span></div>
                   </div>
-                  <form onSubmit={handlePinAction} className="flex gap-2">
+                  <form onSubmit={handlePinAction} className="flex flex-col sm:flex-row gap-3">
                     <input
                       type="password"
                       value={pinInput}
                       onChange={e => setPinInput(e.target.value)}
                       placeholder="Enter a secure PIN"
-                      className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
                       required
                     />
-                    <button type="submit" disabled={isProcessing || !pinInput} className="bg-slate-800 hover:bg-slate-700 text-white px-4 rounded-xl font-medium transition-colors">
+                    <button type="submit" disabled={isProcessing || !pinInput} className="bg-slate-800 hover:bg-slate-700 text-white py-3 sm:px-6 rounded-xl font-medium transition-colors">
                       Save
                     </button>
                   </form>
@@ -178,36 +178,23 @@ export default function VaultPage() {
                       {isProcessing ? "Authenticating..." : "Unlock with Biometrics"}
                     </button>
                   ) : (
-                    <form onSubmit={handlePinAction} className="flex gap-2">
+                    <form onSubmit={handlePinAction} className="flex flex-col sm:flex-row gap-3">
                       <input
                         type="password"
                         value={pinInput}
                         onChange={e => setPinInput(e.target.value)}
                         placeholder="Enter your PIN"
-                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500 text-center tracking-[0.3em] font-mono text-lg"
+                        className="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500 text-center tracking-[0.3em] font-mono text-lg"
                         required
                         autoFocus
                       />
-                      <button type="submit" disabled={isProcessing || !pinInput} className="bg-violet-600 hover:bg-violet-500 text-white px-6 rounded-xl font-medium transition-colors">
+                      <button type="submit" disabled={isProcessing || !pinInput} className="bg-violet-600 hover:bg-violet-500 text-white py-3 sm:px-6 rounded-xl font-medium transition-colors">
                         Unlock
                       </button>
                     </form>
                   )}
 
-                  <div className="flex justify-between items-center mt-6">
-                    {/* Reset Button (Bottom Left) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm("Are you sure? This will delete all encrypted data in your vault and reset biometrics/PIN.")) {
-                          resetVault();
-                          setPinError("");
-                        }
-                      }}
-                      className="text-slate-500 hover:text-red-400 text-xs font-medium transition-colors"
-                    >
-                      Reset Vault
-                    </button>
+                  <div className="flex justify-end items-center mt-6">
 
                     {/* Toggle / Setup Button (Bottom Right) */}
                     {!hasBiometricsSetup ? (

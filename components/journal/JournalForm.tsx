@@ -138,7 +138,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
     try {
       const loc = JSON.parse(location);
       return loc.display || loc.city || loc.place_name || null;
-    } catch { return null; }
+    } catch { return location; }
   };
 
   const togglePlayback = () => {
@@ -293,25 +293,24 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         </div>
         <div>
           <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">Location</label>
-          {getLocationDisplay() ? (
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5">
-              <MapPin className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" />
-              <span className="text-sm text-white truncate">{getLocationDisplay()}</span>
-              <button type="button" onClick={() => setLocation("")} className="ml-auto text-slate-500 hover:text-red-400">
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          ) : (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={getLocationDisplay() || ""}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Paris, France"
+              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:ring-2 focus:ring-violet-500 outline-none"
+            />
             <button
               type="button"
               onClick={fetchLocation}
               disabled={locationLoading}
-              className="w-full flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-500 hover:text-slate-300 hover:border-slate-700 transition-colors"
+              className="flex items-center justify-center bg-slate-900 border border-slate-800 rounded-xl px-3 text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
+              title="Detect Location"
             >
-              <MapPin className="w-3.5 h-3.5" />
-              {locationLoading ? "Detecting..." : "Add location"}
+              <MapPin className={`w-4 h-4 ${locationLoading ? "animate-pulse text-violet-400" : ""}`} />
             </button>
-          )}
+          </div>
         </div>
       </div>
 
