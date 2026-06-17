@@ -24,7 +24,6 @@ import {
   Calendar,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import exifr from "exifr";
 
 const MOODS = [
   { label: "Happy", emoji: "😊" },
@@ -88,54 +87,17 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
     setPhotoBlobs(prev => [...prev, file]);
     setPhotoPreviewUrls(prev => [...prev, URL.createObjectURL(file)]);
     e.target.value = "";
-
-    // Parse EXIF in the background using exifr's optimized file reader (only reads first 64kb)
-    exifr.parse(file, { tiff: true, exif: true, gps: true }).then(async (exif) => {
-      console.log("EXIF Extraction Result:", exif);
-      if (exif) {
-        if (exif.DateTimeOriginal || exif.CreateDate) {
-          const dateObj = new Date(exif.DateTimeOriginal || exif.CreateDate);
-          if (!isNaN(dateObj.getTime())) {
-            const d = new Date(dateObj);
-            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-            setCustomDate(d.toISOString().slice(0, 16));
-          }
-        }
-        if (exif.latitude && exif.longitude) {
-          setLocationLoading(true);
-          try {
-            const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${exif.latitude}&lon=${exif.longitude}&format=json&email=support@expense-tracker.com`, {
-              headers: { 
-                'Accept-Language': 'en',
-                'User-Agent': 'ExpenseTrackerPWA/1.0'
-              }
-            });
-            const geo = await r.json();
-            const place = geo.address?.suburb || geo.address?.neighbourhood || geo.address?.city_district || "";
-            const city = geo.address?.city || geo.address?.town || geo.address?.village || "";
-            const country = geo.address?.country || "";
-            const displayName = [place, city, country].filter(Boolean).join(", ");
-            if (displayName) {
-              setLocation(JSON.stringify({ lat: exif.latitude, lng: exif.longitude, place_name: place, city, country, display: displayName }));
-            } else {
-              setLocation(JSON.stringify({ lat: exif.latitude, lng: exif.longitude, display: "Location from photo" }));
-            }
-          } catch {
-             setLocation(JSON.stringify({ display: "Detected from photo" }));
-          } finally {
-            setLocationLoading(false);
-          }
-        }
-      }
-    }).catch(err => {
-      console.error("EXIF parsing failed", err);
-    });
   };
 
   const removePhoto = (idx: number) => {
-    URL.revokeObjectURL(photoPreviewUrls[idx]);
+    const urlToRevoke = photoPreviewUrls[idx];
     setPhotoBlobs(prev => prev.filter((_, i) => i !== idx));
     setPhotoPreviewUrls(prev => prev.filter((_, i) => i !== idx));
+    
+    // Defer revoke to ensure React removes the img tag from DOM first
+    setTimeout(() => {
+      URL.revokeObjectURL(urlToRevoke);
+    }, 100);
   };
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {

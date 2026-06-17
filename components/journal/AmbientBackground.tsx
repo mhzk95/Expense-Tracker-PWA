@@ -37,16 +37,6 @@ const researchParticles = [
 ];
 
 export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVariant }) => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="fixed inset-0 z-[-1] bg-slate-950" />;
-  }
-
   const getParticles = () => {
     switch (variant) {
       case 'transactions': return txParticles;
