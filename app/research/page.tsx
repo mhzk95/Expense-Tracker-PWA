@@ -178,7 +178,7 @@ function ResearchContent() {
 
   const closeShareModal = () => {
     setShareItem(null);
-    router.replace("/research");
+    window.history.replaceState(null, '', '/research');
   };
 
   const getSuggestedTopics = (itemTitle: string, itemContent: string) => {
