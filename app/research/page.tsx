@@ -34,12 +34,14 @@ function ResearchContent() {
     const action = searchParams.get("action");
     const isSharedIdb = searchParams.get("shared") === "true";
     
-    // 1. Check for legacy query param share
-    if (action === "save") {
-      const url = searchParams.get("url");
-      const text = searchParams.get("text");
-      const title = searchParams.get("title");
+    const url = searchParams.get("url");
+    const text = searchParams.get("text");
+    const title = searchParams.get("title");
 
+    const isLegacyShare = action === "save" || (!action && !isSharedIdb && (title || text || url));
+
+    // 1. Check for legacy query param share
+    if (isLegacyShare) {
       if (!url && !text && !title) return;
 
       const signature = `query-${url}-${text}-${title}`;
