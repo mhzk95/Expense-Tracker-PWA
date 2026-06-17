@@ -79,14 +79,71 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Load image immediately for fast UX
-    setPhotoBlobs(prev => [...prev, file]);
-    setPhotoPreviewUrls(prev => [...prev, URL.createObjectURL(file)]);
+    // Reset input
     e.target.value = "";
+
+    try {
+      // 1. Create a temporary URL for the raw image
+      const tempUrl = URL.createObjectURL(file);
+      
+      // 2. Load the image into an off-screen HTMLImageElement
+      const img = new Image();
+      img.src = tempUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // 3. Calculate new dimensions (max 1280px to save VRAM and storage)
+      const MAX_DIMENSION = 1280;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        if (width > height) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+      }
+
+      // 4. Draw to off-screen canvas
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      
+      if (!ctx) throw new Error("Could not get canvas context");
+      
+      // Smooth scaling
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 5. Compress to highly-optimized JPEG (80% quality)
+      const optimizedBlob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, "image/jpeg", 0.8);
+      });
+
+      // Clean up the raw memory immediately
+      URL.revokeObjectURL(tempUrl);
+
+      if (!optimizedBlob) throw new Error("Failed to compress image");
+
+      // 6. Update state with the lightweight compressed blob
+      setPhotoBlobs(prev => [...prev, optimizedBlob]);
+      setPhotoPreviewUrls(prev => [...prev, URL.createObjectURL(optimizedBlob)]);
+
+    } catch (err) {
+      console.error("Image compression failed:", err);
+      alert("Failed to process the image. Please try a different photo.");
+    }
   };
 
   const removePhoto = (idx: number) => {
@@ -229,7 +286,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
             <img
               src={photoPreviewUrls[0]}
               alt="Cover"
-              className="w-full h-44 object-cover"
+              className="w-full h-44 object-cover transform-gpu will-change-transform"
             />
             <button
               type="button"
@@ -243,7 +300,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
               <div className="flex gap-2 p-2 overflow-x-auto bg-slate-950/60 absolute bottom-0 left-0 right-0 backdrop-blur-sm">
                 {photoPreviewUrls.slice(1).map((url, i) => (
                   <div key={i} className="relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border border-slate-800">
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={url} alt="" className="w-full h-full object-cover transform-gpu will-change-transform" />
                     <button type="button" onClick={() => removePhoto(i + 1)} className="absolute top-0.5 right-0.5 bg-black/60 p-0.5 rounded-full">
                       <X className="w-2.5 h-2.5 text-white" />
                     </button>

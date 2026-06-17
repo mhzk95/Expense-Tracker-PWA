@@ -50,7 +50,7 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
       <img 
         src={loadedSrc} 
         alt={alt} 
-        className={className} 
+        className={className + " transform-gpu will-change-transform"} 
         onClick={() => onClick?.(loadedSrc)}
       />
     );
@@ -61,7 +61,7 @@ export function TelegramLazyImage({ url, alt, className, onClick, entryId, photo
       <img 
         src={loadedSrc} 
         alt={alt} 
-        className={className} 
+        className={className + " transform-gpu will-change-transform"} 
         onClick={() => onClick?.(loadedSrc)}
       />
     );
