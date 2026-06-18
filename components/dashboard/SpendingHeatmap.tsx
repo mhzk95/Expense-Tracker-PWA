@@ -6,7 +6,28 @@ import { formatCurrency } from "@/lib/utils/helpers";
 import { GlassCard } from "@/components/ui/GlassCard";
 
 export function SpendingHeatmap() {
-  const { transactions } = useTransactions();
+  const { transactions, loading } = useTransactions();
+  
+  if (loading) {
+    return (
+      <GlassCard className="p-6 animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-4 w-48 bg-slate-800/60 rounded-full" />
+        </div>
+        <div className="w-full overflow-hidden h-28 bg-slate-900/40 rounded-xl flex items-center justify-center">
+          <div className="flex gap-[3px]">
+            {[...Array(24)].map((_, i) => (
+              <div key={i} className="flex flex-col gap-[3px]">
+                {[...Array(7)].map((_, j) => (
+                  <div key={j} className="w-3 h-3 rounded-[2px] bg-slate-800/60" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </GlassCard>
+    );
+  }
   
   const data = useMemo(() => {
      const map = new Map<string, number>();

@@ -64,7 +64,17 @@ export function DashboardStats() {
   };
 
   if (loading) {
-    return <div className="animate-pulse bg-slate-900/60 h-32 rounded-2xl" />;
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="glass-card p-5 h-28 flex flex-col justify-between animate-pulse">
+            <div className="h-3 w-16 bg-slate-800/60 rounded-full" />
+            <div className="h-6 w-24 bg-slate-800/60 rounded-full mt-2" />
+            <div className="h-3 w-20 bg-slate-800/60 rounded-full mt-2" />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

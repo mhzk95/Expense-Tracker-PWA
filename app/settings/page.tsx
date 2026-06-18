@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
       <CloudSyncSettings />
 
-      {session && <TelegramSettings />}
+      <TelegramSettings />
 
       <ThemeSelector />
 

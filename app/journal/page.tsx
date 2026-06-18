@@ -289,8 +289,9 @@ function groupByDate(entries: JournalEntity[]): { label: string; entries: Journa
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function JournalPage() {
-  const { entries, loading, deleteEntry } = useJournal();
-  const { transactions } = useTransactions();
+  const { entries, loading: journalLoading, deleteEntry } = useJournal();
+  const { transactions, loading: txLoading } = useTransactions();
+  const loading = journalLoading || txLoading;
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState("");

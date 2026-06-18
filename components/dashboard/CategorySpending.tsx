@@ -13,7 +13,28 @@ export function CategorySpending() {
   const { categories, loading: catLoading } = useCategories();
 
   if (txLoading || catLoading) {
-    return <div className="h-64 rounded-2xl border border-slate-800/60 bg-slate-900/60 animate-pulse" />;
+    return (
+      <GlassCard className="flex flex-col h-full animate-pulse">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+          <div className="h-4 w-36 bg-slate-800/60 rounded-full" />
+          <div className="h-3 w-24 bg-slate-800/60 rounded-full" />
+        </div>
+        <div className="p-5 flex-1 space-y-5">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-800/60" />
+                  <div className="h-3 w-20 bg-slate-800/60 rounded-full" />
+                </div>
+                <div className="h-3.5 w-12 bg-slate-800/60 rounded-full" />
+              </div>
+              <div className="h-1.5 w-full bg-slate-800/60 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+    );
   }
 
   // Filter only expenses for current month

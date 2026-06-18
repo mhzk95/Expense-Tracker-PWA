@@ -35,7 +35,18 @@ export function RecentTransactions() {
       {/* Transaction rows */}
       <div className="divide-y divide-white/5 flex-1 flex flex-col justify-between">
         {loading ? (
-          <div className="p-5 text-sm text-slate-400">Loading transactions...</div>
+          <div className="flex-1 flex flex-col divide-y divide-white/5 animate-pulse">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+                <div className="h-9 w-9 rounded-full bg-slate-800/60" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3.5 w-24 bg-slate-800/60 rounded-full" />
+                  <div className="h-2.5 w-16 bg-slate-800/60 rounded-full" />
+                </div>
+                <div className="h-4 w-12 bg-slate-800/60 rounded-full" />
+              </div>
+            ))}
+          </div>
         ) : recent.length === 0 ? (
           <div className="p-5 text-sm text-slate-400">No transactions found.</div>
         ) : recent.map((txn) => {
