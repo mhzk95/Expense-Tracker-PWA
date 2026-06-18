@@ -14,7 +14,7 @@ import { useReminders } from "@/hooks/useReminders";
 function ResearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items, topics, addItem, updateItem, deleteItem, addTopic } = useResearch();
+  const { items, topics, loading, addItem, updateItem, deleteItem, addTopic } = useResearch();
   const { addReminder } = useReminders();
 
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -22,6 +22,10 @@ function ResearchContent() {
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  if (loading) {
+    return <ResearchSkeleton />;
+  }
 
   const [shareItem, setShareItem] = useState<any>(null);
   const [isEditingDetails, setIsEditingDetails] = useState(false);

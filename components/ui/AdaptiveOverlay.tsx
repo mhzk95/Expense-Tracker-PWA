@@ -2,6 +2,7 @@
 
 import { useAppRuntime, getRuntimeUiConfig } from "@/hooks/useAppRuntime";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils/helpers";
 import { X } from "lucide-react";
 
@@ -33,8 +34,8 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children }: AdaptiveOv
 
   const isBottomSheet = uiConfig.modalPresentation === "bottom-sheet";
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop */}
       <div 
         className={cn(
@@ -72,6 +73,7 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children }: AdaptiveOv
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

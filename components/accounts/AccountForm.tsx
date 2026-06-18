@@ -81,7 +81,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
+          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
           placeholder="e.g. Main Checking"
           required
         />
@@ -92,7 +92,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
         >
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
@@ -110,14 +110,14 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             step="0.01"
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
+            className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-8 pr-4 py-3 text-white transition-all shadow-inner outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
             placeholder="0.00"
             required
           />
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+      <div className="flex items-center justify-between p-3 bg-slate-950/40 rounded-xl border border-slate-800/80 shadow-inner">
         <div>
           <label className="block text-sm font-medium text-white">Exclude from Net Worth</label>
           <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
@@ -140,9 +140,9 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !name || !balance}
-        className="w-full bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-xl py-3 mt-2 transition-colors disabled:opacity-50"
+        className="w-full bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/20 text-white font-medium rounded-xl py-3 mt-2 shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
       >
-        {isSubmitting ? "Adding..." : "Add Account"}
+        {isSubmitting ? "Adding..." : initialData ? "Update Account" : "Add Account"}
       </button>
     </form>
   );

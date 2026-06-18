@@ -22,23 +22,23 @@ export function useResearch() {
       const newTopics = allTopics.filter((t: ResearchTopicEntity) => !t.isDeleted).sort((a: ResearchTopicEntity, b: ResearchTopicEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       const newItems = allItems.filter((i: SavedItemEntity) => !i.isDeleted).sort((a: SavedItemEntity, b: SavedItemEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
-      const topicsDiff = !cachedTopics || 
-                         cachedTopics.length !== newTopics.length || 
-                         newTopics.some((t: ResearchTopicEntity, i: number) => t.id !== cachedTopics![i]?.id || t.title !== cachedTopics![i]?.title);
+      // Prevent unnecessary state updates if the fetched data is identical to what's already in the local state
+      const topicsDiff = !topics || 
+                         topics.length !== newTopics.length || 
+                         newTopics.some((t: ResearchTopicEntity, i: number) => t.id !== topics[i]?.id || t.title !== topics[i]?.title);
       
-      const itemsDiff = !cachedItems || 
-                        cachedItems.length !== newItems.length || 
+      const itemsDiff = !items || 
+                        items.length !== newItems.length || 
                         newItems.some((item: SavedItemEntity, i: number) => 
-                          item.id !== cachedItems![i]?.id || 
-                          item.title !== cachedItems![i]?.title || 
-                          item.content !== cachedItems![i]?.content || 
-                          item.imageUrl !== cachedItems![i]?.imageUrl || 
-                          item.topicId !== cachedItems![i]?.topicId || 
-                          item.isPinned !== cachedItems![i]?.isPinned || 
-                          item.isArchived !== cachedItems![i]?.isArchived ||
-                          item.ocrText !== cachedItems![i]?.ocrText ||
-                          item.url !== cachedItems![i]?.url
+                          item.id !== items[i]?.id || 
+                          item.title !== items[i]?.title || 
+                          item.content !== items[i]?.content || 
+                          item.imageUrl !== items[i]?.imageUrl || 
+                          item.topicId !== items[i]?.topicId || 
+                          item.isPinned !== items[i]?.isPinned || 
+                          item.isArchived !== items[i]?.isArchived ||
+                          item.ocrText !== items[i]?.ocrText ||
+                          item.url !== items[i]?.url
                         );
 
       if (topicsDiff || cachedLoading) {

@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { Cloud, CloudOff, RefreshCw } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { syncWithCloud } from "@/lib/services/cloudSync";
+import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import toast from "react-hot-toast";
 
 export function CloudSyncSettings() {
   const { data: session, status } = useSession();
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<string | null>(null);
+  const [showConfirmSignOut, setShowConfirmSignOut] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("et_last_cloud_sync");
@@ -43,6 +45,23 @@ export function CloudSyncSettings() {
     }
   };
 
+  const handleSignOut = async () => {
+    setShowConfirmSignOut(false);
+    localStorage.clear();
+    sessionStorage.clear();
+    try {
+      const cacheKeys = await caches.keys();
+      for (const key of cacheKeys) {
+        await caches.delete(key);
+      }
+    } catch (e) {}
+    
+    const req = indexedDB.deleteDatabase("ExpenseTrackerDB");
+    req.onsuccess = () => signOut();
+    req.onerror = () => signOut();
+    req.onblocked = () => signOut();
+  };
+
   return (
     <div className="space-y-3 pt-4">
       <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1">
@@ -68,21 +87,9 @@ export function CloudSyncSettings() {
           
           {status !== "loading" && (
             <button
-              onClick={async () => {
+              onClick={() => {
                 if (session) {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  try {
-                    const cacheKeys = await caches.keys();
-                    for (const key of cacheKeys) {
-                      await caches.delete(key);
-                    }
-                  } catch (e) {}
-                  
-                  const req = indexedDB.deleteDatabase("ExpenseTrackerDB");
-                  req.onsuccess = () => signOut();
-                  req.onerror = () => signOut();
-                  req.onblocked = () => signOut();
+                  setShowConfirmSignOut(true);
                 } else {
                   signIn();
                 }
@@ -116,6 +123,32 @@ export function CloudSyncSettings() {
           </div>
         )}
       </div>
+
+      <AdaptiveOverlay
+        isOpen={showConfirmSignOut}
+        onClose={() => setShowConfirmSignOut(false)}
+        title="Confirm Sign Out"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-300 leading-relaxed">
+            Are you sure you want to sign out? This will completely clear all local database data, settings, and cache on this device. Any unsynced data will be lost.
+          </p>
+          <div className="flex flex-col gap-2 pt-2">
+            <button
+              onClick={handleSignOut}
+              className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg hover:shadow-red-500/20 active:scale-[0.98]"
+            >
+              Sign Out & Delete Local Data
+            </button>
+            <button
+              onClick={() => setShowConfirmSignOut(false)}
+              className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors active:scale-[0.98]"
+            >
+              Keep Me Connected
+            </button>
+          </div>
+        </div>
+      </AdaptiveOverlay>
     </div>
   );
 }

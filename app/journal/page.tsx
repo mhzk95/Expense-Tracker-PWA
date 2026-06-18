@@ -463,7 +463,7 @@ export default function JournalPage() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-violet-600 hover:bg-violet-500 active:scale-95 rounded-full shadow-2xl shadow-violet-500/40 flex items-center justify-center z-[60] transition-all"
+        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-violet-600 hover:bg-violet-500 active:scale-95 rounded-full shadow-2xl shadow-violet-500/40 flex items-center justify-center z-30 transition-all"
         aria-label="Add journal entry"
       >
         <Plus className="w-6 h-6 text-white" />

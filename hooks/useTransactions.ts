@@ -27,18 +27,18 @@ export function useTransactions() {
 
       const newTransactions = pageIndex === 0 ? data : [...transactions, ...data];
       
-      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
-      const isDifferent = !cachedTransactions || 
-                          cachedTransactions.length !== newTransactions.length || 
+      // Prevent unnecessary state updates if the fetched data is identical to what's already in the local state
+      const isDifferent = !transactions || 
+                          transactions.length !== newTransactions.length || 
                           newTransactions.some((t, i) => 
-                            t.id !== cachedTransactions![i]?.id || 
-                            t.amount !== cachedTransactions![i]?.amount || 
-                            t.description !== cachedTransactions![i]?.description || 
-                            t.date !== cachedTransactions![i]?.date || 
-                            t.categoryId !== cachedTransactions![i]?.categoryId ||
-                            t.type !== cachedTransactions![i]?.type ||
-                            t.status !== cachedTransactions![i]?.status ||
-                            t.needsReview !== cachedTransactions![i]?.needsReview
+                            t.id !== transactions[i]?.id || 
+                            t.amount !== transactions[i]?.amount || 
+                            t.description !== transactions[i]?.description || 
+                            t.date !== transactions[i]?.date || 
+                            t.categoryId !== transactions[i]?.categoryId ||
+                            t.type !== transactions[i]?.type ||
+                            t.status !== transactions[i]?.status ||
+                            t.needsReview !== transactions[i]?.needsReview
                           );
 
       if (isDifferent || cachedLoading) {

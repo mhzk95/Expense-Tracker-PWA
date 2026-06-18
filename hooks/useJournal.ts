@@ -27,16 +27,16 @@ export function useJournal() {
 
       const newEntries = pageIndex === 0 ? data : [...entries, ...data];
       
-      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
-      const isDifferent = !cachedEntries || 
-                          cachedEntries.length !== newEntries.length || 
+      // Prevent unnecessary state updates if the fetched data is identical to what's already in the local state
+      const isDifferent = !entries || 
+                          entries.length !== newEntries.length || 
                           newEntries.some((e, i) => 
-                            e.id !== cachedEntries![i]?.id || 
-                            e.content !== cachedEntries![i]?.content || 
-                            e.date !== cachedEntries![i]?.date ||
-                            e.mood !== cachedEntries![i]?.mood ||
-                            e.title !== cachedEntries![i]?.title ||
-                            (e.photoUrls && e.photoUrls.join(",")) !== (cachedEntries![i]?.photoUrls && cachedEntries![i]?.photoUrls.join(","))
+                            e.id !== entries[i]?.id || 
+                            e.content !== entries[i]?.content || 
+                            e.date !== entries[i]?.date ||
+                            e.mood !== entries[i]?.mood ||
+                            e.title !== entries[i]?.title ||
+                            (e.photoUrls && e.photoUrls.join(",")) !== (entries[i]?.photoUrls && entries[i]?.photoUrls.join(","))
                           );
 
       if (isDifferent || cachedLoading) {

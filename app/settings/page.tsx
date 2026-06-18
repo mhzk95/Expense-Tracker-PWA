@@ -36,8 +36,10 @@ export default function SettingsPage() {
   const [currency, setCurrency] = useState("INR");
   const [activeModal, setActiveModal] = useState<"currency" | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | "unsupported">("default");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const savedCurrency = localStorage.getItem(STORAGE_KEYS.CURRENCY) || "INR";
     setCurrency(savedCurrency);
 
@@ -63,7 +65,7 @@ export default function SettingsPage() {
         { 
           id: "currency", 
           label: "Default Currency", 
-          description: currency, 
+          description: mounted ? currency : "Loading...", 
           icon: Globe 
         },
       ],

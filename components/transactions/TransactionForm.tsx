@@ -22,6 +22,12 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [note, setNote] = useState("");
   
   const availableCategories = categories.filter(c => c.type === type);
+  const focusStyles = {
+    expense: "focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 focus:shadow-[0_0_15px_rgba(239,68,68,0.15)]",
+    income: "focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:shadow-[0_0_15px_rgba(16,185,129,0.15)]",
+    transfer: "focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:shadow-[0_0_15px_rgba(59,130,246,0.15)]",
+  };
+  const activeFocus = focusStyles[type];
   const [categoryId, setCategoryId] = useState("");
   const [accountId, setAccountId] = useState("");
   const [toAccountId, setToAccountId] = useState("");
@@ -209,7 +215,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             step="0.01"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none"
+            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-8 pr-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
             placeholder="0.00"
             required
           />
@@ -229,7 +235,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                 setCategoryId(e.target.value);
               }
             }}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
             required={!isCreatingCategory}
           >
             {categories.length === 0 ? (
@@ -260,7 +266,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                     onChange={e => setNewCategoryName(e.target.value)} 
                     placeholder="New category name..." 
                     autoFocus
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-violet-500 outline-none" 
+                    className={`flex-1 bg-slate-950/40 border border-slate-800/80 rounded-lg px-3 py-2 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`} 
                   />
                   <button type="button" onClick={handleQuickAddCategory} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 transition-colors rounded-lg text-white text-sm font-medium shadow-lg shadow-violet-500/20">Add</button>
                   <button type="button" onClick={() => setIsCreatingCategory(false)} className="px-3 py-2 bg-slate-800 hover:bg-slate-700 transition-colors rounded-lg text-slate-300 text-sm">Cancel</button>
@@ -278,7 +284,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             <select
               value={accountId}
               onChange={(e) => setAccountId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
               required
             >
               {accounts.map((acc) => (
@@ -293,7 +299,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             <select
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
               required
             >
               <option value="" disabled>Select destination</option>
@@ -311,7 +317,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           <select
             value={accountId}
             onChange={(e) => setAccountId(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none appearance-none"
+            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
             required
           >
             {accounts.length === 0 ? (
@@ -333,7 +339,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none"
+          className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
           placeholder="E.g., John owes $20 for pizza, Sarah owes $15..."
         />
       </div>
@@ -361,7 +367,13 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !amount}
-        className="w-full bg-violet-600 hover:bg-violet-500 text-white font-medium rounded-xl py-3 mt-2 transition-colors disabled:opacity-50"
+        className={`w-full py-3 mt-2 font-medium rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] ${
+          type === "expense"
+            ? "bg-red-600 hover:bg-red-500 hover:shadow-red-500/20 text-white shadow-lg"
+            : type === "income"
+            ? "bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20 text-white shadow-lg"
+            : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/20 text-white shadow-lg"
+        }`}
       >
         {isSubmitting ? "Saving..." : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
       </button>

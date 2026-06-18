@@ -402,25 +402,25 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         {/* 2x2 Grid Metadata */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {/* Date & Time */}
-          <div className="col-span-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-col justify-center min-h-[64px]">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><Calendar className="w-3 h-3" /> Date & Time</span>
+          <div className="col-span-2 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><Calendar className="w-3 h-3 text-violet-400" /> Date & Time</span>
             <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full font-medium" />
           </div>
 
           {/* Location */}
-          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 text-left hover:bg-white/10 transition-all flex flex-col justify-center min-h-[64px]">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><MapPin className="w-3 h-3" /> Location</span>
+          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 text-left hover:bg-slate-900/40 transition-all flex flex-col justify-center min-h-[64px] focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><MapPin className="w-3 h-3 text-violet-400" /> Location</span>
             <span className="text-xs text-white truncate w-full font-medium">{getLocationDisplay() || "Add location..."}</span>
           </button>
 
           {/* Event */}
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-col justify-center min-h-[64px]">
+          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Event <span className="lowercase font-normal opacity-70">(optional)</span></span>
             <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 font-medium" />
           </div>
 
           {/* Mood */}
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] relative">
+          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] relative transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Mood</span>
             <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full appearance-none font-medium z-10 cursor-pointer">
               <option value="" className="bg-slate-900">Select mood...</option>
@@ -429,7 +429,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           </div>
 
           {/* Reflection */}
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-col justify-center min-h-[64px]">
+          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Reflection <span className="lowercase font-normal opacity-70">(optional)</span></span>
             <textarea rows={1} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 resize-none font-medium overflow-hidden" />
           </div>
@@ -440,9 +440,9 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           <button
             type="submit"
             disabled={isSubmitting || (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0)}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-2xl py-4 transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+            className="w-full bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/20 text-white font-semibold rounded-2xl py-4 transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
           >
-            <Lock className="w-4 h-4 text-slate-400" />
+            <Lock className="w-4 h-4 text-white/80" />
             {isSubmitting ? "Saving memory..." : "Save Memory"}
           </button>
           <p className="text-center text-[10px] text-slate-500 flex items-center justify-center gap-1 mt-3">
