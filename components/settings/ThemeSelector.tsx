@@ -6,19 +6,37 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 
 const THEMES = [
-  { id: "dark", name: "Slate Dark", bg: "#020617", surface: "#0f172a", primary: "#8b5cf6" },
-  { id: "light", name: "Slate Light", bg: "#f8fafc", surface: "#ffffff", primary: "#8b5cf6" },
-  { id: "amoled", name: "AMOLED Black", bg: "#000000", surface: "#0a0a0a", primary: "#8b5cf6" },
-  { id: "navy", name: "Midnight Navy", bg: "#02040a", surface: "#0a0f1c", primary: "#8b5cf6" },
-  { id: "system", name: "Match System", bg: "linear-gradient(135deg, #f8fafc 50%, #020617 50%)", surface: "linear-gradient(135deg, #ffffff 50%, #0f172a 50%)", primary: "#8b5cf6" },
+  { id: "dark", name: "Slate Dark", bg: "#020617", surface: "#0f172a", primary: "var(--color-primary)" },
+  { id: "light", name: "Slate Light", bg: "#f8fafc", surface: "#ffffff", primary: "var(--color-primary)" },
+  { id: "amoled", name: "AMOLED Black", bg: "#000000", surface: "#0a0a0a", primary: "var(--color-primary)" },
+  { id: "navy", name: "Midnight Navy", bg: "#02040a", surface: "#0a0f1c", primary: "var(--color-primary)" },
+  { id: "system", name: "Match System", bg: "linear-gradient(135deg, #f8fafc 50%, #020617 50%)", surface: "linear-gradient(135deg, #ffffff 50%, #0f172a 50%)", primary: "var(--color-primary)" },
 ];
+
+const ACCENT_MAP: Record<string, string> = {
+  violet: "#8b5cf6",
+  emerald: "#10b981",
+  rose: "#f43f5e",
+  amber: "#f59e0b",
+  sky: "#0ea5e9",
+  indigo: "#6366f1",
+};
 
 export function ThemeSelector() {
   const [activeTheme, setActiveTheme] = useState("dark");
+  const [accentHex, setAccentHex] = useState("#8b5cf6");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || "dark";
     setActiveTheme(savedTheme);
+
+    const updateAccent = () => {
+      const savedAccent = localStorage.getItem("et_accent_color") || "violet";
+      setAccentHex(ACCENT_MAP[savedAccent] || "#8b5cf6");
+    };
+    updateAccent();
+    window.addEventListener("app:accent:changed", updateAccent);
+    return () => window.removeEventListener("app:accent:changed", updateAccent);
   }, []);
 
   const handleThemeChange = (newTheme: string) => {
@@ -65,12 +83,11 @@ export function ThemeSelector() {
             <button
               key={theme.id}
               onClick={() => handleThemeChange(theme.id)}
-              className={cn(
-                "flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 border-2",
-                isActive 
-                  ? "border-violet-500 bg-violet-500/10" 
-                  : "border-transparent hover:bg-slate-800/40"
-              )}
+              className="flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 border-2"
+              style={{
+                borderColor: isActive ? "var(--color-primary)" : "transparent",
+                backgroundColor: isActive ? "var(--color-primary-glow)" : "transparent",
+              }}
             >
               {/* Preview Card */}
               <div 
@@ -96,18 +113,21 @@ export function ThemeSelector() {
                 {/* Active checkmark overlay */}
                 {isActive && (
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[1px]">
-                    <div className="h-6 w-6 rounded-full bg-violet-500 text-white flex items-center justify-center shadow-lg">
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    <div 
+                      className="h-6 w-6 rounded-full text-slate-950 flex items-center justify-center shadow-lg"
+                      style={{ backgroundColor: "var(--color-primary)" }}
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={3.5} />
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Label */}
-              <span className={cn(
-                "text-[11px] font-medium tracking-wide",
-                isActive ? "text-violet-400" : "text-slate-400"
-              )}>
+              <span 
+                className="text-[11px] font-medium tracking-wide transition-colors"
+                style={{ color: isActive ? "var(--color-primary)" : undefined }}
+              >
                 {theme.name}
               </span>
             </button>
@@ -121,9 +141,9 @@ export function ThemeSelector() {
         </h3>
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none px-1">
           {THEMES.find(t => t.id === activeTheme) && [
-            { label: "Background", color: THEMES.find(t => t.id === activeTheme)!.bg },
-            { label: "Surface", color: THEMES.find(t => t.id === activeTheme)!.surface },
-            { label: "Primary", color: THEMES.find(t => t.id === activeTheme)!.primary },
+            { label: "Background", color: THEMES.find(t => t.id === activeTheme)!.bg.includes("linear-gradient") ? "#0f172a" : THEMES.find(t => t.id === activeTheme)!.bg },
+            { label: "Surface", color: THEMES.find(t => t.id === activeTheme)!.surface.includes("linear-gradient") ? "#1e293b" : THEMES.find(t => t.id === activeTheme)!.surface },
+            { label: "Primary", color: accentHex },
             { label: "Success", color: "#10b981" },
             { label: "Danger", color: "#ef4444" },
             { label: "Warning", color: "#f59e0b" },

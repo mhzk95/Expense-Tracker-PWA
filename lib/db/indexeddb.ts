@@ -144,6 +144,17 @@ export interface SyncAction {
   retryCount: number;
 }
 
+export interface ErrorLogEntity {
+  id: string;
+  timestamp: number;
+  feature: string;
+  operation: string;
+  level: "info" | "warning" | "error";
+  message: string;
+  details?: string;
+  retryCount?: number;
+}
+
 interface ExpenseTrackerDB extends DBSchema {
   transactions: {
     key: string;
@@ -192,6 +203,11 @@ interface ExpenseTrackerDB extends DBSchema {
     value: SyncAction;
     indexes: { "by-timestamp": number };
   };
+  error_logs: {
+    key: string;
+    value: ErrorLogEntity;
+    indexes: { "by-timestamp": number };
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ExpenseTrackerDB>> | null = null;
@@ -202,7 +218,7 @@ export function getDB() {
   }
   
   if (!dbPromise) {
-    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 10, {
+    dbPromise = openDB<ExpenseTrackerDB>('ExpenseTrackerDB', 11, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -268,6 +284,12 @@ export function getDB() {
           if (!db.objectStoreNames.contains('sync_queue')) {
             const syncStore = db.createObjectStore('sync_queue', { keyPath: 'id' });
             syncStore.createIndex('by-timestamp', 'timestamp');
+          }
+        }
+        if (oldVersion < 11) {
+          if (!db.objectStoreNames.contains('error_logs')) {
+            const logStore = db.createObjectStore('error_logs', { keyPath: 'id' });
+            logStore.createIndex('by-timestamp', 'timestamp');
           }
         }
       },

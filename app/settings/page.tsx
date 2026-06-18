@@ -26,6 +26,8 @@ import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
 import { CloudSyncSettings } from "@/components/settings/CloudSyncSettings";
 import { TelegramSettings } from "@/components/settings/TelegramSettings";
+import { DiagnosticsSettings } from "@/components/settings/DiagnosticsSettings";
+import { AccentColorSelector } from "@/components/settings/AccentColorSelector";
 import { CheckCircle2 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -92,6 +94,10 @@ export default function SettingsPage() {
       {session && <TelegramSettings />}
 
       <ThemeSelector />
+
+      <AccentColorSelector />
+
+      <DiagnosticsSettings />
 
       {getSectionItems().map((section) => (
         <div key={section.title} className="space-y-1 pt-4">

@@ -1,4 +1,5 @@
 import { getDB, SyncAction } from "@/lib/db/indexeddb";
+import { logMessage } from "./errorLogger";
 
 export async function pullCloudData(entities = "ALL", limit = 500) {
   if (typeof window === "undefined" || !navigator.onLine) return { success: false, error: "Offline" };
@@ -73,6 +74,7 @@ export async function pullCloudData(entities = "ALL", limit = 500) {
     return { success: true, hasMore };
   } catch (error: any) {
     console.error("Pull Error:", error);
+    await logMessage("Sync", "pullCloudData", "error", error.message, error.stack);
     return { success: false, error: error.message };
   }
 }
@@ -124,8 +126,9 @@ export async function drainSyncQueue() {
                 } else {
                   throw new Error(`Upload failed with status ${upRes.status}`);
                 }
-              } catch (e) {
+              } catch (e: any) {
                 console.error("Failed to upload photo to telegram CDN", e);
+                await logMessage("Sync", "uploadPhoto", "error", e.message || "Failed to upload photo", e.stack);
                 throw e; // Halt sync queue
               }
             }
@@ -150,8 +153,9 @@ export async function drainSyncQueue() {
             } else {
               throw new Error(`Upload failed with status ${upRes.status}`);
             }
-          } catch (e) {
+          } catch (e: any) {
             console.error("Failed to upload audio to telegram CDN", e);
+            await logMessage("Sync", "uploadAudio", "error", e.message || "Failed to upload audio", e.stack);
             throw e; // Halt sync queue
           }
         }
@@ -192,6 +196,7 @@ export async function drainSyncQueue() {
 
   } catch (error: any) {
     console.error("Drain Queue Error:", error);
+    await logMessage("Sync", "drainSyncQueue", "error", error.message, error.stack);
     return { success: false, error: error.message };
   }
 }

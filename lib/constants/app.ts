@@ -117,4 +117,5 @@ export const STORAGE_KEYS = {
   CURRENCY: "et_currency",
   SIDEBAR_COLLAPSED: "et_sidebar_collapsed",
   ONBOARDING_COMPLETE: "et_onboarding_complete",
+  ACCENT_COLOR: "et_accent_color",
 } as const;
