@@ -6,20 +6,47 @@ import { journalRepository } from "@/lib/db/journalRepository";
 
 const PAGE_SIZE = 20;
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedEntries: JournalEntity[] | null = null;
+let cachedLoading = true;
+let cachedHasMore = true;
+let cachedPage = 0;
+
 export function useJournal() {
-  const [entries, setEntries] = useState<JournalEntity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
+  const [entries, setEntries] = useState<JournalEntity[]>(cachedEntries || []);
+  const [loading, setLoading] = useState(cachedEntries === null);
+  const [hasMore, setHasMore] = useState(cachedHasMore);
+  const [page, setPage] = useState(cachedPage);
 
   const fetchPage = async (pageIndex: number) => {
     try {
       const data = await journalRepository.getPaginated(PAGE_SIZE, pageIndex * PAGE_SIZE);
-      setHasMore(data.length === PAGE_SIZE);
-      setEntries(prev => pageIndex === 0 ? data : [...prev, ...data]);
+      const newHasMore = data.length === PAGE_SIZE;
+      cachedHasMore = newHasMore;
+      setHasMore(newHasMore);
+
+      const newEntries = pageIndex === 0 ? data : [...entries, ...data];
+      
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const isDifferent = !cachedEntries || 
+                          cachedEntries.length !== newEntries.length || 
+                          newEntries.some((e, i) => 
+                            e.id !== cachedEntries![i]?.id || 
+                            e.content !== cachedEntries![i]?.content || 
+                            e.date !== cachedEntries![i]?.date ||
+                            e.mood !== cachedEntries![i]?.mood ||
+                            e.title !== cachedEntries![i]?.title ||
+                            (e.photoUrls && e.photoUrls.join(",")) !== (cachedEntries![i]?.photoUrls && cachedEntries![i]?.photoUrls.join(","))
+                          );
+
+      if (isDifferent || cachedLoading) {
+        cachedEntries = newEntries;
+        setEntries(newEntries);
+      }
     } catch (error) {
       console.error("Failed to fetch journal entries", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   };
@@ -27,8 +54,9 @@ export function useJournal() {
   useEffect(() => {
     fetchPage(0);
     setPage(0);
+    cachedPage = 0;
     
-    const handleDbChange = () => { fetchPage(0); setPage(0); };
+    const handleDbChange = () => { fetchPage(0); setPage(0); cachedPage = 0; };
     window.addEventListener("db:journal:changed", handleDbChange);
     window.addEventListener("sync:updated", handleDbChange);
 
@@ -42,6 +70,7 @@ export function useJournal() {
     if (!loading && hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
+      cachedPage = nextPage;
       fetchPage(nextPage);
     }
   };

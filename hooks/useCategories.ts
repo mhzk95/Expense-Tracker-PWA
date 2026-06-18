@@ -4,17 +4,36 @@ import { useState, useEffect, useCallback } from "react";
 import { CategoryEntity } from "@/lib/db/indexeddb";
 import { categoriesRepository } from "@/lib/db/categoriesRepository";
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedCategories: CategoryEntity[] | null = null;
+let cachedLoading = true;
+
 export function useCategories() {
-  const [categories, setCategories] = useState<CategoryEntity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryEntity[]>(cachedCategories || []);
+  const [loading, setLoading] = useState(cachedCategories === null);
 
   const fetchCategories = useCallback(async () => {
     try {
       const data = await categoriesRepository.getAll();
-      setCategories(data);
+      
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const isDifferent = !cachedCategories || 
+                          cachedCategories.length !== data.length || 
+                          data.some((c, i) => 
+                            c.id !== cachedCategories![i]?.id || 
+                            c.name !== cachedCategories![i]?.name || 
+                            c.color !== cachedCategories![i]?.color ||
+                            c.type !== cachedCategories![i]?.type
+                          );
+
+      if (isDifferent || cachedLoading) {
+        cachedCategories = data;
+        setCategories(data);
+      }
     } catch (error) {
       console.error("Failed to fetch categories", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   }, []);

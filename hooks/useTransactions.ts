@@ -6,20 +6,49 @@ import { transactionsRepository } from "@/lib/db/transactionsRepository";
 
 const PAGE_SIZE = 50;
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedTransactions: TransactionEntity[] | null = null;
+let cachedLoading = true;
+let cachedHasMore = true;
+let cachedPage = 0;
+
 export function useTransactions() {
-  const [transactions, setTransactions] = useState<TransactionEntity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
+  const [transactions, setTransactions] = useState<TransactionEntity[]>(cachedTransactions || []);
+  const [loading, setLoading] = useState(cachedTransactions === null);
+  const [hasMore, setHasMore] = useState(cachedHasMore);
+  const [page, setPage] = useState(cachedPage);
 
   const fetchPage = async (pageIndex: number) => {
     try {
       const data = await transactionsRepository.getPaginated(PAGE_SIZE, pageIndex * PAGE_SIZE);
-      setHasMore(data.length === PAGE_SIZE);
-      setTransactions(prev => pageIndex === 0 ? data : [...prev, ...data]);
+      const newHasMore = data.length === PAGE_SIZE;
+      cachedHasMore = newHasMore;
+      setHasMore(newHasMore);
+
+      const newTransactions = pageIndex === 0 ? data : [...transactions, ...data];
+      
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const isDifferent = !cachedTransactions || 
+                          cachedTransactions.length !== newTransactions.length || 
+                          newTransactions.some((t, i) => 
+                            t.id !== cachedTransactions![i]?.id || 
+                            t.amount !== cachedTransactions![i]?.amount || 
+                            t.description !== cachedTransactions![i]?.description || 
+                            t.date !== cachedTransactions![i]?.date || 
+                            t.categoryId !== cachedTransactions![i]?.categoryId ||
+                            t.type !== cachedTransactions![i]?.type ||
+                            t.status !== cachedTransactions![i]?.status ||
+                            t.needsReview !== cachedTransactions![i]?.needsReview
+                          );
+
+      if (isDifferent || cachedLoading) {
+        cachedTransactions = newTransactions;
+        setTransactions(newTransactions);
+      }
     } catch (error) {
       console.error("Failed to fetch transactions", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   };
@@ -27,8 +56,9 @@ export function useTransactions() {
   useEffect(() => {
     fetchPage(0);
     setPage(0);
+    cachedPage = 0;
     
-    const handleDbChange = () => { fetchPage(0); setPage(0); };
+    const handleDbChange = () => { fetchPage(0); setPage(0); cachedPage = 0; };
     window.addEventListener("db:transactions:changed", handleDbChange);
     window.addEventListener("sync:updated", handleDbChange);
 
@@ -42,6 +72,7 @@ export function useTransactions() {
     if (!loading && hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
+      cachedPage = nextPage;
       fetchPage(nextPage);
     }
   };

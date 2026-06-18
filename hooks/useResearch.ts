@@ -3,10 +3,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { getDB, ResearchTopicEntity, SavedItemEntity, pushSyncAction } from "@/lib/db/indexeddb";
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedTopics: ResearchTopicEntity[] | null = null;
+let cachedItems: SavedItemEntity[] | null = null;
+let cachedLoading = true;
+
 export function useResearch() {
-  const [topics, setTopics] = useState<ResearchTopicEntity[]>([]);
-  const [items, setItems] = useState<SavedItemEntity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [topics, setTopics] = useState<ResearchTopicEntity[]>(cachedTopics || []);
+  const [items, setItems] = useState<SavedItemEntity[]>(cachedItems || []);
+  const [loading, setLoading] = useState(cachedTopics === null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -14,11 +19,40 @@ export function useResearch() {
       const allTopics = await db.getAll("researchTopics");
       const allItems = await db.getAll("savedItems");
       
-      setTopics(allTopics.filter((t: ResearchTopicEntity) => !t.isDeleted).sort((a: ResearchTopicEntity, b: ResearchTopicEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-      setItems(allItems.filter((i: SavedItemEntity) => !i.isDeleted).sort((a: SavedItemEntity, b: SavedItemEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      const newTopics = allTopics.filter((t: ResearchTopicEntity) => !t.isDeleted).sort((a: ResearchTopicEntity, b: ResearchTopicEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      const newItems = allItems.filter((i: SavedItemEntity) => !i.isDeleted).sort((a: SavedItemEntity, b: SavedItemEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const topicsDiff = !cachedTopics || 
+                         cachedTopics.length !== newTopics.length || 
+                         newTopics.some((t: ResearchTopicEntity, i: number) => t.id !== cachedTopics![i]?.id || t.title !== cachedTopics![i]?.title);
+      
+      const itemsDiff = !cachedItems || 
+                        cachedItems.length !== newItems.length || 
+                        newItems.some((item: SavedItemEntity, i: number) => 
+                          item.id !== cachedItems![i]?.id || 
+                          item.title !== cachedItems![i]?.title || 
+                          item.content !== cachedItems![i]?.content || 
+                          item.imageUrl !== cachedItems![i]?.imageUrl || 
+                          item.topicId !== cachedItems![i]?.topicId || 
+                          item.isPinned !== cachedItems![i]?.isPinned || 
+                          item.isArchived !== cachedItems![i]?.isArchived ||
+                          item.ocrText !== cachedItems![i]?.ocrText ||
+                          item.url !== cachedItems![i]?.url
+                        );
+
+      if (topicsDiff || cachedLoading) {
+        cachedTopics = newTopics;
+        setTopics(newTopics);
+      }
+      if (itemsDiff || cachedLoading) {
+        cachedItems = newItems;
+        setItems(newItems);
+      }
     } catch (error) {
       console.error("Failed to fetch research data", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   }, []);

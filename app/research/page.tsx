@@ -687,9 +687,40 @@ function ResearchContent() {
   );
 }
 
+function ResearchSkeleton() {
+  return (
+    <div className="space-y-6 pb-20 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="h-8 w-48 bg-slate-900 rounded-xl mb-2" />
+          <div className="h-4 w-32 bg-slate-900 rounded-lg" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-9 w-9 bg-slate-900 rounded-xl" />
+          <div className="h-9 w-9 bg-slate-900 rounded-xl" />
+        </div>
+      </div>
+
+      {/* Search Bar Skeleton */}
+      <div className="h-12 w-full bg-slate-900 rounded-2xl" />
+
+      {/* Tab Switcher Skeleton */}
+      <div className="h-10 w-full bg-slate-900 rounded-xl" />
+
+      {/* Grid items skeleton */}
+      <div className="grid grid-cols-2 gap-4">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="h-32 bg-slate-900/60 rounded-2xl border border-slate-900" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ResearchPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<ResearchSkeleton />}>
       <ResearchContent />
     </Suspense>
   );

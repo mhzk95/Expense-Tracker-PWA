@@ -3,19 +3,41 @@
 import { useState, useEffect, useCallback } from "react";
 import { getDB, ReminderEntity, pushSyncAction } from "@/lib/db/indexeddb";
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedReminders: ReminderEntity[] | null = null;
+let cachedLoading = true;
+
 export function useReminders() {
-  const [reminders, setReminders] = useState<ReminderEntity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [reminders, setReminders] = useState<ReminderEntity[]>(cachedReminders || []);
+  const [loading, setLoading] = useState(cachedReminders === null);
 
   const fetchReminders = useCallback(async () => {
     try {
       const db = await getDB();
       const all = await db.getAll("reminders");
       // Filter out deleted items and sort by date
-      setReminders(all.filter((r: ReminderEntity) => !r.isDeleted).sort((a: ReminderEntity, b: ReminderEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      const filtered = all.filter((r: ReminderEntity) => !r.isDeleted).sort((a: ReminderEntity, b: ReminderEntity) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const isDifferent = !cachedReminders || 
+                          cachedReminders.length !== filtered.length || 
+                          filtered.some((r: ReminderEntity, i: number) => 
+                            r.id !== cachedReminders![i]?.id || 
+                            r.title !== cachedReminders![i]?.title || 
+                            r.status !== cachedReminders![i]?.status ||
+                            r.priority !== cachedReminders![i]?.priority ||
+                            r.dueDate !== cachedReminders![i]?.dueDate ||
+                            r.notes !== cachedReminders![i]?.notes
+                          );
+
+      if (isDifferent || cachedLoading) {
+        cachedReminders = filtered;
+        setReminders(filtered);
+      }
     } catch (error) {
       console.error("Failed to fetch reminders", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   }, []);

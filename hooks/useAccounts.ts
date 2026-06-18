@@ -4,17 +4,36 @@ import { useState, useEffect, useCallback } from "react";
 import { AccountEntity } from "@/lib/db/indexeddb";
 import { accountsRepository } from "@/lib/db/accountsRepository";
 
+// Memory cache to prevent layout shifts and flickering on component mount
+let cachedAccounts: AccountEntity[] | null = null;
+let cachedLoading = true;
+
 export function useAccounts() {
-  const [accounts, setAccounts] = useState<AccountEntity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [accounts, setAccounts] = useState<AccountEntity[]>(cachedAccounts || []);
+  const [loading, setLoading] = useState(cachedAccounts === null);
 
   const fetchAccounts = useCallback(async () => {
     try {
       const data = await accountsRepository.getAll();
-      setAccounts(data);
+      
+      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
+      const isDifferent = !cachedAccounts || 
+                          cachedAccounts.length !== data.length || 
+                          data.some((a, i) => 
+                            a.id !== cachedAccounts![i]?.id || 
+                            a.balance !== cachedAccounts![i]?.balance || 
+                            a.name !== cachedAccounts![i]?.name ||
+                            a.excludeFromNetWorth !== cachedAccounts![i]?.excludeFromNetWorth
+                          );
+
+      if (isDifferent || cachedLoading) {
+        cachedAccounts = data;
+        setAccounts(data);
+      }
     } catch (error) {
       console.error("Failed to fetch accounts", error);
     } finally {
+      cachedLoading = false;
       setLoading(false);
     }
   }, []);
