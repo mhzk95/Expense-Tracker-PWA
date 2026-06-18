@@ -92,56 +92,60 @@ export function AppShell({ children }: AppShellProps) {
     return () => document.body.classList.remove("red-alert");
   }, [reminders]);
 
-  if (!runtime.isBrowser) {
-    return (
-      <div className="min-h-screen bg-slate-950">
-        <main className="min-h-screen">{children}</main>
-      </div>
-    );
-  }
-
   const uiConfig = getRuntimeUiConfig(runtime);
 
-  if (uiConfig.showDesktopSidebar) {
-    return (
-      <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
-        <AmbientBackground variant={variant} />
-        <WebSidebarNavigation />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-y-auto">
-            <div className="max-w-6xl mx-auto px-8 py-8">{children}</div>
-          </main>
-        </div>
-        {/* <RuntimeModeBadge position="bottom-right" /> */}
-        <InstallPromptBanner />
-        <PwaUpdatePrompt />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-white relative">
+    <div 
+      className={`bg-slate-950 text-white relative w-full ${
+        uiConfig.showDesktopSidebar ? "flex h-screen overflow-hidden" : "flex flex-col min-h-screen"
+      }`}
+    >
       <AmbientBackground variant={variant} />
-      {uiConfig.showMobileWebHeader && <MobileWebHeader />}
+      
+      {/* Desktop Sidebar Navigation */}
+      {uiConfig.showDesktopSidebar && <WebSidebarNavigation />}
 
-      {!uiConfig.showMobileWebHeader && (
-        <div
-          className="flex-shrink-0 bg-slate-950"
-          style={{ height: "env(safe-area-inset-top)" }}
-          aria-hidden="true"
-        />
-      )}
-
-      <main
-        className="flex-1 overflow-y-auto"
-        style={{ paddingBottom: uiConfig.showBottomNav ? "calc(4rem + env(safe-area-inset-bottom))" : undefined }}
+      {/* Main Content Area */}
+      <div 
+        className={`flex-1 flex flex-col ${
+          uiConfig.showDesktopSidebar ? "overflow-hidden" : "min-h-screen"
+        }`}
       >
-        <div className="max-w-2xl mx-auto px-4 py-6">{children}</div>
-      </main>
+        {/* Mobile Header */}
+        {uiConfig.showMobileWebHeader && <MobileWebHeader />}
 
+        {/* Mobile PWA Safe Area Top Inset */}
+        {!uiConfig.showMobileWebHeader && !uiConfig.showDesktopSidebar && (
+          <div
+            className="flex-shrink-0 bg-slate-950"
+            style={{ height: "env(safe-area-inset-top)" }}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Scrollable Content Container */}
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ 
+            paddingBottom: uiConfig.showBottomNav ? "calc(4rem + env(safe-area-inset-bottom))" : undefined 
+          }}
+        >
+          <div 
+            className={
+              uiConfig.showDesktopSidebar 
+                ? "max-w-6xl mx-auto px-8 py-8" 
+                : "max-w-2xl mx-auto px-4 py-6"
+            }
+          >
+            {children}
+          </div>
+        </main>
+      </div>
+
+      {/* Bottom Navigation */}
       {uiConfig.showBottomNav && <PWABottomNavigation />}
 
-      {/* <RuntimeModeBadge position="top-right" /> */}
+      {/* <RuntimeModeBadge position="bottom-right" /> */}
       <InstallPromptBanner />
       <PwaUpdatePrompt />
       <CommandBar />

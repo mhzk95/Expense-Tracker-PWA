@@ -76,9 +76,9 @@ export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVa
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       <div className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] transition-colors duration-1000 ${getGradient()}`} />
       
-      {renderParticles(journalParticles, variant === 'journal', 'journal')}
-      {renderParticles(txParticles, variant === 'transactions', 'tx')}
-      {renderParticles(researchParticles, variant === 'research', 'research')}
+      {variant === 'journal' && renderParticles(journalParticles, true, 'journal')}
+      {variant === 'transactions' && renderParticles(txParticles, true, 'transactions')}
+      {variant === 'research' && renderParticles(researchParticles, true, 'research')}
     </div>
   );
 };
