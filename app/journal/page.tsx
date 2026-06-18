@@ -6,7 +6,6 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatDate } from "@/lib/utils/helpers";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { JournalForm } from "@/components/journal/JournalForm";
-import { AmbientBackground } from "@/components/journal/AmbientBackground";
 import { TelegramLazyImage } from "@/components/ui/TelegramLazyImage";
 import { JournalEntity } from "@/lib/db/indexeddb";
 import { formatDuration } from "@/hooks/useAudioRecorder";
@@ -318,7 +317,6 @@ export default function JournalPage() {
 
   return (
     <div className="pb-32 min-h-screen relative overflow-hidden flex flex-col">
-      <AmbientBackground />
       
       {/* Sticky Header / Search Area */}
       <div className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md pt-4 pb-2 px-2 sm:px-4 border-b border-slate-800/60">

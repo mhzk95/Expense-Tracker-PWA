@@ -26,6 +26,7 @@ export default function LoginPage() {
       if (res?.error) {
         toast.error("Invalid credentials");
       } else {
+        localStorage.setItem("et_device_trusted", "true");
         toast.success("Welcome back!");
         router.push("/");
         router.refresh();

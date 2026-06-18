@@ -10,6 +10,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell/AppShell";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { OfflineAuthGuard } from "@/components/providers/OfflineAuthGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -88,7 +89,9 @@ export default function RootLayout({
          * - Standalone PWA → bottom navigation
          */}
         <AuthProvider>
-          <AppShell>{children}</AppShell>
+          <OfflineAuthGuard>
+            <AppShell>{children}</AppShell>
+          </OfflineAuthGuard>
         </AuthProvider>
       </body>
     </html>

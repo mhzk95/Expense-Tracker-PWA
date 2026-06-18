@@ -13,6 +13,8 @@ import { useReminders } from "@/hooks/useReminders";
 import { useLocalPushScheduler } from "@/hooks/useLocalPushScheduler";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { AmbientBackground, AmbientVariant } from "@/components/journal/AmbientBackground";
 
 interface AppShellProps {
   children: ReactNode;
@@ -21,6 +23,11 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const runtime = useAppRuntime();
   const { reminders } = useReminders();
+  const pathname = usePathname();
+
+  let variant: AmbientVariant = 'journal';
+  if (pathname?.startsWith('/transactions')) variant = 'transactions';
+  else if (pathname?.startsWith('/research')) variant = 'research';
 
   // Enable global background syncing
   useAutoSync();
@@ -70,7 +77,8 @@ export function AppShell({ children }: AppShellProps) {
 
   if (uiConfig.showDesktopSidebar) {
     return (
-      <div className="flex h-screen bg-slate-950 text-white overflow-hidden">
+      <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
+        <AmbientBackground variant={variant} />
         <WebSidebarNavigation />
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto">
@@ -85,7 +93,8 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-950 text-white relative">
+      <AmbientBackground variant={variant} />
       {uiConfig.showMobileWebHeader && <MobileWebHeader />}
 
       {!uiConfig.showMobileWebHeader && (

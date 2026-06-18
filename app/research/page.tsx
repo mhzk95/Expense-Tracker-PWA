@@ -10,7 +10,6 @@ import Fuse from "fuse.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { useReminders } from "@/hooks/useReminders";
-import { AmbientBackground } from "@/components/journal/AmbientBackground";
 
 function ResearchContent() {
   const searchParams = useSearchParams();
@@ -219,7 +218,6 @@ function ResearchContent() {
 
   return (
     <div className="space-y-6 pb-20">
-      <AmbientBackground variant="research" />
       <PageHeader
         title={searchQuery ? "Search Results" : (activeTopicId ? topics.find(t => t.id === activeTopicId)?.title || "Topic" : "Research Hub")}
         subtitle={searchQuery ? `${displayedItems.length} matches` : (activeTopicId ? `${displayedItems.length} items` : `${items.filter(i => !i.topicId).length} in Inbox`)}

@@ -15,7 +15,6 @@ import { useCategories } from "@/hooks/useCategories";
 import { AddTransactionAction } from "@/components/dashboard/AddTransactionAction";
 import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { AmbientBackground } from "@/components/journal/AmbientBackground";
 
 export default function TransactionsPage() {
   const { transactions: rawTransactions, loading: txLoading, deleteTransaction } = useTransactions();
@@ -27,7 +26,6 @@ export default function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <AmbientBackground variant="transactions" />
       <PageHeader
         title="Transactions"
         subtitle={loading ? "Loading..." : `${transactions.length} transactions this month`}

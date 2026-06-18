@@ -12,19 +12,23 @@ This project is a production-grade Expense Tracker Progressive Web App (PWA). It
 - **Utilities:** `date-fns` for date manipulation
 
 ## Key Features & Modules
-1. **Dashboard (`/`)**: Overview of finances.
-2. **Transactions (`/transactions`)**: Track income and expenses.
-3. **Analytics (`/analytics`)**: Trends and insights.
-4. **Accounts (`/accounts`)**: Bank accounts and cards management (uses `accountsRepository.ts`).
-5. **Categories (`/categories`)**: Manage income/expense categories (uses `categoriesRepository.ts`).
-6. **Journal (`/journal`)**: Memories and life events (uses `journalRepository.ts`).
-7. **Vault (`/vault`)**: Secure, encrypted passwords and notes.
-8. **Settings (`/settings`)**: App preferences, Theme, Currency (INR default), and third-party integrations (e.g., Dropbox sync).
+1. **Dashboard (`/`)**: Overview of finances and recent transactions.
+2. **Transactions (`/transactions`)**: Track income and expenses with category tagging.
+3. **Analytics (`/analytics`)**: Spending trends and insights.
+4. **Accounts (`/accounts`)**: Bank accounts and cards management.
+5. **Categories (`/categories`)**: Manage income/expense categories with personalized colors.
+6. **Journal (`/journal`)**: Memories, life events, photo uploads, and audio recordings.
+7. **Research (`/research`)**: Web clippings and note taking. Functions as a native PWA Share Target to receive URLs/content from other apps.
+8. **Reminders (`/reminders`)**: Schedule recurring payments and notification alerts.
+9. **Vault (`/vault`)**: Secure, encrypted passwords and sensitive notes (Biometric-backed).
+10. **Settings (`/settings`)**: App preferences, Theme, Currency (INR default), and third-party integrations (Dropbox sync).
 
 ## Recent Integrations & Context
-- **Telegram Service**: Code in `lib/services/telegram.ts` suggests integration with Telegram for alerts or tracking.
-- **Dropbox Settings**: Code in `components/settings/DropboxSettings.tsx` indicates remote backup/sync features.
-- **PWA Features**: Bottom navigation is explicitly supported via `ENABLE_APP_SHELL_FOR_MOBILE_DEVICE_BROWSER = true`.
+- **Telegram Service (`lib/services/telegram.ts`)**: Integrated as a completely free, unlimited CDN for saving high-resolution images and audio recordings securely. 
+- **Dropbox Settings (`components/settings/DropboxSettings.tsx`)**: Daily JSON backups and remote sync.
+- **UI Architecture**: Deeply integrated Glassmorphism styling with Framer Motion ambient background particles and hardware-accelerated (`transform-gpu`) media rendering.
+- **Client-Side Optimization**: Custom Canvas pipeline compresses local images to ~300KB locally before IDB storage to prevent mobile VRAM thrashing and accelerate sync.
+- **PWA Features**: Bottom navigation is explicitly supported via `ENABLE_APP_SHELL_FOR_MOBILE_DEVICE_BROWSER = true`. Service worker (`sw.js` via Serwist) handles offline caching and Push Notifications.
 
 ## How to Work on this Project
 - **Styling**: Always use TailwindCSS and `lucide-react` icons. Maintain the modern, responsive design.

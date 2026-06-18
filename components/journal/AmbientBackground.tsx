@@ -37,14 +37,6 @@ const researchParticles = [
 ];
 
 export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVariant }) => {
-  const getParticles = () => {
-    switch (variant) {
-      case 'transactions': return txParticles;
-      case 'research': return researchParticles;
-      default: return journalParticles;
-    }
-  };
-
   const getGradient = () => {
     switch (variant) {
       case 'transactions': return "from-emerald-900/20 via-slate-950/90 to-slate-950";
@@ -53,38 +45,40 @@ export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVa
     }
   };
 
-  const particles = getParticles();
+  const renderParticles = (particles: any[], isCurrent: boolean, keyPrefix: string) => (
+    particles.map((p, i) => (
+      <motion.div
+        key={`${keyPrefix}-${i}`}
+        className="absolute rounded-full mix-blend-screen filter blur-xl transition-opacity duration-1000"
+        style={{
+          background: p.bg,
+          width: p.w,
+          height: p.h,
+          top: p.t,
+          left: p.l,
+          opacity: isCurrent ? 1 : 0,
+        }}
+        animate={{
+          y: p.y,
+          x: p.x,
+          scale: [1, 1.2, 0.9, 1.1, 1],
+        }}
+        transition={{
+          y: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
+          x: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
+        }}
+      />
+    ))
+  );
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      {/* Base subtle radial gradient */}
-      <div className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] ${getGradient()}`} />
-
-      {/* Drifting warm balls */}
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full mix-blend-screen filter blur-xl"
-          style={{
-            background: p.bg,
-            width: p.w,
-            height: p.h,
-            top: p.t,
-            left: p.l,
-          }}
-          animate={{
-            y: p.y,
-            x: p.x,
-            opacity: [1, 1, 1],
-            scale: [1, 1.2, 0.9, 1.1, 1],
-          }}
-          transition={{
-            duration: p.d,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+      <div className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] transition-colors duration-1000 ${getGradient()}`} />
+      
+      {renderParticles(journalParticles, variant === 'journal', 'journal')}
+      {renderParticles(txParticles, variant === 'transactions', 'tx')}
+      {renderParticles(researchParticles, variant === 'research', 'research')}
     </div>
   );
 };

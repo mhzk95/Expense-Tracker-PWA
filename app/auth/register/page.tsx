@@ -29,8 +29,6 @@ export default function RegisterPage() {
       if (!res.ok) {
         toast.error(data.message || "Registration failed");
       } else {
-        toast.success("Account created! Logging in...");
-        
         const signInRes = await signIn("credentials", {
           email,
           password,
@@ -38,6 +36,8 @@ export default function RegisterPage() {
         });
 
         if (!signInRes?.error) {
+          localStorage.setItem("et_device_trusted", "true");
+          toast.success("Account created successfully!");
           router.push("/");
           router.refresh();
         } else {

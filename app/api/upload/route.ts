@@ -6,13 +6,9 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    // Allow local testing (localhost or local network IP) without requiring a strict login
-    const host = request.headers.get("host") || "";
-    const isLocalRequest = host.includes("localhost") || host.includes("127.0.0.1") || host.startsWith("192.168.") || host.startsWith("10.");
-    
-    if (!session?.user && process.env.NODE_ENV !== "development" && !isLocalRequest) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // We remove the strict session check here because local-first PWA users 
+    // might not be logged into Supabase, but still need to upload images to Telegram.
+    // The Telegram bot token is safely secured on the server.
 
     const formData = await request.formData();
     const file = formData.get("file") as Blob | null;
