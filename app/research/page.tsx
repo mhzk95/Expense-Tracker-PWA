@@ -344,7 +344,7 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group glass-card interactive flex flex-col justify-between overflow-hidden transition-all duration-300 ${item.isPinned ? 'ring-1 ring-violet-500 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : ''}`}>
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group glass-card interactive flex flex-col justify-between transition-all duration-300 ${item.isPinned ? 'ring-1 ring-violet-500 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : ''}`}>
 
                         {/* Action Menu Toggle (Mobile & Hover) */}
                         <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
@@ -409,7 +409,7 @@ function ResearchContent() {
 
                         {/* Flush Image at the Top */}
                         {item.imageUrl && (isImage || isLink) && (
-                          <div className="w-full relative h-48 sm:h-64 shrink-0 overflow-hidden border-b border-slate-800/50 bg-slate-950">
+                          <div className="w-full relative h-48 sm:h-64 shrink-0 overflow-hidden rounded-t-[inherit] border-b border-slate-800/50 bg-slate-950">
                             <img src={item.imageUrl} alt={item.title || "Image"} className="w-full h-full object-cover" style={{ objectPosition: "top" }} />
                           </div>
                         )}

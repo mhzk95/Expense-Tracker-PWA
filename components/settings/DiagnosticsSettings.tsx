@@ -23,6 +23,7 @@ export function DiagnosticsSettings() {
   const [failedSyncCount, setFailedSyncCount] = useState(0);
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showAllLogs, setShowAllLogs] = useState(false);
 
   const loadDiagnostics = async () => {
     try {
@@ -173,7 +174,7 @@ export function DiagnosticsSettings() {
           </div>
         ) : (
           <div className="divide-y divide-white/5">
-            {logs.map((log) => {
+            {(showAllLogs ? logs : logs.slice(0, 5)).map((log) => {
               const isExpanded = expandedLogId === log.id;
               return (
                 <div key={log.id} className="text-xs">
@@ -225,6 +226,25 @@ export function DiagnosticsSettings() {
                 </div>
               );
             })}
+
+            {logs.length > 5 && (
+              <div className="p-2.5 bg-slate-900/20 flex justify-center border-t border-white/5">
+                <button
+                  onClick={() => setShowAllLogs(!showAllLogs)}
+                  className="w-full py-2 text-xs font-semibold text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  {showAllLogs ? (
+                    <>
+                      <ChevronUp className="h-3.5 w-3.5" /> Collapse Logs
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-3.5 w-3.5" /> Expand to show all logs ({logs.length})
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

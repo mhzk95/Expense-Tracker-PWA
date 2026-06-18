@@ -44,94 +44,111 @@ export default function TransactionsPage() {
       />
 
       {/* Transaction list */}
-      <GlassCard>
-        {loading ? (
-          <div className="p-10 text-center text-slate-400">Loading transactions...</div>
-        ) : transactions.length === 0 ? (
-          <EmptyState
-            title="No transactions yet"
-            description="Add your first income or expense to get started."
-            action={<AddTransactionAction />}
-          />
-        ) : (
-          <div className="divide-y divide-white/5">
-            {transactions.map((txn) => {
-              const category = categories.find((c) => c.id === txn.categoryId);
-              const isIncome = txn.type === "income";
-              const isTransfer = txn.type === "transfer";
+      {loading ? (
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="glass-card p-4 flex items-center gap-4 animate-pulse">
+              <div className="h-10 w-10 rounded-full bg-slate-800/60" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3.5 w-24 bg-slate-800/60 rounded-full" />
+                <div className="h-2.5 w-16 bg-slate-800/60 rounded-full" />
+              </div>
+              <div className="h-4 w-12 bg-slate-800/60 rounded-full" />
+            </div>
+          ))}
+        </div>
+      ) : transactions.length === 0 ? (
+        <EmptyState
+          title="No transactions yet"
+          description="Add your first income or expense to get started."
+          action={<AddTransactionAction />}
+        />
+      ) : (
+        <div className="space-y-3">
+          {transactions.map((txn) => {
+            const category = categories.find((c) => c.id === txn.categoryId);
+            const isIncome = txn.type === "income";
+            const isTransfer = txn.type === "transfer";
 
-              return (
-                <SwipeToDelete 
-                  key={txn.id} 
-                  onDelete={() => deleteTransaction(txn.id)}
+            const baseColor = txn.needsReview ? "#f59e0b" : (category?.color || "#8b5cf6");
+            const glowColor = txn.needsReview 
+              ? "rgba(245,158,11,0.15)" 
+              : (category 
+                  ? (category.color?.startsWith("#") ? `${category.color}26` : (category.color || "#8b5cf6")) 
+                  : "rgba(139,92,246,0.15)");
+
+            return (
+              <SwipeToDelete 
+                key={txn.id} 
+                onDelete={() => deleteTransaction(txn.id)}
+                glowColor={baseColor}
+                deleteMessage={`Delete "${txn.description}"?`}
+              >
+                <div 
                   className={cn(
-                    "transition-all duration-300 hover:bg-white/5",
-                    txn.needsReview && "border-l-[3px] border-amber-500/80 bg-gradient-to-r from-amber-500/5 to-transparent"
+                    "glass-card interactive flex items-center gap-4 px-5 py-4 w-full transition-all duration-300",
+                    txn.needsReview && "bg-gradient-to-r from-amber-500/5 to-transparent"
                   )}
                   style={{ 
-                    boxShadow: [
-                      category ? `inset -20px 0 30px -20px ${category.color}80, inset -2px 0 0 0 ${category.color}` : '',
-                      txn.needsReview ? `-4px 0 15px -5px rgba(245,158,11,0.3)` : ''
-                    ].filter(Boolean).join(', ') || undefined
-                  }}
+                    "--color-primary": baseColor,
+                    "--color-primary-glow": glowColor
+                  } as React.CSSProperties}
                 >
-                  <div className="flex items-center gap-4 px-5 py-4 w-full">
-                    {/* Icon */}
-                    <div
-                      className={cn(
-                        "flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center",
-                        isIncome
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : isTransfer
-                          ? "bg-blue-500/15 text-blue-400"
-                          : "bg-red-500/15 text-red-400"
-                      )}
-                    >
-                      {isIncome ? (
-                        <ArrowDownLeft className="h-5 w-5" />
-                      ) : isTransfer ? (
-                        <ArrowLeftRight className="h-5 w-5" />
-                      ) : (
-                        <ArrowUpRight className="h-5 w-5" />
-                      )}
-                    </div>
+                  {/* Icon */}
+                  <div
+                    className={cn(
+                      "flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center",
+                      isIncome
+                        ? "bg-emerald-500/15 text-emerald-400"
+                        : isTransfer
+                        ? "bg-blue-500/15 text-blue-400"
+                        : "bg-red-500/15 text-red-400"
+                    )}
+                  >
+                    {isIncome ? (
+                      <ArrowDownLeft className="h-5 w-5" />
+                    ) : isTransfer ? (
+                      <ArrowLeftRight className="h-5 w-5" />
+                    ) : (
+                      <ArrowUpRight className="h-5 w-5" />
+                    )}
+                  </div>
 
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{txn.description}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-slate-400">{category?.name ?? "Other"}</span>
-                        <span className="text-slate-600">·</span>
-                        <span className="text-xs text-slate-400">{formatDate(txn.date, "medium")}</span>
-                      </div>
-                    </div>
-
-                    {/* Amount + status */}
-                    <div className="text-right">
-                      <p
-                        className={cn(
-                          "text-sm font-semibold tabular-nums",
-                          isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
-                        )}
-                      >
-                        {isIncome ? "+" : "−"}{formatCurrency(txn.amount, txn.currency)}
-                      </p>
-                      <span
-                        className={cn(
-                          "text-xs",
-                          txn.status === "completed" ? "text-slate-500" : "text-amber-400"
-                        )}
-                      >
-                        {txn.status}
-                      </span>
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{txn.description}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-slate-400">{category?.name ?? "Other"}</span>
+                      <span className="text-slate-600">·</span>
+                      <span className="text-xs text-slate-400">{formatDate(txn.date, "medium")}</span>
                     </div>
                   </div>
-                </SwipeToDelete>
-              );
-            })}
-          </div>
-        )}
-      </GlassCard>
+
+                  {/* Amount + status */}
+                  <div className="text-right">
+                    <p
+                      className={cn(
+                        "text-sm font-semibold tabular-nums",
+                        isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                      )}
+                    >
+                      {isIncome ? "+" : "−"}{formatCurrency(txn.amount, txn.currency)}
+                    </p>
+                    <span
+                      className={cn(
+                        "text-xs",
+                        txn.status === "completed" ? "text-slate-500" : "text-amber-400"
+                      )}
+                    >
+                      {txn.status}
+                    </span>
+                  </div>
+                </div>
+              </SwipeToDelete>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

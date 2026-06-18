@@ -126,7 +126,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
   const tags = entry.tags || [];
 
   return (
-    <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-5 group w-full overflow-hidden relative">
+    <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-5 group w-full relative">
       {/* Left Column: Time & Timeline Line */}
       <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
         <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end">
@@ -180,12 +180,12 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
                     className="fixed inset-0 z-20" 
                     onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
                   />
-                  <div className="absolute right-0 top-6 z-30 glass-card min-w-[100px]">
+                  <div className="absolute right-0 top-6 z-30 bg-slate-900/95 border border-slate-800/80 backdrop-blur-xl shadow-xl rounded-xl min-w-[120px] overflow-hidden py-1 animate-in fade-in duration-100">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-400 hover:bg-slate-800 transition-colors font-medium"
+                      className="flex items-center gap-2 w-full px-3 py-2.5 text-xs text-red-400 hover:bg-red-500/10 transition-colors font-semibold"
                     >
-                      <Trash2 className="w-3 h-3" /> Delete
+                      <Trash2 className="w-3.5 h-3.5 text-red-400" /> Delete Entry
                     </button>
                   </div>
                 </>

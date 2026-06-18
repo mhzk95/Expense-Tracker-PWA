@@ -20,9 +20,9 @@ export function RecentTransactions() {
   const loading = txLoading || catLoading;
 
   return (
-    <GlassCard className="flex flex-col h-full">
+    <div className="flex flex-col gap-3 h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+      <div className="flex items-center justify-between px-1">
         <h2 className="text-sm font-semibold text-white">Recent Transactions</h2>
         <Link
           href="/transactions"
@@ -33,11 +33,11 @@ export function RecentTransactions() {
       </div>
 
       {/* Transaction rows */}
-      <div className="divide-y divide-white/5 flex-1 flex flex-col justify-between">
+      <div className="space-y-3 flex-1 flex flex-col justify-start">
         {loading ? (
-          <div className="flex-1 flex flex-col divide-y divide-white/5 animate-pulse">
+          <>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+              <div key={i} className="glass-card p-4 flex items-center gap-4 animate-pulse">
                 <div className="h-9 w-9 rounded-full bg-slate-800/60" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3.5 w-24 bg-slate-800/60 rounded-full" />
@@ -46,63 +46,75 @@ export function RecentTransactions() {
                 <div className="h-4 w-12 bg-slate-800/60 rounded-full" />
               </div>
             ))}
-          </div>
+          </>
         ) : recent.length === 0 ? (
-          <div className="p-5 text-sm text-slate-400">No transactions found.</div>
-        ) : recent.map((txn) => {
-          const category = categories.find((c) => c.id === txn.categoryId);
-          const isIncome = txn.type === "income";
-          const isTransfer = txn.type === "transfer";
+          <div className="glass-card p-5 text-sm text-slate-400 text-center">No transactions found.</div>
+        ) : (
+          recent.map((txn) => {
+            const category = categories.find((c) => c.id === txn.categoryId);
+            const isIncome = txn.type === "income";
+            const isTransfer = txn.type === "transfer";
 
-          return (
-            <div
-              key={txn.id}
-              className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors"
-              style={category ? { boxShadow: `inset -20px 0 30px -20px ${category.color}80, inset -2px 0 0 0 ${category.color}` } : undefined}
-            >
-              {/* Type icon */}
+            const baseColor = txn.needsReview ? "#f59e0b" : (category?.color || "#8b5cf6");
+            const glowColor = txn.needsReview 
+              ? "rgba(245,158,11,0.15)" 
+              : (category 
+                  ? (category.color?.startsWith("#") ? `${category.color}26` : (category.color || "#8b5cf6")) 
+                  : "rgba(139,92,246,0.15)");
+
+            return (
               <div
-                className={cn(
-                  "flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center",
-                  isIncome
-                    ? "bg-emerald-500/15 text-emerald-400"
-                    : isTransfer
-                    ? "bg-blue-500/15 text-blue-400"
-                    : "bg-red-500/15 text-red-400"
-                )}
-                style={{ backgroundColor: category ? `${category.color}18` : undefined }}
+                key={txn.id}
+                className="glass-card interactive flex items-center gap-4 px-5 py-3.5 transition-all duration-300"
+                style={{
+                  "--color-primary": baseColor,
+                  "--color-primary-glow": glowColor
+                } as React.CSSProperties}
               >
-                {isIncome ? (
-                  <ArrowDownLeft className="h-4 w-4" />
-                ) : isTransfer ? (
-                  <ArrowLeftRight className="h-4 w-4" />
-                ) : (
-                  <ArrowUpRight className="h-4 w-4" />
-                )}
-              </div>
+                {/* Type icon */}
+                <div
+                  className={cn(
+                    "flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center",
+                    isIncome
+                      ? "bg-emerald-500/15 text-emerald-400"
+                      : isTransfer
+                      ? "bg-blue-500/15 text-blue-400"
+                      : "bg-red-500/15 text-red-400"
+                  )}
+                  style={{ backgroundColor: category ? `${category.color}18` : undefined }}
+                >
+                  {isIncome ? (
+                    <ArrowDownLeft className="h-4 w-4" />
+                  ) : isTransfer ? (
+                    <ArrowLeftRight className="h-4 w-4" />
+                  ) : (
+                    <ArrowUpRight className="h-4 w-4" />
+                  )}
+                </div>
 
-              {/* Description + category */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{txn.description}</p>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "short")}
-                </p>
-              </div>
+                {/* Description + category */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{txn.description}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "short")}
+                  </p>
+                </div>
 
-              {/* Amount */}
-              <span
-                className={cn(
-                  "text-sm font-semibold tabular-nums",
-                  isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
-                )}
-              >
-                {isIncome ? "+" : isTransfer ? "" : "−"}
-                {formatCurrency(txn.amount, txn.currency)}
-              </span>
-            </div>
-          );
-        })}
+                {/* Amount */}
+                <span
+                  className={cn(
+                    "text-sm font-semibold tabular-nums",
+                    isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                  )}
+                >
+                  {isIncome ? "+" : isTransfer ? "" : "−"}
+                  {formatCurrency(txn.amount, txn.currency)}
+                </span>
+              </div>
+            );
+          })
+        )}
       </div>
-    </GlassCard>
+    </div>
   );
 }

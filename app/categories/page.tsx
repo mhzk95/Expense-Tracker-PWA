@@ -155,21 +155,25 @@ export default function CategoriesPage() {
           if (grouped.length === 0) return null;
 
           return (
-            <div key={groupType} className="glass-card">
-              <div className="px-4 py-3 bg-slate-950/50 border-b border-slate-800/60">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  {groupType} Categories
-                </h3>
-              </div>
-              <div className="divide-y divide-slate-800/40">
+            <div key={groupType} className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 mt-2">
+                {groupType} Categories
+              </h3>
+              <div className="space-y-3">
                 {grouped.map((cat) => (
                   <SwipeToDelete 
                     key={cat.id} 
                     onDelete={() => deleteCategory(cat.id)}
-                    className="transition-colors hover:bg-white/5"
-                    style={{ boxShadow: `inset -20px 0 30px -20px ${cat.color}80, inset -2px 0 0 0 ${cat.color}` }}
+                    glowColor={cat.color || "#94a3b8"}
+                    deleteMessage={`Delete "${cat.name}" category?`}
                   >
-                    <div className="flex items-center gap-3 px-5 py-4 w-full">
+                    <div 
+                      className="glass-card interactive flex items-center gap-3 px-5 py-4 w-full"
+                      style={{ 
+                        "--color-primary": cat.color || "#94a3b8",
+                        "--color-primary-glow": cat.color?.startsWith("#") ? `${cat.color}26` : (cat.color || "#94a3b8")
+                      } as React.CSSProperties}
+                    >
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${cat.color}20` }}

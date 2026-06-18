@@ -286,7 +286,11 @@ export default function VaultPage() {
           ) : (
             <div className="space-y-3">
               {entries.map(entry => (
-                <SwipeToDelete key={entry.id} onDelete={() => deleteEntry(entry.id)}>
+                <SwipeToDelete 
+                  key={entry.id} 
+                  onDelete={() => deleteEntry(entry.id)}
+                  deleteMessage={`Delete "${entry.title}"?`}
+                >
                   <div className="glass-card p-4 flex items-center justify-between w-full">
                     <div>
                       <h3 className="text-white font-medium text-left">{entry.title}</h3>
