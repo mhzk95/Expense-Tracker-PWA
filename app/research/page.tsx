@@ -23,10 +23,6 @@ function ResearchContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  if (loading) {
-    return <ResearchSkeleton />;
-  }
-
   const [shareItem, setShareItem] = useState<any>(null);
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const processedShareUrl = useRef<string | null>(null);
@@ -220,6 +216,10 @@ function ResearchContent() {
     return [];
   }, [items, activeTab, activeTopicId, searchQuery, fuse]);
 
+  if (loading) {
+    return <ResearchSkeleton />;
+  }
+
   return (
     <div className="space-y-6 pb-20">
       <PageHeader
@@ -241,7 +241,7 @@ function ResearchContent() {
           placeholder="Search topics, links, text, and images..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-slate-900/80 border border-slate-800 focus:border-violet-500 rounded-2xl py-3 pl-11 pr-10 text-white placeholder:text-slate-500 outline-none transition-all shadow-sm"
+          className="w-full et-input rounded-2xl py-3 pl-11 pr-10 shadow-sm"
         />
         {searchQuery && (
           <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white bg-slate-800 rounded-full transition-colors">
@@ -565,7 +565,7 @@ function ResearchContent() {
                       <div className="w-full space-y-2">
                         <input
                           type="text"
-                          className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-sm text-white focus:border-violet-500 outline-none"
+                          className="w-full et-input rounded-md px-2 py-1 text-sm"
                           value={shareItem.title || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, title: e.target.value });
@@ -575,7 +575,7 @@ function ResearchContent() {
                         />
                         <input
                           type="text"
-                          className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-sm text-white focus:border-violet-500 outline-none"
+                          className="w-full et-input rounded-md px-2 py-1 text-sm"
                           value={shareItem.imageUrl || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, imageUrl: e.target.value });
@@ -652,7 +652,7 @@ function ResearchContent() {
                 <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Add Note or Tags</label>
                 <textarea
                   placeholder="e.g. #design Check out the hero section..."
-                  className="w-full h-20 bg-slate-950 border border-slate-800 focus:border-violet-500 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 outline-none resize-none transition-colors"
+                  className="w-full h-20 et-input rounded-xl p-3 text-sm resize-none"
                   onBlur={(e) => {
                     const text = e.target.value.trim();
                     if (text) {
@@ -671,7 +671,7 @@ function ResearchContent() {
                 <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Extracted Text (OCR)</label>
                 <textarea
                   placeholder="Paste or extract any text from image..."
-                  className="w-full h-16 bg-slate-950 border border-slate-800 focus:border-violet-500 rounded-xl p-3 text-sm text-white placeholder:text-slate-600 outline-none resize-none transition-colors"
+                  className="w-full h-16 et-input rounded-xl p-3 text-sm resize-none"
                   value={shareItem.ocrText || ""}
                   onChange={(e) => {
                     setShareItem({ ...shareItem, ocrText: e.target.value });

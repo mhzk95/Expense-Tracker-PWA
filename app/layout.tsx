@@ -76,10 +76,34 @@ export default function RootLayout({
       </head>
       <body className="h-full bg-slate-950 text-white antialiased font-sans relative">
         {/* Global Ambient Luminescence for Glassmorphism */}
-        <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-slate-950">
-          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-[var(--color-primary)]/20 rounded-full mix-blend-screen filter blur-[120px] opacity-60 animate-pulse" style={{ animationDuration: '8s' }} />
-          <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] bg-indigo-500/10 rounded-full mix-blend-screen filter blur-[150px] opacity-40 animate-pulse" style={{ animationDuration: '12s' }} />
-          <div className="absolute -bottom-[20%] left-[20%] w-[40%] h-[40%] bg-fuchsia-500/10 rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse" style={{ animationDuration: '10s' }} />
+        <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-slate-950 transition-colors duration-300">
+          <div 
+            className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-[var(--color-primary)] rounded-full animate-pulse transition-all duration-300" 
+            style={{ 
+              animationDuration: '8s', 
+              mixBlendMode: 'var(--ambient-blend, screen)' as any, 
+              opacity: 'var(--ambient-opacity-1, 0.6)',
+              filter: 'blur(var(--ambient-blur, 120px))'
+            }} 
+          />
+          <div 
+            className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] bg-indigo-500 rounded-full animate-pulse transition-all duration-300" 
+            style={{ 
+              animationDuration: '12s', 
+              mixBlendMode: 'var(--ambient-blend, screen)' as any, 
+              opacity: 'var(--ambient-opacity-2, 0.4)',
+              filter: 'blur(var(--ambient-blur, 120px))'
+            }} 
+          />
+          <div 
+            className="absolute -bottom-[20%] left-[20%] w-[40%] h-[40%] bg-fuchsia-500 rounded-full animate-pulse transition-all duration-300" 
+            style={{ 
+              animationDuration: '10s', 
+              mixBlendMode: 'var(--ambient-blend, screen)' as any, 
+              opacity: 'var(--ambient-opacity-3, 0.3)',
+              filter: 'blur(var(--ambient-blur, 120px))'
+            }} 
+          />
         </div>
         {/*
          * AppShell is a Client Component.

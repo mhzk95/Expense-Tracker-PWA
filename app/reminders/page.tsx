@@ -178,7 +178,7 @@ export default function RemindersPage() {
               onKeyDown={handleAddTask}
               onFocus={() => setShowTaskOptions(true)}
               placeholder="Add a new task (Press Enter)..." 
-              className="w-full bg-slate-900/90 border border-slate-800 focus:border-violet-500 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-slate-500 outline-none transition-all shadow-lg shadow-violet-500/5 focus:shadow-violet-500/10"
+              className="w-full et-input rounded-2xl py-4 pl-12 pr-12 shadow-lg shadow-violet-500/5"
             />
             {newTaskInput && (
               <button onClick={handleAddTask} className="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-500 text-white p-1.5 rounded-lg transition-colors">
@@ -206,7 +206,7 @@ export default function RemindersPage() {
                         if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
                       } catch (err) {}
                     }}
-                    className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full cursor-pointer"
+                    className="et-input text-xs rounded-lg px-2 py-1.5 w-full cursor-pointer"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function RemindersPage() {
                   <select 
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as any)}
-                    className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500"
+                    className="et-input text-xs rounded-lg px-2 py-1.5"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -349,7 +349,7 @@ export default function RemindersPage() {
                                                 if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
                                               } catch (err) {}
                                             }}
-                                            className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500 w-full cursor-pointer"
+                                            className="et-input text-xs rounded-lg px-2 py-1.5 w-full cursor-pointer"
                                           />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -357,7 +357,7 @@ export default function RemindersPage() {
                                           <select 
                                             value={notesEditPriority}
                                             onChange={(e) => setNotesEditPriority(e.target.value as any)}
-                                            className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none focus:border-violet-500"
+                                            className="et-input text-xs rounded-lg px-2 py-1.5"
                                           >
                                             <option value="low">Low Priority</option>
                                             <option value="medium">Medium Priority</option>
@@ -371,7 +371,7 @@ export default function RemindersPage() {
                                         value={notesEditValue}
                                         onChange={(e) => setNotesEditValue(e.target.value)}
                                         placeholder="- [ ] Subtask 1&#10;- [x] Completed task&#10;Some notes here..."
-                                        className="w-full h-32 bg-slate-950 border border-slate-700 focus:border-violet-500 rounded-xl p-3 text-sm text-slate-300 placeholder:text-slate-600 outline-none resize-none transition-colors"
+                                        className="w-full h-32 et-input rounded-xl p-3 text-sm resize-none"
                                       />
                                       <div className="flex justify-end gap-2">
                                         <button 

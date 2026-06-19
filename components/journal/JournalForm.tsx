@@ -402,34 +402,34 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         {/* 2x2 Grid Metadata */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {/* Date & Time */}
-          <div className="col-span-2 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+          <div className="col-span-2 et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><Calendar className="w-3 h-3 text-violet-400" /> Date & Time</span>
             <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full font-medium" />
           </div>
 
           {/* Location */}
-          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 text-left hover:bg-slate-900/40 transition-all flex flex-col justify-center min-h-[64px] focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+          <button type="button" onClick={() => setShowLocationPicker(true)} className="et-form-container rounded-2xl p-3 text-left hover:opacity-90 flex flex-col justify-center min-h-[64px] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><MapPin className="w-3 h-3 text-violet-400" /> Location</span>
             <span className="text-xs text-white truncate w-full font-medium">{getLocationDisplay() || "Add location..."}</span>
           </button>
 
           {/* Event */}
-          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Event <span className="lowercase font-normal opacity-70">(optional)</span></span>
             <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 font-medium" />
           </div>
 
           {/* Mood */}
-          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] relative transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Mood</span>
             <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full appearance-none font-medium z-10 cursor-pointer">
-              <option value="" className="bg-slate-900">Select mood...</option>
-              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="bg-slate-900">{m.emoji} {m.label}</option>)}
+              <option value="" className="bg-slate-950 text-slate-50">Select mood...</option>
+              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="bg-slate-950 text-slate-50">{m.emoji} {m.label}</option>)}
             </select>
           </div>
 
           {/* Reflection */}
-          <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-center min-h-[64px] transition-all focus-within:border-violet-500/50 focus-within:ring-4 focus-within:ring-violet-500/10 focus-within:shadow-[0_0_15px_rgba(139,92,246,0.15)] shadow-inner">
+          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Reflection <span className="lowercase font-normal opacity-70">(optional)</span></span>
             <textarea rows={1} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 resize-none font-medium overflow-hidden" />
           </div>

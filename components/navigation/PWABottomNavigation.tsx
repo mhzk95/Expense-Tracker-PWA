@@ -95,19 +95,19 @@ export function PWABottomNavigation() {
                     href={item.href}
                     className={cn(
                       "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors group active:scale-[0.98]",
-                      isActive ? "bg-violet-500/15" : "hover:bg-slate-800/40"
+                      isActive ? "bg-[var(--sidebar-bg-active)]" : "hover:bg-[var(--sidebar-bg-hover)]"
                     )}
                   >
                     <div className={cn(
                       "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                      isActive ? "bg-violet-500/20 text-violet-400" : "bg-slate-800/60 text-slate-400 group-hover:text-white"
+                      isActive ? "bg-[var(--sidebar-bg-active)] text-[var(--sidebar-text-active)]" : "bg-slate-800/60 text-[var(--sidebar-text-inactive)] group-hover:text-[var(--sidebar-text-hover)]"
                     )}>
                       {Icon && <Icon className="h-5 w-5" />}
                     </div>
                     <div className="flex-1">
                       <div className={cn(
                         "text-sm font-medium",
-                        isActive ? "text-violet-300" : "text-slate-200"
+                        isActive ? "text-[var(--sidebar-text-active)]" : "text-slate-200"
                       )}>
                         {item.label}
                       </div>
@@ -142,12 +142,12 @@ export function PWABottomNavigation() {
             const content = (
               <>
                 {isActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-b-full bg-violet-400" />
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-b-full bg-[var(--sidebar-text-active)]" />
                 )}
                 <span
                   className={cn(
                     "flex items-center justify-center h-7 w-7 rounded-xl transition-all duration-150",
-                    isActive ? "bg-violet-500/15" : ""
+                    isActive ? "bg-[var(--sidebar-bg-active)]" : ""
                   )}
                 >
                   {Icon && <Icon className="h-5 w-5" />}
@@ -158,7 +158,7 @@ export function PWABottomNavigation() {
 
             const commonClasses = cn(
               "flex-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 active:scale-95",
-              isActive ? "text-violet-400" : "text-slate-500"
+              isActive ? "text-[var(--sidebar-text-active)]" : "text-[var(--sidebar-text-inactive)]"
             );
 
             if (isMoreBtn) {

@@ -101,11 +101,11 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
               key={item.id}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group border",
                 collapsed && "justify-center px-0 py-3",
                 isActive
-                  ? "bg-violet-500/15 text-violet-300 border border-violet-500/25"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                  ? "bg-[var(--sidebar-bg-active)] text-[var(--sidebar-text-active)] border-[var(--sidebar-border-active)]"
+                  : "text-[var(--sidebar-text-inactive)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-bg-hover)] border-transparent"
               )}
               title={collapsed ? item.label : undefined}
               aria-current={isActive ? "page" : undefined}
@@ -114,7 +114,7 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
                 <Icon
                   className={cn(
                     "flex-shrink-0 h-4.5 w-4.5",
-                    isActive ? "text-violet-400" : "text-slate-500 group-hover:text-slate-300"
+                    isActive ? "text-[var(--sidebar-text-active)]" : "text-[var(--sidebar-text-inactive)] group-hover:text-[var(--sidebar-text-hover)]"
                   )}
                 />
               )}
@@ -122,7 +122,7 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
                 <span className="truncate">{item.label}</span>
               )}
               {isActive && !collapsed && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-violet-400" />
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--sidebar-text-active)]" />
               )}
             </Link>
           );
@@ -135,10 +135,10 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
           <Link
             href="/pwa-diagnostics"
             className={cn(
-              "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150",
+              "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 border",
               pathname === "/pwa-diagnostics"
-                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                : "text-slate-600 hover:text-slate-400 border border-transparent"
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                : "text-[var(--sidebar-text-inactive)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-bg-hover)] border-transparent"
             )}
           >
             <Stethoscope className="h-3.5 w-3.5" />
@@ -152,7 +152,7 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
         <button
           onClick={() => setCollapsed((c) => !c)}
           className={cn(
-            "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 text-xs font-medium transition-all",
+            "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[var(--sidebar-text-inactive)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-bg-hover)] text-xs font-medium transition-all",
             collapsed && "justify-center px-0"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}

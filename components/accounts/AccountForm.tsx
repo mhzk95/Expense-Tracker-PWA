@@ -73,6 +73,32 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
     }
   };
 
+  const getFocusGlowClass = () => {
+    switch (type) {
+      case "savings":
+        return "focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:shadow-[0_0_15px_rgba(16,185,129,0.15)]";
+      case "credit_card":
+        return "focus:border-rose-500/50 focus:ring-4 focus:ring-rose-500/10 focus:shadow-[0_0_15px_rgba(244,63,94,0.15)]";
+      case "wallet":
+        return "focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/10 focus:shadow-[0_0_15px_rgba(14,165,233,0.15)]";
+      default: // checking
+        return "focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]";
+    }
+  };
+
+  const getButtonClass = () => {
+    switch (type) {
+      case "savings":
+        return "bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20";
+      case "credit_card":
+        return "bg-rose-600 hover:bg-rose-500 hover:shadow-rose-500/20";
+      case "wallet":
+        return "bg-sky-600 hover:bg-sky-500 hover:shadow-sky-500/20";
+      default: // checking
+        return "bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/20";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -81,7 +107,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+          className={`w-full et-input rounded-xl px-4 py-3 shadow-inner ${getFocusGlowClass()}`}
           placeholder="e.g. Main Checking"
           required
         />
@@ -92,7 +118,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+          className={`w-full et-input rounded-xl px-4 py-3 shadow-inner appearance-none ${getFocusGlowClass()}`}
         >
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
@@ -110,7 +136,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             step="0.01"
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
-            className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-8 pr-4 py-3 text-white transition-all shadow-inner outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+            className={`w-full et-input rounded-xl pl-8 pr-4 py-3 shadow-inner ${getFocusGlowClass()}`}
             placeholder="0.00"
             required
           />
@@ -140,7 +166,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !name || !balance}
-        className="w-full bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/20 text-white font-medium rounded-xl py-3 mt-2 shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
+        className={`w-full text-white font-medium rounded-xl py-3 mt-2 shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 ${getButtonClass()}`}
       >
         {isSubmitting ? "Adding..." : initialData ? "Update Account" : "Add Account"}
       </button>

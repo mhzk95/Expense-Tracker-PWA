@@ -13,8 +13,45 @@
   
   /* Accent Color */
   --color-primary: #8b5cf6; /* Default Violet */
-  --color-primary-glow: rgba(139, 92, 246, 0.15);
-  --color-primary-glow-hover: rgba(139, 92, 246, 0.25);
+  --color-primary-rgb: 139, 92, 246;
+
+  /* Sidebar / Bottom Navigation variables */
+  --sidebar-text-active: #c084fc; /* violet-400 */
+  --sidebar-text-inactive: #94a3b8; /* slate-400 */
+  --sidebar-bg-active: rgba(139, 92, 246, 0.15); /* violet-500/15 */
+  --sidebar-border-active: rgba(139, 92, 246, 0.25); /* violet-500/25 */
+  --sidebar-bg-hover: rgba(30, 41, 59, 0.6); /* slate-800/60 */
+  --sidebar-text-hover: #ffffff;
+
+  /* Glow Intensities */
+  --card-glow-intensity: 0.15;
+  --card-glow-hover-intensity: 0.25;
+  --color-primary-glow: rgba(var(--color-primary-rgb), var(--card-glow-intensity));
+  --color-primary-glow-hover: rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity));
+
+  /* Glassmorphism defaults (Dark Theme) */
+  --glass-bg: rgba(15, 23, 42, 0.4);
+  --glass-bg-hover: rgba(15, 23, 42, 0.5);
+  --glass-border: rgba(148, 163, 184, 0.08);
+  --glass-shadow-inset: inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.4);
+  --glass-shadow-inset-hover: inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.5);
+  --glass-border-gradient: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, var(--color-primary) 100%);
+
+  /* Ambient animations */
+  --ambient-blend: screen;
+  --ambient-opacity-1: 0.6;
+  --ambient-opacity-2: 0.4;
+  --ambient-opacity-3: 0.3;
+  --ambient-opacity-factor: 1.0;
+  --ambient-blur: 120px;
+
+  /* Form / Creation Inputs */
+  --form-bg: rgba(15, 23, 42, 0.45);
+  --form-input-bg: rgba(2, 6, 23, 0.5);
+  --form-border: rgba(30, 41, 59, 0.8);
+  --form-focus-border: var(--color-primary);
+  --form-focus-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.15);
+  --form-focus-ring: rgba(var(--color-primary-rgb), 0.15);
 }
 
 /* ─── Theming System ───────────────────────────────────────────────────────── */
@@ -38,6 +75,42 @@
   
   --color-white: #020617;
   --color-black: #ffffff;
+
+  /* Glassmorphism defaults (Light Theme) */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(15, 23, 42, 0.05);
+  --glass-shadow-inset: inset 0 1px 3px rgba(255, 255, 255, 0.85), inset 0 -1px 2px rgba(15, 23, 42, 0.03);
+  --glass-shadow-inset-hover: inset 0 1px 3px rgba(255, 255, 255, 0.95), inset 0 -1px 2px rgba(15, 23, 42, 0.05);
+  --glass-border-gradient: linear-gradient(135deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0) 40%, rgba(15, 23, 42, 0) 60%, var(--color-primary) 100%);
+
+  /* Glow Intensities */
+  --card-glow-intensity: 0.05;
+  --card-glow-hover-intensity: 0.08;
+
+  /* Ambient animations */
+  --ambient-blend: multiply;
+  --ambient-opacity-1: 0.35;
+  --ambient-opacity-2: 0.25;
+  --ambient-opacity-3: 0.2;
+  --ambient-opacity-factor: 0.65;
+  --ambient-blur: 100px;
+
+  /* Form / Creation Inputs */
+  --form-bg: rgba(255, 255, 255, 0.95);
+  --form-input-bg: rgba(248, 250, 252, 0.85);
+  --form-border: rgba(226, 232, 240, 0.8);
+  --form-focus-border: var(--color-primary);
+  --form-focus-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.1);
+  --form-focus-ring: rgba(var(--color-primary-rgb), 0.1);
+
+  /* Sidebar / Bottom Navigation variables */
+  --sidebar-text-active: #7c3aed; /* violet-600 */
+  --sidebar-text-inactive: #475569; /* slate-600 */
+  --sidebar-bg-active: rgba(124, 58, 237, 0.08); /* violet-600/8 */
+  --sidebar-border-active: rgba(124, 58, 237, 0.15); /* violet-600/15 */
+  --sidebar-bg-hover: rgba(226, 232, 240, 0.6); /* slate-200/60 */
+  --sidebar-text-hover: #020617; /* slate-950 */
 }
 
 :root[data-theme="amoled"] {
@@ -51,9 +124,42 @@
   --color-slate-300: #737373;
   --color-slate-200: #a3a3a3;
   --color-slate-100: #d4d4d4;
-  --color-slate-50: #fafafa;
+  --color-slate-5: #fafafa;
   --color-white: #ffffff;
   --color-black: #000000;
+
+  /* Glassmorphism defaults (AMOLED) */
+  --glass-bg: rgba(10, 10, 10, 0.5);
+  --glass-bg-hover: rgba(15, 15, 15, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow-inset: inset 0 1px 1px rgba(255,255,255,0.1), inset 0 -1px 1px rgba(0,0,0,0.8);
+  --glass-shadow-inset-hover: inset 0 1px 1px rgba(255,255,255,0.15), inset 0 -1px 1px rgba(0,0,0,0.9);
+  --glass-border-gradient: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, var(--color-primary) 100%);
+
+  /* Glow Intensities */
+  --card-glow-intensity: 0.2;
+  --card-glow-hover-intensity: 0.3;
+
+  /* Ambient animations */
+  --ambient-blend: screen;
+  --ambient-opacity-1: 0.5;
+  --ambient-opacity-2: 0.3;
+  --ambient-opacity-3: 0.25;
+  --ambient-opacity-factor: 1.0;
+  --ambient-blur: 130px;
+
+  /* Form / Creation Inputs */
+  --form-bg: rgba(10, 10, 10, 0.6);
+  --form-input-bg: rgba(5, 5, 5, 0.8);
+  --form-border: rgba(38, 38, 38, 0.8);
+
+  /* Sidebar / Bottom Navigation variables */
+  --sidebar-text-active: #c084fc; /* violet-400 */
+  --sidebar-text-inactive: #a3a3a3; /* slate-400 in amoled */
+  --sidebar-bg-active: rgba(139, 92, 246, 0.15);
+  --sidebar-border-active: rgba(139, 92, 246, 0.25);
+  --sidebar-bg-hover: rgba(38, 38, 38, 0.6);
+  --sidebar-text-hover: #ffffff;
 }
 
 :root[data-theme="navy"] {
@@ -70,6 +176,39 @@
   --color-slate-50: #f0f7ff;
   --color-white: #ffffff;
   --color-black: #000000;
+
+  /* Glassmorphism defaults (Navy) */
+  --glass-bg: rgba(10, 15, 28, 0.45);
+  --glass-bg-hover: rgba(17, 26, 47, 0.55);
+  --glass-border: rgba(148, 163, 184, 0.08);
+  --glass-shadow-inset: inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.4);
+  --glass-shadow-inset-hover: inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.5);
+  --glass-border-gradient: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, var(--color-primary) 100%);
+
+  /* Glow Intensities */
+  --card-glow-intensity: 0.18;
+  --card-glow-hover-intensity: 0.28;
+
+  /* Ambient animations */
+  --ambient-blend: screen;
+  --ambient-opacity-1: 0.6;
+  --ambient-opacity-2: 0.4;
+  --ambient-opacity-3: 0.3;
+  --ambient-opacity-factor: 1.0;
+  --ambient-blur: 120px;
+
+  /* Form / Creation Inputs */
+  --form-bg: rgba(10, 15, 28, 0.4);
+  --form-input-bg: rgba(5, 8, 16, 0.6);
+  --form-border: rgba(30, 43, 69, 0.8);
+
+  /* Sidebar / Bottom Navigation variables */
+  --sidebar-text-active: #c084fc; /* violet-400 */
+  --sidebar-text-inactive: #94a3b8;
+  --sidebar-bg-active: rgba(139, 92, 246, 0.15);
+  --sidebar-border-active: rgba(139, 92, 246, 0.25);
+  --sidebar-bg-hover: rgba(17, 26, 47, 0.6);
+  --sidebar-text-hover: #ffffff;
 }
 
 /* ─── Base Resets ─────────────────────────────────────────────────────────── */
@@ -147,10 +286,10 @@ body {
 
 /* Glass card effect */
 .glass {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 /* PWA safe areas */
@@ -170,14 +309,13 @@ body {
 /* ─── Premium Glassmorphism Card ─────────────────────────────────────────── */
 .glass-card {
   position: relative;
-  background: rgba(15, 23, 42, 0.4);
+  background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 1.5rem;
   box-shadow: 
-    0 0 30px -5px var(--color-primary-glow, rgba(139,92,246,0.15)),
-    inset 0 1px 2px rgba(255,255,255,0.15),
-    inset 0 -1px 2px rgba(0,0,0,0.4);
+    0 0 30px -5px var(--color-primary-glow),
+    var(--glass-shadow-inset);
   transition: all 0.3s ease;
   overflow: hidden;
 }
@@ -189,10 +327,9 @@ body {
 
 .glass-card.interactive:hover {
   box-shadow: 
-    0 0 40px -5px var(--color-primary-glow-hover, rgba(139,92,246,0.25)),
-    inset 0 1px 2px rgba(255,255,255,0.2),
-    inset 0 -1px 2px rgba(0,0,0,0.5);
-  background: rgba(15, 23, 42, 0.5);
+    0 0 40px -5px var(--color-primary-glow-hover),
+    var(--glass-shadow-inset-hover, var(--glass-shadow-inset));
+  background: var(--glass-bg-hover, var(--glass-bg));
 }
 
 .glass-card::before {
@@ -201,12 +338,42 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, var(--color-primary) 100%);
+  background: var(--glass-border-gradient);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
   z-index: 10;
+}
+
+/* ─── Theme-Aware Form Inputs ────────────────────────────────────────────── */
+.et-input {
+  background-color: var(--form-input-bg);
+  border: 1px solid var(--form-border);
+  color: var(--color-slate-50);
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.et-input:focus {
+  border-color: var(--form-focus-border);
+  box-shadow: 
+    var(--form-focus-shadow),
+    0 0 0 4px var(--form-focus-ring);
+}
+
+.et-form-container {
+  background-color: var(--form-input-bg);
+  border: 1px solid var(--form-border);
+  color: var(--color-slate-50);
+  transition: all 0.2s ease-in-out;
+}
+
+.et-form-container:focus-within, .et-form-container:focus {
+  border-color: var(--form-focus-border);
+  box-shadow: 
+    var(--form-focus-shadow),
+    0 0 0 4px var(--form-focus-ring);
 }
 
 /* ─── Animation Keyframes ─────────────────────────────────────────────────── */

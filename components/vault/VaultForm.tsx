@@ -38,7 +38,7 @@ export function VaultForm({ onSuccess, onCancel }: VaultFormProps) {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+          className="w-full et-input rounded-xl px-4 py-3 shadow-inner"
           placeholder="e.g., Netflix Password, Bank PIN"
           required
         />
@@ -51,7 +51,7 @@ export function VaultForm({ onSuccess, onCancel }: VaultFormProps) {
           value={secretContent}
           onChange={(e) => setSecretContent(e.target.value)}
           rows={5}
-          className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none font-mono text-sm focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 focus:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+          className="w-full et-input rounded-xl px-4 py-3 shadow-inner resize-none font-mono text-sm"
           placeholder="Enter the private details to encrypt..."
           required
         />

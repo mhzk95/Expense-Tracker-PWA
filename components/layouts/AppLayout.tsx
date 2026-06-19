@@ -38,19 +38,18 @@ export function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     const applyAccentColor = () => {
       const savedAccent = localStorage.getItem("et_accent_color") || "violet";
-      const accents: Record<string, { primary: string; glow: string; hover: string }> = {
-        violet: { primary: "#8b5cf6", glow: "rgba(139, 92, 246, 0.15)", hover: "rgba(139, 92, 246, 0.25)" },
-        emerald: { primary: "#10b981", glow: "rgba(16, 185, 129, 0.15)", hover: "rgba(16, 185, 129, 0.25)" },
-        rose: { primary: "#f43f5e", glow: "rgba(244, 63, 94, 0.15)", hover: "rgba(244, 63, 94, 0.25)" },
-        amber: { primary: "#f59e0b", glow: "rgba(245, 158, 11, 0.15)", hover: "rgba(245, 158, 11, 0.25)" },
-        sky: { primary: "#0ea5e9", glow: "rgba(14, 165, 233, 0.15)", hover: "rgba(14, 165, 233, 0.25)" },
-        indigo: { primary: "#6366f1", glow: "rgba(99, 102, 241, 0.15)", hover: "rgba(99, 102, 241, 0.25)" },
+      const accents: Record<string, { primary: string; rgb: string }> = {
+        violet: { primary: "#8b5cf6", rgb: "139, 92, 246" },
+        emerald: { primary: "#10b981", rgb: "16, 185, 129" },
+        rose: { primary: "#f43f5e", rgb: "244, 63, 94" },
+        amber: { primary: "#f59e0b", rgb: "245, 158, 11" },
+        sky: { primary: "#0ea5e9", rgb: "14, 165, 233" },
+        indigo: { primary: "#6366f1", rgb: "99, 102, 241" },
       };
 
       const selected = accents[savedAccent] || accents.violet;
       document.documentElement.style.setProperty("--color-primary", selected.primary);
-      document.documentElement.style.setProperty("--color-primary-glow", selected.glow);
-      document.documentElement.style.setProperty("--color-primary-glow-hover", selected.hover);
+      document.documentElement.style.setProperty("--color-primary-rgb", selected.rgb);
     };
 
     applyAccentColor();

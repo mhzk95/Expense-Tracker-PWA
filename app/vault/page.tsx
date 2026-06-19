@@ -158,7 +158,7 @@ export default function VaultPage() {
                       value={pinInput}
                       onChange={e => setPinInput(e.target.value)}
                       placeholder="Enter a secure PIN"
-                      className="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex-1 min-w-0 et-input rounded-xl px-4 py-3"
                       required
                     />
                     <button type="submit" disabled={isProcessing || !pinInput} className="bg-slate-800 hover:bg-slate-700 text-white py-3 sm:px-6 rounded-xl font-medium transition-colors">
@@ -184,7 +184,7 @@ export default function VaultPage() {
                         value={pinInput}
                         onChange={e => setPinInput(e.target.value)}
                         placeholder="Enter your PIN"
-                        className="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-violet-500 text-center tracking-[0.3em] font-mono text-lg"
+                        className="flex-1 min-w-0 et-input rounded-xl px-4 py-3 text-center tracking-[0.3em] font-mono text-lg"
                         required
                         autoFocus
                       />
