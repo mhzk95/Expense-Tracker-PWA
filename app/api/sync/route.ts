@@ -58,9 +58,9 @@ export async function GET(request: Request) {
 
     let results: any[] = [];
     if (queries.length > 0) {
-      // Execute read queries in a single transaction to prevent eating 9 concurrent connections
-      // and hitting the EMAXCONNSESSION limit (pool size 15).
-      results = await prisma.$transaction(queries);
+      // Execute read queries in parallel without starting a transaction block,
+      // avoiding transaction timeouts and lock contention.
+      results = await Promise.all(queries);
     }
     
     const data: Record<string, any[]> = {};
