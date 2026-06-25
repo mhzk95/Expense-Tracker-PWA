@@ -1,36 +1,45 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2, X } from "lucide-react";
 import { vibrate } from "@/lib/utils/helpers";
 import toast from "react-hot-toast";
 
 interface SwipeToDeleteProps {
   children: React.ReactNode;
   onDelete: () => void;
+  onEdit?: () => void;
   className?: string;
   style?: React.CSSProperties;
   deleteMessage?: string;
   confirmText?: string;
   cancelText?: string;
   glowColor?: string;
+  expanded?: boolean;
+}
+
+function hexToRgb(hex: string): string {
+  const clean = hex.replace("#", "");
+  let r = 139, g = 92, b = 246; // fallback violet
+  try {
+    if (clean.length === 3) {
+      r = parseInt(clean[0] + clean[0], 16);
+      g = parseInt(clean[1] + clean[1], 16);
+      b = parseInt(clean[2] + clean[2], 16);
+    } else if (clean.length === 6) {
+      r = parseInt(clean.substring(0, 2), 16);
+      g = parseInt(clean.substring(2, 4), 16);
+      b = parseInt(clean.substring(4, 6), 16);
+    }
+  } catch (e) {}
+  return `${r}, ${g}, ${b}`;
 }
 
 function interpolateColor(color1: string, color2: string, factor: number) {
   const parseHex = (hex: string) => {
-    const clean = hex.replace("#", "");
-    if (clean.length === 3) {
-      return {
-        r: parseInt(clean[0] + clean[0], 16),
-        g: parseInt(clean[1] + clean[1], 16),
-        b: parseInt(clean[2] + clean[2], 16),
-      };
-    }
-    return {
-      r: parseInt(clean.substring(0, 2), 16),
-      g: parseInt(clean.substring(2, 4), 16),
-      b: parseInt(clean.substring(4, 6), 16),
-    };
+    const rgbStr = hexToRgb(hex);
+    const parts = rgbStr.split(",").map(x => parseInt(x.trim(), 10));
+    return { r: parts[0], g: parts[1], b: parts[2] };
   };
 
   try {
@@ -56,21 +65,27 @@ function interpolateColor(color1: string, color2: string, factor: number) {
 export function SwipeToDelete({
   children,
   onDelete,
+  onEdit,
   className = "",
   style,
   deleteMessage = "Delete this item?",
   confirmText = "Delete",
   cancelText = "Cancel",
   glowColor = "#8b5cf6",
+  expanded = false,
 }: SwipeToDeleteProps) {
   const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isVerticalScroll, setIsVerticalScroll] = useState(false);
   const [isPendingDelete, setIsPendingDelete] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   const cardId = useRef(crypto.randomUUID());
   const deleteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const revealWidth = 80;
 
   // Execute pending delete on unmount
   useEffect(() => {
@@ -85,14 +100,14 @@ export function SwipeToDelete({
   // Listen for window scroll to cancel active swipes
   useEffect(() => {
     const handleScroll = () => {
-      if (currentX !== 0 || isConfirming) {
+      if (currentX !== 0 || isRevealed) {
         setCurrentX(0);
-        setIsConfirming(false);
+        setIsRevealed(false);
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentX, isConfirming]);
+  }, [currentX, isRevealed]);
 
   // Listen for other cards swiping to close this one
   useEffect(() => {
@@ -100,17 +115,30 @@ export function SwipeToDelete({
       const activeId = (e as CustomEvent).detail?.id;
       if (activeId !== cardId.current) {
         setCurrentX(0);
-        setIsConfirming(false);
+        setIsRevealed(false);
       }
     };
     window.addEventListener("swipe-card-active", handleActiveCardChange);
     return () => window.removeEventListener("swipe-card-active", handleActiveCardChange);
   }, []);
 
+  // Tap outside to collapse
+  useEffect(() => {
+    if (currentX === 0 && !isRevealed) return;
+    const handleDocumentClick = () => {
+      setCurrentX(0);
+      setIsRevealed(false);
+    };
+    document.addEventListener("click", handleDocumentClick);
+    return () => document.removeEventListener("click", handleDocumentClick);
+  }, [currentX, isRevealed]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (isConfirming || isPendingDelete) return;
+    if (isPendingDelete || isRevealed) return;
     setStartX(e.touches[0].clientX);
+    setStartY(e.touches[0].clientY);
     setIsDragging(true);
+    setIsVerticalScroll(false);
     // Notify other components
     window.dispatchEvent(
       new CustomEvent("swipe-card-active", { detail: { id: cardId.current } })
@@ -118,37 +146,40 @@ export function SwipeToDelete({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || isConfirming || isPendingDelete) return;
-    const diff = e.touches[0].clientX - startX;
+    if (!isDragging || isPendingDelete || isRevealed || isVerticalScroll) return;
+    
+    const diffX = e.touches[0].clientX - startX;
+    const diffY = e.touches[0].clientY - startY;
+
+    // Check if vertical scrolling is taking place
+    if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) {
+      setIsVerticalScroll(true);
+      setCurrentX(0);
+      return;
+    }
+
     // Allow only swiping left
-    if (diff < 0) {
-      setCurrentX(Math.max(diff, -100));
+    if (diffX < 0) {
+      setCurrentX(Math.max(diffX, -revealWidth - 20));
     }
   };
 
   const handleTouchEnd = () => {
-    if (isConfirming || isPendingDelete) return;
-    setIsDragging(false);
-    if (currentX <= -60) {
-      setIsConfirming(true);
-      setCurrentX(0);
-      vibrate([10]);
-    } else {
-      setCurrentX(0);
+    if (isPendingDelete || isRevealed || isVerticalScroll) {
+      setIsDragging(false);
+      return;
     }
-  };
-
-  const handleCancel = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    setIsConfirming(false);
+    setIsDragging(false);
+    if (currentX <= -50) {
+      setIsRevealed(true);
+      vibrate([10]);
+    }
     setCurrentX(0);
-    vibrate([10]);
   };
 
   const handleConfirmDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     vibrate([50]);
-    setIsConfirming(false);
     setIsPendingDelete(true);
 
     const toastId = toast.success(
@@ -188,8 +219,8 @@ export function SwipeToDelete({
     }, 5000);
   };
 
-  const progress = Math.min(Math.abs(currentX) / 80, 1);
-  const colors = interpolateColor(glowColor, "#ef4444", isConfirming ? 1 : progress);
+  const progress = Math.min(Math.abs(currentX) / revealWidth, 1);
+  const colors = interpolateColor(glowColor, "#ef4444", progress);
 
   const transitionStyle = isDragging
     ? "none"
@@ -202,8 +233,9 @@ export function SwipeToDelete({
     const mergedStyle = {
       ...child.props.style,
       "--color-primary": colors.primary,
+      "--color-primary-rgb": colors.primary.replace("rgb(", "").replace(")", ""),
       "--color-primary-glow": colors.glow,
-      transform: `scale(${1 - progress * 0.03}) translateX(${currentX * 0.3}px)`,
+      transform: `scale(${1 - progress * 0.02}) translateX(${currentX}px)`,
       transition: transitionStyle,
     };
     clonedChild = React.cloneElement(child, {
@@ -217,7 +249,7 @@ export function SwipeToDelete({
     <div
       className={`relative w-full transition-all duration-300 ease-in-out ${className}`}
       style={{
-        maxHeight: isPendingDelete ? "0px" : "200px",
+        maxHeight: isPendingDelete ? "0px" : (expanded ? "600px" : "200px"),
         opacity: isPendingDelete ? 0 : 1,
         transform: isPendingDelete ? "scale(0.95)" : "scale(1)",
         pointerEvents: isPendingDelete ? "none" : "auto",
@@ -231,68 +263,96 @@ export function SwipeToDelete({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Background icon indicating swiped action */}
+        {progress > 0 && (
+          <div 
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none z-0"
+            style={{
+              opacity: progress * 0.7,
+              transform: `scale(${0.8 + progress * 0.2})`,
+            }}
+          >
+            <Trash2 className="w-5 h-5 text-red-500/50" />
+          </div>
+        )}
+
+        {/* Actions Overlay Card */}
+        <div
+          className="absolute inset-0 w-full h-full z-20"
+          style={{
+            opacity: isRevealed ? 1 : 0,
+            pointerEvents: isRevealed ? "auto" : "none",
+            transform: isRevealed ? "scale(1)" : "scale(0.98)",
+            transition: "all 0.25s cubic-bezier(0.25, 1, 0.5, 1)",
+          }}
+        >
+          <div
+            className="glass-card flex items-center justify-between px-5 py-3 w-full h-full"
+            style={{
+              "--color-primary": glowColor,
+              "--color-primary-rgb": hexToRgb(glowColor),
+              "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
+              "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
+            } as React.CSSProperties}
+          >
+            {/* Title / Info */}
+            <span className="text-sm font-semibold text-white flex items-center gap-2 truncate pr-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse flex-shrink-0" style={{ backgroundColor: glowColor }} />
+              <span className="truncate text-slate-200">{deleteMessage.replace("Delete", "Manage").replace("?", "")}</span>
+            </span>
+
+            {/* Compact Action Buttons */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {onEdit && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                    setIsRevealed(false);
+                  }}
+                  className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 border border-blue-500/20 active:scale-95 transition-all shadow-md"
+                  title="Edit"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConfirmDelete(e);
+                  setIsRevealed(false);
+                }}
+                className="flex items-center justify-center w-9 h-9 rounded-xl bg-red-600/20 hover:bg-red-600/35 text-red-400 border border-red-500/20 active:scale-95 transition-all shadow-md"
+                title="Delete"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsRevealed(false);
+                  vibrate([10]);
+                }}
+                className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 text-slate-400 border border-slate-700/30 active:scale-95 transition-all shadow-md"
+                title="Cancel"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Child Render container */}
         <div
-          className="w-full transition-all"
+          className="w-full transition-all z-10"
           style={{
-            opacity: isConfirming ? 0 : 1,
-            pointerEvents: isConfirming ? "none" : "auto",
-            transform: isConfirming ? "scale(0.95)" : "none",
+            opacity: isRevealed ? 0 : 1,
+            pointerEvents: isRevealed ? "none" : "auto",
+            transform: isRevealed ? "scale(0.98)" : "none",
             transition: "all 0.25s cubic-bezier(0.25, 1, 0.5, 1)",
           }}
         >
           {clonedChild}
-        </div>
-
-        {/* Live Delete Trash Icon Indicator */}
-        {progress > 0.05 && !isConfirming && (
-          <div
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-red-500 pointer-events-none z-10"
-            style={{
-              opacity: progress,
-              transform: `translateY(-50%) scale(${0.8 + progress * 0.2})`,
-            }}
-          >
-            <Trash2 className="w-5 h-5 animate-pulse" />
-          </div>
-        )}
-
-        {/* Transformed Confirmation Card overlay */}
-        <div
-          className="absolute inset-0 w-full h-full"
-          style={{
-            opacity: isConfirming ? 1 : 0,
-            pointerEvents: isConfirming ? "auto" : "none",
-            transform: isConfirming ? "scale(1)" : "scale(0.95)",
-            transition: "all 0.25s cubic-bezier(0.25, 1, 0.5, 1)",
-          }}
-        >
-          <div
-            className="glass-card flex items-center justify-between px-5 py-4 w-full h-full min-h-[58px]"
-            style={{
-              "--color-primary": "#ef4444",
-              "--color-primary-glow": "rgba(239, 68, 68, 0.15)",
-            } as React.CSSProperties}
-          >
-            <span className="text-sm font-semibold text-white flex items-center gap-2 truncate pr-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
-              <span className="truncate">{deleteMessage}</span>
-            </span>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={handleCancel}
-                className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 rounded-xl transition-colors"
-              >
-                {cancelText}
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                className="px-3 py-1.5 text-xs font-semibold text-white bg-red-600 hover:bg-red-500 rounded-xl shadow-lg shadow-red-950/40 transition-colors"
-              >
-                {confirmText}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

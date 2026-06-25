@@ -4,7 +4,7 @@
  */
 
 import { cn, formatCurrency } from "@/lib/utils/helpers";
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import CountUp from "react-countup";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -31,62 +31,70 @@ export function StatCard({
   trend,
   trendDirection = "neutral",
   icon,
-  iconColor = "from-violet-500 to-indigo-600",
   className,
 }: StatCardProps) {
   const TrendIcon =
     trendDirection === "up"
       ? TrendingUp
       : trendDirection === "down"
-      ? TrendingDown
-      : Minus;
+        ? TrendingDown
+        : Minus;
 
   const trendColor = {
-    up: "text-emerald-400",
-    down: "text-red-400",
-    neutral: "text-slate-500",
+    up: "text-emerald-400/90",
+    down: "text-red-400/90",
+    neutral: "text-slate-400",
   }[trendDirection];
 
-  return (
-    <GlassCard className={cn("p-5 flex flex-col h-full", className)}>
-      {/* Subtle gradient background glow */}
-      <div className="absolute inset-0 opacity-5 bg-gradient-to-br from-violet-500 to-transparent pointer-events-none" />
+  const decorativeIcon = icon && React.isValidElement(icon)
+    ? React.cloneElement(icon as React.ReactElement<any>, {
+        className: "w-full h-full stroke-[1.2]",
+      })
+    : icon;
 
-      <div className="relative flex items-start justify-between gap-3 flex-1">
-        {/* Text */}
-        <div className="flex-1 min-w-0 flex flex-col h-full justify-between">
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
-          <div className="mt-2 mb-1">
-            <p className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
-              {rawValue !== undefined ? (
-                <CountUp 
-                  end={rawValue} 
-                  duration={1.5} 
-                  formattingFn={(val) => formatCurrency(val)}
-                />
-              ) : (
-                value
-              )}
-            </p>
-          </div>
-          {trend && (
-            <div className={cn("flex items-center gap-1 text-[10px] sm:text-xs font-medium", trendColor)}>
-              <TrendIcon className="h-3 w-3" />
-              <span>{trend}</span>
-            </div>
-          )}
+  return (
+    <GlassCard className={cn("group p-6 flex flex-col justify-between min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
+      {/* Subtle decorative inner overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+      
+      {/* Decorative partially clipped icon */}
+      {icon && (
+        <div className="absolute -top-3 -right-3 w-20 h-20 sm:w-24 sm:h-24 text-white/[0.08] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
+          {decorativeIcon}
+        </div>
+      )}
+
+      <div className="relative z-10 flex flex-col justify-between h-full flex-1">
+        {/* Label */}
+        <div>
+          <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+            {label}
+          </p>
         </div>
 
-        {/* Icon */}
-        {icon && (
-          <div
-            className={cn(
-              "flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-[14px] bg-gradient-to-br flex items-center justify-center shadow-lg border border-white/5",
-              iconColor
+        {/* Value */}
+        <div className="mt-3.5 mb-1 flex items-baseline">
+          <p className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap tabular-nums leading-none">
+            {rawValue !== undefined ? (
+              <CountUp
+                end={rawValue}
+                duration={1.5}
+                formattingFn={(val) => formatCurrency(val)}
+              />
+            ) : (
+              value
             )}
-          >
-            {icon}
+          </p>
+        </div>
+
+        {/* Trend */}
+        {trend ? (
+          <div className={cn("flex items-center gap-1 text-[10px] sm:text-xs font-semibold mt-1", trendColor)}>
+            <TrendIcon className="h-3 w-3" />
+            <span>{trend}</span>
           </div>
+        ) : (
+          <div className="h-4" />
         )}
       </div>
     </GlassCard>

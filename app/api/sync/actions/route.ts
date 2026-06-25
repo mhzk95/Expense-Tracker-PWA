@@ -55,6 +55,10 @@ export async function POST(request: Request) {
         if (itemData.audioFileId && typeof itemData.audioFileId !== 'string') {
           itemData.audioFileId = null;
         }
+
+        if (itemData.waveformData && typeof itemData.waveformData !== 'string') {
+          itemData.waveformData = JSON.stringify(itemData.waveformData);
+        }
       }
 
       // Map the entity string to the corresponding Prisma model

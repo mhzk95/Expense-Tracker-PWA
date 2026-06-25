@@ -9,7 +9,7 @@ const ACCENTS = [
   { id: "emerald", name: "Emerald", hex: "#10b981" },
   { id: "rose", name: "Rose", hex: "#f43f5e" },
   { id: "amber", name: "Amber", hex: "#f59e0b" },
-  { id: "sky", name: "Sky", hex: "#0ea5e9" },
+  { id: "sky", name: "Cyan", hex: "#00f2fe" },
   { id: "indigo", name: "Indigo", hex: "#6366f1" },
 ];
 

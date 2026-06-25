@@ -10,6 +10,7 @@ const THEMES = [
   { id: "light", name: "Slate Light", bg: "#f8fafc", surface: "#ffffff", primary: "var(--color-primary)" },
   { id: "amoled", name: "AMOLED Black", bg: "#000000", surface: "#0a0a0a", primary: "var(--color-primary)" },
   { id: "navy", name: "Midnight Navy", bg: "#02040a", surface: "#0a0f1c", primary: "var(--color-primary)" },
+  { id: "arena", name: "Arena", bg: "#050b14", surface: "#0b1424", primary: "var(--color-primary)" },
   { id: "system", name: "Match System", bg: "linear-gradient(135deg, #f8fafc 50%, #020617 50%)", surface: "linear-gradient(135deg, #ffffff 50%, #0f172a 50%)", primary: "var(--color-primary)" },
 ];
 
@@ -43,7 +44,12 @@ export function ThemeSelector() {
     setActiveTheme(newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
     
-    let isDark = newTheme === "dark" || newTheme === "amoled" || newTheme === "navy";
+    if (newTheme === "arena") {
+      localStorage.setItem("et_accent_color", "sky");
+      window.dispatchEvent(new Event("app:accent:changed"));
+    }
+    
+    let isDark = newTheme === "dark" || newTheme === "amoled" || newTheme === "navy" || newTheme === "arena";
     if (newTheme === "system") {
       isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
@@ -56,12 +62,14 @@ export function ThemeSelector() {
     const lightColor = "#ffffff";
     const amoledColor = "#000000";
     const navyColor = "#02040a";
+    const arenaColor = "#050b14";
     
     let themeColor = lightColor;
     if (isDark) {
        themeColor = darkColor;
        if (newTheme === "amoled") themeColor = amoledColor;
        if (newTheme === "navy") themeColor = navyColor;
+       if (newTheme === "arena") themeColor = arenaColor;
     }
 
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');

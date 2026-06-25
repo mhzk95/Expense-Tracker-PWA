@@ -39,9 +39,9 @@ const researchParticles = [
 export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVariant }) => {
   const getGradient = () => {
     switch (variant) {
-      case 'transactions': return "from-emerald-500/10 via-slate-950/80 to-slate-950";
-      case 'research': return "from-violet-500/15 via-slate-950/80 to-slate-950";
-      default: return "from-orange-500/10 via-slate-950/80 to-slate-950";
+      case 'transactions': return "from-[var(--ambient-color-tx,rgba(16,185,129,0.1))] via-[var(--color-slate-950)] to-[var(--color-slate-950)]";
+      case 'research': return "from-[var(--ambient-color-res,rgba(139,92,246,0.15))] via-[var(--color-slate-950)] to-[var(--color-slate-950)]";
+      default: return "from-[var(--ambient-color-jr,rgba(249,115,22,0.1))] via-[var(--color-slate-950)] to-[var(--color-slate-950)]";
     }
   };
 

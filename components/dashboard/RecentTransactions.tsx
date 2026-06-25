@@ -6,7 +6,7 @@
  */
 
 import { useCategories } from "@/hooks/useCategories";
-import { formatCurrency, formatDate } from "@/lib/utils/helpers";
+import { formatCurrency, formatDate, hexToRgb } from "@/lib/utils/helpers";
 import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
@@ -55,20 +55,24 @@ export function RecentTransactions() {
             const isIncome = txn.type === "income";
             const isTransfer = txn.type === "transfer";
 
-            const baseColor = txn.needsReview ? "#f59e0b" : (category?.color || "#8b5cf6");
-            const glowColor = txn.needsReview 
-              ? "rgba(245,158,11,0.15)" 
-              : (category 
-                  ? (category.color?.startsWith("#") ? `${category.color}26` : (category.color || "#8b5cf6")) 
-                  : "rgba(139,92,246,0.15)");
+            const baseColor = category?.color || "#8b5cf6";
+            const glowColor = category 
+              ? (category.color?.startsWith("#") ? `${category.color}26` : (category.color || "#8b5cf6")) 
+              : "rgba(139,92,246,0.15)";
 
             return (
               <div
                 key={txn.id}
-                className="glass-card interactive flex items-center gap-4 px-5 py-3.5 transition-all duration-300"
+                className={cn(
+                  "glass-card interactive flex items-center gap-4 px-5 py-3.5 transition-all duration-300",
+                  txn.needsReview && "needs-review-card"
+                )}
                 style={{
                   "--color-primary": baseColor,
-                  "--color-primary-glow": glowColor
+                  "--color-primary-rgb": hexToRgb(baseColor),
+                  "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
+                  "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
+                  "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
                 } as React.CSSProperties}
               >
                 {/* Type icon */}

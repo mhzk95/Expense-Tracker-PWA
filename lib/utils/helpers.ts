@@ -112,3 +112,25 @@ export function vibrate(pattern: number | number[] = [50]): void {
     }
   }
 }
+
+/**
+ * Converts a hex color string to its r, g, b components.
+ */
+export function hexToRgb(hex: string): string {
+  try {
+    const clean = hex.replace("#", "");
+    if (clean.length === 3) {
+      const r = parseInt(clean[0] + clean[0], 16);
+      const g = parseInt(clean[1] + clean[1], 16);
+      const b = parseInt(clean[2] + clean[2], 16);
+      return `${r}, ${g}, ${b}`;
+    }
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  } catch (e) {
+    return "139, 92, 246";
+  }
+}
+

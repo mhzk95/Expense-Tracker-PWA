@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { useCategories } from "@/hooks/useCategories";
 import { Target, Plus, Trash2, Edit2 } from "lucide-react";
 import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
+import { hexToRgb } from "@/lib/utils/helpers";
 
 export default function CategoriesPage() {
   const { categories, loading, addCategory, updateCategory, deleteCategory } = useCategories();
@@ -164,6 +165,7 @@ export default function CategoriesPage() {
                   <SwipeToDelete 
                     key={cat.id} 
                     onDelete={() => deleteCategory(cat.id)}
+                    onEdit={() => handleEdit(cat)}
                     glowColor={cat.color || "#94a3b8"}
                     deleteMessage={`Delete "${cat.name}" category?`}
                   >
@@ -171,7 +173,10 @@ export default function CategoriesPage() {
                       className="glass-card interactive flex items-center gap-3 px-5 py-4 w-full"
                       style={{ 
                         "--color-primary": cat.color || "#94a3b8",
-                        "--color-primary-glow": cat.color?.startsWith("#") ? `${cat.color}26` : (cat.color || "#94a3b8")
+                        "--color-primary-rgb": hexToRgb(cat.color || "#94a3b8"),
+                        "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
+                        "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
+                        "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
                       } as React.CSSProperties}
                     >
                       <div
@@ -181,12 +186,6 @@ export default function CategoriesPage() {
                         <Target className="w-4 h-4" style={{ color: cat.color }} />
                       </div>
                       <span className="flex-1 text-sm font-medium text-white truncate">{cat.name}</span>
-                      <button 
-                        onClick={() => handleEdit(cat)}
-                        className="p-2 text-slate-500 hover:text-white transition-colors"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </SwipeToDelete>
                 ))}

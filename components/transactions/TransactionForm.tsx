@@ -6,20 +6,29 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
 import { vibrate } from "@/lib/utils/helpers";
-import { Camera, Loader2, Sparkles, Receipt } from "lucide-react";
+import { Camera, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { TransactionEntity } from "@/lib/db/indexeddb";
 
 interface TransactionFormProps {
   onSuccess: () => void;
+  editingTransaction?: TransactionEntity;
 }
 
-export function TransactionForm({ onSuccess }: TransactionFormProps) {
-  const { addTransaction } = useTransactions();
+export function TransactionForm({ onSuccess, editingTransaction }: TransactionFormProps) {
+  const { addTransaction, updateTransaction } = useTransactions();
   const { categories, addCategory } = useCategories();
   const { accounts } = useAccounts();
-  const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
-  const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
+  
+  const [type, setType] = useState<"expense" | "income" | "transfer">(editingTransaction?.type || "expense");
+  const [amount, setAmount] = useState(editingTransaction?.amount?.toString() || "");
+  const [description, setDescription] = useState(editingTransaction?.description || "");
+  const [note, setNote] = useState(editingTransaction?.note || "");
+  const [date, setDate] = useState(
+    editingTransaction?.date 
+      ? new Date(editingTransaction.date).toISOString().split("T")[0] 
+      : new Date().toISOString().split("T")[0]
+  );
   
   const availableCategories = categories.filter(c => c.type === type);
   const focusStyles = {
@@ -28,35 +37,40 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     transfer: "focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:shadow-[0_0_15px_rgba(59,130,246,0.15)]",
   };
   const activeFocus = focusStyles[type];
-  const [categoryId, setCategoryId] = useState("");
-  const [accountId, setAccountId] = useState("");
-  const [toAccountId, setToAccountId] = useState("");
-  const [needsReview, setNeedsReview] = useState(false);
+  
+  const [categoryId, setCategoryId] = useState(editingTransaction?.categoryId || "");
+  const [accountId, setAccountId] = useState(editingTransaction?.accountId || "");
+  const [toAccountId, setToAccountId] = useState(editingTransaction?.toAccountId || "");
+  const [needsReview, setNeedsReview] = useState(editingTransaction?.needsReview || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
 
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Restore draft from sessionStorage if modal was accidentally closed
+  // Restore draft from sessionStorage if modal was accidentally closed (only when not editing)
   useEffect(() => {
+    if (editingTransaction) return;
     const draft = sessionStorage.getItem("tx_draft");
     if (draft) {
       try {
         const parsed = JSON.parse(draft);
         if (parsed.amount) setAmount(parsed.amount);
+        if (parsed.description) setDescription(parsed.description);
         if (parsed.note) setNote(parsed.note);
         if (parsed.type) setType(parsed.type);
+        if (parsed.date) setDate(parsed.date);
       } catch (e) {}
     }
-  }, []);
+  }, [editingTransaction]);
 
-  // Save draft to prevent data loss
+  // Save draft to prevent data loss (only when not editing)
   useEffect(() => {
-    if (amount || note) {
-      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, note, type }));
+    if (editingTransaction) return;
+    if (amount || description || note) {
+      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date }));
     }
-  }, [amount, note, type]);
+  }, [amount, description, note, type, date, editingTransaction]);
 
   // Set default category and account when loaded
   useEffect(() => {
@@ -103,20 +117,29 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
 
     setIsSubmitting(true);
     try {
-      await addTransaction({
-        id: crypto.randomUUID(),
+      const txData = {
         amount: Number(amount),
         type,
         currency: "INR",
-        description: note || (type === "transfer" ? "Transfer" : "New Transaction"),
-        date: new Date().toISOString(),
-        note,
+        description: description.trim() || (type === "transfer" ? "Transfer" : "New Transaction"),
+        date: new Date(date).toISOString(),
+        note: note.trim(),
         categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
         needsReview,
-      });
-      sessionStorage.removeItem("tx_draft"); // Clear draft on success
+        status: editingTransaction?.status || "completed",
+      };
+
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction.id, txData);
+      } else {
+        await addTransaction({
+          id: crypto.randomUUID(),
+          ...txData,
+        });
+        sessionStorage.removeItem("tx_draft"); // Clear draft on success
+      }
       vibrate([50]);
       onSuccess();
     } catch (err) {
@@ -199,29 +222,44 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         </button>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <label className="block text-xs font-medium text-slate-400">Amount</label>
-          <label className="flex items-center gap-1.5 text-xs text-violet-400 font-medium cursor-pointer hover:text-violet-300">
-            {isScanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
-            <span>{isScanning ? "Scanning..." : "Scan Receipt"}</span>
-            <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
-          </label>
+      {/* Amount + Date Compact Horizontal Line Row */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-medium text-slate-400">Amount</label>
+            <label className="flex items-center gap-1 text-[10px] text-violet-400 font-medium cursor-pointer hover:text-violet-300">
+              {isScanning ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Camera className="w-2.5 h-2.5" />}
+              <span>Scan</span>
+              <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
+            </label>
+          </div>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">₹</span>
+            <input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-7 pr-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
+              placeholder="0.00"
+              required
+            />
+          </div>
         </div>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Date</label>
           <input
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-8 pr-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
-            placeholder="0.00"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
             required
           />
         </div>
       </div>
 
+      {/* Category selector */}
       {type !== "transfer" && (
         <div>
           <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
@@ -277,6 +315,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         </div>
       )}
 
+      {/* Account / Transfer Destination */}
       {type === "transfer" ? (
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -291,7 +330,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                 <option key={acc.id} value={acc.id}>
                   {acc.name}
                 </option>
-              ))!}
+              ))}
             </select>
           </div>
           <div>
@@ -333,14 +372,28 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         </div>
       )}
 
+      {/* Item Name (Primary Identifier) */}
       <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Note (optional)</label>
+        <label className="block text-xs font-medium text-slate-400 mb-1">Item Name</label>
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
+          placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Salary, Coffee..."}
+          required
+        />
+      </div>
+
+      {/* Notes (Secondary/Optional) */}
+      <div>
+        <label className="block text-xs font-medium text-slate-400 mb-1">Notes (optional)</label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
-          placeholder="E.g., John owes $20 for pizza, Sarah owes $15..."
+          placeholder="E.g., split with Rahul, monthly subscription, etc."
         />
       </div>
 
@@ -348,7 +401,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
         <div>
           <label className="block text-sm font-medium text-amber-500">Needs Review</label>
           <p className="text-[10px] text-amber-500/70 mt-0.5 leading-tight">
-            Flag this transaction to double-check amounts or wait for friend confirmations.
+            Flag this transaction to double-check amounts or wait for confirmations.
           </p>
         </div>
         <div className="flex-shrink-0 ml-4">
@@ -366,7 +419,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
 
       <button
         type="submit"
-        disabled={isSubmitting || !amount}
+        disabled={isSubmitting || !amount || !description}
         className={`w-full py-3 mt-2 font-medium rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] ${
           type === "expense"
             ? "bg-red-600 hover:bg-red-500 hover:shadow-red-500/20 text-white shadow-lg"
@@ -375,7 +428,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/20 text-white shadow-lg"
         }`}
       >
-        {isSubmitting ? "Saving..." : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
+        {isSubmitting ? "Saving..." : editingTransaction ? "Update Transaction" : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
       </button>
 
       {/* AI Scanning Engaging Overlay - Blocks interaction & prevents data loss */}

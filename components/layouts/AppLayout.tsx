@@ -43,7 +43,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         emerald: { primary: "#10b981", rgb: "16, 185, 129" },
         rose: { primary: "#f43f5e", rgb: "244, 63, 94" },
         amber: { primary: "#f59e0b", rgb: "245, 158, 11" },
-        sky: { primary: "#0ea5e9", rgb: "14, 165, 233" },
+        sky: { primary: "#00f2fe", rgb: "0, 242, 254" },
         indigo: { primary: "#6366f1", rgb: "99, 102, 241" },
       };
 

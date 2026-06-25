@@ -81,6 +81,10 @@ export function useTransactions() {
     await transactionsRepository.add(tx);
   };
 
+  const updateTransaction = async (id: string, updates: Partial<Omit<TransactionEntity, "id" | "isDeleted">>) => {
+    await transactionsRepository.update(id, updates);
+  };
+
   const deleteTransaction = async (id: string) => {
     await transactionsRepository.softDelete(id);
   };
@@ -91,6 +95,7 @@ export function useTransactions() {
     hasMore,
     loadMore,
     addTransaction,
+    updateTransaction,
     deleteTransaction,
   };
 }

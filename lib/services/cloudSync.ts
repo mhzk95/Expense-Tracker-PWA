@@ -40,6 +40,15 @@ export async function pullCloudData(entities = "ALL", limit = 500) {
           if (item.createdAt) item.createdAt = typeof item.createdAt === 'string' ? item.createdAt : new Date(item.createdAt).toISOString();
           if (item.updatedAt) item.updatedAt = typeof item.updatedAt === 'string' ? item.updatedAt : new Date(item.updatedAt).toISOString();
           if (item.dueDate) item.dueDate = typeof item.dueDate === 'string' ? item.dueDate : new Date(item.dueDate).toISOString();
+          
+          if (storeName === "journalEntries" && item.waveformData && typeof item.waveformData === "string") {
+            try {
+              item.waveformData = JSON.parse(item.waveformData);
+            } catch (e) {
+              console.error("Failed to parse waveformData from server", e);
+            }
+          }
+
           await store.put(item);
         }
       }
