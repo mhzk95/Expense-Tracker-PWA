@@ -1,8 +1,24 @@
 import { getDB, SyncAction } from "@/lib/db/indexeddb";
 import { logMessage } from "./errorLogger";
 
-export async function pullCloudData(entities = "ALL", limit = 500) {
+let isDraining = false;
+let hasPendingDrainRequest = false;
+
+let isPulling = false;
+let hasPendingPullRequest = false;
+
+export async function pullCloudData(entities = "ALL", limit = 500, isContinuation = false) {
   if (typeof window === "undefined" || !navigator.onLine) return { success: false, error: "Offline" };
+
+  if (isPulling && !isContinuation) {
+    hasPendingPullRequest = true;
+    return { success: false, error: "Pull already in progress, request queued" };
+  }
+
+  isPulling = true;
+  if (!isContinuation) {
+    hasPendingPullRequest = false;
+  }
 
   try {
     const db = await getDB();
@@ -75,14 +91,19 @@ export async function pullCloudData(entities = "ALL", limit = 500) {
     // Recursively pull more if there is more data
     if (hasMore) {
       console.log(`[Pull] More data available for ${entities}, pulling next chunk...`);
-      setTimeout(() => pullCloudData(entities, limit), 500);
+      setTimeout(() => pullCloudData(entities, limit, true), 500);
     } else {
       console.log(`[Pull] Sync complete for ${entities}.`);
+      isPulling = false;
+      if (hasPendingPullRequest) {
+        setTimeout(() => pullCloudData(entities, limit), 500);
+      }
     }
 
     return { success: true, hasMore };
   } catch (error: any) {
     console.error("Pull Error:", error);
+    isPulling = false;
     await logMessage("Sync", "pullCloudData", "error", error.message, error.stack);
     return { success: false, error: error.message };
   }
@@ -91,15 +112,31 @@ export async function pullCloudData(entities = "ALL", limit = 500) {
 /**
  * Background worker function that drains the sync_queue.
  */
-export async function drainSyncQueue() {
+export async function drainSyncQueue(isContinuation = false) {
   if (typeof window === "undefined" || !navigator.onLine) return { success: false, error: "Offline" };
+
+  if (isDraining && !isContinuation) {
+    hasPendingDrainRequest = true;
+    return { success: false, error: "Sync already in progress, request queued" };
+  }
+
+  isDraining = true;
+  if (!isContinuation) {
+    hasPendingDrainRequest = false;
+  }
 
   try {
     const db = await getDB();
     const allActions = await db.getAll("sync_queue");
     const pendingActions = allActions.filter((a: SyncAction) => a.status === "pending" || a.status === "failed");
 
-    if (pendingActions.length === 0) return { success: true, processed: 0 };
+    if (pendingActions.length === 0) {
+      isDraining = false;
+      if (hasPendingDrainRequest) {
+        setTimeout(() => drainSyncQueue(), 500);
+      }
+      return { success: true, processed: 0 };
+    }
 
     // Sort by timestamp
     pendingActions.sort((a: SyncAction, b: SyncAction) => a.timestamp - b.timestamp);
@@ -198,13 +235,19 @@ export async function drainSyncQueue() {
     // If there are more items pending, drain them recursively
     if (pendingActions.length > BATCH_SIZE) {
       console.log(`[AutoSync] Processed batch of ${BATCH_SIZE}, more pending...`);
-      setTimeout(() => drainSyncQueue(), 500);
+      setTimeout(() => drainSyncQueue(true), 500);
+    } else {
+      isDraining = false;
+      if (hasPendingDrainRequest) {
+        setTimeout(() => drainSyncQueue(), 500);
+      }
     }
 
     return { success: true, processed: batch.length };
 
   } catch (error: any) {
     console.error("Drain Queue Error:", error);
+    isDraining = false;
     await logMessage("Sync", "drainSyncQueue", "error", error.message, error.stack);
     return { success: false, error: error.message };
   }
@@ -217,6 +260,12 @@ export async function syncWithCloud() {
   const drainRes = await drainSyncQueue();
   if (!drainRes.success) return drainRes;
   
-  return await pullCloudData("ALL", 500);
+  const pullRes = await pullCloudData("ALL", 500);
+  if (pullRes.success) {
+    const now = Date.now();
+    localStorage.setItem("et_last_full_pull_time", now.toString());
+    localStorage.setItem("et_last_priority_pull_time", now.toString());
+    localStorage.setItem("et_last_cloud_sync", now.toString());
+  }
+  return pullRes;
 }
-

@@ -14,8 +14,8 @@ export function useAutoSync() {
     // Only auto-sync if the user is authenticated
     if (!session) return;
 
-    // Debounced sync function (waits 3 seconds after the last change before syncing)
-    const triggerSync = (e?: Event) => {
+    // Debounced function to drain sync queue and conditionally pull updates if 24h passed
+    const triggerPush = (e?: Event) => {
       // Prevent sync loops if the event was dispatched by our own syncWithCloud function
       if (e instanceof CustomEvent && e.detail?.fromSync) {
         return;
@@ -27,10 +27,20 @@ export function useAutoSync() {
         try {
           console.log("[AutoSync] Draining action queue...");
           await drainSyncQueue();
-          console.log("[AutoSync] Pulling latest data...");
-          await pullCloudData("ALL", 500);
+          
+          // Throttled pull check (once per 24 hours)
+          const lastFullPull = localStorage.getItem("et_last_full_pull_time");
+          const now = Date.now();
+          if (!lastFullPull || now - parseInt(lastFullPull, 10) > 24 * 60 * 60 * 1000) {
+            console.log("[AutoSync] Throttled pull (daily check elapsed). Pulling latest data...");
+            const res = await pullCloudData("ALL", 500);
+            if (res.success) {
+              localStorage.setItem("et_last_full_pull_time", now.toString());
+              localStorage.setItem("et_last_cloud_sync", now.toString());
+            }
+          }
         } catch (error) {
-          console.error("[AutoSync] Failed:", error);
+          console.error("[AutoSync] Push/Pull Failed:", error);
         }
       }, 3000);
     };
@@ -45,7 +55,7 @@ export function useAutoSync() {
     ];
 
     mutationEvents.forEach(event => {
-      window.addEventListener(event, triggerSync);
+      window.addEventListener(event, triggerPush);
     });
 
     // 2. Sync on app regaining focus (throttled to max once per minute)
@@ -53,13 +63,13 @@ export function useAutoSync() {
       const now = Date.now();
       if (now - lastFocusSync.current > 60000) {
         lastFocusSync.current = now;
-        triggerSync();
+        triggerPush();
       }
     };
     window.addEventListener("focus", handleFocus);
 
     // 3. Sync on coming back online
-    const handleOnline = () => triggerSync();
+    const handleOnline = () => triggerPush();
     window.addEventListener("online", handleOnline);
 
     // Initial prioritized sync on app load (Run only once)
@@ -67,11 +77,20 @@ export function useAutoSync() {
       if (hasRunInitialSync.current) return;
       hasRunInitialSync.current = true;
 
-      
       try {
-        console.log("[AutoSync] Initial priority pull (metadata)...");
-        await pullCloudData("accounts,categories,budgets,reminders", 1000);
-        triggerSync();
+        const lastPriorityPull = localStorage.getItem("et_last_priority_pull_time");
+        const now = Date.now();
+        
+        if (!lastPriorityPull || now - parseInt(lastPriorityPull, 10) > 24 * 60 * 60 * 1000) {
+          console.log("[AutoSync] Daily priority pull (metadata)...");
+          const res = await pullCloudData("accounts,categories,budgets,reminders", 1000);
+          if (res.success) {
+            localStorage.setItem("et_last_priority_pull_time", now.toString());
+          }
+        }
+        
+        // Trigger queue drain
+        triggerPush();
       } catch (e) {
         console.error("Initial sync failed", e);
       }
@@ -82,7 +101,7 @@ export function useAutoSync() {
     return () => {
       if (syncTimeout.current) clearTimeout(syncTimeout.current);
       mutationEvents.forEach(event => {
-        window.removeEventListener(event, triggerSync);
+        window.removeEventListener(event, triggerPush);
       });
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("online", handleOnline);

@@ -52,7 +52,7 @@ export function useReminders() {
     };
   }, [fetchReminders]);
 
-  const addReminder = async (item: Omit<ReminderEntity, "createdAt" | "updatedAt" | "isDeleted">) => {
+  const addReminder = useCallback(async (item: Omit<ReminderEntity, "createdAt" | "updatedAt" | "isDeleted">) => {
     const db = await getDB();
     const now = new Date().toISOString();
     const newItem: ReminderEntity = {
@@ -65,9 +65,9 @@ export function useReminders() {
     await pushSyncAction("REMINDER", "CREATE", newItem);
     fetchReminders();
     window.dispatchEvent(new CustomEvent("db:reminders:changed"));
-  };
+  }, [fetchReminders]);
 
-  const updateReminder = async (id: string, updates: Partial<ReminderEntity>) => {
+  const updateReminder = useCallback(async (id: string, updates: Partial<ReminderEntity>) => {
     const db = await getDB();
     const existing = await db.get("reminders", id);
     if (!existing) return;
@@ -81,11 +81,11 @@ export function useReminders() {
     await pushSyncAction("REMINDER", "UPDATE", updated);
     fetchReminders();
     window.dispatchEvent(new CustomEvent("db:reminders:changed"));
-  };
+  }, [fetchReminders]);
 
-  const deleteReminder = async (id: string) => {
+  const deleteReminder = useCallback(async (id: string) => {
     await updateReminder(id, { isDeleted: true });
-  };
+  }, [updateReminder]);
 
   return {
     reminders,

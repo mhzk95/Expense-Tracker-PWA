@@ -8,7 +8,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 export function SpendingHeatmap() {
   const { transactions, loading } = useTransactions();
   
-  const data = useMemo(() => {
+  const { weeks, maxAmount } = useMemo(() => {
      const map = new Map<string, number>();
      
      const today = new Date();
@@ -29,7 +29,15 @@ export function SpendingHeatmap() {
         }
      });
      
-     return Array.from(map.entries()).map(([date, amount]) => ({ date, amount }));
+     const formattedData = Array.from(map.entries()).map(([date, amount]) => ({ date, amount }));
+     const calculatedMax = Math.max(...formattedData.map(d => d.amount), 1);
+     
+     const computedWeeks = [];
+     for (let i = 0; i < formattedData.length; i += 7) {
+       computedWeeks.push(formattedData.slice(i, i + 7));
+     }
+     
+     return { weeks: computedWeeks, maxAmount: calculatedMax };
   }, [transactions]);
   
   if (loading) {
@@ -53,8 +61,6 @@ export function SpendingHeatmap() {
     );
   }
   
-  const maxAmount = Math.max(...data.map(d => d.amount), 1);
-  
   const getColor = (amount: number) => {
     if (amount === 0) return "bg-slate-800/40";
     const intensity = amount / maxAmount;
@@ -64,11 +70,6 @@ export function SpendingHeatmap() {
     return "bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.5)]";
   };
   
-  const weeks = [];
-  for (let i = 0; i < data.length; i += 7) {
-    weeks.push(data.slice(i, i + 7));
-  }
-
   return (
     <GlassCard className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -79,7 +80,7 @@ export function SpendingHeatmap() {
         <div className="flex gap-[3px] min-w-max pr-4">
           {weeks.map((week, wIdx) => (
             <div key={wIdx} className="flex flex-col gap-[3px]">
-              {week.map((day, dIdx) => (
+              {week.map((day) => (
                 <div 
                   key={day.date}
                   className={`w-3 h-3 rounded-[2px] ${getColor(day.amount)} transition-all hover:scale-150 hover:z-10`}

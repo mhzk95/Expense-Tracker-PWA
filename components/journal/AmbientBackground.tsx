@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useAppRuntime } from "@/hooks/useAppRuntime";
 
 export type AmbientVariant = 'journal' | 'transactions' | 'research';
 
@@ -37,6 +38,18 @@ const researchParticles = [
 ];
 
 export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVariant }) => {
+  const runtime = useAppRuntime();
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
   const getGradient = () => {
     switch (variant) {
       case 'transactions': return "from-[var(--ambient-color-tx,rgba(16,185,129,0.1))] via-[var(--color-slate-950)] to-[var(--color-slate-950)]";
@@ -45,8 +58,11 @@ export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVa
     }
   };
 
-  const renderParticles = (particles: any[], isCurrent: boolean, keyPrefix: string) => (
-    particles.map((p, i) => (
+  const renderParticles = (particles: any[], isCurrent: boolean, keyPrefix: string) => {
+    // If mobile viewport, show only a subset of particles to reduce overdraw
+    const visibleParticles = runtime.isMobileViewport ? particles.slice(0, 3) : particles;
+
+    return visibleParticles.map((p, i) => (
       <motion.div
         key={`${keyPrefix}-${i}`}
         className="absolute rounded-full filter blur-xl transition-all duration-1000"
@@ -58,20 +74,21 @@ export const AmbientBackground = ({ variant = 'journal' }: { variant?: AmbientVa
           left: p.l,
           opacity: isCurrent ? `calc(var(--ambient-opacity-factor, 1.0) * ${p.opacity})` as any : 0,
           mixBlendMode: 'var(--ambient-blend, screen)' as any,
+          willChange: reducedMotion ? undefined : "transform",
         }}
-        animate={{
+        animate={reducedMotion ? undefined : {
           y: p.y,
           x: p.x,
           scale: [1, 1.2, 0.9, 1.1, 1],
         }}
-        transition={{
+        transition={reducedMotion ? undefined : {
           y: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
           x: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
           scale: { duration: p.d, repeat: Infinity, ease: "easeInOut" },
         }}
       />
-    ))
-  );
+    ));
+  };
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">

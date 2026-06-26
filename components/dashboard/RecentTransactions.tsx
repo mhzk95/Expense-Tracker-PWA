@@ -12,11 +12,17 @@ import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { useMemo } from "react";
 
 export function RecentTransactions() {
   const { transactions, loading: txLoading } = useTransactions();
   const { categories, loading: catLoading } = useCategories();
-  const recent = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+
+  // Transactions are already sorted descending by date in the repository
+  const recent = useMemo(() => {
+    return transactions.slice(0, 5);
+  }, [transactions]);
+
   const loading = txLoading || catLoading;
 
   return (
@@ -56,9 +62,6 @@ export function RecentTransactions() {
             const isTransfer = txn.type === "transfer";
 
             const baseColor = category?.color || "#8b5cf6";
-            const glowColor = category 
-              ? (category.color?.startsWith("#") ? `${category.color}26` : (category.color || "#8b5cf6")) 
-              : "rgba(139,92,246,0.15)";
 
             return (
               <div

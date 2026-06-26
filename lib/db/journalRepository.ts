@@ -1,4 +1,4 @@
-import { getDB, JournalEntity, pushSyncAction } from "./indexeddb";
+import { getDB, getImageCacheDB, JournalEntity, pushSyncAction } from "./indexeddb";
 
 export const journalRepository = {
   async getAll(): Promise<JournalEntity[]> {
@@ -76,6 +76,33 @@ export const journalRepository = {
       isDeleted: true,
       updatedAt: new Date().toISOString(),
     };
+
+    // 1. Purge local large binary Blobs inside the journal entry itself
+    if (existing.audioFileId instanceof Blob) {
+      deletedEntry.audioFileId = undefined;
+    }
+    if (Array.isArray(existing.photoUrls)) {
+      deletedEntry.photoUrls = existing.photoUrls.map((url: any) => {
+        if (url instanceof Blob) return "deleted_blob";
+        return url;
+      });
+    }
+
+    // 2. Purge local cached image blobs from ImageCacheDB to reclaim disk space
+    if (Array.isArray(existing.photoUrls)) {
+      try {
+        const imgDb = await getImageCacheDB();
+        if (imgDb) {
+          for (const url of existing.photoUrls) {
+            if (typeof url === "string" && url.startsWith("telegram:")) {
+              await imgDb.delete("images", url);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to clear media cache for deleted entry", e);
+      }
+    }
 
     await db.put("journalEntries", deletedEntry);
     await pushSyncAction("JOURNAL", "DELETE", deletedEntry);

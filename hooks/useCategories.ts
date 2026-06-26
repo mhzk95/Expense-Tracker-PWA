@@ -51,17 +51,17 @@ export function useCategories() {
     };
   }, [fetchCategories]);
 
-  const addCategory = async (cat: Omit<CategoryEntity, "syncStatus" | "localVersion" | "isDeleted">) => {
+  const addCategory = useCallback(async (cat: Omit<CategoryEntity, "syncStatus" | "localVersion" | "isDeleted">) => {
     await categoriesRepository.add(cat);
-  };
+  }, []);
 
-  const updateCategory = async (id: string, updates: Partial<CategoryEntity>) => {
+  const updateCategory = useCallback(async (id: string, updates: Partial<CategoryEntity>) => {
     await categoriesRepository.update(id, updates);
-  };
+  }, []);
 
-  const deleteCategory = async (id: string) => {
+  const deleteCategory = useCallback(async (id: string) => {
     await categoriesRepository.softDelete(id);
-  };
+  }, []);
 
   return {
     categories,

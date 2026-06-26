@@ -45,8 +45,17 @@ export default function TransactionsPage() {
     };
   }, []);
 
-  const handleTouchStart = (txnId: string) => {
+  const touchStartPos = useRef({ x: 0, y: 0 });
+  const isTouchDevice = useRef(false);
+
+  const startLongPress = (txnId: string, clientX: number, clientY: number) => {
     isMoving.current = false;
+    touchStartPos.current = { x: clientX, y: clientY };
+    
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+    }
+    
     longPressTimeoutRef.current = setTimeout(() => {
       if (!isMoving.current) {
         vibrate([30]);
@@ -55,17 +64,44 @@ export default function TransactionsPage() {
     }, 500);
   };
 
-  const handleTouchMove = () => {
-    isMoving.current = true;
+  const moveLongPress = (clientX: number, clientY: number) => {
+    const deltaX = Math.abs(clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(clientY - touchStartPos.current.y);
+    
+    // Only cancel long press if finger moved more than 10 pixels (slop tolerance)
+    if (deltaX > 10 || deltaY > 10) {
+      isMoving.current = true;
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+      }
+    }
+  };
+
+  const cancelLongPress = () => {
     if (longPressTimeoutRef.current) {
       clearTimeout(longPressTimeoutRef.current);
     }
   };
 
-  const handleTouchEnd = () => {
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current);
-    }
+  const handleTouchStart = (txnId: string, e: React.TouchEvent) => {
+    isTouchDevice.current = true;
+    const touch = e.touches[0];
+    startLongPress(txnId, touch.clientX, touch.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    moveLongPress(touch.clientX, touch.clientY);
+  };
+
+  const handleMouseDown = (txnId: string, e: React.MouseEvent) => {
+    if (isTouchDevice.current) return;
+    startLongPress(txnId, e.clientX, e.clientY);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isTouchDevice.current) return;
+    moveLongPress(e.clientX, e.clientY);
   };
 
   return (
@@ -140,14 +176,16 @@ export default function TransactionsPage() {
                     "--color-primary-rgb": hexToRgb(baseColor),
                     "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
                     "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                    "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
+                    "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
+                    WebkitTouchCallout: "none",
                   } as React.CSSProperties}
-                  onTouchStart={() => handleTouchStart(txn.id)}
+                  onTouchStart={(e) => handleTouchStart(txn.id, e)}
                   onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  onMouseDown={() => handleTouchStart(txn.id)}
-                  onMouseMove={handleTouchMove}
-                  onMouseUp={handleTouchEnd}
+                  onTouchEnd={cancelLongPress}
+                  onMouseDown={(e) => handleMouseDown(txn.id, e)}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={cancelLongPress}
+                  onContextMenu={(e) => e.preventDefault()}
                   onClick={(e) => {
                     e.stopPropagation();
                   }}

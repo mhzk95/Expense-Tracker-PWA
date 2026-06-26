@@ -18,38 +18,41 @@ export function useJournal() {
   const [hasMore, setHasMore] = useState(cachedHasMore);
   const [page, setPage] = useState(cachedPage);
 
-  const fetchPage = async (pageIndex: number) => {
+  const fetchPage = useCallback(async (pageIndex: number) => {
     try {
       const data = await journalRepository.getPaginated(PAGE_SIZE, pageIndex * PAGE_SIZE);
       const newHasMore = data.length === PAGE_SIZE;
       cachedHasMore = newHasMore;
       setHasMore(newHasMore);
 
-      const newEntries = pageIndex === 0 ? data : [...entries, ...data];
-      
-      // Prevent unnecessary state updates if the fetched data is identical to what's already in the local state
-      const isDifferent = !entries || 
-                          entries.length !== newEntries.length || 
-                          newEntries.some((e, i) => 
-                            e.id !== entries[i]?.id || 
-                            e.content !== entries[i]?.content || 
-                            e.date !== entries[i]?.date ||
-                            e.mood !== entries[i]?.mood ||
-                            e.title !== entries[i]?.title ||
-                            (e.photoUrls && e.photoUrls.join(",")) !== (entries[i]?.photoUrls && entries[i]?.photoUrls.join(","))
-                          );
+      setEntries((prevEntries) => {
+        const newEntries = pageIndex === 0 ? data : [...prevEntries, ...data];
+        
+        // Prevent unnecessary state updates if the fetched data is identical to what's already in the local state
+        const isDifferent = !prevEntries || 
+                            prevEntries.length !== newEntries.length || 
+                            newEntries.some((e, i) => 
+                              e.id !== prevEntries[i]?.id || 
+                              e.content !== prevEntries[i]?.content || 
+                              e.date !== prevEntries[i]?.date ||
+                              e.mood !== prevEntries[i]?.mood ||
+                              e.title !== prevEntries[i]?.title ||
+                              (e.photoUrls && e.photoUrls.join(",")) !== (prevEntries[i]?.photoUrls && prevEntries[i]?.photoUrls.join(","))
+                            );
 
-      if (isDifferent || cachedLoading) {
-        cachedEntries = newEntries;
-        setEntries(newEntries);
-      }
+        if (isDifferent || cachedLoading) {
+          cachedEntries = newEntries;
+          return newEntries;
+        }
+        return prevEntries;
+      });
     } catch (error) {
       console.error("Failed to fetch journal entries", error);
     } finally {
       cachedLoading = false;
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPage(0);
@@ -64,24 +67,24 @@ export function useJournal() {
       window.removeEventListener("db:journal:changed", handleDbChange);
       window.removeEventListener("sync:updated", handleDbChange);
     };
-  }, []);
+  }, [fetchPage]);
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (!loading && hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
       cachedPage = nextPage;
       fetchPage(nextPage);
     }
-  };
+  }, [loading, hasMore, page, fetchPage]);
 
-  const addEntry = async (entry: Omit<JournalEntity, "isDeleted" | "createdAt" | "updatedAt">) => {
+  const addEntry = useCallback(async (entry: Omit<JournalEntity, "isDeleted" | "createdAt" | "updatedAt">) => {
     await journalRepository.add(entry);
-  };
+  }, []);
 
-  const deleteEntry = async (id: string) => {
+  const deleteEntry = useCallback(async (id: string) => {
     await journalRepository.softDelete(id);
-  };
+  }, []);
 
   return {
     entries,

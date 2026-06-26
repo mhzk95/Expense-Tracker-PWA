@@ -11,6 +11,8 @@ import "./globals.css";
 import { AppShell } from "@/components/app-shell/AppShell";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { OfflineAuthGuard } from "@/components/providers/OfflineAuthGuard";
+import { AppRuntimeProvider } from "@/components/providers/AppRuntimeProvider";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -138,11 +140,13 @@ export default function RootLayout({
          * - Mobile browser → mobile header
          * - Standalone PWA → bottom navigation
          */}
-        <AuthProvider>
-          <OfflineAuthGuard>
-            <AppShell>{children}</AppShell>
-          </OfflineAuthGuard>
-        </AuthProvider>
+        <AppRuntimeProvider>
+          <AuthProvider>
+            <OfflineAuthGuard>
+              <AppShell>{children}</AppShell>
+            </OfflineAuthGuard>
+          </AuthProvider>
+        </AppRuntimeProvider>
       </body>
     </html>
   );
