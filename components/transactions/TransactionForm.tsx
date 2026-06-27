@@ -16,7 +16,7 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ onSuccess, editingTransaction }: TransactionFormProps) {
-  const { addTransaction, updateTransaction } = useTransactions();
+  const { transactions, addTransaction, updateTransaction } = useTransactions();
   const { categories, addCategory } = useCategories();
   const { accounts } = useAccounts();
   
@@ -78,6 +78,29 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date, payee, location }));
     }
   }, [amount, description, note, type, date, payee, location, editingTransaction]);
+
+  // Heuristic-based Smart Category auto-suggestions
+  useEffect(() => {
+    if (editingTransaction || !payee.trim() || transactions.length === 0) return;
+    
+    // Find the most recent transaction with the same payee (case-insensitive)
+    const matchingTx = transactions.find(
+      t => t.payee?.toLowerCase().trim() === payee.toLowerCase().trim()
+    );
+    
+    if (matchingTx) {
+      if (matchingTx.categoryId) {
+        // Only set if category matches the current type
+        const cat = categories.find(c => c.id === matchingTx.categoryId);
+        if (cat && cat.type === type) {
+          setCategoryId(matchingTx.categoryId);
+        }
+      }
+      if (matchingTx.accountId) {
+        setAccountId(matchingTx.accountId);
+      }
+    }
+  }, [payee, transactions, categories, type, editingTransaction]);
 
   const fetchLocation = async () => {
     setLocationLoading(true);
@@ -294,7 +317,43 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-7 pr-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
               placeholder="0.00"
               required
+              autoFocus={!editingTransaction}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
+                  nextField?.focus();
+                }
+              }}
             />
+          </div>
+          <div className="flex gap-1.5 mt-1.5">
+            {[100, 500, 1000].map((val) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => {
+                  setAmount((prev) => {
+                    const current = parseFloat(prev) || 0;
+                    return (current + val).toString();
+                  });
+                  vibrate([20]);
+                }}
+                className="px-2.5 py-1 text-[10px] font-semibold bg-slate-900 border border-slate-800/80 rounded-lg text-slate-400 hover:text-white transition-all active:scale-95"
+              >
+                +{val}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setAmount("");
+                vibrate([20]);
+              }}
+              className="px-2.5 py-1 text-[10px] font-semibold bg-slate-900 border border-slate-800/80 rounded-lg text-red-400 hover:text-red-300 transition-all active:scale-95 ml-auto"
+            >
+              Clear
+            </button>
           </div>
         </div>
 
@@ -428,11 +487,18 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <div>
           <label className="block text-xs font-medium text-slate-400 mb-1">Payee / Merchant (optional)</label>
           <input
+            id="payee-input"
             type="text"
             value={payee}
             onChange={(e) => setPayee(e.target.value)}
             className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
             placeholder="E.g., Uber, Starbucks, Amazon..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                document.getElementById("item-name-input")?.focus();
+              }
+            }}
           />
         </div>
       )}
@@ -441,11 +507,18 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div>
         <label className="block text-xs font-medium text-slate-400 mb-1">Item Name (optional)</label>
         <input
+          id="item-name-input"
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
           placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee... (Auto: Quick Entry)"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              document.getElementById("notes-input")?.focus();
+            }
+          }}
         />
       </div>
 
@@ -466,6 +539,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div>
         <label className="block text-xs font-medium text-slate-400 mb-1">Notes (optional)</label>
         <textarea
+          id="notes-input"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}

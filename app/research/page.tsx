@@ -10,6 +10,7 @@ import Fuse from "fuse.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { useReminders } from "@/hooks/useReminders";
+import { CommandBar } from "@/components/ui/CommandBar";
 
 function ResearchContent() {
   const searchParams = useSearchParams();
@@ -374,6 +375,17 @@ function ResearchContent() {
                               <button
                                 onClick={(e) => {
                                   e.preventDefault();
+                                  setShareItem(item);
+                                  setIsEditingDetails(true);
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium hover:bg-slate-700 text-slate-200 transition-colors"
+                              >
+                                <FileText className="h-4 w-4" /> Edit / Move
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   if(confirm("Add a reminder to review this tomorrow?")) {
                                     addReminder({
                                       id: crypto.randomUUID(),
@@ -649,20 +661,16 @@ function ResearchContent() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Add Note or Tags</label>
+                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Content / Notes</label>
                 <textarea
-                  placeholder="e.g. #design Check out the hero section..."
-                  className="w-full h-20 et-input rounded-xl p-3 text-sm resize-none"
-                  onBlur={(e) => {
-                    const text = e.target.value.trim();
-                    if (text) {
-                      // Extract hashtags
-                      const hashtags = text.match(/#[\w-]+/g)?.map(t => t.slice(1)) || [];
-                      updateItem(shareItem.id, {
-                        content: (shareItem.content ? shareItem.content + "\n\n" : "") + text,
-                        tags: hashtags
-                      });
-                    }
+                  placeholder="Content or notes..."
+                  className="w-full h-24 et-input rounded-xl p-3 text-sm resize-none"
+                  value={shareItem.content || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const hashtags = val.match(/#[\w-]+/g)?.map(t => t.slice(1)) || [];
+                    setShareItem({ ...shareItem, content: val, tags: hashtags });
+                    updateItem(shareItem.id, { content: val, tags: hashtags });
                   }}
                 />
               </div>
@@ -687,6 +695,9 @@ function ResearchContent() {
           </div>
         </div>
       )}
+
+      {/* Smart Entry Floating Button only on Research Page */}
+      <CommandBar />
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { MobileWebHeader } from "@/components/navigation/MobileWebHeader";
 import { PWABottomNavigation } from "@/components/navigation/PWABottomNavigation";
 import { InstallPromptBanner } from "@/components/pwa/InstallPromptBanner";
 import { PwaUpdatePrompt } from "@/components/pwa/PwaUpdatePrompt";
-import { CommandBar } from "@/components/ui/CommandBar";
 import { useAutoSync } from "@/hooks/useAutoSync";
 import { useReminders } from "@/hooks/useReminders";
 import { useLocalPushScheduler } from "@/hooks/useLocalPushScheduler";
@@ -145,7 +144,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <InstallPromptBanner />
       <PwaUpdatePrompt />
-      <CommandBar />
     </div>
   );
 }
