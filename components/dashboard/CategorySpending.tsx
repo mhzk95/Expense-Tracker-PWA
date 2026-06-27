@@ -108,7 +108,7 @@ export function CategorySpending() {
                   <span className="font-semibold text-white tabular-nums">
                     {formatCurrency(cat.amount)}
                   </span>
-                </div>Logic
+                </div>
 
                 <div className="h-1.5 w-full bg-slate-800/50 rounded-full overflow-hidden">
                   <div

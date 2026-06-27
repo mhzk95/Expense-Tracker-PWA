@@ -170,7 +170,7 @@ export default function CategoriesPage() {
                     deleteMessage={`Delete "${cat.name}" category?`}
                   >
                     <div 
-                      className="glass-card interactive flex items-center gap-3 px-5 py-4 w-full"
+                      className="glass-card interactive flex items-center gap-3 px-4 py-2.5 w-full"
                       style={{ 
                         "--color-primary": cat.color || "#94a3b8",
                         "--color-primary-rgb": hexToRgb(cat.color || "#94a3b8"),
@@ -185,7 +185,7 @@ export default function CategoriesPage() {
                       >
                         <Target className="w-4 h-4" style={{ color: cat.color }} />
                       </div>
-                      <span className="flex-1 text-sm font-medium text-white truncate">{cat.name}</span>
+                      <span className="flex-1 text-xs font-semibold text-white truncate">{cat.name}</span>
                     </div>
                   </SwipeToDelete>
                 ))}

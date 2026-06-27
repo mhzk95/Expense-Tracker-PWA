@@ -63,22 +63,22 @@ export default function RecurringPage() {
           {recurringTransactions.map((txn) => (
             <div
               key={txn.id}
-              className="flex items-center gap-4 glass-card p-4 interactive"
+              className="flex items-center gap-3 glass-card px-4 py-2.5 interactive"
             >
-              <div className="h-10 w-10 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-                <RefreshCw className="h-5 w-5 text-blue-400" />
+              <div className="h-8 w-8 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                <RefreshCw className="h-4 w-4 text-blue-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{txn.description}</p>
+                <p className="text-xs font-semibold text-white truncate">{txn.description}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <Calendar className="h-3 w-3 text-slate-500" />
-                  <span className="text-xs text-slate-500">Monthly · Next: {formatDate(txn.date, "medium")}</span>
+                  <span className="text-[10px] text-slate-500">Monthly · Next: {formatDate(txn.date, "medium")}</span>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white tabular-nums">
+                <p className="text-xs font-bold text-white tabular-nums">
                   {formatCurrency(txn.amount)}
-                  <span className="text-slate-500 font-normal text-xs">/mo</span>
+                  <span className="text-slate-500 font-normal text-[10px]">/mo</span>
                 </p>
               </div>
             </div>

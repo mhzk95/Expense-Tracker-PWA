@@ -179,6 +179,11 @@ export function SwipeToDelete({
 
   const handleConfirmDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!window.confirm(deleteMessage)) {
+      setCurrentX(0);
+      setIsRevealed(false);
+      return;
+    }
     vibrate([50]);
     setIsPendingDelete(true);
 

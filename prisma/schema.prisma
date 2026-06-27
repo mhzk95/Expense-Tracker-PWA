@@ -106,6 +106,8 @@ model Transaction {
   status      String?
   needsReview Boolean  @default(false)
   isDeleted   Boolean  @default(false)
+  payee       String?
+  location    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

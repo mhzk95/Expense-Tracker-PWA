@@ -14,6 +14,8 @@ export interface TransactionEntity {
   status?: string;
   needsReview?: boolean;
   isDeleted: boolean;
+  payee?: string;
+  location?: string;
 }
 
 export interface AccountEntity {

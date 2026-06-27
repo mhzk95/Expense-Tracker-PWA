@@ -67,8 +67,8 @@ export function RecentTransactions() {
               <div
                 key={txn.id}
                 className={cn(
-                  "glass-card interactive flex items-center gap-4 px-5 py-3.5 transition-all duration-300",
-                  txn.needsReview && "needs-review-card"
+                  "glass-card interactive flex items-center gap-3 px-4 py-2.5 transition-all duration-300",
+                  txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60"
                 )}
                 style={{
                   "--color-primary": baseColor,
@@ -81,7 +81,7 @@ export function RecentTransactions() {
                 {/* Type icon */}
                 <div
                   className={cn(
-                    "flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center",
+                    "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
                     isIncome
                       ? "bg-emerald-500/15 text-emerald-400"
                       : isTransfer
@@ -101,22 +101,32 @@ export function RecentTransactions() {
 
                 {/* Description + category */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{txn.description}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "short")}
+                  <p className="text-xs font-semibold text-white truncate">
+                    {txn.payee ? txn.payee : txn.description}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+                    {txn.payee && txn.description !== "Quick Entry" && `${txn.description} · `}
+                    {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "medium")}
                   </p>
                 </div>
 
-                {/* Amount */}
-                <span
-                  className={cn(
-                    "text-sm font-semibold tabular-nums",
-                    isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                {/* Amount + Review Badge */}
+                <div className="text-right flex flex-col items-end">
+                  <span
+                    className={cn(
+                      "text-xs font-bold tabular-nums",
+                      isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                    )}
+                  >
+                    {isIncome ? "+" : isTransfer ? "" : "−"}
+                    {formatCurrency(txn.amount, txn.currency)}
+                  </span>
+                  {txn.needsReview && (
+                    <span className="text-[7px] font-extrabold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded leading-none mt-0.5">
+                      Review
+                    </span>
                   )}
-                >
-                  {isIncome ? "+" : isTransfer ? "" : "−"}
-                  {formatCurrency(txn.amount, txn.currency)}
-                </span>
+                </div>
               </div>
             );
           })

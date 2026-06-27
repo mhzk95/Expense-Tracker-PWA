@@ -479,7 +479,7 @@ body {
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   box-shadow:
     0 0 30px -5px var(--color-primary-glow),
     var(--glass-shadow-inset);
@@ -488,15 +488,15 @@ body {
 }
 
 .glass-card.rounded-xl {
-  border-radius: 0.75rem;
+  border-radius: 0.6rem;
 }
 
 .glass-card.rounded-2xl {
-  border-radius: 1rem;
+  border-radius: 0.85rem;
 }
 
 .glass-card.rounded-3xl {
-  border-radius: 1.5rem;
+  border-radius: 1.25rem;
 }
 
 .glass-card.rounded-full {

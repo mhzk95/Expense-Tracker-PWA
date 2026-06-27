@@ -74,7 +74,7 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        className="relative w-full aspect-[1.58/1] rounded-[2rem] p-6 overflow-hidden cursor-pointer backdrop-blur-xl bg-slate-900/40 transition-all duration-300 shadow-[0_0_30px_-5px_var(--color-primary-glow,rgba(139,92,246,0.15)),inset_0_1px_2px_rgba(255,255,255,0.15),inset_0_-1px_2px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_-5px_var(--color-primary-glow-hover,rgba(139,92,246,0.25)),inset_0_1px_2px_rgba(255,255,255,0.2),inset_0_-1px_2px_rgba(0,0,0,0.5)]"
+        className="relative w-full aspect-[1.58/1] rounded-[1.25rem] p-6 overflow-hidden cursor-pointer backdrop-blur-xl bg-slate-900/40 transition-all duration-300 shadow-[0_0_30px_-5px_var(--color-primary-glow,rgba(139,92,246,0.15)),inset_0_1px_2px_rgba(255,255,255,0.15),inset_0_-1px_2px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_-5px_var(--color-primary-glow-hover,rgba(139,92,246,0.25)),inset_0_1px_2px_rgba(255,255,255,0.2),inset_0_-1px_2px_rgba(0,0,0,0.5)]"
       >
         {/* Card Background gradient with glass tint */}
         <div 

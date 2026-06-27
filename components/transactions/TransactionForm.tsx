@@ -6,7 +6,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
 import { vibrate } from "@/lib/utils/helpers";
-import { Camera, Loader2, Sparkles } from "lucide-react";
+import { Camera, Loader2, Sparkles, MapPin, X, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransactionEntity } from "@/lib/db/indexeddb";
 
@@ -24,6 +24,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [amount, setAmount] = useState(editingTransaction?.amount?.toString() || "");
   const [description, setDescription] = useState(editingTransaction?.description || "");
   const [note, setNote] = useState(editingTransaction?.note || "");
+  const [payee, setPayee] = useState(editingTransaction?.payee || "");
+  const [location, setLocation] = useState(editingTransaction?.location || "");
   const [date, setDate] = useState(
     editingTransaction?.date 
       ? new Date(editingTransaction.date).toISOString().split("T")[0] 
@@ -44,6 +46,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [needsReview, setNeedsReview] = useState(editingTransaction?.needsReview || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [tempLocationQuery, setTempLocationQuery] = useState("");
 
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -60,6 +65,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         if (parsed.note) setNote(parsed.note);
         if (parsed.type) setType(parsed.type);
         if (parsed.date) setDate(parsed.date);
+        if (parsed.payee) setPayee(parsed.payee);
+        if (parsed.location) setLocation(parsed.location);
       } catch (e) {}
     }
   }, [editingTransaction]);
@@ -67,10 +74,48 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   // Save draft to prevent data loss (only when not editing)
   useEffect(() => {
     if (editingTransaction) return;
-    if (amount || description || note) {
-      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date }));
+    if (amount || description || note || payee || location) {
+      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date, payee, location }));
     }
-  }, [amount, description, note, type, date, editingTransaction]);
+  }, [amount, description, note, type, date, payee, location, editingTransaction]);
+
+  const fetchLocation = async () => {
+    setLocationLoading(true);
+    try {
+      const pos = await new Promise<GeolocationPosition>((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 })
+      );
+      const { latitude, longitude } = pos.coords;
+      const r = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+      );
+      const geo = await r.json();
+      const place = geo.address?.suburb || geo.address?.neighbourhood || geo.address?.city_district || "";
+      const city = geo.address?.city || geo.address?.town || geo.address?.village || "";
+      const country = geo.address?.country || "";
+      const displayName = [place, city, country].filter(Boolean).join(", ");
+      setLocation(JSON.stringify({ lat: latitude, lng: longitude, place_name: place, city, country, display: displayName }));
+    } catch {
+      setLocation("");
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
+  const getLocationDisplay = () => {
+    if (!location) return null;
+    try {
+      const loc = JSON.parse(location);
+      return loc.display || loc.city || loc.place_name || null;
+    } catch {
+      return location;
+    }
+  };
+
+  const handleLocationSelect = (locName: string) => {
+    setLocation(JSON.stringify({ display: locName }));
+    setShowLocationPicker(false);
+  };
 
   // Set default category and account when loaded
   useEffect(() => {
@@ -117,18 +162,24 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
     setIsSubmitting(true);
     try {
+      const rawDesc = description.trim();
+      const rawPayee = payee.trim();
+      const isQuickEntry = !rawDesc || (type !== "transfer" && !rawPayee);
+
       const txData = {
         amount: Number(amount),
         type,
         currency: "INR",
-        description: description.trim() || (type === "transfer" ? "Transfer" : "New Transaction"),
+        description: rawDesc || (type === "transfer" ? "Transfer" : "Quick Entry"),
         date: new Date(date).toISOString(),
         note: note.trim(),
         categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
-        needsReview,
+        needsReview: needsReview || isQuickEntry,
         status: editingTransaction?.status || "completed",
+        payee: type === "transfer" ? undefined : (rawPayee || undefined),
+        location: location.trim() || undefined,
       };
 
       if (editingTransaction) {
@@ -196,7 +247,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 relative">
       {/* Type Toggle */}
       <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800">
         <button
@@ -372,17 +423,43 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         </div>
       )}
 
-      {/* Item Name (Primary Identifier) */}
+      {/* Payee / Merchant (optional) */}
+      {type !== "transfer" && (
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Payee / Merchant (optional)</label>
+          <input
+            type="text"
+            value={payee}
+            onChange={(e) => setPayee(e.target.value)}
+            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
+            placeholder="E.g., Uber, Starbucks, Amazon..."
+          />
+        </div>
+      )}
+
+      {/* Item Name (optional) */}
       <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Item Name</label>
+        <label className="block text-xs font-medium text-slate-400 mb-1">Item Name (optional)</label>
         <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
-          placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Salary, Coffee..."}
-          required
+          placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee... (Auto: Quick Entry)"}
         />
+      </div>
+
+      {/* Location (optional) */}
+      <div>
+        <label className="block text-xs font-medium text-slate-400 mb-1">Location (optional)</label>
+        <button
+          type="button"
+          onClick={() => setShowLocationPicker(true)}
+          className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40`}
+        >
+          <span className="truncate">{getLocationDisplay() || "Add location..."}</span>
+          <MapPin className="h-4 w-4 text-slate-500" />
+        </button>
       </div>
 
       {/* Notes (Secondary/Optional) */}
@@ -391,7 +468,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          rows={3}
+          rows={2}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
           placeholder="E.g., split with Rahul, monthly subscription, etc."
         />
@@ -419,7 +496,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
       <button
         type="submit"
-        disabled={isSubmitting || !amount || !description}
+        disabled={isSubmitting || !amount}
         className={`w-full py-3 mt-2 font-medium rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] ${
           type === "expense"
             ? "bg-red-600 hover:bg-red-500 hover:shadow-red-500/20 text-white shadow-lg"
@@ -430,6 +507,62 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       >
         {isSubmitting ? "Saving..." : editingTransaction ? "Update Transaction" : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
       </button>
+
+      {/* Fluid Location Picker Overlay */}
+      <AnimatePresence>
+        {showLocationPicker && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, scale: 0.98 }} 
+            animate={{ opacity: 1, y: 0, scale: 1 }} 
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-[-16px] z-50 bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-3xl flex flex-col overflow-hidden shadow-2xl"
+          >
+            <div className="flex items-center gap-2 p-3 border-b border-slate-800/60 bg-slate-900/50">
+              <button type="button" onClick={() => setShowLocationPicker(false)} className="p-1.5 text-slate-400 hover:text-white rounded-full bg-slate-800/50 transition-colors"><ChevronLeft className="w-5 h-5" /></button>
+              <input 
+                type="text" 
+                autoFocus 
+                value={tempLocationQuery} 
+                onChange={e => setTempLocationQuery(e.target.value)} 
+                placeholder="Search location..." 
+                className="flex-1 bg-transparent text-sm text-white font-medium outline-none placeholder-slate-500" 
+              />
+              <button 
+                type="button" 
+                onClick={async () => {
+                  await fetchLocation();
+                  setShowLocationPicker(false);
+                }} 
+                className={`p-1.5 rounded-full transition-colors ${locationLoading ? "bg-violet-500/20 text-violet-400 animate-pulse" : "bg-slate-800/50 text-violet-400 hover:bg-violet-500 hover:text-white"}`}
+              >
+                <MapPin className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="flex-1 bg-slate-950 p-4 flex flex-col gap-1 overflow-y-auto">
+              <div className="text-[10px] text-slate-500 uppercase font-semibold mb-2 tracking-wider">Suggestions</div>
+              {tempLocationQuery ? (
+                <button type="button" onClick={() => handleLocationSelect(tempLocationQuery)} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium border border-slate-800/50 bg-slate-900/30 font-semibold text-violet-400 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-violet-400" /> {tempLocationQuery}
+                </button>
+              ) : (
+                <>
+                  <button type="button" onClick={() => handleLocationSelect("Current Location")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-violet-400" /> Current Location
+                  </button>
+                  <button type="button" onClick={() => handleLocationSelect("Home")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-400" /> Home
+                  </button>
+                  <button type="button" onClick={() => handleLocationSelect("Work")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-400" /> Work
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* AI Scanning Engaging Overlay - Blocks interaction & prevents data loss */}
       {typeof document !== "undefined" && createPortal(
