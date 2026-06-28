@@ -53,6 +53,152 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
+  // Custom Keypad & Calculator States & Helpers
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [isCategoryManuallySet, setIsCategoryManuallySet] = useState(false);
+  const [isAccountManuallySet, setIsAccountManuallySet] = useState(false);
+
+  const evaluateExpression = (expr: string): string => {
+    try {
+      const sanitized = expr.replace(/[^0-9+\-*/.]/g, "");
+      if (!sanitized) return "";
+      
+      const cleaned = sanitized.replace(/[+\-*/]+$/, "");
+      if (!cleaned) return "";
+
+      const result = new Function(`return ${cleaned}`)();
+      if (result === undefined || isNaN(result) || !isFinite(result)) {
+        return "";
+      }
+      return Number(Number(result).toFixed(2)).toString();
+    } catch {
+      return "";
+    }
+  };
+
+  const handleKeypadPress = (val: string) => {
+    vibrate([15]);
+    if (val === "C") {
+      setAmount("");
+    } else if (val === "⌫") {
+      setAmount((prev) => prev.slice(0, -1));
+    } else if (val === "=") {
+      setAmount((prev) => {
+        const evaluated = evaluateExpression(prev);
+        return evaluated || prev;
+      });
+    } else if (val === "Next") {
+      setAmount((prev) => {
+        const evaluated = evaluateExpression(prev);
+        return evaluated || prev;
+      });
+      setShowKeypad(false);
+      const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
+      nextField?.focus();
+    } else {
+      setAmount((prev) => {
+        const operators = ["+", "-", "*", "/"];
+        const isNewOperator = operators.includes(val);
+        const lastChar = prev.slice(-1);
+        const isLastOperator = operators.includes(lastChar);
+        
+        if (isNewOperator && isLastOperator) {
+          return prev.slice(0, -1) + val;
+        }
+        return prev + val;
+      });
+    }
+  };
+
+  const handleQuickAdd = (val: number) => {
+    setAmount((prev) => {
+      const hasOperators = /[+\-*/]/.test(prev);
+      if (hasOperators) {
+        return prev + "+" + val;
+      } else {
+        const current = parseFloat(prev) || 0;
+        return (current + val).toString();
+      }
+    });
+  };
+
+  // Heuristic-based suggestions logic
+  const suggestCategoryAndAccount = (
+    currentPayee: string,
+    currentType: string,
+    currentLocation: string
+  ) => {
+    if (!transactions || transactions.length === 0) return null;
+
+    const cleanedPayee = currentPayee.trim().toLowerCase();
+    const typeTransactions = transactions.filter(t => t.type === currentType);
+    if (typeTransactions.length === 0) return null;
+
+    let matchingTxs = cleanedPayee
+      ? typeTransactions.filter(t => t.payee?.toLowerCase().trim() === cleanedPayee)
+      : [];
+
+    let suggestedCatId = "";
+    if (matchingTxs.length > 0) {
+      const catCounts: Record<string, number> = {};
+      matchingTxs.forEach(t => {
+        if (t.categoryId) {
+          catCounts[t.categoryId] = (catCounts[t.categoryId] || 0) + 1;
+        }
+      });
+      const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedCats.length > 0) {
+        suggestedCatId = sortedCats[0][0];
+      }
+    }
+
+    let suggestedAccountId = "";
+    let locationTxs: typeof transactions = [];
+    if (currentLocation) {
+      let locQuery = currentLocation.toLowerCase();
+      try {
+        const parsed = JSON.parse(currentLocation);
+        locQuery = (parsed.display || parsed.city || parsed.place_name || currentLocation).toLowerCase();
+      } catch (e) {}
+
+      locationTxs = typeTransactions.filter(t => {
+        if (!t.location) return false;
+        try {
+          const loc = JSON.parse(t.location);
+          const name = (loc.display || loc.city || loc.place_name || t.location).toLowerCase();
+          return name.includes(locQuery) || locQuery.includes(name);
+        } catch (e) {
+          return t.location.toLowerCase().includes(locQuery);
+        }
+      });
+    }
+
+    const accountSourceTxs = 
+      matchingTxs.length > 0 && locationTxs.length > 0
+        ? matchingTxs.filter(t => locationTxs.includes(t))
+        : matchingTxs.length > 0
+        ? matchingTxs
+        : locationTxs.length > 0
+        ? locationTxs
+        : typeTransactions;
+
+    if (accountSourceTxs.length > 0) {
+      const accCounts: Record<string, number> = {};
+      accountSourceTxs.forEach(t => {
+        if (t.accountId) {
+          accCounts[t.accountId] = (accCounts[t.accountId] || 0) + 1;
+        }
+      });
+      const sortedAccs = Object.entries(accCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedAccs.length > 0) {
+        suggestedAccountId = sortedAccs[0][0];
+      }
+    }
+
+    return { categoryId: suggestedCatId, accountId: suggestedAccountId };
+  };
+
+
   // Restore draft from sessionStorage if modal was accidentally closed (only when not editing)
   useEffect(() => {
     if (editingTransaction) return;
@@ -79,28 +225,33 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   }, [amount, description, note, type, date, payee, location, editingTransaction]);
 
-  // Heuristic-based Smart Category auto-suggestions
+  // Heuristic-based Smart Category & Account auto-suggestions
   useEffect(() => {
-    if (editingTransaction || !payee.trim() || transactions.length === 0) return;
+    if (editingTransaction) return;
+
+    if (!payee.trim()) {
+      if (!isCategoryManuallySet && availableCategories.length > 0) {
+        setCategoryId(availableCategories[0].id);
+      }
+      if (!isAccountManuallySet && accounts.length > 0) {
+        setAccountId(accounts.find(a => a.isDefault)?.id || accounts[0].id);
+      }
+      return;
+    }
     
-    // Find the most recent transaction with the same payee (case-insensitive)
-    const matchingTx = transactions.find(
-      t => t.payee?.toLowerCase().trim() === payee.toLowerCase().trim()
-    );
-    
-    if (matchingTx) {
-      if (matchingTx.categoryId) {
-        // Only set if category matches the current type
-        const cat = categories.find(c => c.id === matchingTx.categoryId);
+    const suggestions = suggestCategoryAndAccount(payee, type, location);
+    if (suggestions) {
+      if (suggestions.categoryId && !isCategoryManuallySet) {
+        const cat = categories.find(c => c.id === suggestions.categoryId);
         if (cat && cat.type === type) {
-          setCategoryId(matchingTx.categoryId);
+          setCategoryId(suggestions.categoryId);
         }
       }
-      if (matchingTx.accountId) {
-        setAccountId(matchingTx.accountId);
+      if (suggestions.accountId && !isAccountManuallySet) {
+        setAccountId(suggestions.accountId);
       }
     }
-  }, [payee, transactions, categories, type, editingTransaction]);
+  }, [payee, type, location, transactions, categories, editingTransaction, isCategoryManuallySet, isAccountManuallySet, availableCategories, accounts]);
 
   const fetchLocation = async () => {
     setLocationLoading(true);
@@ -179,7 +330,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || isNaN(Number(amount))) return;
+    const evaluatedAmount = evaluateExpression(amount) || amount;
+    if (!evaluatedAmount || isNaN(Number(evaluatedAmount))) return;
     if (!accountId) return; // Prevent submission without account
     if (type === "transfer" && (!toAccountId || accountId === toAccountId)) return;
 
@@ -190,7 +342,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       const isQuickEntry = !rawDesc || (type !== "transfer" && !rawPayee);
 
       const txData = {
-        amount: Number(amount),
+        amount: Number(evaluatedAmount),
         type,
         currency: "INR",
         description: rawDesc || (type === "transfer" ? "Transfer" : "Quick Entry"),
@@ -269,6 +421,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   };
 
+  const showLivePreview = /[+\-*/]/.test(amount);
+  const livePreviewValue = showLivePreview ? evaluateExpression(amount) : "";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 relative">
       {/* Type Toggle */}
@@ -300,7 +455,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div className="grid grid-cols-2 gap-3">
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-xs font-medium text-slate-400">Amount</label>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <label className="block text-xs font-medium text-slate-400">Amount</label>
+              {showLivePreview && livePreviewValue && (
+                <span className="text-[10px] text-emerald-400 font-semibold truncate animate-pulse">
+                  = ₹{livePreviewValue}
+                </span>
+              )}
+            </div>
             <label className="flex items-center gap-1 text-[10px] text-violet-400 font-medium cursor-pointer hover:text-violet-300">
               {isScanning ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Camera className="w-2.5 h-2.5" />}
               <span>Scan</span>
@@ -310,10 +472,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">₹</span>
             <input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="none"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onFocus={() => setShowKeypad(true)}
+              onClick={() => setShowKeypad(true)}
               className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-7 pr-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
               placeholder="0.00"
               required
@@ -321,6 +485,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
+                  const evaluated = evaluateExpression(amount);
+                  if (evaluated) setAmount(evaluated);
+                  setShowKeypad(false);
                   const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
                   nextField?.focus();
                 }
@@ -333,10 +500,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 key={val}
                 type="button"
                 onClick={() => {
-                  setAmount((prev) => {
-                    const current = parseFloat(prev) || 0;
-                    return (current + val).toString();
-                  });
+                  handleQuickAdd(val);
                   vibrate([20]);
                 }}
                 className="px-2.5 py-1 text-[10px] font-semibold bg-slate-900 border border-slate-800/80 rounded-lg text-slate-400 hover:text-white transition-all active:scale-95"
@@ -363,11 +527,56 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            onFocus={() => setShowKeypad(false)}
             className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
             required
           />
         </div>
       </div>
+
+      {/* Custom Keypad & Calculator Panel */}
+      <AnimatePresence>
+        {showKeypad && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden bg-slate-950/80 border border-slate-800/60 rounded-2xl p-3 space-y-2 shadow-2xl"
+          >
+            <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
+              {/* Row 1 */}
+              <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
+              <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
+              <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
+              <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
+
+              {/* Row 2 */}
+              <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
+              <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
+              <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
+              <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
+
+              {/* Row 3 */}
+              <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
+              <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
+              <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
+              <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
+
+              {/* Row 4 */}
+              <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
+              <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
+              <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
+              <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
+
+              {/* Row 5 */}
+              <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
+              <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
+              <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Category selector */}
       {type !== "transfer" && (
@@ -375,7 +584,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
           <select
             value={categoryId}
+            onFocus={() => setShowKeypad(false)}
             onChange={(e) => {
+              setIsCategoryManuallySet(true);
               if (e.target.value === "NEW") {
                 setIsCreatingCategory(true);
                 setCategoryId("");
@@ -432,7 +643,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             <label className="block text-xs font-medium text-slate-400 mb-1">From Account</label>
             <select
               value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
+              onFocus={() => setShowKeypad(false)}
+              onChange={(e) => {
+                setIsAccountManuallySet(true);
+                setAccountId(e.target.value);
+              }}
               className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
               required
             >
@@ -447,7 +662,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             <label className="block text-xs font-medium text-slate-400 mb-1">To Account</label>
             <select
               value={toAccountId}
-              onChange={(e) => setToAccountId(e.target.value)}
+              onFocus={() => setShowKeypad(false)}
+              onChange={(e) => {
+                setIsAccountManuallySet(true);
+                setToAccountId(e.target.value);
+              }}
               className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
               required
             >
@@ -465,7 +684,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
           <select
             value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            onFocus={() => setShowKeypad(false)}
+            onChange={(e) => {
+              setIsAccountManuallySet(true);
+              setAccountId(e.target.value);
+            }}
             className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
             required
           >
@@ -490,6 +713,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             id="payee-input"
             type="text"
             value={payee}
+            onFocus={() => setShowKeypad(false)}
             onChange={(e) => setPayee(e.target.value)}
             className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
             placeholder="E.g., Uber, Starbucks, Amazon..."
@@ -510,6 +734,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           id="item-name-input"
           type="text"
           value={description}
+          onFocus={() => setShowKeypad(false)}
           onChange={(e) => setDescription(e.target.value)}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
           placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee... (Auto: Quick Entry)"}
@@ -527,7 +752,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <label className="block text-xs font-medium text-slate-400 mb-1">Location (optional)</label>
         <button
           type="button"
-          onClick={() => setShowLocationPicker(true)}
+          onClick={() => {
+            setShowLocationPicker(true);
+            setShowKeypad(false);
+          }}
           className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40`}
         >
           <span className="truncate">{getLocationDisplay() || "Add location..."}</span>
@@ -541,6 +769,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <textarea
           id="notes-input"
           value={note}
+          onFocus={() => setShowKeypad(false)}
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
