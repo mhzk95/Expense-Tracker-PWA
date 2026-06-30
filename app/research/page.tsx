@@ -4,13 +4,46 @@ import { useEffect, useState, Suspense, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useResearch } from "@/hooks/useResearch";
-import { Link2, LayoutGrid, List, FileText, ExternalLink, Trash2, Folder, FolderPlus, Pin, Inbox, ChevronLeft, ArrowRight, Search, X, Bell, MoreHorizontal } from "lucide-react";
+import { Link2, LayoutGrid, List, FileText, ExternalLink, Trash2, Folder, FolderPlus, Pin, Inbox, ChevronLeft, ArrowRight, Search, X, Bell, MoreHorizontal, Copy, Check } from "lucide-react";
 import { vibrate } from "@/lib/utils/helpers";
 import Fuse from "fuse.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { useReminders } from "@/hooks/useReminders";
 import { CommandBar } from "@/components/ui/CommandBar";
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      vibrate([10]);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error("Failed to copy text", err);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="p-1 hover:bg-slate-800/80 text-slate-400 hover:text-white rounded-lg transition-colors flex-shrink-0"
+      title="Copy to clipboard"
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5 text-emerald-400 animate-in zoom-in-50 duration-200" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
+    </button>
+  );
+}
 
 function ResearchContent() {
   const searchParams = useSearchParams();
@@ -349,15 +382,15 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group glass-card interactive flex flex-col justify-between transition-all duration-300 ${item.isPinned ? 'ring-1 ring-violet-500 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : ''}`}>
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-3 sm:mb-4 w-full" : "w-full"} relative group glass-card interactive flex flex-col justify-between transition-all duration-300 !overflow-visible ${item.isPinned ? 'ring-1 ring-violet-500 shadow-[0_4px_20px_rgba(139,92,246,0.15)]' : ''}`}>
 
                         {/* Action Menu Toggle (Mobile & Hover) */}
                         <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
                           <button 
                             onClick={(e) => { e.preventDefault(); setOpenMenuId(openMenuId === item.id ? null : item.id); }}
-                            className="p-1.5 sm:p-2 bg-slate-900/90 backdrop-blur-md text-slate-400 hover:text-white rounded-full shadow-md border border-slate-700/50 transition-colors"
+                            className="p-1 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors"
                           >
-                            <MoreHorizontal className="h-4 w-4 sm:h-4 sm:w-4" />
+                            <MoreHorizontal className="h-4 w-4" />
                           </button>
 
                           {openMenuId === item.id && (
@@ -447,28 +480,45 @@ function ResearchContent() {
                           </div>
 
                           {isQuote ? (
-                            <blockquote className="text-sm sm:text-lg text-slate-200 font-serif italic mb-2 sm:mb-3 border-l-4 border-violet-500/50 pl-3 py-1 pr-2 line-clamp-4">
-                              "{item.content}"
-                            </blockquote>
+                            <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
+                              <blockquote className="text-sm sm:text-lg text-slate-200 font-serif italic border-l-4 border-violet-500/50 pl-3 py-1 pr-2 line-clamp-4 flex-1">
+                                "{item.content}"
+                              </blockquote>
+                              <CopyButton text={item.content || ""} />
+                            </div>
                           ) : (
                             <>
-                              <h3 className={`text-white break-all font-medium mb-1.5 sm:mb-2 leading-snug ${view === "grid" ? "text-sm sm:text-lg line-clamp-2" : "text-base sm:text-xl"} pr-6 sm:pr-10`}>{item.title}</h3>
-                              {item.content && !isImage && <p className={`text-xs sm:text-sm text-slate-400 leading-relaxed whitespace-pre-wrap ${view === "grid" ? "line-clamp-3 sm:line-clamp-4" : ""}`}>{item.content}</p>}
+                              <div className="flex items-start justify-between gap-2 mb-1.5 sm:mb-2">
+                                <h3 className={`text-white break-all font-medium leading-snug ${view === "grid" ? "text-sm sm:text-lg line-clamp-2" : "text-base sm:text-xl"} pr-6 sm:pr-10 flex-1`}>{item.title}</h3>
+                                <CopyButton text={item.title || ""} />
+                              </div>
+                              {item.content && !isImage && (
+                                <div className="flex items-start justify-between gap-2 mt-1">
+                                  <p className={`text-xs sm:text-sm text-slate-400 leading-relaxed whitespace-pre-wrap flex-1 ${view === "grid" ? "line-clamp-3 sm:line-clamp-4" : ""}`}>{item.content}</p>
+                                  <CopyButton text={item.content || ""} />
+                                </div>
+                              )}
                             </>
                           )}
 
                           {/* OCR Text Display */}
                           {item.ocrText && (
                             <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-slate-950/40 rounded-xl border border-slate-800/50">
-                              <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold mb-1 sm:mb-1.5 tracking-wider flex items-center gap-1"><FileText className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> Extracted Text</p>
+                              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                                <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1"><FileText className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> Extracted Text</p>
+                                <CopyButton text={item.ocrText || ""} />
+                              </div>
                               <p className="text-[10px] sm:text-xs text-slate-400 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
                             </div>
                           )}
 
                           {item.url && isLink && (
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mt-3 sm:mt-4 text-[10px] sm:text-xs font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-colors">
-                              Visit Link <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                            </a>
+                            <div className="flex items-center gap-2 mt-3 sm:mt-4">
+                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-colors">
+                                Visit Link <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                              </a>
+                              <CopyButton text={item.url || ""} />
+                            </div>
                           )}
 
                           {/* Topic Auto-Suggest Pills */}
@@ -661,7 +711,10 @@ function ResearchContent() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Content / Notes</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider block">Content / Notes</label>
+                  <CopyButton text={shareItem.content || ""} />
+                </div>
                 <textarea
                   placeholder="Content or notes..."
                   className="w-full h-24 et-input rounded-xl p-3 text-sm resize-none"
@@ -676,7 +729,10 @@ function ResearchContent() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Extracted Text (OCR)</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider block">Extracted Text (OCR)</label>
+                  <CopyButton text={shareItem.ocrText || ""} />
+                </div>
                 <textarea
                   placeholder="Paste or extract any text from image..."
                   className="w-full h-16 et-input rounded-xl p-3 text-sm resize-none"
