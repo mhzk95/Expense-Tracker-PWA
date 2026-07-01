@@ -75,9 +75,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Custom Keypad & Calculator States & Helpers
+  // Custom Dropdowns & Keypad states
   const [showKeypad, setShowKeypad] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [showToAccountDropdown, setShowToAccountDropdown] = useState(false);
+  
   const [categorySearch, setCategorySearch] = useState("");
   const [isCategoryManuallySet, setIsCategoryManuallySet] = useState(false);
   const [isAccountManuallySet, setIsAccountManuallySet] = useState(false);
@@ -349,6 +352,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       setCategoryId(newCategories[0]?.id || "");
     }
     setIsCreatingCategory(false);
+    setShowCategoryDropdown(false);
+    setShowAccountDropdown(false);
+    setShowToAccountDropdown(false);
   };
 
   const handleQuickAddCategory = async () => {
@@ -370,7 +376,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     e.preventDefault();
     const evaluatedAmount = evaluateExpression(amount) || amount;
     if (!evaluatedAmount || isNaN(Number(evaluatedAmount))) return;
-    if (!accountId) return; // Prevent submission without account
+    if (!accountId) return;
     if (type === "transfer" && (!toAccountId || accountId === toAccountId)) return;
 
     setIsSubmitting(true);
@@ -422,7 +428,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     
     setIsScanning(true);
     try {
-      // Extract Base64 and MimeType
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve) => {
         reader.onload = () => resolve((reader.result as string).split(",")[1]);
@@ -469,8 +474,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       {/* Scrollable Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
         
-        {/* Main Details Card */}
-        <div className="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">
+        {/* Main Details Card - Structured Stacking Context relative z-30 */}
+        <div className="relative z-30 p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">
           {/* Type Toggle */}
           <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800/60">
             {(["expense", "income", "transfer"] as const).map((t) => {
@@ -495,7 +500,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </div>
 
           {/* Amount field */}
-          <div>
+          <div className="relative z-20">
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Amount</label>
@@ -522,10 +527,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 onFocus={() => {
                   setShowKeypad(true);
                   setShowCategoryDropdown(false);
+                  setShowAccountDropdown(false);
+                  setShowToAccountDropdown(false);
                 }}
                 onClick={() => {
                   setShowKeypad(true);
                   setShowCategoryDropdown(false);
+                  setShowAccountDropdown(false);
+                  setShowToAccountDropdown(false);
                 }}
                 className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-9 pr-4 py-3 text-lg font-bold text-white transition-all shadow-inner outline-none ${activeFocus}`}
                 placeholder="0.00"
@@ -568,10 +577,54 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 Clear
               </button>
             </div>
+
+            {/* Custom Keypad & Calculator Panel - Placed directly below the Amount field */}
+            <AnimatePresence>
+              {showKeypad && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden bg-slate-950/90 border border-slate-800/60 rounded-2xl p-3 space-y-2 mt-3 shadow-2xl relative z-40"
+                >
+                  <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
+                    {/* Row 1 */}
+                    <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
+                    <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
+                    <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
+                    <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
+
+                    {/* Row 2 */}
+                    <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
+                    <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
+                    <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
+                    <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
+
+                    {/* Row 3 */}
+                    <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
+                    <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
+                    <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
+                    <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
+
+                    {/* Row 4 */}
+                    <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
+                    <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
+                    <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
+                    <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
+
+                    {/* Row 5 */}
+                    <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
+                    <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
+                    <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Date & Time Selection (Side by Side) */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Date & Time Selection (Side by Side) - relative z-10 */}
+          <div className="relative z-10 grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
               <input
@@ -581,6 +634,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 onFocus={() => {
                   setShowKeypad(false);
                   setShowCategoryDropdown(false);
+                  setShowAccountDropdown(false);
+                  setShowToAccountDropdown(false);
                 }}
                 className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
                 required
@@ -595,6 +650,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 onFocus={() => {
                   setShowKeypad(false);
                   setShowCategoryDropdown(false);
+                  setShowAccountDropdown(false);
+                  setShowToAccountDropdown(false);
                 }}
                 className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
                 required
@@ -602,18 +659,20 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </div>
           </div>
 
-          {/* Category & Account Select Row */}
+          {/* Custom Select Dropdowns Row - relative z-25 */}
           {type !== "transfer" ? (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="relative z-25 grid grid-cols-2 gap-3">
+              {/* Custom Category Dropdown container - relative z-50 */}
+              <div className="relative z-50">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Category</label>
                 
-                {/* Custom Category Dropdown popover */}
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => {
                       setShowCategoryDropdown(!showCategoryDropdown);
+                      setShowAccountDropdown(false);
+                      setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
                     className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
@@ -659,7 +718,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           />
                         </div>
 
-                        {/* Commonly Used Suggestions */}
+                        {/* Suggestions */}
                         {(() => {
                           const typedCats = categories.filter(c => c.type === type);
                           if (typedCats.length === 0) return null;
@@ -749,79 +808,186 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   </AnimatePresence>
                 </div>
               </div>
-              <div>
+
+              {/* Custom Account Dropdown container - relative z-45 */}
+              <div className="relative z-45">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Account</label>
-                <select
-                  value={accountId}
-                  onFocus={() => {
-                    setShowKeypad(false);
-                    setShowCategoryDropdown(false);
-                  }}
-                  onChange={(e) => {
-                    setIsAccountManuallySet(true);
-                    setAccountId(e.target.value);
-                  }}
-                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-                  required
-                >
-                  {accounts.length === 0 ? (
-                    <option value="" disabled>No accounts</option>
-                  ) : (
-                    accounts.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.name}
-                      </option>
-                    ))
-                  )}
-                </select>
+                
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAccountDropdown(!showAccountDropdown);
+                      setShowCategoryDropdown(false);
+                      setShowToAccountDropdown(false);
+                      setShowKeypad(false);
+                    }}
+                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                  >
+                    {(() => {
+                      const selectedAcc = accounts.find(a => a.id === accountId);
+                      if (!selectedAcc) {
+                        return <span className="text-slate-500 text-xs">Select...</span>;
+                      }
+                      return <span className="text-xs font-semibold truncate">{selectedAcc.name}</span>;
+                    })()}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  </button>
+
+                  <AnimatePresence>
+                    {showAccountDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute z-[60] left-[-60px] md:left-0 right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                      >
+                        {accounts.length === 0 ? (
+                          <div className="text-slate-500 text-[11px] p-2 text-center">No accounts</div>
+                        ) : (
+                          accounts.map((acc) => {
+                            const isSelected = acc.id === accountId;
+                            return (
+                              <button
+                                key={acc.id}
+                                type="button"
+                                onClick={() => {
+                                  setAccountId(acc.id);
+                                  setIsAccountManuallySet(true);
+                                  setShowAccountDropdown(false);
+                                }}
+                                className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
+                                  isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                                }`}
+                              >
+                                {acc.name}
+                              </button>
+                            );
+                          })
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            <div className="relative z-25 grid grid-cols-2 gap-3">
+              {/* Custom From Account dropdown container - relative z-50 */}
+              <div className="relative z-50">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">From Account</label>
-                <select
-                  value={accountId}
-                  onFocus={() => {
-                    setShowKeypad(false);
-                    setShowCategoryDropdown(false);
-                  }}
-                  onChange={(e) => {
-                    setIsAccountManuallySet(true);
-                    setAccountId(e.target.value);
-                  }}
-                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-                  required
-                >
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name}
-                    </option>
-                  ))}
-                </select>
+                
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAccountDropdown(!showAccountDropdown);
+                      setShowToAccountDropdown(false);
+                      setShowCategoryDropdown(false);
+                      setShowKeypad(false);
+                    }}
+                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                  >
+                    {(() => {
+                      const selectedAcc = accounts.find(a => a.id === accountId);
+                      if (!selectedAcc) {
+                        return <span className="text-slate-500 text-xs">Select...</span>;
+                      }
+                      return <span className="text-xs font-semibold truncate">{selectedAcc.name}</span>;
+                    })()}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  </button>
+
+                  <AnimatePresence>
+                    {showAccountDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute z-[60] left-0 right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                      >
+                        {accounts.map((acc) => {
+                          const isSelected = acc.id === accountId;
+                          return (
+                            <button
+                              key={acc.id}
+                              type="button"
+                              onClick={() => {
+                                setAccountId(acc.id);
+                                setIsAccountManuallySet(true);
+                                setShowAccountDropdown(false);
+                              }}
+                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
+                                isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                              }`}
+                            >
+                                {acc.name}
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <div>
+
+              {/* Custom To Account dropdown container - relative z-45 */}
+              <div className="relative z-45">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">To Account</label>
-                <select
-                  value={toAccountId}
-                  onFocus={() => {
-                    setShowKeypad(false);
-                    setShowCategoryDropdown(false);
-                  }}
-                  onChange={(e) => {
-                    setIsAccountManuallySet(true);
-                    setToAccountId(e.target.value);
-                  }}
-                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-                  required
-                >
-                  <option value="" disabled>Select destination</option>
-                  {accounts.filter(a => a.id !== accountId).map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name}
-                    </option>
-                  ))}
-                </select>
+                
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowToAccountDropdown(!showToAccountDropdown);
+                      setShowAccountDropdown(false);
+                      setShowCategoryDropdown(false);
+                      setShowKeypad(false);
+                    }}
+                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                  >
+                    {(() => {
+                      const selectedAcc = accounts.find(a => a.id === toAccountId);
+                      if (!selectedAcc) {
+                        return <span className="text-slate-500 text-xs">Select...</span>;
+                      }
+                      return <span className="text-xs font-semibold truncate">{selectedAcc.name}</span>;
+                    })()}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  </button>
+
+                  <AnimatePresence>
+                    {showToAccountDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute z-[60] left-[-60px] md:left-0 right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                      >
+                        <option value="" disabled>Select destination</option>
+                        {accounts.filter(a => a.id !== accountId).map((acc) => {
+                          const isSelected = acc.id === toAccountId;
+                          return (
+                            <button
+                              key={acc.id}
+                              type="button"
+                              onClick={() => {
+                                setToAccountId(acc.id);
+                                setIsAccountManuallySet(true);
+                                setShowToAccountDropdown(false);
+                              }}
+                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
+                                isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                              }`}
+                            >
+                              {acc.name}
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           )}
@@ -852,50 +1018,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </AnimatePresence>
         </div>
 
-        {/* Custom Keypad & Calculator Panel */}
-        <AnimatePresence>
-          {showKeypad && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden bg-slate-950/80 border border-slate-800/60 rounded-2xl p-3 space-y-2 shadow-2xl"
-            >
-              <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
-                {/* Row 1 */}
-                <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
-                <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
-                <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
-                <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
-
-                {/* Row 2 */}
-                <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
-                <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
-                <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
-                <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
-
-                {/* Row 3 */}
-                <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
-                <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
-                <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
-                <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
-
-                {/* Row 4 */}
-                <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
-                <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
-                <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
-                <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
-
-                {/* Row 5 */}
-                <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
-                <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
-                <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Collapsible Trigger Button */}
         <button
           type="button"
@@ -903,6 +1025,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             setShowOptionalDetails(!showOptionalDetails);
             setShowKeypad(false);
             setShowCategoryDropdown(false);
+            setShowAccountDropdown(false);
+            setShowToAccountDropdown(false);
           }}
           className="w-full py-2.5 px-4 rounded-xl border border-slate-800/80 bg-slate-950/20 text-slate-400 hover:text-white transition-all text-xs font-semibold flex items-center justify-between hover:bg-slate-900/20 active:scale-[0.99]"
         >
@@ -931,6 +1055,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       onFocus={() => {
                         setShowKeypad(false);
                         setShowCategoryDropdown(false);
+                        setShowAccountDropdown(false);
+                        setShowToAccountDropdown(false);
                       }}
                       onChange={(e) => setPayee(e.target.value)}
                       className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
@@ -949,6 +1075,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     onFocus={() => {
                       setShowKeypad(false);
                       setShowCategoryDropdown(false);
+                      setShowAccountDropdown(false);
+                      setShowToAccountDropdown(false);
                     }}
                     onChange={(e) => setDescription(e.target.value)}
                     className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
@@ -956,7 +1084,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   />
                 </div>
 
-                {/* Location (with inline MapPin click) */}
+                {/* Location */}
                 <div>
                   <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Location</label>
                   <div className="flex gap-2">
@@ -966,6 +1094,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         setShowLocationPicker(true);
                         setShowKeypad(false);
                         setShowCategoryDropdown(false);
+                        setShowAccountDropdown(false);
+                        setShowToAccountDropdown(false);
                       }}
                       className={`flex-1 text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40 ${activeFocus}`}
                     >
@@ -999,6 +1129,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     onFocus={() => {
                       setShowKeypad(false);
                       setShowCategoryDropdown(false);
+                      setShowAccountDropdown(false);
+                      setShowToAccountDropdown(false);
                     }}
                     onChange={(e) => setNote(e.target.value)}
                     rows={2}
@@ -1011,8 +1143,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           )}
         </AnimatePresence>
 
-        {/* Needs Review Toggle */}
-        <div className="flex items-center justify-between p-3.5 bg-amber-500/10 rounded-2xl border border-amber-500/20 backdrop-blur-md">
+        {/* Needs Review Toggle - relative z-10 */}
+        <div className="relative z-10 flex items-center justify-between p-3.5 bg-amber-500/10 rounded-2xl border border-amber-500/20 backdrop-blur-md">
           <div className="pr-4">
             <label className="block text-xs font-semibold text-amber-500 uppercase tracking-wider">Needs Review</label>
             <p className="text-[10px] text-amber-500/70 mt-0.5 leading-tight">
