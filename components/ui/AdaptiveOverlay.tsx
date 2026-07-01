@@ -11,9 +11,10 @@ interface AdaptiveOverlayProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  contentClassName?: string;
 }
 
-export function AdaptiveOverlay({ isOpen, onClose, title, children }: AdaptiveOverlayProps) {
+export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClassName }: AdaptiveOverlayProps) {
   const runtime = useAppRuntime();
   const uiConfig = getRuntimeUiConfig(runtime);
   const [mounted, setMounted] = useState(false);
@@ -69,7 +70,7 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children }: AdaptiveOv
           )}
         </div>
 
-        <div className="p-4 max-h-[80vh] overflow-y-auto">
+        <div className={cn("p-4 max-h-[80vh] overflow-y-auto", contentClassName)}>
           {children}
         </div>
       </div>

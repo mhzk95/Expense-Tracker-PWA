@@ -6,7 +6,14 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
 import { vibrate } from "@/lib/utils/helpers";
-import { Camera, Loader2, Sparkles, MapPin, X, ChevronLeft } from "lucide-react";
+import { 
+  Camera, Loader2, Sparkles, MapPin, X, ChevronLeft, ChevronDown, Search, Plus, 
+  Tag, UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
+  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
+  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
+  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
+  HeartHandshake, Sparkles as SparklesIcon, Package, Wallet
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransactionEntity } from "@/lib/db/indexeddb";
 
@@ -14,6 +21,31 @@ interface TransactionFormProps {
   onSuccess: () => void;
   editingTransaction?: TransactionEntity;
 }
+
+const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
+  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
+  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
+  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
+  HeartHandshake, Sparkles: SparklesIcon, Package, Wallet, Tag
+};
+
+function getCategoryIcon(iconName?: string) {
+  return ICON_MAP[iconName || ""] || Tag;
+}
+
+const formatDateYYYYMMDD = (d: Date) => {
+  const year = d.getFullYear();
+  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+  const day = d.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatTimeHHMM = (d: Date) => {
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
 
 export function TransactionForm({ onSuccess, editingTransaction }: TransactionFormProps) {
   const { transactions, addTransaction, updateTransaction } = useTransactions();
@@ -26,10 +58,17 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [note, setNote] = useState(editingTransaction?.note || "");
   const [payee, setPayee] = useState(editingTransaction?.payee || "");
   const [location, setLocation] = useState(editingTransaction?.location || "");
+  
   const [date, setDate] = useState(
     editingTransaction?.date 
-      ? new Date(editingTransaction.date).toISOString().split("T")[0] 
-      : new Date().toISOString().split("T")[0]
+      ? formatDateYYYYMMDD(new Date(editingTransaction.date))
+      : formatDateYYYYMMDD(new Date())
+  );
+  
+  const [time, setTime] = useState(
+    editingTransaction?.date 
+      ? formatTimeHHMM(new Date(editingTransaction.date))
+      : formatTimeHHMM(new Date())
   );
   
   const availableCategories = categories.filter(c => c.type === type);
@@ -55,8 +94,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
   // Custom Keypad & Calculator States & Helpers
   const [showKeypad, setShowKeypad] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
   const [isCategoryManuallySet, setIsCategoryManuallySet] = useState(false);
   const [isAccountManuallySet, setIsAccountManuallySet] = useState(false);
+  
+  const [showOptionalDetails, setShowOptionalDetails] = useState(
+    !!(editingTransaction?.payee || editingTransaction?.description || editingTransaction?.location || editingTransaction?.note)
+  );
 
   const evaluateExpression = (expr: string): string => {
     try {
@@ -93,8 +138,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         return evaluated || prev;
       });
       setShowKeypad(false);
-      const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
-      nextField?.focus();
+      setShowOptionalDetails(true);
+      setTimeout(() => {
+        const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
+        nextField?.focus();
+      }, 100);
     } else {
       setAmount((prev) => {
         const operators = ["+", "-", "*", "/"];
@@ -198,7 +246,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     return { categoryId: suggestedCatId, accountId: suggestedAccountId };
   };
 
-
   // Restore draft from sessionStorage if modal was accidentally closed (only when not editing)
   useEffect(() => {
     if (editingTransaction) return;
@@ -210,9 +257,16 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         if (parsed.description) setDescription(parsed.description);
         if (parsed.note) setNote(parsed.note);
         if (parsed.type) setType(parsed.type);
-        if (parsed.date) setDate(parsed.date);
         if (parsed.payee) setPayee(parsed.payee);
         if (parsed.location) setLocation(parsed.location);
+        
+        if (parsed.date) {
+          const dObj = new Date(parsed.date);
+          if (!isNaN(dObj.getTime())) {
+            setDate(formatDateYYYYMMDD(dObj));
+            setTime(formatTimeHHMM(dObj));
+          }
+        }
       } catch (e) {}
     }
   }, [editingTransaction]);
@@ -221,9 +275,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   useEffect(() => {
     if (editingTransaction) return;
     if (amount || description || note || payee || location) {
-      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date, payee, location }));
+      const combinedDateTime = new Date(`${date}T${time}`).toISOString();
+      sessionStorage.setItem("tx_draft", JSON.stringify({ amount, description, note, type, date: combinedDateTime, payee, location }));
     }
-  }, [amount, description, note, type, date, payee, location, editingTransaction]);
+  }, [amount, description, note, type, date, time, payee, location, editingTransaction]);
 
   // Heuristic-based Smart Category & Account auto-suggestions
   useEffect(() => {
@@ -341,12 +396,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       const rawPayee = payee.trim();
       const isQuickEntry = !rawDesc || (type !== "transfer" && !rawPayee);
 
+      const combinedDateTime = new Date(`${date}T${time}`).toISOString();
+
       const txData = {
         amount: Number(evaluatedAmount),
         type,
         currency: "INR",
         description: rawDesc || (type === "transfer" ? "Transfer" : "Quick Entry"),
-        date: new Date(date).toISOString(),
+        date: combinedDateTime,
         note: note.trim(),
         categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
@@ -425,190 +482,367 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const livePreviewValue = showLivePreview ? evaluateExpression(amount) : "";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 relative">
-      {/* Type Toggle */}
-      <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800">
-        <button
-          type="button"
-          onClick={() => handleTypeChange("expense")}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${type === "expense" ? "bg-red-500/20 text-red-400" : "text-slate-400"}`}
-        >
-          Expense
-        </button>
-        <button
-          type="button"
-          onClick={() => handleTypeChange("income")}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${type === "income" ? "bg-emerald-500/20 text-emerald-400" : "text-slate-400"}`}
-        >
-          Income
-        </button>
-        <button
-          type="button"
-          onClick={() => handleTypeChange("transfer")}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${type === "transfer" ? "bg-blue-500/20 text-blue-400" : "text-slate-400"}`}
-        >
-          Transfer
-        </button>
-      </div>
+    <form onSubmit={handleSubmit} className="flex flex-col h-[75vh] md:h-auto max-h-[85vh] overflow-hidden relative">
+      {/* Scrollable Container */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
+        
+        {/* Main Details Card */}
+        <div className="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">
+          {/* Type Toggle */}
+          <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800/60">
+            {(["expense", "income", "transfer"] as const).map((t) => {
+              const isActive = type === t;
+              const activeClasses = 
+                t === "expense" ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                t === "income" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
+                "bg-blue-500/20 text-blue-400 border border-blue-500/30";
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => handleTypeChange(t)}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg capitalize transition-all active:scale-[0.98] ${
+                    isActive ? activeClasses : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
 
-      {/* Amount + Date Compact Horizontal Line Row */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <label className="block text-xs font-medium text-slate-400">Amount</label>
-              {showLivePreview && livePreviewValue && (
-                <span className="text-[10px] text-emerald-400 font-semibold truncate animate-pulse">
-                  = ₹{livePreviewValue}
-                </span>
-              )}
+          {/* Amount field */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Amount</label>
+                {showLivePreview && livePreviewValue && (
+                  <span className="text-[10px] text-emerald-400 font-semibold truncate animate-pulse bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    = ₹{livePreviewValue}
+                  </span>
+                )}
+              </div>
+              <label className="flex items-center gap-1 text-[10px] text-violet-400 font-semibold cursor-pointer hover:text-violet-300 bg-violet-500/10 px-2 py-0.5 rounded-lg border border-violet-500/20">
+                {isScanning ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Camera className="w-2.5 h-2.5" />}
+                <span>Scan</span>
+                <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
+              </label>
             </div>
-            <label className="flex items-center gap-1 text-[10px] text-violet-400 font-medium cursor-pointer hover:text-violet-300">
-              {isScanning ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Camera className="w-2.5 h-2.5" />}
-              <span>Scan</span>
-              <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
-            </label>
-          </div>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">₹</span>
-            <input
-              type="text"
-              inputMode="none"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              onFocus={() => setShowKeypad(true)}
-              onClick={() => setShowKeypad(true)}
-              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-7 pr-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
-              placeholder="0.00"
-              required
-              autoFocus={!editingTransaction}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const evaluated = evaluateExpression(amount);
-                  if (evaluated) setAmount(evaluated);
-                  setShowKeypad(false);
-                  const nextField = document.getElementById("payee-input") || document.getElementById("item-name-input");
-                  nextField?.focus();
-                }
-              }}
-            />
-          </div>
-          <div className="flex gap-1.5 mt-1.5">
-            {[100, 500, 1000].map((val) => (
+
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg font-semibold">₹</span>
+              <input
+                type="text"
+                inputMode="none"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                onFocus={() => {
+                  setShowKeypad(true);
+                  setShowCategoryDropdown(false);
+                }}
+                onClick={() => {
+                  setShowKeypad(true);
+                  setShowCategoryDropdown(false);
+                }}
+                className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl pl-9 pr-4 py-3 text-lg font-bold text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                placeholder="0.00"
+                required
+                autoFocus={!editingTransaction}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const evaluated = evaluateExpression(amount);
+                    if (evaluated) setAmount(evaluated);
+                    setShowKeypad(false);
+                  }
+                }}
+              />
+            </div>
+
+            {/* Quick Add and Clear */}
+            <div className="flex gap-1.5 mt-2">
+              {[100, 500, 1000].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => {
+                    handleQuickAdd(val);
+                    vibrate([20]);
+                  }}
+                  className="px-2.5 py-1 text-[10px] font-bold bg-slate-900 border border-slate-800/80 rounded-lg text-slate-400 hover:text-white transition-all active:scale-95"
+                >
+                  +{val}
+                </button>
+              ))}
               <button
-                key={val}
                 type="button"
                 onClick={() => {
-                  handleQuickAdd(val);
+                  setAmount("");
                   vibrate([20]);
                 }}
-                className="px-2.5 py-1 text-[10px] font-semibold bg-slate-900 border border-slate-800/80 rounded-lg text-slate-400 hover:text-white transition-all active:scale-95"
+                className="px-2.5 py-1 text-[10px] font-bold bg-slate-900 border border-slate-800/80 rounded-lg text-red-400 hover:text-red-300 transition-all active:scale-95 ml-auto"
               >
-                +{val}
+                Clear
               </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                setAmount("");
-                vibrate([20]);
-              }}
-              className="px-2.5 py-1 text-[10px] font-semibold bg-slate-900 border border-slate-800/80 rounded-lg text-red-400 hover:text-red-300 transition-all active:scale-95 ml-auto"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            onFocus={() => setShowKeypad(false)}
-            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Custom Keypad & Calculator Panel */}
-      <AnimatePresence>
-        {showKeypad && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden bg-slate-950/80 border border-slate-800/60 rounded-2xl p-3 space-y-2 shadow-2xl"
-          >
-            <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
-              {/* Row 1 */}
-              <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
-              <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
-              <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
-              <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
-
-              {/* Row 2 */}
-              <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
-              <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
-              <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
-              <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
-
-              {/* Row 3 */}
-              <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
-              <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
-              <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
-              <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
-
-              {/* Row 4 */}
-              <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
-              <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
-              <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
-              <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
-
-              {/* Row 5 */}
-              <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
-              <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
-              <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
 
-      {/* Category selector */}
-      {type !== "transfer" && (
-        <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
-          <select
-            value={categoryId}
-            onFocus={() => setShowKeypad(false)}
-            onChange={(e) => {
-              setIsCategoryManuallySet(true);
-              if (e.target.value === "NEW") {
-                setIsCreatingCategory(true);
-                setCategoryId("");
-              } else {
-                setCategoryId(e.target.value);
-              }
-            }}
-            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-            required={!isCreatingCategory}
-          >
-            {categories.length === 0 ? (
-              <option value="" disabled>No categories available</option>
-            ) : (
-              categories.filter((c) => c.type === type).map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))
-            )}
-            <option value="NEW" className="text-violet-400 font-medium">+ Add New Category</option>
-          </select>
-          
+          {/* Date & Time Selection (Side by Side) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                onFocus={() => {
+                  setShowKeypad(false);
+                  setShowCategoryDropdown(false);
+                }}
+                className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Time</label>
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                onFocus={() => {
+                  setShowKeypad(false);
+                  setShowCategoryDropdown(false);
+                }}
+                className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Category & Account Select Row */}
+          {type !== "transfer" ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Category</label>
+                
+                {/* Custom Category Dropdown popover */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCategoryDropdown(!showCategoryDropdown);
+                      setShowKeypad(false);
+                    }}
+                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                  >
+                    {(() => {
+                      const selectedCat = categories.find(c => c.id === categoryId);
+                      if (!selectedCat) {
+                        return <span className="text-slate-500 text-xs">Select...</span>;
+                      }
+                      const IconComp = getCategoryIcon(selectedCat.icon);
+                      return (
+                        <span className="flex items-center gap-1.5 min-w-0">
+                          <span 
+                            className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${selectedCat.color}20` }}
+                          >
+                            <IconComp className="w-2.5 h-2.5" style={{ color: selectedCat.color }} />
+                          </span>
+                          <span className="text-xs font-semibold truncate">{selectedCat.name}</span>
+                        </span>
+                      );
+                    })()}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  </button>
+
+                  <AnimatePresence>
+                    {showCategoryDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute z-[60] left-0 right-[-100px] md:right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-3 flex flex-col gap-2 max-h-[280px] overflow-hidden"
+                      >
+                        {/* Search */}
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            value={categorySearch}
+                            onChange={(e) => setCategorySearch(e.target.value)}
+                            className="w-full bg-slate-900 border border-slate-800/80 rounded-lg pl-8 pr-2 py-1.5 text-[11px] text-white placeholder-slate-500 outline-none focus:border-violet-500/50"
+                          />
+                        </div>
+
+                        {/* Commonly Used Suggestions */}
+                        {(() => {
+                          const typedCats = categories.filter(c => c.type === type);
+                          if (typedCats.length === 0) return null;
+
+                          const counts: Record<string, number> = {};
+                          transactions.forEach(t => {
+                            if (t.categoryId) counts[t.categoryId] = (counts[t.categoryId] || 0) + 1;
+                          });
+                          const suggested = typedCats
+                            .map(c => ({ ...c, count: counts[c.id] || 0 }))
+                            .sort((a, b) => b.count - a.count)
+                            .slice(0, 3);
+
+                          if (suggested.length === 0) return null;
+
+                          return (
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] uppercase tracking-wider font-semibold text-slate-500">Suggestions</span>
+                              <div className="flex flex-wrap gap-1">
+                                {suggested.map(cat => {
+                                  const IconComp = getCategoryIcon(cat.icon);
+                                  return (
+                                    <button
+                                      key={cat.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setCategoryId(cat.id);
+                                        setIsCategoryManuallySet(true);
+                                        setShowCategoryDropdown(false);
+                                      }}
+                                      className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800/50 text-[10px] text-slate-300 hover:text-white transition-all"
+                                    >
+                                      <span className="w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: `${cat.color}20` }}>
+                                        <IconComp className="w-2 h-2" style={{ color: cat.color }} />
+                                      </span>
+                                      {cat.name}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* List */}
+                        <div className="flex-1 overflow-y-auto space-y-0.5 pr-1 scrollbar-none">
+                          {categories
+                            .filter(c => c.type === type && c.name.toLowerCase().includes(categorySearch.toLowerCase()))
+                            .map(cat => {
+                              const IconComp = getCategoryIcon(cat.icon);
+                              const isSelected = cat.id === categoryId;
+                              return (
+                                <button
+                                  key={cat.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setCategoryId(cat.id);
+                                    setIsCategoryManuallySet(true);
+                                    setShowCategoryDropdown(false);
+                                  }}
+                                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-[11px] transition-colors ${
+                                    isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                                  }`}
+                                >
+                                  <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${cat.color}20` }}>
+                                    <IconComp className="w-3 h-3" style={{ color: cat.color }} />
+                                  </span>
+                                  <span className="flex-1 truncate">{cat.name}</span>
+                                </button>
+                              );
+                            })}
+                          
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsCreatingCategory(true);
+                              setShowCategoryDropdown(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-[11px] text-violet-400 hover:bg-slate-900/50 transition-colors font-semibold"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>New Category</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Account</label>
+                <select
+                  value={accountId}
+                  onFocus={() => {
+                    setShowKeypad(false);
+                    setShowCategoryDropdown(false);
+                  }}
+                  onChange={(e) => {
+                    setIsAccountManuallySet(true);
+                    setAccountId(e.target.value);
+                  }}
+                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
+                  required
+                >
+                  {accounts.length === 0 ? (
+                    <option value="" disabled>No accounts</option>
+                  ) : (
+                    accounts.map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">From Account</label>
+                <select
+                  value={accountId}
+                  onFocus={() => {
+                    setShowKeypad(false);
+                    setShowCategoryDropdown(false);
+                  }}
+                  onChange={(e) => {
+                    setIsAccountManuallySet(true);
+                    setAccountId(e.target.value);
+                  }}
+                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
+                  required
+                >
+                  {accounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">To Account</label>
+                <select
+                  value={toAccountId}
+                  onFocus={() => {
+                    setShowKeypad(false);
+                    setShowCategoryDropdown(false);
+                  }}
+                  onChange={(e) => {
+                    setIsAccountManuallySet(true);
+                    setToAccountId(e.target.value);
+                  }}
+                  className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
+                  required
+                >
+                  <option value="" disabled>Select destination</option>
+                  {accounts.filter(a => a.id !== accountId).map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           {/* Inline Category Creator */}
           <AnimatePresence>
             {isCreatingCategory && (
@@ -625,166 +859,183 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     onChange={e => setNewCategoryName(e.target.value)} 
                     placeholder="New category name..." 
                     autoFocus
-                    className={`flex-1 bg-slate-950/40 border border-slate-800/80 rounded-lg px-3 py-2 text-sm text-white transition-all shadow-inner outline-none ${activeFocus}`} 
+                    className={`flex-1 bg-slate-950/40 border border-slate-800/80 rounded-lg px-3 py-2 text-xs text-white transition-all outline-none ${activeFocus}`} 
                   />
-                  <button type="button" onClick={handleQuickAddCategory} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 transition-colors rounded-lg text-white text-sm font-medium shadow-lg shadow-violet-500/20">Add</button>
-                  <button type="button" onClick={() => setIsCreatingCategory(false)} className="px-3 py-2 bg-slate-800 hover:bg-slate-700 transition-colors rounded-lg text-slate-300 text-sm">Cancel</button>
+                  <button type="button" onClick={handleQuickAddCategory} className="px-3 py-2 bg-violet-600 hover:bg-violet-500 transition-colors rounded-lg text-white text-xs font-semibold shadow-lg shadow-violet-500/20">Add</button>
+                  <button type="button" onClick={() => setIsCreatingCategory(false)} className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 transition-colors rounded-lg text-slate-300 text-xs">Cancel</button>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      )}
 
-      {/* Account / Transfer Destination */}
-      {type === "transfer" ? (
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">From Account</label>
-            <select
-              value={accountId}
-              onFocus={() => setShowKeypad(false)}
-              onChange={(e) => {
-                setIsAccountManuallySet(true);
-                setAccountId(e.target.value);
-              }}
-              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-              required
+        {/* Custom Keypad & Calculator Panel */}
+        <AnimatePresence>
+          {showKeypad && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden bg-slate-950/80 border border-slate-800/60 rounded-2xl p-3 space-y-2 shadow-2xl"
             >
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">To Account</label>
-            <select
-              value={toAccountId}
-              onFocus={() => setShowKeypad(false)}
-              onChange={(e) => {
-                setIsAccountManuallySet(true);
-                setToAccountId(e.target.value);
-              }}
-              className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-              required
-            >
-              <option value="" disabled>Select destination</option>
-              {accounts.filter(a => a.id !== accountId).map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      ) : (
-        <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Account</label>
-          <select
-            value={accountId}
-            onFocus={() => setShowKeypad(false)}
-            onChange={(e) => {
-              setIsAccountManuallySet(true);
-              setAccountId(e.target.value);
-            }}
-            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none appearance-none ${activeFocus}`}
-            required
-          >
-            {accounts.length === 0 ? (
-              <option value="" disabled>No accounts available</option>
-            ) : (
-              accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-      )}
+              <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
+                {/* Row 1 */}
+                <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
+                <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
+                <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
+                <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
 
-      {/* Payee / Merchant (optional) */}
-      {type !== "transfer" && (
-        <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Payee / Merchant (optional)</label>
-          <input
-            id="payee-input"
-            type="text"
-            value={payee}
-            onFocus={() => setShowKeypad(false)}
-            onChange={(e) => setPayee(e.target.value)}
-            className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
-            placeholder="E.g., Uber, Starbucks, Amazon..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                document.getElementById("item-name-input")?.focus();
-              }
-            }}
-          />
-        </div>
-      )}
+                {/* Row 2 */}
+                <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
+                <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
+                <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
+                <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
 
-      {/* Item Name (optional) */}
-      <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Item Name (optional)</label>
-        <input
-          id="item-name-input"
-          type="text"
-          value={description}
-          onFocus={() => setShowKeypad(false)}
-          onChange={(e) => setDescription(e.target.value)}
-          className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none ${activeFocus}`}
-          placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee... (Auto: Quick Entry)"}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              document.getElementById("notes-input")?.focus();
-            }
-          }}
-        />
-      </div>
+                {/* Row 3 */}
+                <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
+                <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
+                <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
+                <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
 
-      {/* Location (optional) */}
-      <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Location (optional)</label>
+                {/* Row 4 */}
+                <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
+                <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
+                <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
+                <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
+
+                {/* Row 5 */}
+                <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
+                <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
+                <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Collapsible Trigger Button */}
         <button
           type="button"
           onClick={() => {
-            setShowLocationPicker(true);
+            setShowOptionalDetails(!showOptionalDetails);
             setShowKeypad(false);
+            setShowCategoryDropdown(false);
           }}
-          className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40`}
+          className="w-full py-2.5 px-4 rounded-xl border border-slate-800/80 bg-slate-950/20 text-slate-400 hover:text-white transition-all text-xs font-semibold flex items-center justify-between hover:bg-slate-900/20 active:scale-[0.99]"
         >
-          <span className="truncate">{getLocationDisplay() || "Add location..."}</span>
-          <MapPin className="h-4 w-4 text-slate-500" />
+          <span>{showOptionalDetails ? "Hide Optional Details" : "Show Optional Details"}</span>
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showOptionalDetails ? "rotate-180" : ""}`} />
         </button>
-      </div>
 
-      {/* Notes (Secondary/Optional) */}
-      <div>
-        <label className="block text-xs font-medium text-slate-400 mb-1">Notes (optional)</label>
-        <textarea
-          id="notes-input"
-          value={note}
-          onFocus={() => setShowKeypad(false)}
-          onChange={(e) => setNote(e.target.value)}
-          rows={2}
-          className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-4 py-3 text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
-          placeholder="E.g., split with Rahul, monthly subscription, etc."
-        />
-      </div>
+        {/* Collapsible Optional Details */}
+        <AnimatePresence>
+          {showOptionalDetails && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="space-y-4 overflow-hidden pt-1"
+            >
+              <div className="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">
+                {/* Payee / Merchant */}
+                {type !== "transfer" && (
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Payee / Merchant</label>
+                    <input
+                      id="payee-input"
+                      type="text"
+                      value={payee}
+                      onFocus={() => {
+                        setShowKeypad(false);
+                        setShowCategoryDropdown(false);
+                      }}
+                      onChange={(e) => setPayee(e.target.value)}
+                      className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                      placeholder="E.g., Uber, Starbucks, Amazon..."
+                    />
+                  </div>
+                )}
 
-      <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-        <div>
-          <label className="block text-sm font-medium text-amber-500">Needs Review</label>
-          <p className="text-[10px] text-amber-500/70 mt-0.5 leading-tight">
-            Flag this transaction to double-check amounts or wait for confirmations.
-          </p>
-        </div>
-        <div className="flex-shrink-0 ml-4">
+                {/* Item Name */}
+                <div>
+                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Item Name</label>
+                  <input
+                    id="item-name-input"
+                    type="text"
+                    value={description}
+                    onFocus={() => {
+                      setShowKeypad(false);
+                      setShowCategoryDropdown(false);
+                    }}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                    placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee..."}
+                  />
+                </div>
+
+                {/* Location (with inline MapPin click) */}
+                <div>
+                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Location</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowLocationPicker(true);
+                        setShowKeypad(false);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className={`flex-1 text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40 ${activeFocus}`}
+                    >
+                      <span className="truncate">{getLocationDisplay() || "Add location..."}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        vibrate([15]);
+                        await fetchLocation();
+                      }}
+                      disabled={locationLoading}
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl bg-slate-950/40 border border-slate-800/80 text-slate-400 hover:bg-slate-900/40 hover:text-white transition-all outline-none ${activeFocus}`}
+                      title="Use current location"
+                    >
+                      {locationLoading ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-400" />
+                      ) : (
+                        <MapPin className="w-3.5 h-3.5 text-violet-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Notes</label>
+                  <textarea
+                    id="notes-input"
+                    value={note}
+                    onFocus={() => {
+                      setShowKeypad(false);
+                      setShowCategoryDropdown(false);
+                    }}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows={2}
+                    className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
+                    placeholder="E.g., split with friends..."
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Needs Review Toggle */}
+        <div className="flex items-center justify-between p-3.5 bg-amber-500/10 rounded-2xl border border-amber-500/20 backdrop-blur-md">
+          <div className="pr-4">
+            <label className="block text-xs font-semibold text-amber-500 uppercase tracking-wider">Needs Review</label>
+            <p className="text-[10px] text-amber-500/70 mt-0.5 leading-tight">
+              Flag this transaction for verification or matching later.
+            </p>
+          </div>
           <button
             type="button"
             onClick={() => setNeedsReview(!needsReview)}
@@ -795,21 +1046,25 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             />
           </button>
         </div>
+
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting || !amount}
-        className={`w-full py-3 mt-2 font-medium rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] ${
-          type === "expense"
-            ? "bg-red-600 hover:bg-red-500 hover:shadow-red-500/20 text-white shadow-lg"
-            : type === "income"
-            ? "bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20 text-white shadow-lg"
-            : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/20 text-white shadow-lg"
-        }`}
-      >
-        {isSubmitting ? "Saving..." : editingTransaction ? "Update Transaction" : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
-      </button>
+      {/* Pinned Bottom Submit Action Button */}
+      <div className="absolute bottom-0 inset-x-0 p-4 border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-md flex-shrink-0 z-20">
+        <button
+          type="submit"
+          disabled={isSubmitting || !amount}
+          className={`w-full py-3.5 font-semibold text-sm rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] ${
+            type === "expense"
+              ? "bg-red-600 hover:bg-red-500 hover:shadow-red-500/20 text-white shadow-lg shadow-red-600/10"
+              : type === "income"
+              ? "bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20 text-white shadow-lg shadow-emerald-600/10"
+              : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/20 text-white shadow-lg shadow-blue-600/10"
+          }`}
+        >
+          {isSubmitting ? "Saving..." : editingTransaction ? "Update Transaction" : `Save ${type === "expense" ? "Expense" : type === "income" ? "Income" : "Transfer"}`}
+        </button>
+      </div>
 
       {/* Fluid Location Picker Overlay */}
       <AnimatePresence>
@@ -867,7 +1122,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         )}
       </AnimatePresence>
 
-      {/* AI Scanning Engaging Overlay - Blocks interaction & prevents data loss */}
+      {/* AI Scanning Engaging Overlay */}
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {isScanning && (
@@ -887,11 +1142,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 transition={{ type: "spring", bounce: 0.5 }}
                 className="relative mb-8"
               >
-                {/* Outer pulsing rings */}
                 <div className="absolute inset-0 rounded-full border-4 border-violet-500/20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
                 <div className="absolute inset-[-20px] rounded-full border-2 border-fuchsia-500/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite_0.5s]" />
                 
-                {/* Center orb */}
                 <div className="relative bg-gradient-to-br from-violet-600 to-fuchsia-600 h-24 w-24 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
                   <motion.div
                     animate={{ rotate: 360 }}

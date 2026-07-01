@@ -734,6 +734,7 @@ export default function TransactionsPage() {
           setEditingTxn(null);
         }} 
         title="Edit Transaction"
+        contentClassName="p-0 max-h-[90vh] md:max-h-[85vh] flex flex-col overflow-hidden"
       >
         {editingTxn && (
           <TransactionForm

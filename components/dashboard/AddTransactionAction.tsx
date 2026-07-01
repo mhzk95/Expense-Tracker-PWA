@@ -18,7 +18,12 @@ export function AddTransactionAction() {
         Add
       </button>
 
-      <AdaptiveOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Transaction">
+      <AdaptiveOverlay 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)} 
+        title="New Transaction"
+        contentClassName="p-0 max-h-[90vh] md:max-h-[85vh] flex flex-col overflow-hidden"
+      >
         <TransactionForm onSuccess={() => setIsOpen(false)} />
       </AdaptiveOverlay>
     </>

@@ -423,6 +423,12 @@ body {
   outline-offset: 2px;
 }
 
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+}
+
 /* ─── Selection ───────────────────────────────────────────────────────────── */
 ::selection {
   background-color: #8b5cf620;
