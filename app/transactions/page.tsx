@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { formatCurrency, formatDate, hexToRgb, vibrate, cn } from "@/lib/utils/helpers";
-import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag } from "lucide-react";
+import { formatCurrency, formatDate, hexToRgb, vibrate, cn, getCategoryIcon } from "@/lib/utils/helpers";
+import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -519,7 +519,7 @@ export default function TransactionsPage() {
               >
                 <div 
                   className={cn(
-                    "glass-card interactive flex flex-col px-4 py-2.5 w-full transition-all duration-300 select-none",
+                    "glass-card interactive flex flex-col px-4 py-2.5 w-full transition-all duration-300 select-none border border-transparent",
                     txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60",
                     isExpanded && "shadow-lg shadow-black/40 ring-1 ring-white/10",
                     isSelected && "ring-2 ring-violet-500/60 bg-violet-950/10"
@@ -530,6 +530,8 @@ export default function TransactionsPage() {
                     "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
                     "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
                     "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
+                    borderColor: `${baseColor}20`,
+                    boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`,
                     WebkitTouchCallout: "none",
                   } as React.CSSProperties}
                   onTouchStart={(e) => handleTouchStart(txn.id, e)}
@@ -571,22 +573,19 @@ export default function TransactionsPage() {
 
                     {/* Icon */}
                     <div
-                      className={cn(
-                        "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
-                        isIncome
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : isTransfer
-                          ? "bg-blue-500/15 text-blue-400"
-                          : "bg-red-500/15 text-red-400"
-                      )}
+                      className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: `${baseColor}20`,
+                        color: baseColor 
+                      }}
                     >
-                      {isIncome ? (
-                        <ArrowDownLeft className="h-4 w-4" />
-                      ) : isTransfer ? (
-                        <ArrowLeftRight className="h-4 w-4" />
-                      ) : (
-                        <ArrowUpRight className="h-4 w-4" />
-                      )}
+                      {(() => {
+                        if (isTransfer) {
+                          return <ArrowLeftRight className="h-4 w-4" />;
+                        }
+                        const IconComp = getCategoryIcon(category?.icon);
+                        return <IconComp className="h-4 w-4" />;
+                      })()}
                     </div>
 
                     {/* Details */}

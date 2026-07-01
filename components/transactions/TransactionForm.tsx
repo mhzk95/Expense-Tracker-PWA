@@ -5,14 +5,9 @@ import { createPortal } from "react-dom";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
-import { vibrate } from "@/lib/utils/helpers";
+import { vibrate, getCategoryIcon, ICON_MAP } from "@/lib/utils/helpers";
 import { 
-  Camera, Loader2, Sparkles, MapPin, X, ChevronLeft, ChevronDown, Search, Plus, 
-  Tag, UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
-  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
-  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
-  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
-  HeartHandshake, Sparkles as SparklesIcon, Package, Wallet
+  Camera, Loader2, Sparkles, MapPin, X, ChevronLeft, ChevronDown, Search, Plus, Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransactionEntity } from "@/lib/db/indexeddb";
@@ -20,18 +15,6 @@ import { TransactionEntity } from "@/lib/db/indexeddb";
 interface TransactionFormProps {
   onSuccess: () => void;
   editingTransaction?: TransactionEntity;
-}
-
-const ICON_MAP: Record<string, React.ComponentType<any>> = {
-  UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
-  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
-  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
-  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
-  HeartHandshake, Sparkles: SparklesIcon, Package, Wallet, Tag
-};
-
-function getCategoryIcon(iconName?: string) {
-  return ICON_MAP[iconName || ""] || Tag;
 }
 
 const formatDateYYYYMMDD = (d: Date) => {

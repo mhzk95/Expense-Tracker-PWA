@@ -6,8 +6,8 @@
  */
 
 import { useCategories } from "@/hooks/useCategories";
-import { formatCurrency, formatDate, hexToRgb } from "@/lib/utils/helpers";
-import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from "lucide-react";
+import { formatCurrency, formatDate, hexToRgb, getCategoryIcon } from "@/lib/utils/helpers";
+import { ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -67,7 +67,7 @@ export function RecentTransactions() {
               <div
                 key={txn.id}
                 className={cn(
-                  "glass-card interactive flex items-center gap-3 px-4 py-2.5 transition-all duration-300",
+                  "glass-card interactive flex items-center gap-3 px-4 py-2.5 transition-all duration-300 border border-transparent",
                   txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60"
                 )}
                 style={{
@@ -75,28 +75,26 @@ export function RecentTransactions() {
                   "--color-primary-rgb": hexToRgb(baseColor),
                   "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
                   "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                  "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
+                  "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
+                  borderColor: `${baseColor}20`,
+                  boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`
                 } as React.CSSProperties}
               >
                 {/* Type icon */}
                 <div
-                  className={cn(
-                    "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
-                    isIncome
-                      ? "bg-emerald-500/15 text-emerald-400"
-                      : isTransfer
-                      ? "bg-blue-500/15 text-blue-400"
-                      : "bg-red-500/15 text-red-400"
-                  )}
-                  style={{ backgroundColor: category ? `${category.color}18` : undefined }}
+                  className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${baseColor}20`,
+                    color: baseColor 
+                  }}
                 >
-                  {isIncome ? (
-                    <ArrowDownLeft className="h-4 w-4" />
-                  ) : isTransfer ? (
-                    <ArrowLeftRight className="h-4 w-4" />
-                  ) : (
-                    <ArrowUpRight className="h-4 w-4" />
-                  )}
+                  {(() => {
+                    if (isTransfer) {
+                      return <ArrowLeftRight className="h-4 w-4" />;
+                    }
+                    const IconComp = getCategoryIcon(category?.icon);
+                    return <IconComp className="h-4 w-4" />;
+                  })()}
                 </div>
 
                 {/* Description + category */}

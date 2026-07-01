@@ -134,3 +134,25 @@ export function hexToRgb(hex: string): string {
   }
 }
 
+// ─── Category Icon Mapping ──────────────────────────────────────────────────
+import {
+  Tag, UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
+  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
+  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
+  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
+  HeartHandshake, Sparkles as SparklesIcon, Package, Wallet
+} from "lucide-react";
+
+export const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  UtensilsCrossed, Car, Home, Tv, ShoppingBag, Banknote, HeartPulse, Zap,
+  Briefcase, Building2, TrendingUp, Gift, CircleDollarSign, ShoppingCart, Coffee,
+  Hammer, Sofa, Fuel, Bus, CarTaxiFront, Wrench, Plane, Repeat, Gamepad2, Shield,
+  PiggyBank, LineChart, CreditCard, Receipt, GraduationCap, Baby, PawPrint, Users,
+  HeartHandshake, Sparkles: SparklesIcon, Package, Wallet, Tag
+};
+
+export function getCategoryIcon(iconName?: string) {
+  return ICON_MAP[iconName || ""] || Tag;
+}
+
+
