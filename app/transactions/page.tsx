@@ -13,6 +13,8 @@ import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { TransactionEntity } from "@/lib/db/indexeddb";
+import { MarqueeText } from "@/components/ui/MarqueeText";
+import { FlashEntryModal } from "@/components/transactions/FlashEntryModal";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function TransactionsPage() {
@@ -34,6 +36,7 @@ export default function TransactionsPage() {
 
   const [selectedTxIds, setSelectedTxIds] = useState<Set<string>>(new Set());
   const [showBulkCategoryPicker, setShowBulkCategoryPicker] = useState(false);
+  const [showFlashEntry, setShowFlashEntry] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -102,7 +105,10 @@ export default function TransactionsPage() {
     try {
       const loc = JSON.parse(locationStr);
       const name = loc.display || loc.city || loc.place_name;
-      if (name) return name;
+      if (name) {
+        if (loc.source === "google_link" || loc.source === "overpass") return `📍 ${name}`;
+        return name;
+      }
       if (loc.lat && loc.lon) {
         return `${Number(loc.lat).toFixed(5)}, ${Number(loc.lon).toFixed(5)}`;
       }
@@ -326,6 +332,14 @@ export default function TransactionsPage() {
                 {needsReviewCount}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => setShowFlashEntry(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 border border-violet-500/50 shadow-lg shadow-violet-600/20 transition-all select-none"
+            title="Flash Entry"
+          >
+            <span>⚡ Flash</span>
           </button>
         </div>
 
@@ -589,14 +603,20 @@ export default function TransactionsPage() {
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold text-white truncate relative overflow-hidden group">
-                        <div className={cn("whitespace-nowrap transition-all duration-300", isExpanded ? "animate-marquee-on-hover" : "group-hover:animate-marquee-on-hover")}>
-                          {txn.payee || "No Payee"}
-                        </div>
-                      </div>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <MarqueeText 
+                        text={txn.payee || txn.description || "No Payee"} 
+                        className="text-xs font-semibold text-white" 
+                        isExpanded={isExpanded}
+                      />
                       <div className="flex items-center mt-0.5 text-[10px] text-slate-400 min-w-0">
-                        <span className="truncate">{txn.description || "No description"}</span>
+                        <div className="flex-1 min-w-0 flex items-center">
+                          {txn.payee && txn.description !== "Quick Entry" ? (
+                            <MarqueeText text={txn.description} className="flex-shrink min-w-0" isExpanded={isExpanded} />
+                          ) : (
+                            <span className="truncate">{txn.description || "No description"}</span>
+                          )}
+                        </div>
                         <span className="text-slate-600 flex-shrink-0 mx-1.5">·</span>
                         <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
                       </div>
@@ -645,7 +665,15 @@ export default function TransactionsPage() {
                           <div>
                             <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Notes</span>
                             <p className="text-xs text-slate-300 mt-0.5 whitespace-pre-wrap leading-relaxed">
-                              {txn.note || "No notes provided."}
+                              {txn.note ? (
+                                txn.note.split(/(#[a-zA-Z0-9_]+)/g).map((part, i) => 
+                                  part.startsWith('#') 
+                                    ? <span key={i} className="text-violet-400 bg-violet-500/10 px-1 py-0.5 rounded border border-violet-500/20 font-medium inline-block my-0.5">{part}</span> 
+                                    : <span key={i}>{part}</span>
+                                )
+                              ) : (
+                                "No notes provided."
+                              )}
                             </p>
                           </div>
                           <div className="grid grid-cols-2 gap-3 pt-0.5">
@@ -836,6 +864,13 @@ export default function TransactionsPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Flash Entry Modal */}
+      <FlashEntryModal 
+        isOpen={showFlashEntry} 
+        onClose={() => setShowFlashEntry(false)} 
+        defaultAccountId={accounts.find(a => a.isDefault)?.id || accounts[0]?.id || ""}
+      />
+
     </div>
   );
 }

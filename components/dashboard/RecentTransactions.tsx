@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { MarqueeText } from "@/components/ui/MarqueeText";
 import { useMemo } from "react";
 
 export function RecentTransactions() {
@@ -98,17 +99,22 @@ export function RecentTransactions() {
                 </div>
 
                 {/* Description + category */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-white truncate relative group overflow-hidden">
-                    <div className="group-hover:animate-marquee-on-hover whitespace-nowrap">
-                      {txn.payee ? txn.payee : txn.description}
-                    </div>
-                  </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <MarqueeText 
+                    text={txn.payee ? txn.payee : txn.description} 
+                    className="text-xs font-semibold text-white" 
+                  />
                   <div className="text-[10px] text-slate-400 mt-0.5 flex items-center min-w-0">
-                    <span className="truncate">
-                      {txn.payee && txn.description !== "Quick Entry" && `${txn.description} · `}
-                      {category?.name ?? "Uncategorized"}
-                    </span>
+                    <div className="flex-1 min-w-0 flex items-center">
+                      {txn.payee && txn.description !== "Quick Entry" ? (
+                        <>
+                          <MarqueeText text={txn.description} className="flex-shrink min-w-0" />
+                          <span className="flex-shrink-0 whitespace-pre"> · {category?.name ?? "Uncategorized"}</span>
+                        </>
+                      ) : (
+                        <span className="truncate">{category?.name ?? "Uncategorized"}</span>
+                      )}
+                    </div>
                     <span className="flex-shrink-0 text-slate-600 mx-1.5">·</span>
                     <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
                   </div>

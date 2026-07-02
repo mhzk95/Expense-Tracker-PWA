@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransactionEntity } from "@/lib/db/indexeddb";
+import { resolveLocationFromCoordinates, parseGoogleMapsUrl } from "@/lib/utils/location";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -41,6 +42,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [note, setNote] = useState(editingTransaction?.note || "");
   const [payee, setPayee] = useState(editingTransaction?.payee || "");
   const [location, setLocation] = useState(editingTransaction?.location || "");
+  const [isLocationManuallySet, setIsLocationManuallySet] = useState(!!editingTransaction?.location);
   
   const [date, setDate] = useState(
     editingTransaction?.date 
@@ -301,7 +303,25 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       }
     }
 
-    return { categoryId: suggestedCatId, accountId: suggestedAccountId };
+    let suggestedLocation = "";
+    if (matchingTxs.length > 0 && !currentLocation) {
+      const locCounts: Record<string, number> = {};
+      matchingTxs.forEach(t => {
+        if (t.location) {
+          locCounts[t.location] = (locCounts[t.location] || 0) + 1;
+        }
+      });
+      const sortedLocs = Object.entries(locCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedLocs.length > 0) {
+        suggestedLocation = sortedLocs[0][0];
+      }
+    }
+
+    return { 
+      categoryId: suggestedCatId, 
+      accountId: suggestedAccountId,
+      location: suggestedLocation
+    };
   };
 
   useEffect(() => {
@@ -360,8 +380,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       if (suggestions.accountId && !isAccountManuallySet) {
         setAccountId(suggestions.accountId);
       }
+      if (suggestions.location && !isLocationManuallySet) {
+        setLocation(suggestions.location);
+      }
     }
-  }, [payee, type, location, transactions, categories, editingTransaction, isCategoryManuallySet, isAccountManuallySet, availableCategories, accounts]);
+  }, [payee, type, location, transactions, categories, editingTransaction, isCategoryManuallySet, isAccountManuallySet, isLocationManuallySet, availableCategories, accounts]);
 
   const fetchLocation = async () => {
     setLocationLoading(true);
@@ -370,15 +393,13 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 })
       );
       const { latitude, longitude } = pos.coords;
-      const r = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-      );
-      const geo = await r.json();
-      const place = geo.address?.suburb || geo.address?.neighbourhood || geo.address?.city_district || "";
-      const city = geo.address?.city || geo.address?.town || geo.address?.village || "";
-      const country = geo.address?.country || "";
-      const displayName = [place, city, country].filter(Boolean).join(", ");
-      setLocation(JSON.stringify({ lat: latitude, lng: longitude, place_name: place, city, country, display: displayName }));
+      const richLoc = await resolveLocationFromCoordinates(latitude, longitude);
+      if (richLoc) {
+        setLocation(JSON.stringify(richLoc));
+      } else {
+        setLocation(JSON.stringify({ lat: latitude, lon: longitude, source: "manual_gps" }));
+      }
+      setIsLocationManuallySet(true);
     } catch {
       setLocation("");
     } finally {
@@ -386,11 +407,54 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   };
 
+  useEffect(() => {
+    if (!tempLocationQuery) return;
+    const isUrl = tempLocationQuery.includes("http");
+    if (isUrl) {
+      const processUrl = async () => {
+        setLocationLoading(true);
+        let url = tempLocationQuery;
+        try {
+          if (url.includes("maps.app.goo.gl")) {
+            const res = await fetch("/api/expand-url", { 
+              method: "POST", 
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url }) 
+            });
+            const data = await res.json();
+            if (data.expandedUrl) url = data.expandedUrl;
+          }
+          const parsed = parseGoogleMapsUrl(url);
+          if (parsed) {
+            if (parsed.lat && parsed.lon && !parsed.display) {
+              const rich = await resolveLocationFromCoordinates(parsed.lat, parsed.lon);
+              if (rich) parsed.display = rich.display;
+            }
+            setLocation(JSON.stringify(parsed));
+            setIsLocationManuallySet(true);
+            setShowLocationPicker(false);
+            setTempLocationQuery("");
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLocationLoading(false);
+        }
+      };
+      processUrl();
+    }
+  }, [tempLocationQuery]);
+
   const getLocationDisplay = () => {
     if (!location) return null;
     try {
       const loc = JSON.parse(location);
-      return loc.display || loc.city || loc.place_name || null;
+      const text = loc.display || loc.city || loc.place_name || null;
+      if (!text) return null;
+      if (loc.source === "google_link" || loc.source === "overpass") {
+        return `📍 ${text}`;
+      }
+      return text;
     } catch {
       return location;
     }
@@ -398,6 +462,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
   const handleLocationSelect = (locName: string) => {
     setLocation(JSON.stringify({ display: locName }));
+    setIsLocationManuallySet(true);
     setShowLocationPicker(false);
   };
 
@@ -1251,21 +1316,33 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       )}
                     </AnimatePresence>
                   </div>
-                  <textarea
-                    id="notes-input"
-                    value={note}
-                    onFocus={() => {
-                      setShowKeypad(false);
-                      setShowCategoryDropdown(false);
-                      setShowAccountDropdown(false);
-                      setShowToAccountDropdown(false);
-                    }}
-                    onChange={handleNoteChange}
-                    onSelect={handleNoteSelect}
-                    rows={2}
-                    className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
-                    placeholder="E.g., split with friends... Use #tag for tags"
-                  />
+                  <div className="relative">
+                    <div 
+                      className="absolute inset-0 pointer-events-none px-3 py-2.5 text-xs whitespace-pre-wrap break-words border border-transparent overflow-hidden"
+                      aria-hidden="true"
+                    >
+                      {note.split(/(#[a-zA-Z0-9_]+)/g).map((part, i) => 
+                        part.startsWith('#') 
+                          ? <span key={i} className="bg-violet-500/40 text-transparent rounded-sm">{part}</span> 
+                          : <span key={i} className="text-transparent">{part}</span>
+                      )}
+                    </div>
+                    <textarea
+                      id="notes-input"
+                      value={note}
+                      onFocus={() => {
+                        setShowKeypad(false);
+                        setShowCategoryDropdown(false);
+                        setShowAccountDropdown(false);
+                        setShowToAccountDropdown(false);
+                      }}
+                      onChange={handleNoteChange}
+                      onSelect={handleNoteSelect}
+                      rows={2}
+                      className={`relative z-10 w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none resize-none bg-transparent ${activeFocus}`}
+                      placeholder="E.g., split with friends... Use #tag for tags"
+                    />
+                  </div>
                   
                   <AnimatePresence>
                     {activeTagIndex && tagSuggestions.length > 0 && (
