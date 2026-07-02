@@ -773,10 +773,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             <AnimatePresence>
               {showKeypad && (
                 <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
                   className="overflow-hidden bg-slate-950/90 border border-slate-800/60 rounded-2xl p-3 space-y-2 mt-3 shadow-2xl relative z-40"
                 >
                   <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
@@ -1177,9 +1177,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <AnimatePresence>
             {isCreatingCategory && (
               <motion.div 
-                initial={{ height: 0, opacity: 0 }} 
-                animate={{ height: "auto", opacity: 1 }} 
-                exit={{ height: 0, opacity: 0 }}
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
                 className="overflow-hidden mt-2"
               >
                 <div className="flex gap-2">
@@ -1217,9 +1218,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <AnimatePresence>
           {showOptionalDetails && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="space-y-4 overflow-hidden pt-1 relative z-20"
             >
               <div className="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">

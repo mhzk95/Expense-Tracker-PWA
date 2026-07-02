@@ -350,6 +350,7 @@ export default function TransactionsPage() {
                 <button
                   onClick={() => setSearchQuery("")}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1"
+                  aria-label="Clear search"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -365,6 +366,7 @@ export default function TransactionsPage() {
                   : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
               )}
               title="Filter transactions"
+              aria-label="Filter transactions"
             >
               <Filter className="h-4 w-4" />
             </button>
@@ -466,10 +468,10 @@ export default function TransactionsPage() {
         <AnimatePresence initial={false}>
           {showFiltersPanel && (
             <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="overflow-hidden"
             >
               <div className="pt-3">
@@ -656,9 +658,10 @@ export default function TransactionsPage() {
                 <AnimatePresence initial={false}>
                   {!collapsedGroups.has(group.key) && (
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
                       className="space-y-3 overflow-hidden"
                     >
                       {group.txns.map((txn) => {
@@ -791,10 +794,10 @@ export default function TransactionsPage() {
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
                         className="overflow-hidden"
                       >
                         <div className="mt-3 pt-3 border-t border-white/5 space-y-2.5">
