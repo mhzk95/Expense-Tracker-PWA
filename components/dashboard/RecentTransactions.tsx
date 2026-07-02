@@ -99,13 +99,19 @@ export function RecentTransactions() {
 
                 {/* Description + category */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-white truncate">
-                    {txn.payee ? txn.payee : txn.description}
-                  </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                    {txn.payee && txn.description !== "Quick Entry" && `${txn.description} · `}
-                    {category?.name ?? "Uncategorized"} · {formatDate(txn.date, "medium")}
-                  </p>
+                  <div className="text-xs font-semibold text-white truncate relative group overflow-hidden">
+                    <div className="group-hover:animate-marquee-on-hover whitespace-nowrap">
+                      {txn.payee ? txn.payee : txn.description}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5 flex items-center min-w-0">
+                    <span className="truncate">
+                      {txn.payee && txn.description !== "Quick Entry" && `${txn.description} · `}
+                      {category?.name ?? "Uncategorized"}
+                    </span>
+                    <span className="flex-shrink-0 text-slate-600 mx-1.5">·</span>
+                    <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
+                  </div>
                 </div>
 
                 {/* Amount + Review Badge */}

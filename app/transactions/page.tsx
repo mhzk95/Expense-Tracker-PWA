@@ -590,13 +590,15 @@ export default function TransactionsPage() {
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">
-                        {txn.payee || "No Payee"}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-400">
+                      <div className="text-xs font-semibold text-white truncate relative overflow-hidden group">
+                        <div className={cn("whitespace-nowrap transition-all duration-300", isExpanded ? "animate-marquee-on-hover" : "group-hover:animate-marquee-on-hover")}>
+                          {txn.payee || "No Payee"}
+                        </div>
+                      </div>
+                      <div className="flex items-center mt-0.5 text-[10px] text-slate-400 min-w-0">
                         <span className="truncate">{txn.description || "No description"}</span>
-                        <span className="text-slate-600">·</span>
-                        <span>{formatDate(txn.date, "medium")}</span>
+                        <span className="text-slate-600 flex-shrink-0 mx-1.5">·</span>
+                        <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
                       </div>
                     </div>
 

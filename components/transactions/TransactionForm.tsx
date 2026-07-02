@@ -81,6 +81,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showToAccountDropdown, setShowToAccountDropdown] = useState(false);
   
+  // Auto-suggest states
+  const [showPayeeSuggestions, setShowPayeeSuggestions] = useState(false);
+  const [showItemSuggestions, setShowItemSuggestions] = useState(false);
+  
   const [categorySearch, setCategorySearch] = useState("");
   const [isCategoryManuallySet, setIsCategoryManuallySet] = useState(false);
   const [isAccountManuallySet, setIsAccountManuallySet] = useState(false);
@@ -88,6 +92,75 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [showOptionalDetails, setShowOptionalDetails] = useState(
     !!(editingTransaction?.payee || editingTransaction?.description || editingTransaction?.location || editingTransaction?.note)
   );
+
+  // Notes inline tag states
+  const [activeTagIndex, setActiveTagIndex] = useState<{ start: number, end: number, query: string } | null>(null);
+  const [selectedWordRange, setSelectedWordRange] = useState<{ start: number, end: number, text: string } | null>(null);
+
+  // Derive existing data for suggestions
+  const existingPayees = Array.from(new Set(transactions.map(t => t.payee).filter(Boolean))) as string[];
+  const payeeSuggestions = payee.trim() ? existingPayees.filter(p => p.toLowerCase().includes(payee.toLowerCase()) && p !== payee) : [];
+
+  const existingItems = Array.from(new Set(transactions.map(t => t.description).filter(Boolean))) as string[];
+  const itemSuggestions = description.trim() ? existingItems.filter(i => i.toLowerCase().includes(description.toLowerCase()) && i !== description) : [];
+
+  const allTags = Array.from(new Set(
+    transactions.flatMap(t => t.note?.match(/#[a-zA-Z0-9_]+/g) || [])
+  )).map(t => t.slice(1));
+  const tagSuggestions = activeTagIndex ? allTags.filter(t => t.toLowerCase().includes(activeTagIndex.query.toLowerCase())) : [];
+
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setNote(val);
+    
+    // Check if cursor is currently typing a hashtag
+    const cursor = e.target.selectionStart;
+    const textBeforeCursor = val.slice(0, cursor);
+    const hashMatch = textBeforeCursor.match(/#([a-zA-Z0-9_]*)$/);
+    if (hashMatch) {
+      setActiveTagIndex({
+        start: cursor - hashMatch[0].length,
+        end: cursor,
+        query: hashMatch[1]
+      });
+    } else {
+      setActiveTagIndex(null);
+    }
+  };
+
+  const handleNoteSelect = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+    const start = target.selectionStart;
+    const end = target.selectionEnd;
+    if (start !== end && end - start > 0 && end - start < 30) {
+      const text = target.value.substring(start, end);
+      if (/^[a-zA-Z0-9_]+$/.test(text.trim())) {
+        setSelectedWordRange({ start, end, text: text.trim() });
+      } else {
+        setSelectedWordRange(null);
+      }
+    } else {
+      setSelectedWordRange(null);
+    }
+  };
+
+  const insertTag = (tagName: string) => {
+    if (!activeTagIndex) return;
+    const { start, end } = activeTagIndex;
+    const newNote = note.substring(0, start) + `#${tagName} ` + note.substring(end);
+    setNote(newNote);
+    setActiveTagIndex(null);
+    vibrate([10]);
+  };
+
+  const convertToTag = () => {
+    if (!selectedWordRange) return;
+    const { start, end, text } = selectedWordRange;
+    const newNote = note.substring(0, start) + `#${text}` + note.substring(end);
+    setNote(newNote);
+    setSelectedWordRange(null);
+    vibrate([10]);
+  };
 
   const evaluateExpression = (expr: string): string => {
     try {
@@ -156,7 +229,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     });
   };
 
-  // Heuristic-based suggestions logic
   const suggestCategoryAndAccount = (
     currentPayee: string,
     currentType: string,
@@ -232,7 +304,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     return { categoryId: suggestedCatId, accountId: suggestedAccountId };
   };
 
-  // Restore draft from sessionStorage if modal was accidentally closed (only when not editing)
   useEffect(() => {
     if (editingTransaction) return;
     const draft = sessionStorage.getItem("tx_draft");
@@ -257,7 +328,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   }, [editingTransaction]);
 
-  // Save draft to prevent data loss (only when not editing)
   useEffect(() => {
     if (editingTransaction) return;
     if (amount || description || note || payee || location) {
@@ -266,7 +336,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   }, [amount, description, note, type, date, time, payee, location, editingTransaction]);
 
-  // Heuristic-based Smart Category & Account auto-suggestions
   useEffect(() => {
     if (editingTransaction) return;
 
@@ -332,7 +401,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     setShowLocationPicker(false);
   };
 
-  // Set default category and account when loaded
   useEffect(() => {
     if (availableCategories.length > 0 && (!categoryId || !availableCategories.find(c => c.id === categoryId))) {
       setCategoryId(availableCategories[0].id);
@@ -344,7 +412,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   }, [availableCategories, categoryId, accounts, accountId]);
 
-  // Update category when type changes
   const handleTypeChange = (newType: "expense" | "income" | "transfer") => {
     setType(newType);
     if (newType !== "transfer") {
@@ -383,7 +450,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     try {
       const rawDesc = description.trim();
       const rawPayee = payee.trim();
-      const isQuickEntry = !rawDesc || (type !== "transfer" && !rawPayee);
 
       const combinedDateTime = new Date(`${date}T${time}`).toISOString();
 
@@ -397,7 +463,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         categoryId: type === "transfer" ? undefined : (categoryId || "other"),
         accountId,
         toAccountId: type === "transfer" ? toAccountId : undefined,
-        needsReview: needsReview || isQuickEntry,
+        needsReview,
         status: editingTransaction?.status || "completed",
         payee: type === "transfer" ? undefined : (rawPayee || undefined),
         location: location.trim() || undefined,
@@ -410,7 +476,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           id: crypto.randomUUID(),
           ...txData,
         });
-        sessionStorage.removeItem("tx_draft"); // Clear draft on success
+        sessionStorage.removeItem("tx_draft");
       }
       vibrate([50]);
       onSuccess();
@@ -471,7 +537,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-[75vh] md:h-auto max-h-[85vh] overflow-hidden relative">
-      {/* Scrollable Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
         
         {/* Main Details Card - Structured Stacking Context relative z-30 */}
@@ -589,31 +654,26 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   className="overflow-hidden bg-slate-950/90 border border-slate-800/60 rounded-2xl p-3 space-y-2 mt-3 shadow-2xl relative z-40"
                 >
                   <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
-                    {/* Row 1 */}
                     <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95">C</button>
                     <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95 flex items-center justify-center">⌫</button>
                     <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">/</button>
                     <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">*</button>
 
-                    {/* Row 2 */}
                     <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">7</button>
                     <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">8</button>
                     <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">9</button>
                     <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">-</button>
 
-                    {/* Row 3 */}
                     <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">4</button>
                     <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">5</button>
                     <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">6</button>
                     <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-all active:scale-95">+</button>
 
-                    {/* Row 4 */}
                     <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">1</button>
                     <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">2</button>
                     <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">3</button>
                     <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/20 transition-all active:scale-95">=</button>
 
-                    {/* Row 5 */}
                     <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">0</button>
                     <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all active:scale-95">.</button>
                     <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all active:scale-95">Next</button>
@@ -662,7 +722,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           {/* Custom Select Dropdowns Row - relative z-25 */}
           {type !== "transfer" ? (
             <div className="relative z-25 grid grid-cols-2 gap-3">
-              {/* Custom Category Dropdown container - relative z-50 */}
               <div className="relative z-50">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Category</label>
                 
@@ -706,7 +765,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         exit={{ opacity: 0, y: 10 }}
                         className="absolute z-[60] left-0 right-[-100px] md:right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-3 flex flex-col gap-2 max-h-[280px] overflow-hidden"
                       >
-                        {/* Search */}
                         <div className="relative">
                           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
                           <input
@@ -718,7 +776,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           />
                         </div>
 
-                        {/* Suggestions */}
                         {(() => {
                           const typedCats = categories.filter(c => c.type === type);
                           if (typedCats.length === 0) return null;
@@ -763,7 +820,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           );
                         })()}
 
-                        {/* List */}
                         <div className="flex-1 overflow-y-auto space-y-0.5 pr-1 scrollbar-none">
                           {categories
                             .filter(c => c.type === type && c.name.toLowerCase().includes(categorySearch.toLowerCase()))
@@ -809,7 +865,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 </div>
               </div>
 
-              {/* Custom Account Dropdown container - relative z-45 */}
               <div className="relative z-45">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Account</label>
                 
@@ -873,7 +928,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </div>
           ) : (
             <div className="relative z-25 grid grid-cols-2 gap-3">
-              {/* Custom From Account dropdown container - relative z-50 */}
               <div className="relative z-50">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">From Account</label>
                 
@@ -931,7 +985,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 </div>
               </div>
 
-              {/* Custom To Account dropdown container - relative z-45 */}
               <div className="relative z-45">
                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">To Account</label>
                 
@@ -992,7 +1045,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </div>
           )}
 
-          {/* Inline Category Creator */}
           <AnimatePresence>
             {isCreatingCategory && (
               <motion.div 
@@ -1018,7 +1070,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </AnimatePresence>
         </div>
 
-        {/* Collapsible Trigger Button */}
         <button
           type="button"
           onClick={() => {
@@ -1034,19 +1085,19 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showOptionalDetails ? "rotate-180" : ""}`} />
         </button>
 
-        {/* Collapsible Optional Details */}
         <AnimatePresence>
           {showOptionalDetails && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="space-y-4 overflow-hidden pt-1"
+              className="space-y-4 overflow-hidden pt-1 relative z-20"
             >
               <div className="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl space-y-4 backdrop-blur-md">
-                {/* Payee / Merchant */}
+                
+                {/* Payee / Merchant with Auto Suggest */}
                 {type !== "transfer" && (
-                  <div>
+                  <div className="relative">
                     <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Payee / Merchant</label>
                     <input
                       id="payee-input"
@@ -1057,16 +1108,46 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         setShowCategoryDropdown(false);
                         setShowAccountDropdown(false);
                         setShowToAccountDropdown(false);
+                        setShowPayeeSuggestions(true);
                       }}
-                      onChange={(e) => setPayee(e.target.value)}
+                      onBlur={() => setTimeout(() => setShowPayeeSuggestions(false), 200)}
+                      onChange={(e) => {
+                        setPayee(e.target.value);
+                        setShowPayeeSuggestions(true);
+                      }}
                       className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
                       placeholder="E.g., Uber, Starbucks, Amazon..."
                     />
+                    <AnimatePresence>
+                      {showPayeeSuggestions && payeeSuggestions.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 5 }}
+                          className="absolute z-[70] left-0 right-0 mt-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        >
+                          {payeeSuggestions.slice(0, 5).map(p => (
+                            <button
+                              key={p}
+                              type="button"
+                              onMouseDown={() => {
+                                setPayee(p);
+                                setShowPayeeSuggestions(false);
+                                vibrate([10]);
+                              }}
+                              className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
+                            >
+                              {p}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 )}
 
-                {/* Item Name */}
-                <div>
+                {/* Item Name with Auto Suggest */}
+                <div className="relative">
                   <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Item Name</label>
                   <input
                     id="item-name-input"
@@ -1077,11 +1158,41 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowAccountDropdown(false);
                       setShowToAccountDropdown(false);
+                      setShowItemSuggestions(true);
                     }}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onBlur={() => setTimeout(() => setShowItemSuggestions(false), 200)}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      setShowItemSuggestions(true);
+                    }}
                     className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
                     placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee..."}
                   />
+                  <AnimatePresence>
+                    {showItemSuggestions && itemSuggestions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        className="absolute z-[70] left-0 right-0 mt-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                      >
+                        {itemSuggestions.slice(0, 5).map(i => (
+                          <button
+                            key={i}
+                            type="button"
+                            onMouseDown={() => {
+                              setDescription(i);
+                              setShowItemSuggestions(false);
+                              vibrate([10]);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
+                          >
+                            {i}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Location */}
@@ -1120,9 +1231,26 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   </div>
                 </div>
 
-                {/* Notes */}
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Notes</label>
+                {/* Notes with Inline Hashtags */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Notes</label>
+                    <AnimatePresence>
+                      {selectedWordRange && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          type="button"
+                          onClick={convertToTag}
+                          className="text-[10px] font-bold bg-violet-600/20 text-violet-400 px-2 py-0.5 rounded border border-violet-500/30 hover:bg-violet-500/30 transition-colors flex items-center gap-1"
+                        >
+                          <Tag className="w-3 h-3" />
+                          Convert to #{selectedWordRange.text}
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </div>
                   <textarea
                     id="notes-input"
                     value={note}
@@ -1132,11 +1260,37 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowAccountDropdown(false);
                       setShowToAccountDropdown(false);
                     }}
-                    onChange={(e) => setNote(e.target.value)}
+                    onChange={handleNoteChange}
+                    onSelect={handleNoteSelect}
                     rows={2}
                     className={`w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-white transition-all shadow-inner outline-none resize-none ${activeFocus}`}
-                    placeholder="E.g., split with friends..."
+                    placeholder="E.g., split with friends... Use #tag for tags"
                   />
+                  
+                  <AnimatePresence>
+                    {activeTagIndex && tagSuggestions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        className="absolute z-[70] left-0 right-0 top-full mt-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                      >
+                        {tagSuggestions.slice(0, 5).map(t => (
+                          <button
+                            key={t}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault(); // Prevent blur
+                              insertTag(t);
+                            }}
+                            className="w-full px-3 py-2 text-left text-xs text-violet-300 hover:bg-slate-800 hover:text-violet-200 transition-colors border-b border-slate-800/50 last:border-0 flex items-center gap-1"
+                          >
+                            <Tag className="w-3 h-3 opacity-70" /> {t}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </motion.div>
@@ -1164,7 +1318,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
       </div>
 
-      {/* Pinned Bottom Submit Action Button */}
       <div className="absolute bottom-0 inset-x-0 p-4 border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-md flex-shrink-0 z-20">
         <button
           type="submit"
@@ -1181,7 +1334,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         </button>
       </div>
 
-      {/* Fluid Location Picker Overlay */}
       <AnimatePresence>
         {showLocationPicker && (
           <motion.div 
@@ -1237,7 +1389,6 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         )}
       </AnimatePresence>
 
-      {/* AI Scanning Engaging Overlay */}
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {isScanning && (

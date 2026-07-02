@@ -776,3 +776,28 @@ body.red-alert {
   box-shadow: 0 0 22px rgba(0, 242, 254, 0.6) !important;
   transform: translateY(-1px) !important;
 }
+
+/* ─── Auto Scrolling Text (Marquee) ──────────────────────────────────────── */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  20% {
+    transform: translateX(0%);
+  }
+  80% {
+    transform: translateX(calc(-100% + 120px));
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-on-hover {
+  display: inline-block;
+}
+
+.group:hover .group-hover\:animate-marquee-on-hover,
+.animate-marquee-on-hover {
+  animation: marquee-scroll 4s linear infinite;
+}
