@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, hexToRgb, vibrate, cn, getCategoryIcon } from "@/lib/utils/helpers";
-import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag } from "lucide-react";
+import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -40,6 +40,7 @@ export default function TransactionsPage() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
   const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMoving = useRef(false);
@@ -119,6 +120,30 @@ export default function TransactionsPage() {
   };
 
   const needsReviewCount = rawTransactions.filter(t => t.needsReview).length;
+
+  const now = new Date();
+  
+  const todayTxns = rawTransactions.filter(t => {
+    const d = new Date(t.date);
+    return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  
+  const monthTxns = rawTransactions.filter(t => {
+    const d = new Date(t.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  const getNetTotal = (txns: TransactionEntity[]) => {
+    return txns.reduce((acc, t) => {
+      if (t.type === "expense") return acc - t.amount;
+      if (t.type === "income") return acc + t.amount;
+      return acc;
+    }, 0);
+  };
+
+  const todayTotal = getNetTotal(todayTxns);
+  const monthTotal = getNetTotal(monthTxns);
+  const currentMonthName = now.toLocaleString('default', { month: 'short' });
 
   const transactions = [...rawTransactions]
     .filter((t) => {
@@ -234,6 +259,69 @@ export default function TransactionsPage() {
           </div>
         }
       />
+
+      {/* Top Cards */}
+      {!loading && (
+        <div className="grid grid-cols-2 gap-3 px-4">
+          {/* Today */}
+          <button 
+            type="button"
+            onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
+            className={cn(
+              "bg-slate-900/40 border rounded-2xl p-3 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
+              selectedDateRange === 'today' ? "border-emerald-500/50 bg-slate-900/80 ring-1 ring-emerald-500/20" : "border-emerald-500/10 hover:border-emerald-500/30"
+            )}
+          >
+            <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl -ml-10 -mt-10 pointer-events-none" />
+            <div className="flex items-start justify-between relative z-10 w-full">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+                   <Calendar className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-slate-400 font-medium">Today's total</span>
+                  <span className="text-sm font-bold text-white tracking-tight">
+                    {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
+                  </span>
+                </div>
+              </div>
+              <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 mt-1 transition-transform", selectedDateRange === 'today' ? "text-emerald-400 rotate-180" : "text-slate-500")} />
+            </div>
+            <div className="mt-2.5 text-[10px] text-slate-400 relative z-10">
+              {todayTxns.length} transactions
+            </div>
+          </button>
+
+          {/* Month */}
+          <button 
+            type="button"
+            onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
+            className={cn(
+              "bg-slate-900/40 border rounded-2xl p-3 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
+              selectedDateRange === 'month' ? "border-violet-500/50 bg-slate-900/80 ring-1 ring-violet-500/20" : "border-violet-500/10 hover:border-violet-500/30"
+            )}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+            <div className="flex items-start justify-between relative z-10 w-full">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
+                   <Calendar className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-slate-400 font-medium">{currentMonthName} total</span>
+                  <span className="text-sm font-bold text-white tracking-tight">
+                    {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
+                  </span>
+                </div>
+              </div>
+              <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 mt-1 transition-transform", selectedDateRange === 'month' ? "text-violet-400 rotate-180" : "text-slate-500")} />
+            </div>
+            <div className="mt-2.5 text-[10px] text-slate-400 relative z-10">
+              {monthTxns.length} transactions
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Unified Search and filter toolbar + panel container to prevent layout jerking */}
       <div className="space-y-0">
@@ -508,9 +596,67 @@ export default function TransactionsPage() {
           action={<AddTransactionAction />}
         />
       ) : (
-        <div className="space-y-3">
-          {transactions.map((txn) => {
-            const category = categories.find((c) => c.id === txn.categoryId);
+        <div className="pb-8">
+          {(() => {
+            const groupedTransactions = transactions.reduce((acc, t) => {
+              const d = new Date(t.date);
+              const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              
+              let label = dateStr;
+              const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+              const yesterday = new Date(now.getTime() - 86400000);
+              const isYesterday = yesterday.getDate() === d.getDate() && yesterday.getMonth() === d.getMonth() && yesterday.getFullYear() === d.getFullYear();
+              
+              if (isToday) label = `Today • ${dateStr}`;
+              else if (isYesterday) label = `Yesterday • ${dateStr}`;
+              else label = `Earlier • ${dateStr}`;
+          
+              const key = d.toDateString();
+              
+              if (!acc[key]) {
+                acc[key] = { key, label, date: d, txns: [], total: 0 };
+              }
+              acc[key].txns.push(t);
+              if (t.type === 'expense') acc[key].total -= t.amount;
+              if (t.type === 'income') acc[key].total += t.amount;
+              
+              return acc;
+            }, {} as Record<string, { key: string, label: string, date: Date, txns: TransactionEntity[], total: number }>);
+          
+            const sortedGroups = Object.values(groupedTransactions).sort((a, b) => b.date.getTime() - a.date.getTime());
+
+            return sortedGroups.map((group) => (
+              <div key={group.key} className="space-y-3 mb-6 last:mb-0">
+                <div 
+                  className="flex items-center justify-between px-2 cursor-pointer group/header select-none"
+                  onClick={() => {
+                    setCollapsedGroups(prev => {
+                      const next = new Set(prev);
+                      if (next.has(group.key)) next.delete(group.key);
+                      else next.add(group.key);
+                      return next;
+                    });
+                  }}
+                >
+                  <span className="text-[11px] font-bold text-slate-300">{group.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("text-[11px] font-bold", group.total < 0 ? "text-violet-400" : "text-emerald-400")}>
+                      {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
+                    </span>
+                    <ChevronDown className={cn("w-3.5 h-3.5 text-slate-500 transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-violet-400" : "")} />
+                  </div>
+                </div>
+                
+                <AnimatePresence initial={false}>
+                  {!collapsedGroups.has(group.key) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="space-y-3 overflow-hidden"
+                    >
+                      {group.txns.map((txn) => {
+                        const category = categories.find((c) => c.id === txn.categoryId);
             const isIncome = txn.type === "income";
             const isTransfer = txn.type === "transfer";
             const isExpanded = expandedTxnId === txn.id;
@@ -750,8 +896,14 @@ export default function TransactionsPage() {
                   </AnimatePresence>
                 </div>
               </SwipeToDelete>
-            );
-          })}
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ));
+          })()}
         </div>
       )}
 
