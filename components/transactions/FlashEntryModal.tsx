@@ -45,22 +45,27 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
 
     // 1. Capture Coordinates & Timestamp immediately
     const now = new Date();
-    let lat: number | undefined;
-    let lon: number | undefined;
+    let locationString: string | undefined;
 
     try {
       const pos = await new Promise<GeolocationPosition>((res, rej) => 
         navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000, maximumAge: 10000 })
       );
-      lat = pos.coords.latitude;
-      lon = pos.coords.longitude;
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      
+      const richLoc = await resolveLocationFromCoordinates(lat, lon);
+      if (richLoc) {
+        locationString = JSON.stringify(richLoc);
+      } else {
+        locationString = JSON.stringify({ lat, lon, source: "manual_gps" });
+      }
     } catch (err) {
       console.warn("Flash Entry: Failed to get location:", err);
     }
 
-    // 2. Optimistic Save
+    // 2. Save Transaction
     const tempId = crypto.randomUUID();
-    const initialLocation = lat && lon ? JSON.stringify({ lat, lon, source: "gps_pending" }) : undefined;
     
     await addTransaction({
       id: tempId,
@@ -71,24 +76,14 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
       date: now.toISOString(),
       categoryId: "other", // Default or generic
       accountId: defaultAccountId,
-      location: initialLocation,
+      location: locationString,
       status: "completed",
       needsReview: false
     });
 
-    // 3. Close immediately for the user
+    // 3. Close for the user
+    setIsCapturing(false);
     onClose();
-
-    // 4. Background Resolution if we have coordinates
-    if (lat && lon) {
-      resolveLocationFromCoordinates(lat, lon).then((richLoc) => {
-        if (richLoc && richLoc.display) {
-          updateTransaction(tempId, {
-            location: JSON.stringify(richLoc)
-          });
-        }
-      }).catch(err => console.error("Background resolution failed", err));
-    }
   };
 
   return (

@@ -9,48 +9,6 @@ export interface RichLocation {
   rawUrl?: string;
 }
 
-export async function fetchOverpassPOI(lat: number, lon: number, radius = 50): Promise<Partial<RichLocation> | null> {
-  const query = `
-    [out:json][timeout:5];
-    (
-      node["name"]["amenity"](around:${radius},${lat},${lon});
-      node["name"]["shop"](around:${radius},${lat},${lon});
-      node["name"]["leisure"](around:${radius},${lat},${lon});
-      node["name"]["tourism"](around:${radius},${lat},${lon});
-      node["name"]["office"](around:${radius},${lat},${lon});
-      way["name"]["amenity"](around:${radius},${lat},${lon});
-      way["name"]["shop"](around:${radius},${lat},${lon});
-    );
-    out center 1;
-  `;
-
-  try {
-    const res = await fetch("https://overpass-api.de/api/interpreter", {
-      method: "POST",
-      body: query,
-    });
-    
-    if (!res.ok) return null;
-    const data = await res.json();
-    
-    if (data.elements && data.elements.length > 0) {
-      const el = data.elements[0];
-      const name = el.tags?.name;
-      if (name) {
-        return {
-          display: name,
-          lat: el.lat || el.center?.lat || lat,
-          lon: el.lon || el.center?.lon || lon,
-          source: "overpass"
-        };
-      }
-    }
-    return null;
-  } catch (error) {
-    console.error("Overpass API error:", error);
-    return null;
-  }
-}
 
 export async function reverseGeocodeNominatim(lat: number, lon: number): Promise<Partial<RichLocation> | null> {
   try {
@@ -84,13 +42,6 @@ export async function reverseGeocodeNominatim(lat: number, lon: number): Promise
 }
 
 export async function resolveLocationFromCoordinates(lat: number, lon: number): Promise<Partial<RichLocation> | null> {
-  // 1. Try Overpass first for exact POI
-  const overpassResult = await fetchOverpassPOI(lat, lon);
-  if (overpassResult?.display) {
-    return overpassResult;
-  }
-  
-  // 2. Fallback to generic Nominatim
   return await reverseGeocodeNominatim(lat, lon);
 }
 
@@ -103,7 +54,7 @@ export function parseGoogleMapsUrl(url: string): Partial<RichLocation> | null {
     if (placeMatch) {
       let displayName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
       // Remove any trailing coordinates or query strings if accidentally captured
-      displayName = displayName.split('/')[0];
+      displayName = displayName.split('/')[0].split(',')[0].trim();
       
       const loc: Partial<RichLocation> = {
         display: displayName,

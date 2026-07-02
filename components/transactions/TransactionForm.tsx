@@ -71,8 +71,24 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
-  const [showLocationPicker, setShowLocationPicker] = useState(false);
-  const [tempLocationQuery, setTempLocationQuery] = useState("");
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [locationInput, setLocationInput] = useState(() => {
+    if (editingTransaction?.location) {
+      try {
+        const loc = JSON.parse(editingTransaction.location);
+        if (loc.display || loc.city || loc.place_name) {
+          return loc.display || loc.city || loc.place_name;
+        }
+        if (loc.lat && loc.lon) {
+          return `${Number(loc.lat).toFixed(4)}, ${Number(loc.lon).toFixed(4)}`;
+        }
+        return editingTransaction.location;
+      } catch {
+        return editingTransaction.location;
+      }
+    }
+    return "";
+  });
 
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -382,6 +398,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       }
       if (suggestions.location && !isLocationManuallySet) {
         setLocation(suggestions.location);
+        try {
+          const loc = JSON.parse(suggestions.location);
+          setLocationInput(loc.display || loc.city || loc.place_name || suggestions.location);
+        } catch {
+          setLocationInput(suggestions.location);
+        }
       }
     }
   }, [payee, type, location, transactions, categories, editingTransaction, isCategoryManuallySet, isAccountManuallySet, isLocationManuallySet, availableCategories, accounts]);
@@ -396,8 +418,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       const richLoc = await resolveLocationFromCoordinates(latitude, longitude);
       if (richLoc) {
         setLocation(JSON.stringify(richLoc));
+        setLocationInput(richLoc.display || richLoc.city || richLoc.place_name || "");
       } else {
         setLocation(JSON.stringify({ lat: latitude, lon: longitude, source: "manual_gps" }));
+        setLocationInput(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
       }
       setIsLocationManuallySet(true);
     } catch {
@@ -408,12 +432,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   };
 
   useEffect(() => {
-    if (!tempLocationQuery) return;
-    const isUrl = tempLocationQuery.includes("http");
+    if (!locationInput) return;
+    const isUrl = locationInput.includes("http");
     if (isUrl) {
       const processUrl = async () => {
         setLocationLoading(true);
-        let url = tempLocationQuery;
+        let url = locationInput;
         try {
           if (url.includes("maps.app.goo.gl")) {
             const res = await fetch("/api/expand-url", { 
@@ -426,14 +450,13 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           }
           const parsed = parseGoogleMapsUrl(url);
           if (parsed) {
-            if (parsed.lat && parsed.lon && !parsed.display) {
+            if (parsed.lat && parsed.lon) {
               const rich = await resolveLocationFromCoordinates(parsed.lat, parsed.lon);
-              if (rich) parsed.display = rich.display;
+              if (rich && rich.display) parsed.display = rich.display;
             }
             setLocation(JSON.stringify(parsed));
+            setLocationInput(parsed.display || url);
             setIsLocationManuallySet(true);
-            setShowLocationPicker(false);
-            setTempLocationQuery("");
           }
         } catch (err) {
           console.error(err);
@@ -443,7 +466,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       };
       processUrl();
     }
-  }, [tempLocationQuery]);
+  }, [locationInput]);
 
   const getLocationDisplay = () => {
     if (!location) return null;
@@ -460,10 +483,22 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
     }
   };
 
-  const handleLocationSelect = (locName: string) => {
-    setLocation(JSON.stringify({ display: locName }));
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocationInput(val);
     setIsLocationManuallySet(true);
-    setShowLocationPicker(false);
+    try {
+      const existing = location ? JSON.parse(location) : {};
+      setLocation(JSON.stringify({ ...existing, display: val, source: "manual" }));
+    } catch {
+      setLocation(JSON.stringify({ display: val, source: "manual" }));
+    }
+  };
+
+  const handleClearLocation = () => {
+    setLocation("");
+    setLocationInput("");
+    setIsLocationManuallySet(true);
   };
 
   useEffect(() => {
@@ -1261,22 +1296,36 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 </div>
 
                 {/* Location */}
-                <div>
+                <div className="relative">
                   <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Location</label>
                   <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowLocationPicker(true);
+                    <input
+                      type="text"
+                      value={locationInput}
+                      onFocus={() => {
                         setShowKeypad(false);
                         setShowCategoryDropdown(false);
                         setShowAccountDropdown(false);
                         setShowToAccountDropdown(false);
                       }}
-                      className={`flex-1 text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-xs text-slate-300 transition-all shadow-inner outline-none flex items-center justify-between hover:bg-slate-900/40 ${activeFocus}`}
-                    >
-                      <span className="truncate">{getLocationDisplay() || "Add location..."}</span>
-                    </button>
+                      onChange={handleLocationInputChange}
+                      className={`flex-1 min-w-0 bg-slate-950/40 border border-slate-800/80 rounded-xl pl-3 pr-8 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                      placeholder="Search or paste map link..."
+                    />
+                    <AnimatePresence>
+                      {locationInput && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          type="button"
+                          onClick={handleClearLocation}
+                          className="absolute right-[52px] top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 rounded-full transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
                     <button
                       type="button"
                       onClick={async () => {
@@ -1284,7 +1333,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         await fetchLocation();
                       }}
                       disabled={locationLoading}
-                      className={`w-10 h-10 flex items-center justify-center rounded-xl bg-slate-950/40 border border-slate-800/80 text-slate-400 hover:bg-slate-900/40 hover:text-white transition-all outline-none ${activeFocus}`}
+                      className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-slate-950/40 border border-slate-800/80 text-slate-400 hover:bg-slate-900/40 hover:text-white transition-all outline-none ${activeFocus}`}
                       title="Use current location"
                     >
                       {locationLoading ? (
@@ -1350,7 +1399,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 top-full mt-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {tagSuggestions.slice(0, 5).map(t => (
                           <button
@@ -1411,60 +1460,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         </button>
       </div>
 
-      <AnimatePresence>
-        {showLocationPicker && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.98 }} 
-            animate={{ opacity: 1, y: 0, scale: 1 }} 
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute inset-[-16px] z-50 bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-3xl flex flex-col overflow-hidden shadow-2xl"
-          >
-            <div className="flex items-center gap-2 p-3 border-b border-slate-800/60 bg-slate-900/50">
-              <button type="button" onClick={() => setShowLocationPicker(false)} className="p-1.5 text-slate-400 hover:text-white rounded-full bg-slate-800/50 transition-colors"><ChevronLeft className="w-5 h-5" /></button>
-              <input 
-                type="text" 
-                autoFocus 
-                value={tempLocationQuery} 
-                onChange={e => setTempLocationQuery(e.target.value)} 
-                placeholder="Search location..." 
-                className="flex-1 bg-transparent text-sm text-white font-medium outline-none placeholder-slate-500" 
-              />
-              <button 
-                type="button" 
-                onClick={async () => {
-                  await fetchLocation();
-                  setShowLocationPicker(false);
-                }} 
-                className={`p-1.5 rounded-full transition-colors ${locationLoading ? "bg-violet-500/20 text-violet-400 animate-pulse" : "bg-slate-800/50 text-violet-400 hover:bg-violet-500 hover:text-white"}`}
-              >
-                <MapPin className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="flex-1 bg-slate-950 p-4 flex flex-col gap-1 overflow-y-auto">
-              <div className="text-[10px] text-slate-500 uppercase font-semibold mb-2 tracking-wider">Suggestions</div>
-              {tempLocationQuery ? (
-                <button type="button" onClick={() => handleLocationSelect(tempLocationQuery)} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium border border-slate-800/50 bg-slate-900/30 font-semibold text-violet-400 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-violet-400" /> {tempLocationQuery}
-                </button>
-              ) : (
-                <>
-                  <button type="button" onClick={() => handleLocationSelect("Current Location")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-violet-400" /> Current Location
-                  </button>
-                  <button type="button" onClick={() => handleLocationSelect("Home")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-slate-400" /> Home
-                  </button>
-                  <button type="button" onClick={() => handleLocationSelect("Work")} className="text-left text-sm text-white py-3 px-3 hover:bg-slate-900 rounded-xl transition-colors font-medium flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-slate-400" /> Work
-                  </button>
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
