@@ -278,9 +278,9 @@ export default function TransactionsPage() {
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
                    <Calendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-1">
                   <span className="text-[10px] text-slate-400 font-medium">Today's total</span>
-                  <span className="text-sm font-bold text-white tracking-tight">
+                  <span className="text-xl font-black text-white tracking-tight">
                     {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
                   </span>
                 </div>
@@ -307,9 +307,9 @@ export default function TransactionsPage() {
                 <div className="w-8 h-8 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
                    <Calendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-1">
                   <span className="text-[10px] text-slate-400 font-medium">{currentMonthName} total</span>
-                  <span className="text-sm font-bold text-white tracking-tight">
+                  <span className="text-xl font-black text-white tracking-tight">
                     {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
                   </span>
                 </div>
@@ -326,109 +326,115 @@ export default function TransactionsPage() {
       {/* Unified Search and filter toolbar + panel container to prevent layout jerking */}
       <div className="space-y-0">
         {/* Search and filter toolbar */}
-        <div className="flex gap-2 items-center">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => {
-                setTimeout(() => setIsSearchFocused(false), 200);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  addSearchToHistory(searchQuery);
-                }
-              }}
-              placeholder="Search transactions..."
-              className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500/50"
-            />
-            {searchQuery && (
+        <div className="flex flex-col gap-2">
+          {/* Search Row */}
+          <div className="flex items-center gap-2 w-full">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => {
+                  setTimeout(() => setIsSearchFocused(false), 200);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addSearchToHistory(searchQuery);
+                  }
+                }}
+                placeholder="Search transactions..."
+                className="w-full bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500/50"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+              className={cn(
+                "flex items-center justify-center p-2.5 rounded-xl border transition-all select-none shrink-0",
+                showFiltersPanel || selectedType || selectedCategory || selectedDateRange
+                  ? "bg-violet-500/20 text-violet-400 border-violet-500/30"
+                  : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
+              )}
+              title="Filter transactions"
+            >
+              <Filter className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 w-full">
+            {(selectedType !== null || selectedCategory !== null || selectedDateRange !== null || showOnlyNeedsReview || selectedTxIds.size > 0) && (
               <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                onClick={() => {
+                  setSelectedType(null);
+                  setSelectedCategory(null);
+                  setSelectedDateRange(null);
+                  setShowOnlyNeedsReview(false);
+                  setSelectedTxIds(new Set());
+                  setIsSelectMode(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 transition-all select-none whitespace-nowrap shrink-0"
+                title="Clear all filters / selection"
               >
                 <X className="h-3.5 w-3.5" />
+                {selectedTxIds.size > 0 || isSelectMode ? "Deselect" : "Clear"}
               </button>
             )}
-          </div>
-          
-          <button
-            onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-            className={cn(
-              "flex items-center justify-center p-2 rounded-xl border transition-all select-none",
-              showFiltersPanel || selectedType || selectedCategory || selectedDateRange
-                ? "bg-violet-500/20 text-violet-400 border-violet-500/30"
-                : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
-            )}
-            title="Filter transactions"
-          >
-            <Filter className="h-3.5 w-3.5" />
-          </button>
 
-          {(selectedType !== null || selectedCategory !== null || selectedDateRange !== null || showOnlyNeedsReview || selectedTxIds.size > 0) && (
             <button
               onClick={() => {
-                setSelectedType(null);
-                setSelectedCategory(null);
-                setSelectedDateRange(null);
-                setShowOnlyNeedsReview(false);
-                setSelectedTxIds(new Set());
-                setIsSelectMode(false);
+                if (selectedTxIds.size > 0 || isSelectMode) {
+                  setSelectedTxIds(new Set());
+                  setIsSelectMode(false);
+                } else {
+                  setIsSelectMode(true);
+                }
               }}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 transition-all select-none"
-              title="Clear all filters / selection"
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none whitespace-nowrap shrink-0",
+                isSelectMode || selectedTxIds.size > 0
+                  ? "bg-violet-500/20 text-violet-400 border-violet-500/30"
+                  : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
+              )}
+              title="Toggle bulk select"
             >
-              <X className="h-3 w-3" />
-              {selectedTxIds.size > 0 || isSelectMode ? "Deselect" : "Clear"}
+              <span>☑ Bulk</span>
             </button>
-          )}
 
-          <button
-            onClick={() => {
-              if (selectedTxIds.size > 0 || isSelectMode) {
-                setSelectedTxIds(new Set());
-                setIsSelectMode(false);
-              } else {
-                setIsSelectMode(true);
-              }
-            }}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none",
-              isSelectMode || selectedTxIds.size > 0
-                ? "bg-violet-500/20 text-violet-400 border-violet-500/30"
-                : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
-            )}
-            title="Toggle bulk select"
-          >
-            <span>☑ Bulk</span>
-          </button>
+            <button
+              onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none whitespace-nowrap shrink-0",
+                showOnlyNeedsReview
+                  ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                  : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
+              )}
+            >
+              <span>⚡ Review</span>
+              {needsReviewCount > 0 && (
+                <span className="h-4 min-w-[16px] px-1 rounded-full bg-amber-500 text-slate-950 font-bold text-[9px] flex items-center justify-center">
+                  {needsReviewCount}
+                </span>
+              )}
+            </button>
 
-          <button
-            onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none",
-              showOnlyNeedsReview
-                ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
-            )}
-          >
-            <span>⚡ Review</span>
-            {needsReviewCount > 0 && (
-              <span className="h-4 min-w-[16px] px-1 rounded-full bg-amber-500 text-slate-950 font-bold text-[9px] flex items-center justify-center">
-                {needsReviewCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setShowFlashEntry(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 border border-violet-500/50 shadow-lg shadow-violet-600/20 transition-all select-none"
-            title="Flash Entry"
-          >
-            <span>⚡ Flash</span>
-          </button>
+            <button
+              onClick={() => setShowFlashEntry(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 border border-violet-500/50 shadow-lg shadow-violet-600/20 transition-all select-none whitespace-nowrap shrink-0 ml-auto"
+              title="Flash Entry"
+            >
+              <span>⚡ Flash</span>
+            </button>
+          </div>
         </div>
 
         {/* Search History Row */}

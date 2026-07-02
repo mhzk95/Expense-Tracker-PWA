@@ -809,8 +809,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </AnimatePresence>
           </div>
 
-          {/* Date & Time Selection (Side by Side) - relative z-10 */}
-          <div className="relative z-10 grid grid-cols-2 gap-3">
+          {/* Core Details Group */}
+          <div className="bg-slate-900/20 border border-white/5 rounded-2xl p-3 space-y-4">
+            {/* Date & Time Selection (Side by Side) - relative z-10 */}
+            <div className="relative z-10 grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
               <input
@@ -961,7 +963,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                     setIsCategoryManuallySet(true);
                                     setShowCategoryDropdown(false);
                                   }}
-                                  className={`w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-colors border-b border-slate-800/50 last:border-0 ${
+                                  className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs transition-colors border-b border-slate-800/50 last:border-0 ${
                                     isSelected ? "bg-slate-800/80 text-white font-medium" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                                   }`}
                                 >
@@ -979,7 +981,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                               setIsCreatingCategory(true);
                               setShowCategoryDropdown(false);
                             }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs text-violet-400 hover:bg-slate-800 transition-colors font-semibold"
+                            className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs text-violet-400 hover:bg-slate-800 transition-colors font-semibold"
                           >
                             <Plus className="w-4 h-4 opacity-70" />
                             <span>New Category</span>
@@ -1097,7 +1099,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setIsAccountManuallySet(true);
                                 setShowAccountDropdown(false);
                               }}
-                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
+                              className={`w-full px-3 py-2.5 rounded-lg text-left text-[11px] transition-colors ${
                                 isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
                               }`}
                             >
@@ -1155,7 +1157,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setIsAccountManuallySet(true);
                                 setShowToAccountDropdown(false);
                               }}
-                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
+                              className={`w-full px-3 py-2.5 rounded-lg text-left text-[11px] transition-colors ${
                                 isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
                               }`}
                             >
@@ -1170,6 +1172,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               </div>
             </div>
           )}
+          </div>
 
           <AnimatePresence>
             {isCreatingCategory && (
@@ -1261,7 +1264,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setShowPayeeSuggestions(false);
                                 vibrate([10]);
                               }}
-                              className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
+                              className="w-full px-3 py-2.5 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
                             >
                               {p}
                             </button>
@@ -1311,7 +1314,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                               setShowItemSuggestions(false);
                               vibrate([10]);
                             }}
-                            className="w-full px-3 py-2 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
+                            className="w-full px-3 py-2.5 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-800/50 last:border-0"
                           >
                             {i}
                           </button>
