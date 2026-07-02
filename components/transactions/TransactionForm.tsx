@@ -433,29 +433,55 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
   useEffect(() => {
     if (!locationInput) return;
+    
+    // Check if URL
     const isUrl = locationInput.includes("http");
-    if (isUrl) {
-      const processUrl = async () => {
+    
+    // Check if Coordinates: roughly matches "lat, lon" or "lat,lon"
+    const coordMatch = locationInput.match(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/);
+
+    if (isUrl || coordMatch) {
+      const processLocationStr = async () => {
         setLocationLoading(true);
-        let url = locationInput;
         try {
-          if (url.includes("maps.app.goo.gl")) {
-            const res = await fetch("/api/expand-url", { 
-              method: "POST", 
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ url }) 
-            });
-            const data = await res.json();
-            if (data.expandedUrl) url = data.expandedUrl;
-          }
-          const parsed = parseGoogleMapsUrl(url);
-          if (parsed) {
-            if (parsed.lat && parsed.lon) {
-              const rich = await resolveLocationFromCoordinates(parsed.lat, parsed.lon);
-              if (rich && rich.display) parsed.display = rich.display;
+          let lat: number | undefined;
+          let lon: number | undefined;
+          let rawUrl: string | undefined;
+
+          if (isUrl) {
+            let url = locationInput;
+            if (url.includes("maps.app.goo.gl")) {
+              const res = await fetch("/api/expand-url", { 
+                method: "POST", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url }) 
+              });
+              const data = await res.json();
+              if (data.expandedUrl) url = data.expandedUrl;
             }
-            setLocation(JSON.stringify(parsed));
-            setLocationInput(parsed.display || url);
+            const parsed = parseGoogleMapsUrl(url);
+            if (parsed && parsed.lat && parsed.lon) {
+              lat = parsed.lat;
+              lon = parsed.lon;
+              rawUrl = url;
+            }
+          } else if (coordMatch) {
+            const parts = locationInput.split(",");
+            lat = parseFloat(parts[0].trim());
+            lon = parseFloat(parts[1].trim());
+          }
+
+          if (lat !== undefined && lon !== undefined) {
+            const rich = await resolveLocationFromCoordinates(lat, lon);
+            if (rich && rich.display) {
+              const newLoc = { ...rich, source: isUrl ? "google_link" : "manual_gps", rawUrl };
+              setLocation(JSON.stringify(newLoc));
+              setLocationInput(rich.display);
+            } else {
+              const fallback = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+              setLocation(JSON.stringify({ lat, lon, display: fallback, source: isUrl ? "google_link" : "manual_gps", rawUrl }));
+              setLocationInput(fallback);
+            }
             setIsLocationManuallySet(true);
           }
         } catch (err) {
@@ -464,7 +490,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           setLocationLoading(false);
         }
       };
-      processUrl();
+      processLocationStr();
     }
   }, [locationInput]);
 
@@ -860,19 +886,19 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   <AnimatePresence>
                     {showCategoryDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-0 right-[-100px] md:right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-3 flex flex-col gap-2 max-h-[280px] overflow-hidden"
+                        exit={{ opacity: 0, y: 5 }}
+                        className="absolute z-[70] left-0 right-0 mt-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-60 flex flex-col"
                       >
-                        <div className="relative">
-                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+                        <div className="relative p-2 border-b border-slate-700/50">
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
                           <input
                             type="text"
                             placeholder="Search..."
                             value={categorySearch}
                             onChange={(e) => setCategorySearch(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-800/80 rounded-lg pl-8 pr-2 py-1.5 text-[11px] text-white placeholder-slate-500 outline-none focus:border-violet-500/50"
+                            className="w-full bg-slate-950/50 border border-slate-800/80 rounded-lg pl-8 pr-2 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500/50 transition-colors"
                           />
                         </div>
 
@@ -920,7 +946,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           );
                         })()}
 
-                        <div className="flex-1 overflow-y-auto space-y-0.5 pr-1 scrollbar-none">
+                        <div className="flex-1 overflow-y-auto scrollbar-none">
                           {categories
                             .filter(c => c.type === type && c.name.toLowerCase().includes(categorySearch.toLowerCase()))
                             .map(cat => {
@@ -935,8 +961,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                     setIsCategoryManuallySet(true);
                                     setShowCategoryDropdown(false);
                                   }}
-                                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-[11px] transition-colors ${
-                                    isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                                  className={`w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-colors border-b border-slate-800/50 last:border-0 ${
+                                    isSelected ? "bg-slate-800/80 text-white font-medium" : "text-slate-300 hover:bg-slate-800 hover:text-white"
                                   }`}
                                 >
                                   <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${cat.color}20` }}>
@@ -953,9 +979,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                               setIsCreatingCategory(true);
                               setShowCategoryDropdown(false);
                             }}
-                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-[11px] text-violet-400 hover:bg-slate-900/50 transition-colors font-semibold"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs text-violet-400 hover:bg-slate-800 transition-colors font-semibold"
                           >
-                            <Plus className="w-3.5 h-3.5" />
+                            <Plus className="w-4 h-4 opacity-70" />
                             <span>New Category</span>
                           </button>
                         </div>
@@ -1302,6 +1328,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     <input
                       type="text"
                       value={locationInput}
+                      disabled={locationLoading}
                       onFocus={() => {
                         setShowKeypad(false);
                         setShowCategoryDropdown(false);
@@ -1309,7 +1336,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         setShowToAccountDropdown(false);
                       }}
                       onChange={handleLocationInputChange}
-                      className={`flex-1 min-w-0 bg-slate-950/40 border border-slate-800/80 rounded-xl pl-3 pr-8 py-2.5 text-xs text-white transition-all shadow-inner outline-none ${activeFocus}`}
+                      className={`flex-1 min-w-0 bg-slate-950/40 border border-slate-800/80 rounded-xl pl-3 pr-8 py-2.5 text-xs text-white transition-all shadow-inner outline-none disabled:opacity-50 disabled:cursor-not-allowed ${activeFocus}`}
                       placeholder="Search or paste map link..."
                     />
                     <AnimatePresence>
