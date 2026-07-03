@@ -273,21 +273,21 @@ export default function TransactionsPage() {
             )}
           >
             <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl -ml-10 -mt-10 pointer-events-none" />
-            <div className="flex items-start justify-between relative z-10 w-full">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col justify-between h-full relative z-10 w-full">
+              <div className="flex items-center justify-between w-full">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
                    <Calendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col mt-1">
-                  <span className="text-[10px] text-slate-400 font-medium">Today's total</span>
-                  <span className="text-xl font-black text-white tracking-tight">
-                    {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
-                  </span>
-                </div>
+                <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform", selectedDateRange === 'today' ? "text-emerald-400 rotate-180" : "text-slate-500")} />
               </div>
-              <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 mt-1 transition-transform", selectedDateRange === 'today' ? "text-emerald-400 rotate-180" : "text-slate-500")} />
+              <div className="flex flex-col mt-3">
+                <span className="text-[10px] text-slate-400 font-medium">Today's total</span>
+                <span className="text-lg font-extrabold text-white tracking-tight truncate">
+                  {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
+                </span>
+              </div>
             </div>
-            <div className="mt-2.5 text-[10px] text-slate-400 relative z-10">
+            <div className="mt-1 text-[9px] text-slate-500 relative z-10">
               {todayTxns.length} transactions
             </div>
           </button>
@@ -302,21 +302,21 @@ export default function TransactionsPage() {
             )}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-            <div className="flex items-start justify-between relative z-10 w-full">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col justify-between h-full relative z-10 w-full">
+              <div className="flex items-center justify-between w-full">
                 <div className="w-8 h-8 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
                    <Calendar className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col mt-1">
-                  <span className="text-[10px] text-slate-400 font-medium">{currentMonthName} total</span>
-                  <span className="text-xl font-black text-white tracking-tight">
-                    {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
-                  </span>
-                </div>
+                <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform", selectedDateRange === 'month' ? "text-violet-400 rotate-180" : "text-slate-500")} />
               </div>
-              <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 mt-1 transition-transform", selectedDateRange === 'month' ? "text-violet-400 rotate-180" : "text-slate-500")} />
+              <div className="flex flex-col mt-3">
+                <span className="text-[10px] text-slate-400 font-medium">{currentMonthName} total</span>
+                <span className="text-lg font-extrabold text-white tracking-tight truncate">
+                  {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
+                </span>
+              </div>
             </div>
-            <div className="mt-2.5 text-[10px] text-slate-400 relative z-10">
+            <div className="mt-1 text-[9px] text-slate-500 relative z-10">
               {monthTxns.length} transactions
             </div>
           </button>

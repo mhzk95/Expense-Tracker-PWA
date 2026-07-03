@@ -8,9 +8,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
-    // Follow redirect
+    // Follow redirect using GET and a mobile user agent to prevent consent page/blocks
     const response = await fetch(url, {
-      method: 'HEAD', // HEAD is often enough, but some services require GET
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+      },
       redirect: 'follow',
     });
 

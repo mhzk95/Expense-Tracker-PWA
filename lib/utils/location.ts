@@ -47,33 +47,68 @@ export async function resolveLocationFromCoordinates(lat: number, lon: number): 
 
 export function parseGoogleMapsUrl(url: string): Partial<RichLocation> | null {
   try {
-    // Standard long URLs: https://www.google.com/maps/place/Starbucks/@37.77,-122.41,15z/...
-    const placeMatch = url.match(/\/place\/([^\/]+)\//);
+    let lat: number | undefined;
+    let lon: number | undefined;
+
+    // Pattern 1: @lat,lon in path
     const coordsMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-    
+    if (coordsMatch) {
+      lat = parseFloat(coordsMatch[1]);
+      lon = parseFloat(coordsMatch[2]);
+    } else {
+      // Pattern 2: query params like q=lat,lon or ll=lat,lon
+      const queryMatch = url.match(/[\?&](q|query|ll|loc)=([-+]?\d+\.\d+),([-+]?\d+\.\d+)/) ||
+                         url.match(/[\?&](q|query|ll|loc)=loc:([-+]?\d+\.\d+),([-+]?\d+\.\d+)/);
+      if (queryMatch) {
+        const num1 = parseFloat(queryMatch[2]);
+        const num2 = parseFloat(queryMatch[3]);
+        if (!isNaN(num1) && !isNaN(num2)) {
+          lat = num1;
+          lon = num2;
+        }
+      } else {
+        // Pattern 3: fallback coordinates match anywhere in url
+        const fallbackMatch = url.match(/([-+]?\d+\.\d+),([-+]?\d+\.\d+)/);
+        if (fallbackMatch) {
+          const num1 = parseFloat(fallbackMatch[1]);
+          const num2 = parseFloat(fallbackMatch[2]);
+          if (Math.abs(num1) <= 90 && Math.abs(num2) <= 180) {
+            lat = num1;
+            lon = num2;
+          }
+        }
+      }
+    }
+
+    // Extract place name
+    const placeMatch = url.match(/\/place\/([^\/]+)\//);
+    let displayName: string | undefined;
     if (placeMatch) {
-      let displayName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
-      // Remove any trailing coordinates or query strings if accidentally captured
+      displayName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
       displayName = displayName.split('/')[0].split(',')[0].trim();
-      
-      const loc: Partial<RichLocation> = {
+    } else {
+      const qParamMatch = url.match(/[\?&]q=([^&]+)/);
+      if (qParamMatch) {
+        const decoded = decodeURIComponent(qParamMatch[1].replace(/\+/g, ' '));
+        if (!decoded.match(/^[-+]?\d+\.\d+,[-+]?\d+\.\d+$/) && !decoded.startsWith("loc:")) {
+          displayName = decoded;
+        }
+      }
+    }
+
+    if (lat !== undefined && lon !== undefined) {
+      return {
+        lat,
+        lon,
         display: displayName,
         source: "google_link",
         rawUrl: url
       };
-      
-      if (coordsMatch) {
-        loc.lat = parseFloat(coordsMatch[1]);
-        loc.lon = parseFloat(coordsMatch[2]);
-      }
-      return loc;
     }
-    
-    // Just coordinates in URL
-    if (coordsMatch) {
+
+    if (displayName) {
       return {
-        lat: parseFloat(coordsMatch[1]),
-        lon: parseFloat(coordsMatch[2]),
+        display: displayName,
         source: "google_link",
         rawUrl: url
       };
