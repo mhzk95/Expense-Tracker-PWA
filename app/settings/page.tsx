@@ -102,11 +102,11 @@ export default function SettingsPage() {
       <DiagnosticsSettings />
 
       {getSectionItems().map((section) => (
-        <div key={section.title} className="space-y-1 pt-4">
-          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
+        <div key={section.title} className="space-y-2 pt-4">
+          <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
             {section.title}
           </h2>
-          <div className="glass-card divide-y divide-white/5">
+          <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] divide-y-2 divide-black overflow-hidden">
             {section.items.map((item) => {
               const Icon = item.icon;
               return (
@@ -114,16 +114,16 @@ export default function SettingsPage() {
                   key={item.id}
                   id={`settings-${item.id}-btn`}
                   onClick={() => setActiveModal(item.id as "currency")}
-                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-slate-800/40 transition-colors text-left group"
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-100 transition-colors text-left group"
                 >
-                  <div className="h-9 w-9 rounded-xl bg-slate-800/60 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-700/60 transition-colors">
-                    <Icon className="h-4.5 w-4.5 text-slate-400" />
+                  <div className="h-10 w-10 rounded-[10px] bg-white border-2 border-black flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#000] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#000]">
+                    <Icon className="h-5 w-5 stroke-[2.5px] text-black" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">{item.label}</p>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{item.description}</p>
+                    <p className="text-sm font-black text-black uppercase tracking-widest">{item.label}</p>
+                    <p className="text-xs font-bold text-gray-500 mt-0.5 truncate">{item.description}</p>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 stroke-[3px] text-black transition-transform group-hover:translate-x-1 flex-shrink-0" />
                 </button>
               );
             })}
@@ -132,32 +132,32 @@ export default function SettingsPage() {
       ))}
 
       {notificationPermission !== "unsupported" && (
-        <div className="space-y-1 pt-4">
-          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
+        <div className="space-y-2 pt-4">
+          <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
             Device
           </h2>
-          <div className="glass-card">
+          <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-4">
-                <div className={`h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${notificationPermission === "granted" ? "bg-violet-500/20" : "bg-slate-800/60"}`}>
-                  <Bell className={`h-4.5 w-4.5 ${notificationPermission === "granted" ? "text-violet-400" : "text-slate-400"}`} />
+                <div className={`h-10 w-10 rounded-[10px] bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center flex-shrink-0 transition-colors ${notificationPermission === "granted" ? "bg-[var(--color-primary)] text-white" : "text-black"}`}>
+                  <Bell className={`h-5 w-5 stroke-[2.5px] ${notificationPermission === "granted" ? "text-white" : "text-black"}`} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Push Notifications</p>
-                  <p className="text-xs text-slate-500 mt-0.5 truncate">
+                  <p className="text-sm font-black text-black uppercase tracking-widest">Push Notifications</p>
+                  <p className="text-xs font-bold text-gray-500 mt-0.5 truncate">
                     {notificationPermission === "granted" ? "Enabled for Reminders" : "Alerts for upcoming tasks"}
                   </p>
                 </div>
               </div>
               
               {notificationPermission === "granted" ? (
-                <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium rounded-lg flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> Active
+                <div className="px-3 py-1.5 bg-emerald-100 border-2 border-emerald-500 text-emerald-600 text-xs font-black uppercase tracking-widest rounded-lg flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#10b981]">
+                  <CheckCircle2 className="h-4 w-4 stroke-[3px]" /> Active
                 </div>
               ) : (
                 <button 
                   onClick={requestNotificationPermission}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl transition-colors"
+                  className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] border-2 border-black shadow-[4px_4px_0px_0px_#000] text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
                 >
                   Enable
                 </button>
@@ -167,12 +167,12 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="space-y-1 pt-4">
-        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4" />
+      <div className="space-y-2 pt-4">
+        <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 stroke-[3px] text-red-500" />
           Security
         </h2>
-        <div className="rounded-2xl border border-red-900/60 bg-red-950/20 overflow-hidden">
+        <div className="bg-red-50 border-[3px] border-red-500 rounded-[16px] shadow-[4px_4px_0px_0px_#ef4444] overflow-hidden">
           <button
             onClick={() => {
               if (confirm("Are you sure? This will delete all encrypted data in your vault and reset biometrics/PIN.")) {
@@ -180,25 +180,25 @@ export default function SettingsPage() {
                 alert("Vault has been reset.");
               }
             }}
-            className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-900/40 transition-colors text-left group"
+            className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-100 transition-colors text-left group"
           >
-            <div className="h-9 w-9 rounded-xl bg-red-900/60 flex items-center justify-center flex-shrink-0 group-hover:bg-red-800/60 transition-colors">
-              <Lock className="h-4.5 w-4.5 text-red-400" />
+            <div className="h-10 w-10 rounded-[10px] bg-white border-2 border-red-500 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#ef4444] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#ef4444]">
+              <Lock className="h-5 w-5 stroke-[2.5px] text-red-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-red-400">Reset Vault</p>
-              <p className="text-xs text-red-500 mt-0.5 truncate">Delete all secure notes and reset PIN</p>
+              <p className="text-sm font-black text-red-600 uppercase tracking-widest">Reset Vault</p>
+              <p className="text-xs font-bold text-red-500/80 mt-0.5 truncate">Delete all secure notes and reset PIN</p>
             </div>
           </button>
         </div>
       </div>
 
-      <div className="space-y-1 pt-4">
-        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2 flex items-center gap-2">
-          <Database className="w-4 h-4" />
+      <div className="space-y-2 pt-4">
+        <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1 flex items-center gap-2">
+          <Database className="w-4 h-4 stroke-[3px] text-red-500" />
           Developer Options
         </h2>
-        <div className="rounded-2xl border border-red-900/60 bg-red-950/20 overflow-hidden">
+        <div className="bg-red-50 border-[3px] border-red-500 rounded-[16px] shadow-[4px_4px_0px_0px_#ef4444] overflow-hidden">
           <button
             onClick={async () => {
               if (confirm("WARNING: This will clear all local data, caches, and unregister Service Workers. You will be logged out. Are you absolutely sure?")) {
@@ -238,14 +238,14 @@ export default function SettingsPage() {
                 window.location.href = '/';
               }
             }}
-            className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-900/40 transition-colors text-left group"
+            className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-100 transition-colors text-left group"
           >
-            <div className="h-9 w-9 rounded-xl bg-red-900/60 flex items-center justify-center flex-shrink-0 group-hover:bg-red-800/60 transition-colors">
-              <Trash2 className="h-4.5 w-4.5 text-red-400" />
+            <div className="h-10 w-10 rounded-[10px] bg-white border-2 border-red-500 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#ef4444] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#ef4444]">
+              <Trash2 className="h-5 w-5 stroke-[2.5px] text-red-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-red-400">Factory Reset</p>
-              <p className="text-xs text-red-500 mt-0.5 truncate">Clear all local storage, IDB, and caches</p>
+              <p className="text-sm font-black text-red-600 uppercase tracking-widest">Factory Reset</p>
+              <p className="text-xs font-bold text-red-500/80 mt-0.5 truncate">Clear all local storage, IDB, and caches</p>
             </div>
           </button>
         </div>
@@ -256,18 +256,18 @@ export default function SettingsPage() {
         onClose={() => setActiveModal(null)} 
         title="Default Currency"
       >
-        <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 mt-2">
           {SUPPORTED_CURRENCIES.map((c) => (
             <button
               key={c}
               onClick={() => handleCurrencyChange(c)}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-colors ${
-                currency === c ? "bg-violet-500/20 text-violet-400 border border-violet-500/30" : "glass-card text-white interactive"
+              className={`w-full text-left px-5 py-4 rounded-[16px] transition-all border-[3px] font-black uppercase tracking-widest ${
+                currency === c ? "bg-[var(--color-primary)] text-white border-black shadow-[4px_4px_0px_0px_#000]" : "bg-white text-black border-black hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#000]"
               }`}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">{c}</span>
-                {currency === c && <div className="h-2 w-2 rounded-full bg-violet-400" />}
+                <span>{c}</span>
+                {currency === c && <div className="h-3 w-3 rounded-full bg-white border-2 border-black" />}
               </div>
             </button>
           ))}

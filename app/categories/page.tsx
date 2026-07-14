@@ -113,7 +113,7 @@ export default function CategoriesPage() {
       />
 
       {isAdding && (
-        <div className="p-5 glass-card mb-6">
+        <div className="p-5 brutal-card mb-6">
           <h3 className="text-sm font-semibold text-white mb-4">
             {editingId ? "Edit Category" : "New Category"}
           </h3>
@@ -276,7 +276,7 @@ export default function CategoriesPage() {
                   return (
                     <div 
                       key={cat.id}
-                      className="group relative glass-card interactive flex items-center justify-between gap-2 px-3 py-2 border rounded-xl overflow-visible transition-all duration-300"
+                      className="group relative brutal-card interactive flex items-center justify-between gap-2 px-3 py-2 border rounded-xl overflow-visible transition-all duration-300"
                       style={{ 
                         borderColor: `${cat.color || "#94a3b8"}30`,
                         boxShadow: `0 4px 20px -2px ${(cat.color || "#94a3b8")}15, inset 0 1px 0px rgba(255,255,255,0.05)`,
@@ -331,7 +331,7 @@ export default function CategoriesPage() {
         })}
 
         {!loading && categories.length === 0 && !isAdding && (
-          <div className="text-center p-10 glass-card">
+          <div className="text-center p-10 brutal-card">
             <Target className="w-8 h-8 text-slate-600 mx-auto mb-3" />
             <h3 className="text-sm font-medium text-white mb-1">No Categories</h3>
             <p className="text-xs text-slate-400 mb-4">Add your first category to start tracking.</p>

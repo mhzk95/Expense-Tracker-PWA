@@ -16,21 +16,21 @@ export function useCategories() {
     try {
       const data = await categoriesRepository.getAll();
       
-      // Prevent unnecessary state updates if the fetched data is identical to what's already cached
-      const isDifferent = !cachedCategories || 
-                          cachedCategories.length !== data.length || 
-                          data.some((c, i) => 
-                            c.id !== cachedCategories![i]?.id || 
-                            c.name !== cachedCategories![i]?.name || 
-                            c.color !== cachedCategories![i]?.color ||
-                            c.icon !== cachedCategories![i]?.icon ||
-                            c.type !== cachedCategories![i]?.type
-                          );
-
-      if (isDifferent || cachedLoading) {
-        cachedCategories = data;
-        setCategories(data);
-      }
+      setCategories(prev => {
+        const isDifferent = prev.length !== data.length || data.some((c, i) => 
+          c.id !== prev[i]?.id || 
+          c.name !== prev[i]?.name || 
+          c.color !== prev[i]?.color ||
+          c.icon !== prev[i]?.icon ||
+          c.type !== prev[i]?.type
+        );
+        
+        if (isDifferent) {
+          cachedCategories = data;
+          return data;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Failed to fetch categories", error);
     } finally {

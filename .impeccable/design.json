@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-14T12:00:00Z",
+  "title": "Design System: Expense Tracker",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Vibrant Indigo" },
+      "neutral-bg": { "role": "neutral", "displayName": "Deep Slate Canvas" }
+    }
+  },
+  "components": [
+    {
+      "name": "Glass Card",
+      "kind": "card",
+      "refersTo": "glass-card",
+      "description": "Tactile and confident container.",
+      "html": "<div class=\"ds-glass-card\">Content</div>",
+      "css": ".ds-glass-card { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(24px); border-radius: 1rem; padding: 1rem; box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.4); color: #fff; border: 1px solid rgba(148, 163, 184, 0.08); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Minimalist Ledger",
+    "overview": "A highly functional, organized, and accessible interface built on clarity and consistent spacing. The aesthetic relies on an ambient, layered dark mode with tactile boundaries. The system prioritizes rapid task completion and clear hierarchy over decorative flair.",
+    "keyCharacteristics": ["Tactile and confident components", "Ambient glows and glass layers for depth", "Minimal distractions", "Clean typography and scanning"],
+    "rules": [],
+    "dos": ["Do prioritize clarity and efficient task completion.", "Do ensure WCAG 2.1 AA alignment for text contrast and touch targets."],
+    "donts": ["Don't use Dribbble-style showcases or heavily decorative UIs.", "Don't create cluttered, trend-driven interfaces (excessive gradients, neumorphism, oversized cards).", "Don't hide important information behind unnecessary interactions."]
+  }
+}

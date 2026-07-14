@@ -28,11 +28,11 @@ export function AccentColorSelector() {
   };
 
   return (
-    <div className="space-y-3 pt-4">
-      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1">
+    <div className="space-y-2 pt-4">
+      <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
         Accent Color
       </h2>
-      <div className="glass-card p-4">
+      <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] p-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {ACCENTS.map((accent) => {
             const isActive = activeAccent === accent.id;
@@ -41,23 +41,22 @@ export function AccentColorSelector() {
                 key={accent.id}
                 onClick={() => handleAccentChange(accent.id)}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-2.5 rounded-2xl transition-all duration-200 border border-white/5",
-                  isActive ? "bg-white/5 shadow-md" : "hover:bg-slate-800/30"
+                  "flex flex-col items-center gap-2 p-3 rounded-[12px] transition-all border-2",
+                  isActive ? "bg-gray-100 border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]" : "border-transparent hover:border-black hover:shadow-[2px_2px_0px_0px_#000]"
                 )}
               >
                 {/* Color Dot */}
                 <div
-                  className="h-9 w-9 rounded-full flex items-center justify-center transition-transform duration-200 active:scale-95 shadow-lg relative"
+                  className="h-10 w-10 rounded-[8px] border-2 border-black flex items-center justify-center transition-transform active:scale-95 relative shadow-[2px_2px_0px_0px_#000]"
                   style={{
                     backgroundColor: accent.hex,
-                    boxShadow: isActive ? `0 0 15px ${accent.hex}50` : "none",
                   }}
                 >
                   {isActive && (
-                    <Check className="h-4 w-4 text-slate-950 font-bold" strokeWidth={3.5} />
+                    <Check className="h-5 w-5 text-white font-bold stroke-[3px]" />
                   )}
                 </div>
-                <span className="text-[11px] text-slate-400 font-medium">{accent.name}</span>
+                <span className={`text-[10px] uppercase font-black tracking-widest mt-1 ${isActive ? "text-black" : "text-gray-500"}`}>{accent.name}</span>
               </button>
             );
           })}

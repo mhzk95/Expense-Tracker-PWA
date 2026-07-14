@@ -11,7 +11,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 import { MarqueeText } from "@/components/ui/MarqueeText";
 import { useMemo } from "react";
 
@@ -30,10 +30,10 @@ export function RecentTransactions() {
     <div className="flex flex-col gap-3 h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-body font-semibold text-white text-balance">Recent Transactions</h2>
+        <h2 className="text-xl font-black uppercase tracking-wider text-black text-balance">Recent Transactions</h2>
         <Link
           href="/transactions"
-          className="text-sm text-violet-400 hover:text-violet-300 font-medium transition-colors min-h-tap-target min-w-tap-target flex items-center justify-center -mr-3 px-3"
+          className="text-sm text-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:bg-gray-100 font-bold transition-all active:translate-y-0.5 active:translate-x-0.5 active:shadow-none rounded-xl flex items-center justify-center -mr-1 px-3 py-1"
         >
           View all
         </Link>
@@ -44,19 +44,19 @@ export function RecentTransactions() {
         {loading ? (
           <>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="glass-card p-4 flex items-start gap-4 animate-pulse">
-                <div className="h-12 w-12 rounded-full bg-slate-800/60" />
+              <div key={i} className="brutal-card p-4 flex items-start gap-4 animate-pulse">
+                <div className="h-12 w-12 rounded-xl border-2 border-black bg-gray-200" />
                 <div className="flex-1 space-y-2 mt-1">
-                  <div className="h-4 w-32 bg-slate-800/60 rounded-full" />
-                  <div className="h-3 w-20 bg-slate-800/60 rounded-full" />
-                  <div className="h-3 w-16 bg-slate-800/60 rounded-full" />
+                  <div className="h-4 w-32 bg-gray-200 border-2 border-black rounded-full" />
+                  <div className="h-3 w-20 bg-gray-200 border-2 border-black rounded-full" />
+                  <div className="h-3 w-16 bg-gray-200 border-2 border-black rounded-full" />
                 </div>
-                <div className="h-4 w-12 bg-slate-800/60 rounded-full" />
+                <div className="h-4 w-12 bg-gray-200 border-2 border-black rounded-full" />
               </div>
             ))}
           </>
         ) : recent.length === 0 ? (
-          <div className="glass-card p-5 text-sm text-slate-400 text-center">No transactions found.</div>
+          <div className="brutal-card p-5 text-sm font-bold text-gray-500 text-center uppercase tracking-wider border-dashed bg-white">No transactions found.</div>
         ) : (
           recent.map((txn) => {
             const category = categories.find((c) => c.id === txn.categoryId);
@@ -69,25 +69,16 @@ export function RecentTransactions() {
               <div
                 key={txn.id}
                 className={cn(
-                  "glass-card interactive flex items-center gap-3 px-4 py-2.5 transition-all duration-300 border border-transparent",
-                  txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60"
+                  "brutal-card interactive flex items-center gap-4 px-4 py-3 transition-all duration-300",
+                  txn.needsReview && "needs-review-card border-l-[6px] border-l-amber-400 bg-amber-50"
                 )}
-                style={{
-                  "--color-primary": baseColor,
-                  "--color-primary-rgb": hexToRgb(baseColor),
-                  "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
-                  "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                  "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
-                  borderColor: `${baseColor}20`,
-                  boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`
-                } as React.CSSProperties}
               >
                 {/* Type icon */}
                 <div
-                  className="flex-shrink-0 min-h-tap-target min-w-tap-target rounded-full flex items-center justify-center"
+                  className="flex-shrink-0 h-12 w-12 rounded-xl flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0px_0px_#000]"
                   style={{ 
-                    backgroundColor: `${baseColor}20`,
-                    color: baseColor 
+                    backgroundColor: baseColor,
+                    color: "#fff"
                   }}
                 >
                   {(() => {
@@ -103,14 +94,14 @@ export function RecentTransactions() {
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <MarqueeText 
                     text={txn.payee ? txn.payee : txn.description} 
-                    className="text-body font-semibold text-white text-balance" 
+                    className="text-base font-black text-black text-balance uppercase tracking-wide" 
                   />
-                  <div className="text-sm text-slate-400 mt-1 flex flex-col min-w-0">
+                  <div className="text-xs font-bold text-gray-600 mt-1 flex flex-col min-w-0 uppercase tracking-widest">
                     {txn.payee && txn.description !== "Quick Entry" ? (
-                      <span className="text-slate-300 truncate">{txn.description}</span>
+                      <span className="text-black truncate">{txn.description}</span>
                     ) : null}
-                    <span className="truncate text-slate-500">{category?.name ?? "Uncategorized"}</span>
-                    <span className="whitespace-nowrap mt-0.5">{formatDate(txn.date, "medium")}</span>
+                    <span className="truncate">{category?.name ?? "Uncategorized"}</span>
+                    <span className="whitespace-nowrap mt-0.5 text-gray-500">{formatDate(txn.date, "medium")}</span>
                   </div>
                 </div>
 
@@ -118,15 +109,15 @@ export function RecentTransactions() {
                 <div className="text-right flex flex-col items-end justify-start h-full pt-1">
                   <span
                     className={cn(
-                      "text-body font-bold tabular-nums text-balance",
-                      isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                      "text-lg font-black tabular-nums text-balance",
+                      isIncome ? "text-emerald-600" : isTransfer ? "text-gray-500" : "text-black"
                     )}
                   >
                     {isIncome ? "+" : isTransfer ? "" : "−"}
                     {formatCurrency(txn.amount, txn.currency)}
                   </span>
                   {txn.needsReview && (
-                    <span className="text-micro font-extrabold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded leading-none mt-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-400 border-2 border-black shadow-[2px_2px_0px_0px_#000] px-2 py-1 rounded-md leading-none mt-2">
                       Review
                     </span>
                   )}

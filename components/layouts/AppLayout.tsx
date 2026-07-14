@@ -12,8 +12,6 @@ import { useLocalPushScheduler } from "@/hooks/useLocalPushScheduler";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { AmbientBackground, AmbientVariant } from "@/components/journal/AmbientBackground";
-
 interface AppLayoutProps {
   children: ReactNode;
 }
@@ -22,10 +20,6 @@ export function AppLayout({ children }: AppLayoutProps) {
   const runtime = useAppRuntime();
   const { reminders } = useReminders();
   const pathname = usePathname();
-
-  let variant: AmbientVariant = 'journal';
-  if (pathname?.startsWith('/transactions')) variant = 'transactions';
-  else if (pathname?.startsWith('/research')) variant = 'research';
 
   // Enable global background syncing
   useAutoSync();
@@ -93,11 +87,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div 
-      className={`bg-slate-950 text-white relative w-full ${
+      className={`relative w-full ${
         uiConfig.showDesktopSidebar ? "flex h-screen overflow-hidden" : "flex flex-col min-h-screen"
       }`}
     >
-      <AmbientBackground variant={variant} />
       
       {/* Desktop Sidebar Navigation */}
       {uiConfig.showDesktopSidebar && <WebSidebarNavigation />}
@@ -114,7 +107,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Mobile PWA Safe Area Top Inset */}
         {!uiConfig.showMobileWebHeader && !uiConfig.showDesktopSidebar && (
           <div
-            className="flex-shrink-0 bg-slate-950"
+            className="flex-shrink-0 bg-transparent"
             style={{ height: "env(safe-area-inset-top)" }}
             aria-hidden="true"
           />

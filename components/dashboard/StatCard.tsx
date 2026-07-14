@@ -7,7 +7,7 @@ import { cn, formatCurrency } from "@/lib/utils/helpers";
 import React, { type ReactNode } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import CountUp from "react-countup";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 
 type TrendDirection = "up" | "down" | "neutral";
 
@@ -41,9 +41,9 @@ export function StatCard({
         : Minus;
 
   const trendColor = {
-    up: "text-emerald-400/90",
-    down: "text-red-400/90",
-    neutral: "text-slate-400",
+    up: "text-emerald-600",
+    down: "text-red-600",
+    neutral: "text-gray-500",
   }[trendDirection];
 
   const decorativeIcon = icon && React.isValidElement(icon)
@@ -53,13 +53,12 @@ export function StatCard({
     : icon;
 
   return (
-    <GlassCard className={cn("group p-6 flex flex-col justify-between min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
-      {/* Subtle decorative inner overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+    <Card className={cn("group p-4 sm:p-6 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
+      {/* Decorative inner borders or harsh lines could go here */}
       
       {/* Decorative partially clipped icon */}
       {icon && (
-        <div className="absolute -top-3 -right-3 w-20 h-20 sm:w-24 sm:h-24 text-white/[0.08] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
+        <div className="absolute -top-4 -right-4 w-20 h-20 sm:w-24 sm:h-24 text-black/[0.05] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
           {decorativeIcon}
         </div>
       )}
@@ -67,14 +66,14 @@ export function StatCard({
       <div className="relative z-10 flex flex-col justify-between h-full flex-1">
         {/* Label */}
         <div>
-          <p className="text-micro font-bold text-slate-400 uppercase tracking-widest leading-none text-balance">
+          <p className="text-xs font-black text-black uppercase tracking-widest leading-none text-balance">
             {label}
           </p>
         </div>
 
         {/* Value */}
-        <div className="mt-4 mb-2 flex items-baseline">
-          <p className="text-h2 font-bold text-white tracking-tight whitespace-nowrap tabular-nums leading-none">
+        <div className="mt-2 sm:mt-4 mb-1 sm:mb-2 flex items-baseline">
+          <p className="text-xl sm:text-3xl font-black text-black tracking-tight whitespace-nowrap tabular-nums leading-none">
             {rawValue !== undefined ? (
               <CountUp
                 end={rawValue}
@@ -97,6 +96,6 @@ export function StatCard({
           <div className="h-4" />
         )}
       </div>
-    </GlassCard>
+    </Card>
   );
 }

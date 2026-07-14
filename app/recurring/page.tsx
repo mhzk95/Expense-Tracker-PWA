@@ -35,7 +35,7 @@ export default function RecurringPage() {
       />
 
       {/* Summary card */}
-      <div className="glass-card p-5 flex items-center gap-4">
+      <div className="brutal-card p-5 flex items-center gap-4">
         <div className="h-12 w-12 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0">
           <RefreshCw className="h-6 w-6 text-blue-400" />
         </div>
@@ -63,7 +63,7 @@ export default function RecurringPage() {
           {recurringTransactions.map((txn) => (
             <div
               key={txn.id}
-              className="flex items-center gap-3 glass-card px-4 py-2.5 interactive"
+              className="flex items-center gap-3 brutal-card px-4 py-2.5 interactive"
             >
               <div className="h-8 w-8 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
                 <RefreshCw className="h-4 w-4 text-blue-400" />

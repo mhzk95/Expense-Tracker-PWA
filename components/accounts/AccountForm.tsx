@@ -107,7 +107,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={`w-full et-input rounded-xl px-4 py-3 shadow-inner ${getFocusGlowClass()}`}
+          className={`w-full brutal-input rounded-xl px-4 py-3 shadow-inner ${getFocusGlowClass()}`}
           placeholder="e.g. Main Checking"
           required
         />
@@ -118,7 +118,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className={`w-full et-input rounded-xl px-4 py-3 shadow-inner appearance-none ${getFocusGlowClass()}`}
+          className={`w-full brutal-input rounded-xl px-4 py-3 shadow-inner appearance-none ${getFocusGlowClass()}`}
         >
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
@@ -136,7 +136,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             step="0.01"
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
-            className={`w-full et-input rounded-xl pl-8 pr-4 py-3 shadow-inner ${getFocusGlowClass()}`}
+            className={`w-full brutal-input rounded-xl pl-8 pr-4 py-3 shadow-inner ${getFocusGlowClass()}`}
             placeholder="0.00"
             required
           />

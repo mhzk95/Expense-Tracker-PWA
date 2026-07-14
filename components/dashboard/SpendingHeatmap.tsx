@@ -3,7 +3,7 @@
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMemo } from "react";
 import { formatCurrency } from "@/lib/utils/helpers";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 
 export function SpendingHeatmap() {
   const { transactions, loading } = useTransactions();
@@ -42,48 +42,48 @@ export function SpendingHeatmap() {
   
   if (loading) {
     return (
-      <GlassCard className="p-6 animate-pulse">
-        <div className="flex items-center justify-between mb-4">
-          <div className="h-4 w-48 bg-slate-800/60 rounded-full" />
+      <Card className="p-6 animate-pulse">
+        <div className="flex items-center justify-between mb-4 border-b-2 border-black pb-4">
+          <div className="h-4 w-48 bg-gray-200 border-2 border-black rounded-full" />
         </div>
-        <div className="w-full overflow-hidden h-28 bg-slate-900/40 rounded-xl flex items-center justify-center">
-          <div className="flex gap-[3px]">
+        <div className="w-full overflow-hidden h-28 bg-white border-4 border-black rounded-[20px] shadow-[4px_4px_0px_0px_#000] flex items-center justify-center">
+          <div className="flex gap-[4px]">
             {[...Array(24)].map((_, i) => (
-              <div key={i} className="flex flex-col gap-[3px]">
+              <div key={i} className="flex flex-col gap-[4px]">
                 {[...Array(7)].map((_, j) => (
-                  <div key={j} className="w-3 h-3 rounded-[2px] bg-slate-800/60" />
+                  <div key={j} className="w-3 h-3 rounded-sm bg-gray-200 border border-black" />
                 ))}
               </div>
             ))}
           </div>
         </div>
-      </GlassCard>
+      </Card>
     );
   }
   
   const getColor = (amount: number) => {
-    if (amount === 0) return "bg-slate-800/40";
+    if (amount === 0) return "bg-gray-100 border-gray-300";
     const intensity = amount / maxAmount;
-    if (intensity < 0.2) return "bg-violet-900/60";
-    if (intensity < 0.5) return "bg-violet-700";
-    if (intensity < 0.8) return "bg-violet-500";
-    return "bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.5)]";
+    if (intensity < 0.2) return "bg-emerald-300 border-black";
+    if (intensity < 0.5) return "bg-emerald-400 border-black";
+    if (intensity < 0.8) return "bg-emerald-500 border-black";
+    return "bg-emerald-600 border-black";
   };
   
   return (
-    <GlassCard className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Spending Heatmap (Last 365 Days)</h3>
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4 border-b-[3px] border-black pb-4 bg-[var(--color-primary)] -mt-6 -mx-6 px-6 pt-6">
+        <h3 className="text-base font-black text-white uppercase tracking-wider">Spending Heatmap (Last 365 Days)</h3>
       </div>
       
-      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        <div className="flex gap-[3px] min-w-max pr-4">
+      <div className="w-full overflow-x-auto pb-4 pt-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-transparent">
+        <div className="flex gap-[4px] min-w-max pr-4">
           {weeks.map((week, wIdx) => (
-            <div key={wIdx} className="flex flex-col gap-[3px]">
+            <div key={wIdx} className="flex flex-col gap-[4px]">
               {week.map((day) => (
                 <div 
                   key={day.date}
-                  className={`w-3 h-3 rounded-[2px] ${getColor(day.amount)} transition-all hover:scale-150 hover:z-10`}
+                  className={`w-[14px] h-[14px] rounded-sm border-[1.5px] ${getColor(day.amount)} transition-all hover:scale-150 hover:z-10`}
                   title={`${new Date(day.date).toLocaleDateString()}: ${formatCurrency(day.amount)}`}
                 />
               ))}
@@ -91,17 +91,17 @@ export function SpendingHeatmap() {
           ))}
         </div>
       </div>
-      <div className="flex justify-end items-center gap-2 mt-2 text-xs text-slate-500 font-medium tracking-wide">
+      <div className="flex justify-end items-center gap-3 mt-4 text-sm text-black font-bold tracking-wide uppercase">
         <span>Less</span>
-        <div className="flex gap-[3px]">
-          <div className="w-3 h-3 rounded-[2px] bg-slate-800/40" />
-          <div className="w-3 h-3 rounded-[2px] bg-violet-900/60" />
-          <div className="w-3 h-3 rounded-[2px] bg-violet-700" />
-          <div className="w-3 h-3 rounded-[2px] bg-violet-500" />
-          <div className="w-3 h-3 rounded-[2px] bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.5)]" />
+        <div className="flex gap-[4px]">
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-gray-100 border-gray-300" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-300 border-black" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-400 border-black" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-500 border-black" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-600 border-black" />
         </div>
         <span>More</span>
       </div>
-    </GlassCard>
+    </Card>
   );
 }

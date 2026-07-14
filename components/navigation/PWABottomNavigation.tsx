@@ -2,12 +2,7 @@
 
 /**
  * PWABottomNavigation — App-like bottom tab bar for standalone PWA mode.
- *
- * Features:
- * - 5 primary tabs (subset of full nav)
- * - Safe-area-aware padding (env(safe-area-inset-bottom))
- * - Active tab highlight with animated indicator
- * - Haptic-ready design (visual feedback optimized for touch)
+ * Neo-Brutalist Redesign: Floating pill, thick borders, solid colors.
  */
 
 import { useState, useEffect } from "react";
@@ -49,12 +44,10 @@ export function PWABottomNavigation() {
   const pathname = usePathname();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
-  // Close menu on route change
   useEffect(() => {
     setShowMoreMenu(false);
   }, [pathname]);
 
-  // Items to show in the "More" overlay
   const moreItems = NAV_ITEMS.filter(
     (navItem) => !BOTTOM_NAV_ITEMS.some((bottomItem) => bottomItem.id === navItem.id)
   );
@@ -66,26 +59,25 @@ export function PWABottomNavigation() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-30 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200"
-            style={{ bottom: "calc(4rem + env(safe-area-inset-bottom))" }}
+            className="fixed inset-0 z-30 bg-[var(--color-bg)]/80 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setShowMoreMenu(false)}
           />
           
           {/* Menu Sheet */}
           <div 
-            className="fixed left-4 right-4 z-40 bg-slate-900/95 backdrop-blur-xl border border-slate-800/60 rounded-3xl shadow-2xl shadow-black/50 overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200"
-            style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+            className="fixed left-4 right-4 z-40 bg-white border-4 border-black rounded-[24px] shadow-[6px_6px_0px_0px_#000] overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200"
+            style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
           >
-            <div className="p-4 border-b border-slate-800/60 flex items-center justify-between">
-              <h3 className="font-semibold text-white">More Options</h3>
+            <div className="p-4 border-b-4 border-black flex items-center justify-between bg-white">
+              <h3 className="font-black text-black uppercase tracking-wider text-lg">More Options</h3>
               <button 
                 onClick={() => setShowMoreMenu(false)}
-                className="h-8 w-8 rounded-full bg-slate-800/60 flex items-center justify-center text-slate-400 hover:text-white"
+                className="h-10 w-10 rounded-full bg-white border-2 border-black flex items-center justify-center text-black hover:bg-[var(--color-primary)] hover:text-white transition-colors brutal-btn"
               >
-                <X className="h-4 w-4" />
+                <X className="h-6 w-6 stroke-[3px]" />
               </button>
             </div>
-            <div className="p-2 space-y-1">
+            <div className="p-3 space-y-2 bg-[var(--color-bg)]">
               {moreItems.map((item) => {
                 const Icon = ICON_MAP[item.icon];
                 const isActive = pathname.startsWith(item.href);
@@ -94,26 +86,34 @@ export function PWABottomNavigation() {
                     key={item.id}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-colors group active:scale-[0.98]",
-                      isActive ? "bg-[var(--sidebar-bg-active)]" : "hover:bg-[var(--sidebar-bg-hover)]"
+                      "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group border-2",
+                      isActive 
+                        ? "bg-[var(--color-primary)] border-black shadow-[4px_4px_0px_0px_#000] text-white" 
+                        : "bg-white border-transparent text-black hover:border-black hover:shadow-[4px_4px_0px_0px_#000]"
                     )}
                   >
                     <div className={cn(
-                      "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                      isActive ? "bg-[var(--sidebar-bg-active)] text-[var(--sidebar-text-active)]" : "bg-slate-800/60 text-[var(--sidebar-text-inactive)] group-hover:text-[var(--sidebar-text-hover)]"
+                      "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 border-2",
+                      isActive ? "bg-white border-black text-black" : "bg-gray-100 border-transparent text-black group-hover:border-black"
                     )}>
-                      {Icon && <Icon className="h-5 w-5" />}
+                      {Icon && <Icon className="h-6 w-6 stroke-[2.5px]" />}
                     </div>
                     <div className="flex-1">
                       <div className={cn(
-                        "text-sm font-medium",
-                        isActive ? "text-[var(--sidebar-text-active)]" : "text-slate-200"
+                        "text-base font-bold",
+                        isActive ? "text-white" : "text-black"
                       )}>
                         {item.label}
                       </div>
-                      <div className="text-xs text-slate-500 mt-0.5">{item.description}</div>
+                      <div className={cn(
+                        "text-xs font-semibold mt-0.5",
+                        isActive ? "text-white/80" : "text-gray-600"
+                      )}>{item.description}</div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-slate-400" />
+                    <ChevronRight className={cn(
+                      "h-6 w-6 stroke-[3px]",
+                      isActive ? "text-white" : "text-black"
+                    )} />
                   </Link>
                 );
               })}
@@ -123,72 +123,76 @@ export function PWABottomNavigation() {
       )}
 
       {/* ── Bottom Navigation Bar ───────────────────────────────────────── */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/80 backdrop-blur-xl border-t border-slate-800/60 shadow-[0_-8px_30px_rgb(0,0,0,0.12)]"
+      <div 
+        className="fixed bottom-4 left-4 right-4 z-40"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-        aria-label="Bottom navigation"
       >
-        <div className="flex items-stretch h-16">
-          {BOTTOM_NAV_ITEMS.map((item) => {
-            const Icon = ICON_MAP[item.icon];
-            const isMoreBtn = item.id === "more";
-            
-            // "More" button is active if the menu is open, OR if the current route is one of the "more" items.
-            const isMoreItemActive = moreItems.some(mi => pathname.startsWith(mi.href));
-            const isActive = isMoreBtn 
-              ? (showMoreMenu || isMoreItemActive)
-              : (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
+        <nav
+          className="bg-white border-4 border-black rounded-[28px] shadow-[6px_6px_0px_0px_#000] overflow-hidden"
+          aria-label="Bottom navigation"
+        >
+          <div className="flex items-stretch h-16">
+            {BOTTOM_NAV_ITEMS.map((item) => {
+              const Icon = ICON_MAP[item.icon];
+              const isMoreBtn = item.id === "more";
+              
+              const isMoreItemActive = moreItems.some(mi => pathname.startsWith(mi.href));
+              const isActive = isMoreBtn 
+                ? (showMoreMenu || isMoreItemActive)
+                : (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
 
-            const content = (
-              <>
-                {isActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-b-full bg-[var(--sidebar-text-active)]" />
-                )}
-                <span
-                  className={cn(
-                    "flex items-center justify-center h-7 w-7 rounded-xl transition-all duration-150",
-                    isActive ? "bg-[var(--sidebar-bg-active)]" : ""
-                  )}
-                >
-                  {Icon && <Icon className="h-5 w-5" />}
-                </span>
-                <span className="text-[10px] font-medium leading-none">{item.label}</span>
-              </>
-            );
+              const content = (
+                <>
+                  <span
+                    className={cn(
+                      "flex items-center justify-center h-10 w-10 rounded-[14px] transition-all duration-200 border-2",
+                      isActive 
+                        ? "bg-[var(--color-primary)] border-black shadow-[2px_2px_0px_0px_#000] text-white" 
+                        : "bg-transparent border-transparent text-black"
+                    )}
+                  >
+                    {Icon && <Icon className="h-5 w-5 stroke-[2.5px]" />}
+                  </span>
+                  <span className={cn(
+                    "text-[10px] font-black uppercase tracking-wider mt-1 transition-colors",
+                    isActive ? "text-black" : "text-gray-500"
+                  )}>{item.label}</span>
+                </>
+              );
 
-            const commonClasses = cn(
-              "flex-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 active:scale-95",
-              isActive ? "text-[var(--sidebar-text-active)]" : "text-[var(--sidebar-text-inactive)]"
-            );
+              const commonClasses = cn(
+                "flex-1 flex flex-col items-center justify-center relative transition-transform duration-150 active:scale-95"
+              );
 
-            if (isMoreBtn) {
+              if (isMoreBtn) {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setShowMoreMenu(!showMoreMenu)}
+                    className={commonClasses}
+                    aria-label="More options"
+                    aria-expanded={showMoreMenu}
+                  >
+                    {content}
+                  </button>
+                );
+              }
+
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  href={item.href}
                   className={commonClasses}
-                  aria-label="More options"
-                  aria-expanded={showMoreMenu}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={item.label}
                 >
                   {content}
-                </button>
+                </Link>
               );
-            }
-
-            return (
-              <Link
-                key={item.id}
-                href={item.href}
-                className={commonClasses}
-                aria-current={isActive ? "page" : undefined}
-                aria-label={item.label}
-              >
-                {content}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+            })}
+          </div>
+        </nav>
+      </div>
     </>
   );
 }

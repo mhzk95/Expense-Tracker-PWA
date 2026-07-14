@@ -2,12 +2,7 @@
 
 /**
  * MobileWebHeader — Compact header for mobile browser view.
- *
- * Features:
- * - App title / current page name
- * - Hamburger menu button → full-screen slide-over menu
- * - Online/offline indicator dot
- * - Closes on navigation change
+ * Neo-Brutalist Redesign
  */
 
 import Link from "next/link";
@@ -44,7 +39,6 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShieldAlert,
 };
 
-/** Find the display label for the current route */
 function usePageTitle(pathname: string): string {
   const match = NAV_ITEMS.find((item) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
@@ -60,12 +54,10 @@ export function MobileWebHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isOnline } = useNetworkStatus();
 
-  // Close menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -74,21 +66,21 @@ export function MobileWebHeader() {
   return (
     <>
       {/* ── Header bar ──────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-14 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[var(--color-bg)] border-b-[3px] border-black">
         {/* Brand + page title */}
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-xl overflow-hidden bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center">
             <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-white font-semibold text-sm">{pageTitle}</span>
+          <span className="text-black font-black uppercase tracking-wider text-sm">{pageTitle}</span>
         </div>
 
         {/* Right side: status + menu */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Network indicator */}
           <span
             className={cn(
-              "h-2 w-2 rounded-full",
+              "h-3 w-3 rounded-full border-2 border-black shadow-[1px_1px_0px_0px_#000]",
               isOnline ? "bg-emerald-400" : "bg-red-400"
             )}
             title={isOnline ? "Online" : "Offline"}
@@ -98,37 +90,37 @@ export function MobileWebHeader() {
           <button
             id="mobile-menu-toggle"
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex items-center justify-center h-9 w-9 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="flex items-center justify-center h-10 w-10 rounded-xl bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] text-black active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {menuOpen ? <X className="h-6 w-6 stroke-[3px]" /> : <Menu className="h-6 w-6 stroke-[3px]" />}
           </button>
         </div>
       </header>
 
       {/* ── Full-screen slide-over menu ──────────────────────────────────── */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 animate-in slide-in-from-right duration-200">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[var(--color-bg)] animate-in slide-in-from-right duration-200">
           {/* Menu header */}
-          <div className="flex items-center justify-between px-4 h-14 border-b border-slate-800/60">
+          <div className="flex items-center justify-between px-4 h-16 border-b-[3px] border-black bg-white">
             <div className="flex items-center gap-3">
-              <div className="h-7 w-7 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-xl overflow-hidden bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center">
                 <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="text-white font-semibold text-sm">Menu</span>
+              <span className="text-black font-black uppercase tracking-wider text-sm">Menu</span>
             </div>
             <button
               onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center h-9 w-9 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+              className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-primary)] border-[3px] border-black shadow-[2px_2px_0px_0px_#000] text-white active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               aria-label="Close menu"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6 stroke-[3px]" />
             </button>
           </div>
 
           {/* Nav items */}
-          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-3">
             {NAV_ITEMS.map((item) => {
               const Icon = ICON_MAP[item.icon];
               const isActive =
@@ -139,24 +131,27 @@ export function MobileWebHeader() {
                   key={item.id}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all",
+                    "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] active:translate-y-1 active:translate-x-1 active:shadow-none",
                     isActive
-                      ? "bg-violet-500/15 text-violet-300 border border-violet-500/25"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                      ? "bg-[var(--color-primary)] text-white border-black shadow-[4px_4px_0px_0px_#000]"
+                      : "bg-white text-black border-black shadow-[4px_4px_0px_0px_#000]"
                   )}
                   aria-current={isActive ? "page" : undefined}
                 >
                   {Icon && (
                     <Icon
                       className={cn(
-                        "h-5 w-5",
-                        isActive ? "text-violet-400" : "text-slate-500"
+                        "h-6 w-6 stroke-[3px]",
+                        isActive ? "text-white" : "text-black"
                       )}
                     />
                   )}
                   <div>
-                    <div>{item.label}</div>
-                    <div className="text-xs text-slate-500 font-normal">{item.description}</div>
+                    <div className="font-bold text-lg">{item.label}</div>
+                    <div className={cn(
+                      "text-xs font-semibold mt-0.5",
+                      isActive ? "text-white/80" : "text-gray-600"
+                    )}>{item.description}</div>
                   </div>
                 </Link>
               );
@@ -166,30 +161,30 @@ export function MobileWebHeader() {
             <Link
               href="/pwa-diagnostics"
               className={cn(
-                "flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all",
+                "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] mt-6 active:translate-y-1 active:translate-x-1 active:shadow-none",
                 pathname === "/pwa-diagnostics"
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 border border-transparent"
+                  ? "bg-emerald-400 text-black border-black shadow-[4px_4px_0px_0px_#000]"
+                  : "bg-white text-black border-black shadow-[4px_4px_0px_0px_#000]"
               )}
             >
-              <Stethoscope className="h-5 w-5" />
+              <Stethoscope className="h-6 w-6 stroke-[3px]" />
               <div>
-                <div>PWA Diagnostics</div>
-                <div className="text-xs text-slate-600 font-normal">Runtime info</div>
+                <div className="font-bold text-lg">PWA Diagnostics</div>
+                <div className="text-xs font-semibold mt-0.5 text-gray-600">Runtime info</div>
               </div>
             </Link>
           </nav>
 
           {/* Status footer */}
-          <div className="px-4 py-4 border-t border-slate-800/60">
-            <div className="flex items-center gap-2 text-xs text-slate-500">
+          <div className="px-6 py-5 border-t-[3px] border-black bg-white">
+            <div className="flex items-center gap-3 text-sm font-bold text-black uppercase tracking-widest">
               <span
                 className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  isOnline ? "bg-emerald-400" : "bg-red-400"
+                  "h-3 w-3 rounded-full border-2 border-black",
+                  isOnline ? "bg-emerald-400 shadow-[2px_2px_0px_0px_#000]" : "bg-red-400 shadow-[2px_2px_0px_0px_#000]"
                 )}
               />
-              {isOnline ? "Connected" : "No internet connection"}
+              {isOnline ? "Connected" : "Offline"}
             </div>
           </div>
         </div>

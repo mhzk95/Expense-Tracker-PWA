@@ -6,7 +6,7 @@ import { formatCurrency } from "@/lib/utils/helpers";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 
 export function CategorySpending() {
   const { transactions, loading: txLoading } = useTransactions();
@@ -52,36 +52,36 @@ export function CategorySpending() {
 
   if (txLoading || catLoading) {
     return (
-      <GlassCard className="flex flex-col h-full animate-pulse">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-          <div className="h-4 w-36 bg-slate-800/60 rounded-full" />
-          <div className="h-3 w-24 bg-slate-800/60 rounded-full" />
+      <Card className="flex flex-col h-full animate-pulse">
+        <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black">
+          <div className="h-4 w-36 bg-gray-200 border-2 border-black rounded-full" />
+          <div className="h-3 w-24 bg-gray-200 border-2 border-black rounded-full" />
         </div>
         <div className="p-5 flex-1 space-y-5">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-800/60" />
-                  <div className="h-3 w-20 bg-slate-800/60 rounded-full" />
+                  <div className="w-4 h-4 rounded-full border-2 border-black bg-gray-200" />
+                  <div className="h-4 w-20 bg-gray-200 border-2 border-black rounded-full" />
                 </div>
-                <div className="h-3.5 w-12 bg-slate-800/60 rounded-full" />
+                <div className="h-4 w-12 bg-gray-200 border-2 border-black rounded-full" />
               </div>
-              <div className="h-1.5 w-full bg-slate-800/60 rounded-full" />
+              <div className="h-3 w-full bg-gray-200 border-2 border-black rounded-full" />
             </div>
           ))}
         </div>
-      </GlassCard>
+      </Card>
     );
   }
 
   return (
-    <GlassCard className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-        <h2 className="text-sm font-semibold text-white">Where your money goes</h2>
+    <Card className="flex flex-col h-full">
+      <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black bg-[var(--color-primary)]">
+        <h2 className="text-base font-black uppercase tracking-wider text-white">Where your money goes</h2>
         <Link
           href="/analytics"
-          className="text-xs flex items-center gap-1 text-violet-400 hover:text-violet-300 font-medium transition-colors"
+          className="text-xs flex items-center gap-1 text-white hover:text-white/80 font-bold transition-colors uppercase tracking-wider"
         >
           Detailed Analytics
           <ArrowRight className="h-3 w-3" />
@@ -98,21 +98,21 @@ export function CategorySpending() {
             {sortedCategories.map((cat) => (
               <div key={cat.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <span
-                      className="w-2.5 h-2.5 rounded-full"
+                      className="w-4 h-4 rounded-full border-2 border-black"
                       style={{ backgroundColor: cat.color }}
                     />
-                    <span className="font-medium text-slate-300">{cat.name}</span>
+                    <span className="font-bold text-black text-base">{cat.name}</span>
                   </div>
-                  <span className="font-semibold text-white tabular-nums">
+                  <span className="font-black text-black tabular-nums text-lg">
                     {formatCurrency(cat.amount)}
                   </span>
                 </div>
 
-                <div className="h-1.5 w-full bg-slate-800/50 rounded-full overflow-hidden">
+                <div className="h-3 w-full bg-gray-200 border-[3px] border-black rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full"
+                    className="h-full border-r-[3px] border-black"
                     style={{
                       width: `${cat.percentage}%`,
                       backgroundColor: cat.color,
@@ -124,6 +124,6 @@ export function CategorySpending() {
           </div>
         )}
       </div>
-    </GlassCard>
+    </Card>
   );
 }

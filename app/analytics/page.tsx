@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <PageHeader title="Analytics" subtitle="Loading insights..." />
         <div className="animate-pulse flex flex-col gap-6">
-          <div className="h-40 glass-card" />
-          <div className="h-64 glass-card" />
+          <div className="h-40 brutal-card" />
+          <div className="h-64 brutal-card" />
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="glass-card p-6 flex items-center justify-between">
+      <div className="brutal-card p-6 flex items-center justify-between">
         <span className="text-slate-300 font-medium">Net Cash Flow</span>
         <span className={`text-xl font-bold tabular-nums ${netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
           {netCashFlow > 0 ? "+" : ""}{formatCurrency(netCashFlow)}
@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Spending Breakdown */}
-      <div className="glass-card p-6">
+      <div className="brutal-card p-6">
         <h3 className="text-lg font-semibold text-white mb-6">Spending Breakdown</h3>
         
         {totalExpenses === 0 ? (

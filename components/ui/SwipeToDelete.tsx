@@ -292,7 +292,7 @@ export function SwipeToDelete({
           }}
         >
           <div
-            className="glass-card flex items-center justify-between px-5 py-3 w-full h-full"
+            className="brutal-card flex items-center justify-between px-5 py-3 w-full h-full"
             style={{
               "--color-primary": glowColor,
               "--color-primary-rgb": hexToRgb(glowColor),

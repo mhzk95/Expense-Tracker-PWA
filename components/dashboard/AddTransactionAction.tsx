@@ -4,19 +4,21 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Button } from "@/components/ui/Button";
 
 export function AddTransactionAction() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors shadow-lg shadow-violet-500/20"
+        size="sm"
+        className="gap-1.5"
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-4 w-4 stroke-[3px]" />
         Add
-      </button>
+      </Button>
 
       <AdaptiveOverlay 
         isOpen={isOpen} 

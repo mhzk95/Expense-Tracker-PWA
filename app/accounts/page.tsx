@@ -18,7 +18,7 @@ import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { AccountForm } from "@/components/accounts/AccountForm";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
 
 const ACCOUNT_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   Building2,
@@ -70,7 +70,7 @@ export default function AccountsPage() {
       ) : (
         <>
           {/* Net worth summary */}
-          <GlassCard className="p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-violet-400" />
@@ -90,7 +90,7 @@ export default function AccountsPage() {
                 <p className="text-lg font-semibold text-red-400 mt-0.5">{formatCurrency(totalLiabilities)}</p>
               </div>
             </div>
-          </GlassCard>
+          </Card>
 
           {/* Account cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">

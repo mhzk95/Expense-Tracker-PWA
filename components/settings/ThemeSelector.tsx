@@ -80,8 +80,8 @@ export function ThemeSelector() {
   };
 
   return (
-    <div className="space-y-3 pt-4">
-      <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1">
+    <div className="space-y-2 pt-4">
+      <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
         Appearance
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -91,10 +91,11 @@ export function ThemeSelector() {
             <button
               key={theme.id}
               onClick={() => handleThemeChange(theme.id)}
-              className="flex flex-col items-center gap-2 p-2 rounded-2xl transition-all duration-200 border-2"
+              className="flex flex-col items-center gap-2 p-3 bg-white rounded-[16px] transition-all border-2 border-black"
               style={{
-                borderColor: isActive ? "var(--color-primary)" : "transparent",
-                backgroundColor: isActive ? "var(--color-primary-glow)" : "transparent",
+                borderColor: isActive ? "var(--color-primary)" : "black",
+                boxShadow: isActive ? "4px 4px 0px 0px var(--color-primary)" : "2px 2px 0px 0px #000",
+                transform: isActive ? "translate(-2px, -2px)" : "none",
               }}
             >
               {/* Preview Card */}
@@ -133,8 +134,8 @@ export function ThemeSelector() {
 
               {/* Label */}
               <span 
-                className="text-[11px] font-medium tracking-wide transition-colors"
-                style={{ color: isActive ? "var(--color-primary)" : undefined }}
+                className="text-[10px] font-black uppercase tracking-widest transition-colors mt-1"
+                style={{ color: isActive ? "var(--color-primary)" : "black" }}
               >
                 {theme.name}
               </span>
@@ -144,7 +145,7 @@ export function ThemeSelector() {
       </div>
 
       <div className="pt-6">
-        <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-1 mb-3">
+        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1 mb-3">
           Active Color Palette
         </h3>
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none px-1">
@@ -158,11 +159,11 @@ export function ThemeSelector() {
           ].map((c) => (
             <div key={c.label} className="flex flex-col items-center gap-1.5 flex-shrink-0">
               <div 
-                className="w-10 h-10 rounded-full shadow-inner ring-1 ring-white/10" 
+                className="w-10 h-10 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]" 
                 style={{ background: c.color }}
               />
-              <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wider">{c.label}</span>
-              <span className="text-[8px] text-slate-500 font-mono">{c.color}</span>
+              <span className="text-[9px] font-black text-black uppercase tracking-widest">{c.label}</span>
+              <span className="text-[8px] font-bold text-gray-500 font-mono">{c.color}</span>
             </div>
           ))}
         </div>

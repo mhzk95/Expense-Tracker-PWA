@@ -59,7 +59,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm pointer-events-auto"
+        className="absolute inset-0 bg-white/60 backdrop-blur-md pointer-events-auto"
         onClick={onClose}
       />
       <motion.div
@@ -75,97 +75,98 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
             onClose();
           }
         }}
-        className="w-full sm:max-w-md bg-[#0c101c]/95 backdrop-blur-2xl border-t border-white/10 rounded-t-[2rem] sm:rounded-[2rem] sm:border pointer-events-auto flex flex-col max-h-[92dvh] shadow-[0_-20px_50px_rgba(0,0,0,0.5)]"
+        className="w-full sm:max-w-md bg-[var(--color-bg)] border-t-[4px] border-l-[4px] border-r-[4px] border-black rounded-t-[32px] sm:rounded-[32px] sm:border-[4px] pointer-events-auto flex flex-col max-h-[92dvh] sm:shadow-[8px_8px_0px_0px_#000] shadow-[0_-8px_0px_rgba(0,0,0,0.1)] relative z-10"
       >
         {/* Drag Handle */}
         <div className="w-full flex justify-center pt-4 pb-2 shrink-0 touch-none">
-          <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+          <div className="w-16 h-2 bg-black rounded-full" />
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-8 space-y-6 scrollbar-none">
           {/* Visual Header */}
           <div className="flex flex-col items-center mt-2">
             <div 
-              className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-xl"
-              style={{ backgroundColor: `${baseColor}20`, color: baseColor }}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]"
+              style={{ backgroundColor: baseColor, color: "black" }}
             >
-              <IconComp className="w-8 h-8" />
+              <IconComp className="w-8 h-8 stroke-[3px]" />
             </div>
-            <h2 className="text-2xl font-bold text-white text-balance text-center mb-1.5">{title}</h2>
+            <h2 className="text-2xl font-black text-black text-balance text-center mb-1.5 uppercase tracking-tight">{title}</h2>
             
             <div className="flex items-center gap-2 mb-5">
               <span 
-                className="px-2.5 py-1 rounded-md text-xs font-medium border"
-                style={{ backgroundColor: `${baseColor}15`, borderColor: `${baseColor}30`, color: baseColor }}
+                className="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border-[2.5px] border-black bg-white text-black shadow-[2px_2px_0px_0px_#000]"
+                style={{ backgroundColor: baseColor }}
               >
                 {category?.name || "Uncategorized"}
               </span>
-              <span className="text-slate-500 text-sm">{formatDate(txn.date, "medium")}</span>
+              <span className="text-gray-600 text-xs font-bold uppercase tracking-wider">{formatDate(txn.date, "medium")}</span>
             </div>
 
             <p 
-              className="text-4xl font-extrabold tabular-nums tracking-tight"
-              style={{ color: isIncome ? "#34d399" : isTransfer ? "#cbd5e1" : "white" }}
+              className={cn(
+                "text-4xl font-black tabular-nums tracking-tight",
+                isIncome ? "text-emerald-600" : isTransfer ? "text-gray-500" : "text-black"
+              )}
             >
               {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
             </p>
           </div>
 
           {/* Payment Method Block */}
-          <div className="bg-slate-900/50 rounded-2xl p-4 border border-white/5 active:scale-[0.98] transition-transform cursor-pointer">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-3 block">Payment Method</span>
+          <div className="bg-white rounded-[20px] p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer">
+            <span className="text-[10px] uppercase font-black tracking-widest text-black mb-3 block">Payment Method</span>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                  <CreditCard className="w-5 h-5" />
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)] flex items-center justify-center text-white border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                  <CreditCard className="w-6 h-6 stroke-[2.5px]" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Paid via {account?.name || "Account"}</p>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">{(account as any)?.lastFour ? `•••• ${(account as any).lastFour}` : "•••• 1234"}</p>
+                  <p className="text-sm font-black text-black uppercase tracking-wide">Paid via {account?.name || "Account"}</p>
+                  <p className="text-xs text-gray-600 font-bold mt-0.5 tracking-wider">{(account as any)?.lastFour ? `•••• ${(account as any).lastFour}` : "•••• 1234"}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-600" />
+              <ChevronRight className="w-6 h-6 stroke-[3px] text-black" />
             </div>
           </div>
 
           {/* Metadata Block */}
           <div className="grid grid-cols-2 gap-3">
-             <div className="bg-slate-900/50 rounded-2xl p-4 border border-white/5">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 block mb-1">Transaction ID</span>
-                <span className="text-sm text-slate-300 font-mono">TXN_{txn.id.substring(0,8).toUpperCase()}</span>
+             <div className="bg-white rounded-[20px] p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-1">Transaction ID</span>
+                <span className="text-sm text-black font-bold uppercase">TXN_{txn.id.substring(0,8).toUpperCase()}</span>
              </div>
-             <div className="bg-slate-900/50 rounded-2xl p-4 border border-white/5">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 block mb-1">Status</span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <div className={cn("w-2 h-2 rounded-full", txn.needsReview ? "bg-amber-500" : "bg-emerald-500")} />
-                  <span className="text-sm text-slate-300 font-medium capitalize">{txn.needsReview ? "Needs Review" : "Completed"}</span>
+             <div className="bg-white rounded-[20px] p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-1">Status</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className={cn("w-3 h-3 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]", txn.needsReview ? "bg-amber-400" : "bg-emerald-400")} />
+                  <span className="text-sm text-black font-black uppercase tracking-wide">{txn.needsReview ? "Needs Review" : "Completed"}</span>
                 </div>
              </div>
           </div>
 
           {/* Geolocation Block */}
           {locDisplay && (
-            <div className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/5">
-              <div className="p-4 border-b border-white/5 flex items-start gap-3">
-                 <div className="mt-0.5 text-violet-400"><MapPin className="w-4 h-4" /></div>
+            <div className="bg-white rounded-[20px] overflow-hidden border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+              <div className="p-4 border-b-[3px] border-black flex items-start gap-3 bg-white">
+                 <div className="mt-0.5 text-black"><MapPin className="w-5 h-5 stroke-[2.5px]" /></div>
                  <div>
-                   <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 block mb-1">Location</span>
-                   <p className="text-sm text-slate-300">{locDisplay}</p>
+                   <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-1">Location</span>
+                   <p className="text-sm font-bold text-black uppercase">{locDisplay}</p>
                  </div>
               </div>
-              <div className="h-24 bg-slate-800/50 w-full relative overflow-hidden group cursor-pointer flex items-center justify-center">
-                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay" />
-                 <div className="text-xs font-medium text-slate-400 group-hover:text-slate-300 transition-colors">Tap to view map</div>
+              <div className="h-24 bg-gray-100 w-full relative overflow-hidden group cursor-pointer flex items-center justify-center">
+                 <div className="text-xs font-black uppercase tracking-wider text-black">Tap to view map</div>
               </div>
             </div>
           )}
 
           {/* Notes Input */}
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 block mb-2 pl-1">Notes</span>
+            <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-2 pl-1">Notes</span>
             <div className="relative">
               <textarea 
-                className="w-full bg-slate-900/50 border border-white/5 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 resize-none transition-all"
+                className="w-full bg-white border-[3px] border-black rounded-[20px] p-4 text-sm font-bold text-black placeholder-gray-500 outline-none focus:shadow-[6px_6px_0px_0px_#000] focus:-translate-x-1 focus:-translate-y-1 shadow-[4px_4px_0px_0px_#000] resize-none transition-all"
                 placeholder="Add notes about this transaction..."
                 rows={3}
                 defaultValue={txn.note || ""}
@@ -174,25 +175,25 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
           </div>
 
           {/* Bottom Action Row */}
-          <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-none pb-2 pt-2">
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-slate-800 active:scale-[0.98] transition-all shrink-0 text-sm font-medium text-slate-300">
-              <Receipt className="w-4 h-4 text-slate-400" />
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-none pb-4 pt-2">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-gray-50 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-black">
+              <Receipt className="w-4 h-4 stroke-[3px] text-black" />
               Attach Receipt
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-slate-800 active:scale-[0.98] transition-all shrink-0 text-sm font-medium text-slate-300">
-              <Split className="w-4 h-4 text-slate-400" />
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-gray-50 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-black">
+              <Split className="w-4 h-4 stroke-[3px] text-black" />
               Split
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-slate-800 active:scale-[0.98] transition-all shrink-0 text-sm font-medium text-slate-300">
-              <Tag className="w-4 h-4 text-slate-400" />
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-gray-50 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-black">
+              <Tag className="w-4 h-4 stroke-[3px] text-black" />
               Re-Categorize
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-slate-800 active:scale-[0.98] transition-all shrink-0 text-sm font-medium text-slate-300">
-              <Flag className="w-4 h-4 text-slate-400" />
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-gray-50 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-black">
+              <Flag className="w-4 h-4 stroke-[3px] text-black" />
               Flag
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-slate-900/50 hover:bg-slate-800 active:scale-[0.98] transition-all shrink-0 text-sm font-medium text-slate-300">
-              <Repeat className="w-4 h-4 text-slate-400" />
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-gray-50 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-black">
+              <Repeat className="w-4 h-4 stroke-[3px] text-black" />
               Repeat
             </button>
           </div>

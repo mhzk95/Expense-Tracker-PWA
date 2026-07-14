@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils/helpers";
 
-export const GlassCard = ({ 
+export const Card = ({ 
   children, 
   className = "", 
   onClick 
@@ -14,7 +14,7 @@ export const GlassCard = ({
     <div
       onClick={onClick}
       className={cn(
-        "glass-card",
+        "brutal-card",
         onClick ? "cursor-pointer interactive" : "",
         className
       )}
