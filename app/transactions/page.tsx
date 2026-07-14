@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, hexToRgb, vibrate, cn, getCategoryIcon } from "@/lib/utils/helpers";
-import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown } from "lucide-react";
+import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown, Clock, ChevronRight, CheckSquare, Zap } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -209,27 +209,24 @@ export default function TransactionsPage() {
             type="button"
             onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
             className={cn(
-              "bg-slate-900/40 border rounded-2xl p-3 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
-              selectedDateRange === 'today' ? "border-emerald-500/50 bg-slate-900/80 ring-1 ring-emerald-500/20" : "border-emerald-500/10 hover:border-emerald-500/30"
+              "bg-[#161b26] border rounded-2xl p-4 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
+              selectedDateRange === 'today' ? "border-[#10b981]/50 bg-[#161b26]" : "border-white/5 hover:border-white/10"
             )}
           >
-            <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl -ml-10 -mt-10 pointer-events-none" />
-            <div className="flex flex-col justify-between h-full relative z-10 w-full">
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
-                   <Calendar className="w-4 h-4" />
-                </div>
-                <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform", selectedDateRange === 'today' ? "text-emerald-400 rotate-180" : "text-slate-500")} />
+            <div className="flex items-start gap-3 w-full">
+              <div className="w-10 h-10 rounded-xl bg-[#10b981]/10 flex items-center justify-center text-[#10b981] shrink-0">
+                 <Calendar className="w-5 h-5" />
               </div>
-              <div className="flex flex-col mt-3">
-                <span className="text-[10px] text-slate-400 font-medium">Today's total</span>
-                <span className="text-lg font-extrabold text-white tracking-tight truncate">
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#10b981]">Today</span>
+                <span className="text-xl font-extrabold text-white tracking-tight truncate mt-0.5">
                   {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
                 </span>
+                <span className="text-xs text-slate-400 mt-0.5">Spent</span>
               </div>
             </div>
-            <div className="mt-1 text-[9px] text-slate-500 relative z-10">
-              {todayTxns.length} transactions
+            <div className="mt-4 pt-3 border-t border-white/5 w-full flex justify-center">
+              <span className="text-xs font-semibold text-[#10b981]">{todayTxns.length} Transactions</span>
             </div>
           </button>
 
@@ -238,27 +235,24 @@ export default function TransactionsPage() {
             type="button"
             onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
             className={cn(
-              "bg-slate-900/40 border rounded-2xl p-3 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
-              selectedDateRange === 'month' ? "border-violet-500/50 bg-slate-900/80 ring-1 ring-violet-500/20" : "border-violet-500/10 hover:border-violet-500/30"
+              "bg-[#161b26] border rounded-2xl p-4 flex flex-col relative overflow-hidden group text-left transition-all active:scale-[0.98]",
+              selectedDateRange === 'month' ? "border-[#a855f7]/50 bg-[#161b26]" : "border-white/5 hover:border-white/10"
             )}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-            <div className="flex flex-col justify-between h-full relative z-10 w-full">
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
-                   <Calendar className="w-4 h-4" />
-                </div>
-                <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform", selectedDateRange === 'month' ? "text-violet-400 rotate-180" : "text-slate-500")} />
+            <div className="flex items-start gap-3 w-full">
+              <div className="w-10 h-10 rounded-xl bg-[#a855f7]/10 flex items-center justify-center text-[#a855f7] shrink-0">
+                 <Calendar className="w-5 h-5" />
               </div>
-              <div className="flex flex-col mt-3">
-                <span className="text-[10px] text-slate-400 font-medium">{currentMonthName} total</span>
-                <span className="text-lg font-extrabold text-white tracking-tight truncate">
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#a855f7]">{currentMonthName} Total</span>
+                <span className="text-xl font-extrabold text-white tracking-tight truncate mt-0.5">
                   {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
                 </span>
+                <span className="text-xs text-slate-400 mt-0.5">Spent</span>
               </div>
             </div>
-            <div className="mt-1 text-[9px] text-slate-500 relative z-10">
-              {monthTxns.length} transactions
+            <div className="mt-4 pt-3 border-t border-white/5 w-full flex justify-center">
+              <span className="text-xs font-semibold text-[#a855f7]">{monthTxns.length} Transactions</span>
             </div>
           </button>
         </div>
@@ -314,25 +308,7 @@ export default function TransactionsPage() {
           </div>
 
           {/* Action Buttons Row */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 w-full">
-            {(selectedType !== null || selectedCategory !== null || selectedDateRange !== null || showOnlyNeedsReview || selectedTxIds.size > 0) && (
-              <button
-                onClick={() => {
-                  setSelectedType(null);
-                  setSelectedCategory(null);
-                  setSelectedDateRange(null);
-                  setShowOnlyNeedsReview(false);
-                  setSelectedTxIds(new Set());
-                  setIsSelectMode(false);
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-red-400 hover:text-red-300 border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 transition-all select-none whitespace-nowrap shrink-0"
-                title="Clear all filters / selection"
-              >
-                <X className="h-3.5 w-3.5" />
-                {selectedTxIds.size > 0 || isSelectMode ? "Deselect" : "Clear"}
-              </button>
-            )}
-
+          <div className="grid grid-cols-2 gap-3 w-full">
             <button
               onClick={() => {
                 if (selectedTxIds.size > 0 || isSelectMode) {
@@ -343,39 +319,27 @@ export default function TransactionsPage() {
                 }
               }}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none whitespace-nowrap shrink-0",
+                "flex items-center justify-center gap-2 py-3.5 rounded-xl border transition-all text-sm font-medium active:scale-[0.98]",
                 isSelectMode || selectedTxIds.size > 0
                   ? "bg-violet-500/20 text-violet-400 border-violet-500/30"
-                  : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
+                  : "bg-[#161b26] text-slate-300 border-white/5 hover:border-white/10 hover:bg-[#1c2230]"
               )}
-              title="Toggle bulk select"
             >
-              <span>☑ Bulk</span>
+              <CheckSquare className="w-4 h-4" />
+              <span>Select Multiple</span>
             </button>
 
             <button
               onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all select-none whitespace-nowrap shrink-0",
+                "flex items-center justify-center gap-2 py-3.5 rounded-xl border transition-all text-sm font-medium active:scale-[0.98]",
                 showOnlyNeedsReview
                   ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                  : "bg-slate-800/40 text-slate-400 border-slate-700/40 hover:text-white"
+                  : "bg-[#161b26] text-slate-300 border-white/5 hover:border-white/10 hover:bg-[#1c2230]"
               )}
             >
-              <span>⚡ Review</span>
-              {needsReviewCount > 0 && (
-                <span className="h-4 min-w-[16px] px-1 rounded-full bg-amber-500 text-slate-950 font-bold text-[9px] flex items-center justify-center">
-                  {needsReviewCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => setShowFlashEntry(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 border border-violet-500/50 shadow-lg shadow-violet-600/20 transition-all select-none whitespace-nowrap shrink-0 ml-auto"
-              title="Flash Entry"
-            >
-              <span>⚡ Flash</span>
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span>Needs Review</span>
             </button>
           </div>
         </div>
@@ -556,28 +520,28 @@ export default function TransactionsPage() {
               const yesterday = new Date(now.getTime() - 86400000);
               const isYesterday = yesterday.getDate() === d.getDate() && yesterday.getMonth() === d.getMonth() && yesterday.getFullYear() === d.getFullYear();
               
-              if (isToday) label = `Today • ${dateStr}`;
-              else if (isYesterday) label = `Yesterday • ${dateStr}`;
-              else label = `Earlier • ${dateStr}`;
+              if (isToday) label = `Today`;
+              else if (isYesterday) label = `Yesterday`;
+              else label = `Earlier`;
           
               const key = d.toDateString();
               
               if (!acc[key]) {
-                acc[key] = { key, label, date: d, txns: [], total: 0 };
+                acc[key] = { key, label, date: d, txns: [], total: 0, isToday, isYesterday };
               }
               acc[key].txns.push(t);
               if (t.type === 'expense') acc[key].total -= t.amount;
               if (t.type === 'income') acc[key].total += t.amount;
               
               return acc;
-            }, {} as Record<string, { key: string, label: string, date: Date, txns: TransactionEntity[], total: number }>);
+            }, {} as Record<string, { key: string, label: string, date: Date, txns: TransactionEntity[], total: number, isToday: boolean, isYesterday: boolean }>);
           
             const sortedGroups = Object.values(groupedTransactions).sort((a, b) => b.date.getTime() - a.date.getTime());
 
             return sortedGroups.map((group) => (
               <div key={group.key} className="space-y-3 mb-6 last:mb-0">
                 <div 
-                  className="flex items-center justify-between px-2 cursor-pointer group/header select-none"
+                  className="flex items-center justify-between px-2 cursor-pointer group/header select-none mb-4"
                   onClick={() => {
                     setCollapsedGroups(prev => {
                       const next = new Set(prev);
@@ -587,12 +551,21 @@ export default function TransactionsPage() {
                     });
                   }}
                 >
-                  <span className="text-[11px] font-bold text-slate-300">{group.label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className={cn("text-[11px] font-bold", group.total < 0 ? "text-violet-400" : "text-emerald-400")}>
-                      {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
-                    </span>
-                    <ChevronDown className={cn("w-3.5 h-3.5 text-slate-500 transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-violet-400" : "")} />
+                  <div className="flex items-center gap-3">
+                    <Calendar className={cn("w-5 h-5", group.isToday ? "text-[#10b981]" : group.isYesterday ? "text-[#3b82f6]" : "text-slate-500")} />
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">{group.label}</span>
+                      <span className="text-xs text-slate-500 mt-0.5">{group.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-end">
+                      <span className={cn("text-[13px] font-bold", group.total < 0 ? "text-violet-400" : "text-emerald-400")}>
+                        {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
+                      </span>
+                      <span className="text-xs text-slate-500 mt-0.5">{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-white" : "")} />
                   </div>
                 </div>
                 
@@ -606,119 +579,150 @@ export default function TransactionsPage() {
                       className="space-y-3 overflow-hidden"
                     >
                       {group.txns.map((txn) => {
-                        const category = categories.find((c) => c.id === txn.categoryId);
-            const isIncome = txn.type === "income";
-            const isTransfer = txn.type === "transfer";
-            const baseColor = category?.color || "#8b5cf6";
-
-            const isSelected = selectedTxIds.has(txn.id);
-
-            return (
-              <SwipeToDelete 
-                key={txn.id} 
-                onDelete={() => deleteTransaction(txn.id)}
-                onEdit={() => {
-                  setEditingTxn(txn);
-                  setIsEditOpen(true);
-                }}
-                glowColor={baseColor}
-                deleteMessage={`Delete "${txn.description}"?`}
-              >
-                <div 
-                  className={cn(
-                    "glass-card interactive flex flex-col w-full transition-all duration-300 select-none border border-transparent active:scale-[0.98] active:bg-white/5",
-                    txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60",
-                    selectedTxn?.id === txn.id && "shadow-lg shadow-black/40 ring-1 ring-white/10",
-                    isSelected && "ring-2 ring-violet-500/60 bg-violet-950/10"
-                  )}
-                  style={{ 
-                    "--color-primary": baseColor,
-                    "--color-primary-rgb": hexToRgb(baseColor),
-                    "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
-                    "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                    "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
-                    borderColor: `${baseColor}20`,
-                    boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`,
-                    WebkitTouchCallout: "none",
-                  } as React.CSSProperties}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isSelectMode || selectedTxIds.size > 0) {
-                      const newSelected = new Set(selectedTxIds);
-                      if (newSelected.has(txn.id)) {
-                        newSelected.delete(txn.id);
-                      } else {
-                        newSelected.add(txn.id);
-                      }
-                      setSelectedTxIds(newSelected);
-                      vibrate([10]);
-                    } else {
-                      setSelectedTxn(txn);
-                      vibrate([20]);
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-3 w-full px-4 py-2.5">
-                    {/* Checkbox (visible in select mode) */}
-                    {(isSelectMode || selectedTxIds.size > 0) && (
-                      <div className="flex-shrink-0">
-                        {isSelected ? (
-                          <div className="h-5 w-5 rounded-full bg-violet-500 border border-violet-400 flex items-center justify-center text-white">
-                            <Check className="h-3 w-3 stroke-[3]" />
-                          </div>
-                        ) : (
-                          <div className="h-5 w-5 rounded-full border border-slate-700 bg-slate-950/40" />
-                        )}
-                      </div>
-                    )}
-
-                    {/* Icon */}
-                    <div
-                      className="flex-shrink-0 min-h-tap-target min-w-tap-target rounded-full flex items-center justify-center"
-                      style={{ 
-                        backgroundColor: `${baseColor}20`,
-                        color: baseColor 
-                      }}
-                    >
-                      {(() => {
-                        if (isTransfer) {
-                          return <ArrowLeftRight className="h-5 w-5" />;
+                        let category = categories.find((c) => c.id === txn.categoryId);
+                        if (!category && (txn as any).category) {
+                           category = categories.find((c) => c.name.toLowerCase() === (txn as any).category?.toLowerCase());
                         }
-                        const IconComp = getCategoryIcon(category?.icon);
-                        return <IconComp className="h-5 w-5" />;
-                      })()}
-                    </div>
 
-                    {/* Details */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <MarqueeText 
-                        text={txn.payee || txn.description || "No Payee"} 
-                        className="text-body font-semibold text-white text-balance" 
-                      />
-                      <div className="flex flex-col mt-1 text-sm text-slate-400 min-w-0">
-                        {txn.payee && txn.description !== "Quick Entry" ? (
-                          <span className="text-slate-300 truncate">{txn.description}</span>
-                        ) : null}
-                        <span className="truncate text-slate-500">{txn.description || "No description"}</span>
-                        <span className="whitespace-nowrap mt-0.5">{formatDate(txn.date, "medium")}</span>
-                      </div>
-                    </div>
+                        const isIncome = txn.type === "income";
+                        const isTransfer = txn.type === "transfer";
+                        const baseColor = category?.color || "#8b5cf6";
 
-                    {/* Amount */}
-                    <div className="text-right flex flex-col justify-start pt-1 items-end flex-shrink-0 h-full">
-                      <p
-                        className={cn(
-                          "text-body font-bold tabular-nums text-balance",
-                          isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
-                        )}
-                      >
-                        {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
-                      </p>
-                    </div>
-                  </div>
+                        const isSelected = selectedTxIds.has(txn.id);
 
-                </div>
-              </SwipeToDelete>
+                        let locDisplay = txn.location;
+                        try {
+                          if (txn.location) {
+                             const loc = JSON.parse(txn.location);
+                             locDisplay = loc.display || loc.place_name || "Location saved";
+                          }
+                        } catch {}
+
+                        const txDate = new Date(txn.date);
+                        const timeStr = txDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                        return (
+                          <SwipeToDelete 
+                            key={txn.id} 
+                            onDelete={() => deleteTransaction(txn.id)}
+                            onEdit={() => {
+                              setEditingTxn(txn);
+                              setIsEditOpen(true);
+                            }}
+                            glowColor={baseColor}
+                            deleteMessage={`Delete "${txn.description}"?`}
+                          >
+                            <div 
+                              className={cn(
+                                "glass-card interactive flex flex-col w-full transition-all duration-300 select-none border border-transparent active:scale-[0.98] active:bg-white/5",
+                                txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60",
+                                selectedTxn?.id === txn.id && "shadow-lg shadow-black/40 ring-1 ring-white/10",
+                                isSelected && "ring-2 ring-violet-500/60 bg-violet-950/10"
+                              )}
+                              style={{ 
+                                "--color-primary": baseColor,
+                                "--color-primary-rgb": hexToRgb(baseColor),
+                                "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
+                                "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
+                                "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
+                                borderColor: `${baseColor}20`,
+                                boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`,
+                                WebkitTouchCallout: "none",
+                              } as React.CSSProperties}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isSelectMode || selectedTxIds.size > 0) {
+                                  const newSelected = new Set(selectedTxIds);
+                                  if (newSelected.has(txn.id)) {
+                                    newSelected.delete(txn.id);
+                                  } else {
+                                    newSelected.add(txn.id);
+                                  }
+                                  setSelectedTxIds(newSelected);
+                                  vibrate([10]);
+                                } else {
+                                  setSelectedTxn(txn);
+                                  vibrate([20]);
+                                }
+                              }}
+                            >
+                              <div className="flex items-center justify-between w-full px-4 py-3">
+                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                  {/* Checkbox (visible in select mode) */}
+                                  {(isSelectMode || selectedTxIds.size > 0) && (
+                                    <div className="flex-shrink-0 mr-1">
+                                      {isSelected ? (
+                                        <div className="h-5 w-5 rounded-full bg-violet-500 border border-violet-400 flex items-center justify-center text-white">
+                                          <Check className="h-3 w-3 stroke-[3]" />
+                                        </div>
+                                      ) : (
+                                        <div className="h-5 w-5 rounded-full border border-slate-700 bg-slate-950/40" />
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Icon */}
+                                  <div
+                                    className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center border"
+                                    style={{ 
+                                      backgroundColor: `${baseColor}20`,
+                                      borderColor: `${baseColor}20`,
+                                      color: baseColor 
+                                    }}
+                                  >
+                                    {(() => {
+                                      if (isTransfer) {
+                                        return <ArrowLeftRight className="w-5 h-5" />;
+                                      }
+                                      const IconComp = getCategoryIcon(category?.icon);
+                                      return <IconComp className="w-5 h-5" />;
+                                    })()}
+                                  </div>
+
+                                  {/* Details */}
+                                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                    <h3 className="text-[15px] font-semibold text-white tracking-tight truncate">
+                                      {txn.payee || txn.description || "No Title"}
+                                    </h3>
+                                    
+                                    <div className="flex items-center mt-1">
+                                      <span 
+                                        className="px-2 py-0.5 rounded text-[9px] font-bold tracking-wide border"
+                                        style={{ backgroundColor: `${baseColor}15`, borderColor: `${baseColor}30`, color: baseColor }}
+                                      >
+                                        {category?.name || "Uncategorized"}
+                                      </span>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-xs text-slate-500 font-medium truncate">
+                                      <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                                      <span>{timeStr}</span>
+                                      {locDisplay && (
+                                        <>
+                                          <span className="text-slate-700 mx-0.5">•</span>
+                                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                                          <span className="truncate">{locDisplay}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Amount & Action */}
+                                <div className="flex items-center gap-3 flex-shrink-0 ml-3 h-full">
+                                  <p
+                                    className={cn(
+                                      "text-[15px] font-bold tabular-nums text-right text-balance",
+                                      isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                                    )}
+                                  >
+                                    {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
+                                  </p>
+                                  <ChevronRight className="w-4 h-4 text-slate-600" />
+                                </div>
+                              </div>
+                            </div>
+                          </SwipeToDelete>
                         );
                       })}
                     </motion.div>
