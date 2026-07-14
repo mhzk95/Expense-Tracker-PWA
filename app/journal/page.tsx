@@ -94,7 +94,7 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
         ))}
       </div>
 
-      <span className="text-[10px] font-mono text-slate-500 flex-shrink-0 ml-1">
+      <span className="text-micro font-mono text-slate-500 flex-shrink-0 ml-1">
         {formatDuration(durationMs ?? 0)}
       </span>
     </div>
@@ -130,7 +130,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       {/* Left Column: Time & Timeline Line */}
       <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
         <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end">
-          <span className="text-[9px] sm:text-[10px] font-medium text-slate-500 flex-shrink-0 whitespace-nowrap">{time}</span>
+          <span className="text-micro sm:text-sm font-medium text-slate-500 flex-shrink-0 whitespace-nowrap">{time}</span>
           <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-violet-500 ring-2 ring-violet-500/30 z-10 flex-shrink-0" />
         </div>
         {/* The continuous line extending down */}
@@ -164,7 +164,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
         <div className="flex-1 min-w-0 py-1 pr-1">
           {/* Title & Menu */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-white font-semibold text-sm truncate">
+            <h3 className="text-white font-semibold text-body text-balance truncate">
               {entry.title || (entry.event || "Memory")}
             </h3>
             <div className="relative flex-shrink-0">
@@ -197,13 +197,13 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           {locationDisplay && (
             <div className="flex items-center gap-1 mt-0.5">
               <MapPin className="w-3 h-3 text-violet-400 flex-shrink-0" />
-              <span className="text-[11px] text-slate-400 truncate">{locationDisplay}</span>
+              <span className="text-sm text-slate-400 truncate">{locationDisplay}</span>
             </div>
           )}
 
           {/* Description */}
           {entry.content && (
-            <p className="text-[11px] text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
               {entry.content}
             </p>
           )}
@@ -212,7 +212,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {tags.map(tag => (
-                <span key={tag} className="text-[10px] font-medium text-violet-400/80 bg-violet-400/10 px-1.5 py-0.5 rounded-md border border-violet-400/20">
+                <span key={tag} className="text-micro font-medium text-violet-400/80 bg-violet-400/10 px-1.5 py-0.5 rounded-md border border-violet-400/20">
                   #{tag}
                 </span>
               ))}

@@ -30,10 +30,10 @@ export function RecentTransactions() {
     <div className="flex flex-col gap-3 h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-sm font-semibold text-white">Recent Transactions</h2>
+        <h2 className="text-body font-semibold text-white text-balance">Recent Transactions</h2>
         <Link
           href="/transactions"
-          className="text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors"
+          className="text-sm text-violet-400 hover:text-violet-300 font-medium transition-colors min-h-tap-target min-w-tap-target flex items-center justify-center -mr-3 px-3"
         >
           View all
         </Link>
@@ -44,11 +44,12 @@ export function RecentTransactions() {
         {loading ? (
           <>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="glass-card p-4 flex items-center gap-4 animate-pulse">
-                <div className="h-9 w-9 rounded-full bg-slate-800/60" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-3.5 w-24 bg-slate-800/60 rounded-full" />
-                  <div className="h-2.5 w-16 bg-slate-800/60 rounded-full" />
+              <div key={i} className="glass-card p-4 flex items-start gap-4 animate-pulse">
+                <div className="h-12 w-12 rounded-full bg-slate-800/60" />
+                <div className="flex-1 space-y-2 mt-1">
+                  <div className="h-4 w-32 bg-slate-800/60 rounded-full" />
+                  <div className="h-3 w-20 bg-slate-800/60 rounded-full" />
+                  <div className="h-3 w-16 bg-slate-800/60 rounded-full" />
                 </div>
                 <div className="h-4 w-12 bg-slate-800/60 rounded-full" />
               </div>
@@ -83,7 +84,7 @@ export function RecentTransactions() {
               >
                 {/* Type icon */}
                 <div
-                  className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center"
+                  className="flex-shrink-0 min-h-tap-target min-w-tap-target rounded-full flex items-center justify-center"
                   style={{ 
                     backgroundColor: `${baseColor}20`,
                     color: baseColor 
@@ -91,10 +92,10 @@ export function RecentTransactions() {
                 >
                   {(() => {
                     if (isTransfer) {
-                      return <ArrowLeftRight className="h-4 w-4" />;
+                      return <ArrowLeftRight className="h-5 w-5" />;
                     }
                     const IconComp = getCategoryIcon(category?.icon);
-                    return <IconComp className="h-4 w-4" />;
+                    return <IconComp className="h-5 w-5" />;
                   })()}
                 </div>
 
@@ -102,29 +103,22 @@ export function RecentTransactions() {
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <MarqueeText 
                     text={txn.payee ? txn.payee : txn.description} 
-                    className="text-xs font-semibold text-white" 
+                    className="text-body font-semibold text-white text-balance" 
                   />
-                  <div className="text-[10px] text-slate-400 mt-0.5 flex items-center min-w-0">
-                    <div className="flex-1 min-w-0 flex items-center">
-                      {txn.payee && txn.description !== "Quick Entry" ? (
-                        <>
-                          <MarqueeText text={txn.description} className="flex-shrink min-w-0" />
-                          <span className="flex-shrink-0 whitespace-pre"> · {category?.name ?? "Uncategorized"}</span>
-                        </>
-                      ) : (
-                        <span className="truncate">{category?.name ?? "Uncategorized"}</span>
-                      )}
-                    </div>
-                    <span className="flex-shrink-0 text-slate-600 mx-1.5">·</span>
-                    <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
+                  <div className="text-sm text-slate-400 mt-1 flex flex-col min-w-0">
+                    {txn.payee && txn.description !== "Quick Entry" ? (
+                      <span className="text-slate-300 truncate">{txn.description}</span>
+                    ) : null}
+                    <span className="truncate text-slate-500">{category?.name ?? "Uncategorized"}</span>
+                    <span className="whitespace-nowrap mt-0.5">{formatDate(txn.date, "medium")}</span>
                   </div>
                 </div>
 
                 {/* Amount + Review Badge */}
-                <div className="text-right flex flex-col items-end">
+                <div className="text-right flex flex-col items-end justify-start h-full pt-1">
                   <span
                     className={cn(
-                      "text-xs font-bold tabular-nums",
+                      "text-body font-bold tabular-nums text-balance",
                       isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
                     )}
                   >
@@ -132,7 +126,7 @@ export function RecentTransactions() {
                     {formatCurrency(txn.amount, txn.currency)}
                   </span>
                   {txn.needsReview && (
-                    <span className="text-[7px] font-extrabold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded leading-none mt-0.5">
+                    <span className="text-micro font-extrabold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded leading-none mt-2">
                       Review
                     </span>
                   )}

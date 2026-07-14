@@ -1,5 +1,41 @@
 @import "tailwindcss";
 
+@theme {
+  --spacing-readable-xs: 0.25rem;
+  --spacing-readable-sm: 0.5rem;
+  --spacing-readable-md: 1rem;
+  --spacing-readable-lg: 1.5rem;
+  --spacing-readable-xl: 2rem;
+
+  --min-height-tap-target: 48px;
+  --min-width-tap-target: 48px;
+
+  --radius-readable-sm: 0.5rem;
+  --radius-readable-md: 1rem;
+  --radius-readable-lg: 1.5rem;
+
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.2;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.4;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.4;
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.3;
+  --text-h1: 2rem;
+  --text-h1--line-height: 1.2;
+
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-surface-border: var(--color-surface-border);
+  
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+}
+
 /* ─── CSS Custom Properties ──────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", sans-serif;
@@ -91,6 +127,15 @@
   --form-focus-border: var(--color-primary);
   --form-focus-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.15);
   --form-focus-ring: rgba(var(--color-primary-rgb), 0.15);
+
+  /* Semantic Theme Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  
+  --color-surface: rgba(15, 23, 42, 0.45);
+  --color-surface-hover: rgba(30, 41, 59, 0.6);
+  --color-surface-border: rgba(148, 163, 184, 0.15);
 }
 
 /* ─── Theming System ───────────────────────────────────────────────────────── */
@@ -162,6 +207,15 @@
   /* slate-200/60 */
   --sidebar-text-hover: #020617;
   /* slate-950 */
+
+  /* Semantic Theme Colors */
+  --color-text-primary: #020617;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  
+  --color-surface: rgba(255, 255, 255, 0.95);
+  --color-surface-hover: rgba(248, 250, 252, 0.95);
+  --color-surface-border: rgba(15, 23, 42, 0.08);
 }
 
 :root[data-theme="amoled"] {
@@ -219,6 +273,15 @@
   --sidebar-border-active: rgba(139, 92, 246, 0.25);
   --sidebar-bg-hover: rgba(38, 38, 38, 0.6);
   --sidebar-text-hover: #ffffff;
+
+  /* Semantic Theme Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a3a3a3;
+  --color-text-tertiary: #737373;
+  
+  --color-surface: rgba(10, 10, 10, 0.85);
+  --color-surface-hover: rgba(15, 15, 15, 0.95);
+  --color-surface-border: rgba(255, 255, 255, 0.1);
 }
 
 :root[data-theme="navy"] {
@@ -275,6 +338,15 @@
   --sidebar-border-active: rgba(139, 92, 246, 0.25);
   --sidebar-bg-hover: rgba(17, 26, 47, 0.6);
   --sidebar-text-hover: #ffffff;
+
+  /* Semantic Theme Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1bce3;
+  --color-text-tertiary: #5c78a3;
+  
+  --color-surface: rgba(10, 15, 28, 0.65);
+  --color-surface-hover: rgba(17, 26, 47, 0.85);
+  --color-surface-border: rgba(148, 163, 184, 0.15);
 }
 
 :root[data-theme="arena"] {
@@ -369,6 +441,15 @@
   --sidebar-border-active: rgba(0, 242, 254, 0.25);
   --sidebar-bg-hover: rgba(16, 31, 53, 0.6);
   --sidebar-text-hover: #ffffff;
+
+  /* Semantic Theme Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b2c8e9;
+  --color-text-tertiary: #517cb8;
+  
+  --color-surface: rgba(5, 11, 20, 0.85);
+  --color-surface-hover: rgba(8, 18, 33, 0.95);
+  --color-surface-border: rgba(0, 242, 254, 0.2);
 }
 
 /* ─── Base Resets ─────────────────────────────────────────────────────────── */
@@ -389,10 +470,17 @@ body {
   font-family: var(--font-inter);
   background-color: var(--color-slate-950);
   color: var(--color-slate-50);
+  min-height: 100vh;
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Prevent overscroll bounce on iOS in desktop/PWA mode */
   overscroll-behavior: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary-glow, #8b5cf6);
+  outline-offset: 2px;
 }
 
 /* ─── Scrollbar Styling (Webkit) ──────────────────────────────────────────── */
@@ -485,7 +573,7 @@ textarea:focus-visible {
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: 1rem;
+  border-radius: var(--radius-readable-md);
   box-shadow:
     0 0 30px -5px var(--color-primary-glow),
     var(--glass-shadow-inset);
@@ -494,11 +582,11 @@ textarea:focus-visible {
 }
 
 .glass-card.rounded-xl {
-  border-radius: 0.6rem;
+  border-radius: var(--radius-readable-sm);
 }
 
 .glass-card.rounded-2xl {
-  border-radius: 0.85rem;
+  border-radius: var(--radius-readable-lg);
 }
 
 .glass-card.rounded-3xl {

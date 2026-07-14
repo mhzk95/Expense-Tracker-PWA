@@ -206,7 +206,7 @@ export function CommandBar() {
                   <h3 className="text-white font-medium">Smart Entry</h3>
                   <p className="text-[10px] text-slate-400">Log txns, type URLs, or say "Remind me to..."</p>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white">
+                <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white min-w-tap-target min-h-tap-target flex items-center justify-center -mr-2">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -222,7 +222,7 @@ export function CommandBar() {
                     className="w-full bg-transparent border-none text-xl text-white focus:ring-0 px-2 py-4 placeholder:text-slate-600 pr-24"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="p-2 text-slate-500 hover:text-violet-400 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-colors">
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="min-w-tap-target min-h-tap-target flex items-center justify-center text-slate-500 hover:text-violet-400 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-colors">
                       <ImageIcon className="h-4 w-4" />
                     </button>
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
@@ -253,7 +253,7 @@ export function CommandBar() {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="h-10 px-4 shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
+                          className="min-h-tap-target min-w-tap-target px-4 shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                         >
                           {isSubmitting ? "Saving" : "Save"} <Send className="h-4 w-4" />
                         </button>

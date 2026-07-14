@@ -67,14 +67,14 @@ export function StatCard({
       <div className="relative z-10 flex flex-col justify-between h-full flex-1">
         {/* Label */}
         <div>
-          <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+          <p className="text-micro font-bold text-slate-400 uppercase tracking-widest leading-none text-balance">
             {label}
           </p>
         </div>
 
         {/* Value */}
-        <div className="mt-3.5 mb-1 flex items-baseline">
-          <p className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap tabular-nums leading-none">
+        <div className="mt-4 mb-2 flex items-baseline">
+          <p className="text-h2 font-bold text-white tracking-tight whitespace-nowrap tabular-nums leading-none">
             {rawValue !== undefined ? (
               <CountUp
                 end={rawValue}
@@ -89,8 +89,8 @@ export function StatCard({
 
         {/* Trend */}
         {trend ? (
-          <div className={cn("flex items-center gap-1 text-[10px] sm:text-xs font-semibold mt-1", trendColor)}>
-            <TrendIcon className="h-3 w-3" />
+          <div className={cn("flex items-center gap-1.5 text-sm font-semibold mt-1", trendColor)}>
+            <TrendIcon className="h-4 w-4" />
             <span>{trend}</span>
           </div>
         ) : (

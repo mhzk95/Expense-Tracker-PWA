@@ -315,7 +315,7 @@ export function SwipeToDelete({
                     onEdit();
                     setIsRevealed(false);
                   }}
-                  className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 border border-blue-500/20 active:scale-95 transition-all shadow-md"
+                  className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 border border-blue-500/20 active:scale-95 transition-all shadow-md"
                   title="Edit"
                 >
                   <Edit2 className="w-4 h-4" />
@@ -327,7 +327,7 @@ export function SwipeToDelete({
                   handleConfirmDelete(e);
                   setIsRevealed(false);
                 }}
-                className="flex items-center justify-center w-9 h-9 rounded-xl bg-red-600/20 hover:bg-red-600/35 text-red-400 border border-red-500/20 active:scale-95 transition-all shadow-md"
+                className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-red-600/20 hover:bg-red-600/35 text-red-400 border border-red-500/20 active:scale-95 transition-all shadow-md"
                 title="Delete"
               >
                 <Trash2 className="w-4 h-4" />
@@ -338,7 +338,7 @@ export function SwipeToDelete({
                   setIsRevealed(false);
                   vibrate([10]);
                 }}
-                className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 text-slate-400 border border-slate-700/30 active:scale-95 transition-all shadow-md"
+                className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-slate-800/60 hover:bg-slate-700/60 text-slate-400 border border-slate-700/30 active:scale-95 transition-all shadow-md"
                 title="Cancel"
               >
                 <X className="w-4 h-4" />

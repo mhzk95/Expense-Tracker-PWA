@@ -742,7 +742,7 @@ export default function TransactionsPage() {
 
                     {/* Icon */}
                     <div
-                      className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center"
+                      className="flex-shrink-0 min-h-tap-target min-w-tap-target rounded-full flex items-center justify-center"
                       style={{ 
                         backgroundColor: `${baseColor}20`,
                         color: baseColor 
@@ -750,10 +750,10 @@ export default function TransactionsPage() {
                     >
                       {(() => {
                         if (isTransfer) {
-                          return <ArrowLeftRight className="h-4 w-4" />;
+                          return <ArrowLeftRight className="h-5 w-5" />;
                         }
                         const IconComp = getCategoryIcon(category?.icon);
-                        return <IconComp className="h-4 w-4" />;
+                        return <IconComp className="h-5 w-5" />;
                       })()}
                     </div>
 
@@ -761,31 +761,27 @@ export default function TransactionsPage() {
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <MarqueeText 
                         text={txn.payee || txn.description || "No Payee"} 
-                        className="text-xs font-semibold text-white" 
+                        className="text-body font-semibold text-white text-balance" 
                         isExpanded={isExpanded}
                       />
-                      <div className="flex items-center mt-0.5 text-[10px] text-slate-400 min-w-0">
-                        <div className="flex-1 min-w-0 flex items-center">
-                          {txn.payee && txn.description !== "Quick Entry" ? (
-                            <MarqueeText text={txn.description} className="flex-shrink min-w-0" isExpanded={isExpanded} />
-                          ) : (
-                            <span className="truncate">{txn.description || "No description"}</span>
-                          )}
-                        </div>
-                        <span className="text-slate-600 flex-shrink-0 mx-1.5">·</span>
-                        <span className="flex-shrink-0 whitespace-nowrap">{formatDate(txn.date, "medium")}</span>
+                      <div className="flex flex-col mt-1 text-sm text-slate-400 min-w-0">
+                        {txn.payee && txn.description !== "Quick Entry" ? (
+                          <span className="text-slate-300 truncate">{txn.description}</span>
+                        ) : null}
+                        <span className="truncate text-slate-500">{txn.description || "No description"}</span>
+                        <span className="whitespace-nowrap mt-0.5">{formatDate(txn.date, "medium")}</span>
                       </div>
                     </div>
 
                     {/* Amount */}
-                    <div className="text-right flex flex-col justify-center items-end flex-shrink-0">
+                    <div className="text-right flex flex-col justify-start pt-1 items-end flex-shrink-0 h-full">
                       <p
                         className={cn(
-                          "text-xs font-bold tabular-nums",
+                          "text-body font-bold tabular-nums text-balance",
                           isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
                         )}
                       >
-                        {isIncome ? "+" : "−"}{formatCurrency(txn.amount, txn.currency)}
+                        {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
                       </p>
                     </div>
                   </div>
