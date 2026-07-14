@@ -560,10 +560,10 @@ export default function TransactionsPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-end">
-                      <span className={cn("text-[13px] font-bold", group.total < 0 ? "text-violet-400" : "text-emerald-400")}>
+                      <span className={cn("text-[13px] font-bold tracking-tight", group.isToday ? "text-[#10b981]" : group.isYesterday ? "text-[#3b82f6]" : "text-slate-400")}>
                         {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
                       </span>
-                      <span className="text-xs text-slate-500 mt-0.5">{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
+                      <span className={cn("text-xs mt-0.5", group.isToday ? "text-[#10b981]" : group.isYesterday ? "text-[#3b82f6]" : "text-slate-500")}>{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
                     </div>
                     <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-white" : "")} />
                   </div>
@@ -614,21 +614,12 @@ export default function TransactionsPage() {
                           >
                             <div 
                               className={cn(
-                                "glass-card interactive flex flex-col w-full transition-all duration-300 select-none border border-transparent active:scale-[0.98] active:bg-white/5",
-                                txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60",
+                                "bg-[#161b26] rounded-2xl flex flex-col w-full transition-all duration-300 select-none border border-white/5 active:scale-[0.98] active:bg-[#1c2230]",
+                                txn.needsReview && "border-l-2 border-l-amber-500/60",
                                 selectedTxn?.id === txn.id && "shadow-lg shadow-black/40 ring-1 ring-white/10",
                                 isSelected && "ring-2 ring-violet-500/60 bg-violet-950/10"
                               )}
-                              style={{ 
-                                "--color-primary": baseColor,
-                                "--color-primary-rgb": hexToRgb(baseColor),
-                                "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
-                                "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                                "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)",
-                                borderColor: `${baseColor}20`,
-                                boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`,
-                                WebkitTouchCallout: "none",
-                              } as React.CSSProperties}
+                              style={{ WebkitTouchCallout: "none" }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (isSelectMode || selectedTxIds.size > 0) {
@@ -713,10 +704,10 @@ export default function TransactionsPage() {
                                   <p
                                     className={cn(
                                       "text-[15px] font-bold tabular-nums text-right text-balance",
-                                      isIncome ? "text-emerald-400" : isTransfer ? "text-slate-300" : "text-white"
+                                      isIncome ? "text-emerald-400" : "text-white"
                                     )}
                                   >
-                                    {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
+                                    {isIncome ? "+" : ""}{formatCurrency(txn.amount, txn.currency)}
                                   </p>
                                   <ChevronRight className="w-4 h-4 text-slate-600" />
                                 </div>

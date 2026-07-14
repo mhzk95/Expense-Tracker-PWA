@@ -23,6 +23,7 @@ export function useCategories() {
                             c.id !== cachedCategories![i]?.id || 
                             c.name !== cachedCategories![i]?.name || 
                             c.color !== cachedCategories![i]?.color ||
+                            c.icon !== cachedCategories![i]?.icon ||
                             c.type !== cachedCategories![i]?.type
                           );
 
