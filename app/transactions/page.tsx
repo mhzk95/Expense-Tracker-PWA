@@ -15,6 +15,7 @@ import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { TransactionEntity } from "@/lib/db/indexeddb";
 import { MarqueeText } from "@/components/ui/MarqueeText";
 import { FlashEntryModal } from "@/components/transactions/FlashEntryModal";
+import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function TransactionsPage() {
@@ -26,7 +27,7 @@ export default function TransactionsPage() {
   
   const [editingTxn, setEditingTxn] = useState<TransactionEntity | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [expandedTxnId, setExpandedTxnId] = useState<string | null>(null);
+  const [selectedTxn, setSelectedTxn] = useState<TransactionEntity | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showOnlyNeedsReview, setShowOnlyNeedsReview] = useState(false);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
@@ -41,9 +42,6 @@ export default function TransactionsPage() {
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-
-  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMoving = useRef(false);
 
   useEffect(() => {
     const history = localStorage.getItem("search_history");
@@ -179,7 +177,7 @@ export default function TransactionsPage() {
   // Collapse notes on scroll or click outside
   useEffect(() => {
     const handleCollapse = () => {
-      setExpandedTxnId(null);
+      // Intentionally left empty or remove event listeners entirely if we no longer need collapse on scroll
     };
     window.addEventListener("scroll", handleCollapse, { passive: true });
     document.addEventListener("click", handleCollapse);
@@ -189,64 +187,7 @@ export default function TransactionsPage() {
     };
   }, []);
 
-  const touchStartPos = useRef({ x: 0, y: 0 });
-  const isTouchDevice = useRef(false);
 
-  const startLongPress = (txnId: string, clientX: number, clientY: number) => {
-    isMoving.current = false;
-    touchStartPos.current = { x: clientX, y: clientY };
-    
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current);
-    }
-    
-    longPressTimeoutRef.current = setTimeout(() => {
-      if (!isMoving.current) {
-        vibrate([30]);
-        setExpandedTxnId((prev) => (prev === txnId ? null : txnId));
-      }
-    }, 500);
-  };
-
-  const moveLongPress = (clientX: number, clientY: number) => {
-    const deltaX = Math.abs(clientX - touchStartPos.current.x);
-    const deltaY = Math.abs(clientY - touchStartPos.current.y);
-    
-    // Only cancel long press if finger moved more than 10 pixels (slop tolerance)
-    if (deltaX > 10 || deltaY > 10) {
-      isMoving.current = true;
-      if (longPressTimeoutRef.current) {
-        clearTimeout(longPressTimeoutRef.current);
-      }
-    }
-  };
-
-  const cancelLongPress = () => {
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current);
-    }
-  };
-
-  const handleTouchStart = (txnId: string, e: React.TouchEvent) => {
-    isTouchDevice.current = true;
-    const touch = e.touches[0];
-    startLongPress(txnId, touch.clientX, touch.clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    moveLongPress(touch.clientX, touch.clientY);
-  };
-
-  const handleMouseDown = (txnId: string, e: React.MouseEvent) => {
-    if (isTouchDevice.current) return;
-    startLongPress(txnId, e.clientX, e.clientY);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isTouchDevice.current) return;
-    moveLongPress(e.clientX, e.clientY);
-  };
 
   return (
     <div className="space-y-6">
@@ -668,8 +609,6 @@ export default function TransactionsPage() {
                         const category = categories.find((c) => c.id === txn.categoryId);
             const isIncome = txn.type === "income";
             const isTransfer = txn.type === "transfer";
-            const isExpanded = expandedTxnId === txn.id;
-
             const baseColor = category?.color || "#8b5cf6";
 
             const isSelected = selectedTxIds.has(txn.id);
@@ -684,13 +623,12 @@ export default function TransactionsPage() {
                 }}
                 glowColor={baseColor}
                 deleteMessage={`Delete "${txn.description}"?`}
-                expanded={isExpanded}
               >
                 <div 
                   className={cn(
-                    "glass-card interactive flex flex-col px-4 py-2.5 w-full transition-all duration-300 select-none border border-transparent",
+                    "glass-card interactive flex flex-col w-full transition-all duration-300 select-none border border-transparent active:scale-[0.98] active:bg-white/5",
                     txn.needsReview && "needs-review-card border-l-2 border-l-amber-500/60",
-                    isExpanded && "shadow-lg shadow-black/40 ring-1 ring-white/10",
+                    selectedTxn?.id === txn.id && "shadow-lg shadow-black/40 ring-1 ring-white/10",
                     isSelected && "ring-2 ring-violet-500/60 bg-violet-950/10"
                   )}
                   style={{ 
@@ -703,13 +641,6 @@ export default function TransactionsPage() {
                     boxShadow: `0 4px 15px -3px ${baseColor}10, inset 0 1px 0px rgba(255,255,255,0.05)`,
                     WebkitTouchCallout: "none",
                   } as React.CSSProperties}
-                  onTouchStart={(e) => handleTouchStart(txn.id, e)}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={cancelLongPress}
-                  onMouseDown={(e) => handleMouseDown(txn.id, e)}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={cancelLongPress}
-                  onContextMenu={(e) => e.preventDefault()}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (isSelectMode || selectedTxIds.size > 0) {
@@ -722,11 +653,12 @@ export default function TransactionsPage() {
                       setSelectedTxIds(newSelected);
                       vibrate([10]);
                     } else {
-                      setExpandedTxnId((prev) => (prev === txn.id ? null : txn.id));
+                      setSelectedTxn(txn);
+                      vibrate([20]);
                     }
                   }}
                 >
-                  <div className="flex items-center gap-3 w-full">
+                  <div className="flex items-center gap-3 w-full px-4 py-2.5">
                     {/* Checkbox (visible in select mode) */}
                     {(isSelectMode || selectedTxIds.size > 0) && (
                       <div className="flex-shrink-0">
@@ -762,7 +694,6 @@ export default function TransactionsPage() {
                       <MarqueeText 
                         text={txn.payee || txn.description || "No Payee"} 
                         className="text-body font-semibold text-white text-balance" 
-                        isExpanded={isExpanded}
                       />
                       <div className="flex flex-col mt-1 text-sm text-slate-400 min-w-0">
                         {txn.payee && txn.description !== "Quick Entry" ? (
@@ -786,119 +717,6 @@ export default function TransactionsPage() {
                     </div>
                   </div>
 
-                  {/* Expanded notes area */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-3 pt-3 border-t border-white/5 space-y-2.5">
-                          {txn.payee && (
-                            <div>
-                              <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Payee</span>
-                              <span className="text-xs text-slate-300 mt-0.5 block font-medium">
-                                {txn.payee}
-                              </span>
-                            </div>
-                          )}
-                          {txn.payee && txn.description !== "Quick Entry" && (
-                            <div>
-                              <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Item Name</span>
-                              <span className="text-xs text-slate-300 mt-0.5 block font-medium">
-                                {txn.description}
-                              </span>
-                            </div>
-                          )}
-                          <div>
-                            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Notes</span>
-                            <p className="text-xs text-slate-300 mt-0.5 whitespace-pre-wrap leading-relaxed">
-                              {txn.note ? (
-                                txn.note.split(/(#[a-zA-Z0-9_]+)/g).map((part, i) => 
-                                  part.startsWith('#') 
-                                    ? <span key={i} className="text-violet-400 bg-violet-500/10 px-1 py-0.5 rounded border border-violet-500/20 font-medium inline-block my-0.5">{part}</span> 
-                                    : <span key={i}>{part}</span>
-                                )
-                              ) : (
-                                "No notes provided."
-                              )}
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3 pt-0.5">
-                            <div>
-                              <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Category</span>
-                              <span className="text-xs text-slate-300 mt-0.5 block flex items-center gap-1.5">
-                                {category && (
-                                  <span 
-                                    className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
-                                    style={{ backgroundColor: category.color }}
-                                  />
-                                )}
-                                {category?.name ?? "Other"}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Account</span>
-                              <span className="text-xs text-slate-300 mt-0.5 block">
-                                {accounts.find(a => a.id === txn.accountId)?.name || "Unknown Account"}
-                              </span>
-                            </div>
-                            {txn.type === "transfer" && txn.toAccountId && (
-                              <div>
-                                <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">To Account</span>
-                                <span className="text-xs text-slate-300 mt-0.5 block">
-                                  {accounts.find(a => a.id === txn.toAccountId)?.name || "Unknown Account"}
-                                </span>
-                              </div>
-                            )}
-                            <div>
-                              <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Status</span>
-                              <span className="text-xs text-slate-300 mt-0.5 block capitalize flex items-center gap-1.5">
-                                {txn.status || "completed"}
-                                {txn.needsReview && (
-                                  <span className="text-[8px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded leading-none">
-                                    Review
-                                  </span>
-                                )}
-                              </span>
-                            </div>
-                            {getLocationDisplay(txn.location) && (
-                              <div className="col-span-2">
-                                <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 block">Location</span>
-                                <div className="mt-0.5">
-                                  <span className="text-xs text-slate-300 flex items-center gap-1">
-                                    <MapPin className="h-3 w-3 text-violet-400 flex-shrink-0" />
-                                    {getLocationDisplay(txn.location)}
-                                  </span>
-                                  {(() => {
-                                    try {
-                                      const loc = JSON.parse(txn.location || "");
-                                      if (loc.lat && loc.lon) {
-                                        return (
-                                          <a
-                                            href={`https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lon}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-[9px] text-violet-400 hover:text-violet-300 transition-colors mt-0.5 inline-block font-semibold"
-                                          >
-                                            View on Google Maps
-                                          </a>
-                                        );
-                                      }
-                                    } catch {}
-                                    return null;
-                                  })()}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               </SwipeToDelete>
                         );
@@ -1028,6 +846,10 @@ export default function TransactionsPage() {
         defaultAccountId={accounts.find(a => a.isDefault)?.id || accounts[0]?.id || ""}
       />
 
+      <TransactionDetailSheet 
+        txn={selectedTxn} 
+        onClose={() => setSelectedTxn(null)} 
+      />
     </div>
   );
 }
