@@ -76,7 +76,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full bg-[var(--color-bg)] text-black antialiased font-sans relative transition-colors duration-300">
+      <body className="h-full bg-[var(--color-bg)] text-[var(--color-text)] antialiased font-sans relative transition-colors duration-300">
         {/*
          * AppShell is a Client Component.
          * It detects the runtime environment and renders the correct shell:

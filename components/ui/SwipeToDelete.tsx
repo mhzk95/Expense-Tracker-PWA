@@ -201,7 +201,7 @@ export function SwipeToDelete({
               toast.dismiss(toastId);
               vibrate([15]);
             }}
-            className="px-2.5 py-1 text-xs font-semibold text-violet-400 hover:text-violet-300 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+            className="px-2.5 py-1 text-xs font-semibold text-violet-400 hover:text-violet-300 bg-[var(--color-surface)]/5 rounded-lg border border-white/10 hover:bg-[var(--color-surface)]/10 transition-colors"
           >
             Undo
           </button>
@@ -292,10 +292,10 @@ export function SwipeToDelete({
           }}
         >
           <div
-            className="flex items-center justify-between px-5 py-3 w-full h-full bg-white border-[3px] border-black rounded-[16px] sm:rounded-[24px] shadow-[4px_4px_0px_0px_#000]"
+            className="flex items-center justify-between px-5 py-3 w-full h-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] sm:rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)]"
           >
             {/* Title / Info */}
-            <span className="text-[13px] sm:text-sm font-black uppercase tracking-widest text-black flex items-center gap-2 truncate pr-2">
+            <span className="text-[13px] sm:text-sm font-black uppercase tracking-widest text-[var(--color-text)] flex items-center gap-2 truncate pr-2">
               <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style={{ backgroundColor: glowColor }} />
               <span className="truncate">{deleteMessage.replace("Delete", "Manage").replace("?", "")}</span>
             </span>
@@ -309,7 +309,7 @@ export function SwipeToDelete({
                     onEdit();
                     setIsRevealed(false);
                   }}
-                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] hover:bg-violet-400 text-white border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
+                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] hover:bg-violet-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
                   title="Edit"
                 >
                   <Edit2 className="w-5 h-5 stroke-[3px]" />
@@ -321,7 +321,7 @@ export function SwipeToDelete({
                   handleConfirmDelete(e);
                   setIsRevealed(false);
                 }}
-                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-500 hover:bg-red-400 text-white border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-500 hover:bg-red-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
                 title="Delete"
               >
                 <Trash2 className="w-5 h-5 stroke-[3px]" />
@@ -332,7 +332,7 @@ export function SwipeToDelete({
                   setIsRevealed(false);
                   vibrate([10]);
                 }}
-                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gray-100 hover:bg-white text-black border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gray-100 hover:bg-[var(--color-surface)] text-[var(--color-text)] border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
                 title="Cancel"
               >
                 <X className="w-5 h-5 stroke-[3px]" />

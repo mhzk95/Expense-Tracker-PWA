@@ -30,7 +30,7 @@ export function PwaUpdatePrompt() {
       <div className="bg-violet-600/95 backdrop-blur-md border border-violet-400/50 text-white p-4 rounded-2xl shadow-2xl shadow-violet-900/50 flex flex-col gap-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <div className="h-9 w-9 rounded-full bg-[var(--color-surface)]/20 flex items-center justify-center shrink-0">
               <Download className="h-4.5 w-4.5 text-white" />
             </div>
             <div>
@@ -42,7 +42,7 @@ export function PwaUpdatePrompt() {
           </div>
           <button 
             onClick={() => setShowPrompt(false)}
-            className="text-violet-200 hover:text-white p-1.5 -mr-1.5 -mt-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            className="text-violet-200 hover:text-white p-1.5 -mr-1.5 -mt-1.5 rounded-lg hover:bg-[var(--color-surface)]/10 transition-colors"
             aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
@@ -51,7 +51,7 @@ export function PwaUpdatePrompt() {
         
         <button
           onClick={() => window.location.reload()}
-          className="w-full bg-white text-violet-900 hover:bg-violet-50 font-semibold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-[0.98]"
+          className="w-full bg-[var(--color-surface)] text-violet-900 hover:bg-violet-50 font-semibold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors shadow-sm active:scale-[0.98]"
         >
           <RefreshCw className="h-4 w-4" />
           Refresh App to Update

@@ -65,14 +65,14 @@ export function PWABottomNavigation() {
           
           {/* Menu Sheet */}
           <div 
-            className="fixed left-4 right-4 z-40 bg-white border-4 border-black rounded-[24px] shadow-[6px_6px_0px_0px_#000] overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200"
+            className="fixed left-4 right-4 z-40 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[24px] shadow-brutal-lg overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200"
             style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
           >
-            <div className="p-4 border-b-4 border-black flex items-center justify-between bg-white">
-              <h3 className="font-black text-black uppercase tracking-wider text-lg">More Options</h3>
+            <div className="p-4 border-b-4 border-[var(--color-border)] flex items-center justify-between bg-[var(--color-surface)]">
+              <h3 className="font-black text-[var(--color-text)] uppercase tracking-wider text-lg">More Options</h3>
               <button 
                 onClick={() => setShowMoreMenu(false)}
-                className="h-10 w-10 rounded-full bg-white border-2 border-black flex items-center justify-center text-black hover:bg-[var(--color-primary)] hover:text-white transition-colors brutal-btn"
+                className="h-10 w-10 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-[var(--color-surface)] transition-colors brutal-btn"
               >
                 <X className="h-6 w-6 stroke-[3px]" />
               </button>
@@ -88,20 +88,20 @@ export function PWABottomNavigation() {
                     className={cn(
                       "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group border-2",
                       isActive 
-                        ? "bg-[var(--color-primary)] border-black shadow-[4px_4px_0px_0px_#000] text-white" 
-                        : "bg-white border-transparent text-black hover:border-black hover:shadow-[4px_4px_0px_0px_#000]"
+                        ? "bg-[var(--color-primary)] border-[var(--color-border)] shadow-brutal text-white" 
+                        : "bg-[var(--color-surface)] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-brutal"
                     )}
                   >
                     <div className={cn(
                       "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 border-2",
-                      isActive ? "bg-white border-black text-black" : "bg-gray-100 border-transparent text-black group-hover:border-black"
+                      isActive ? "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)]" : "bg-[var(--color-surface-hover)] border-transparent text-[var(--color-text)] group-hover:border-[var(--color-border)]"
                     )}>
                       {Icon && <Icon className="h-6 w-6 stroke-[2.5px]" />}
                     </div>
                     <div className="flex-1">
                       <div className={cn(
                         "text-base font-bold",
-                        isActive ? "text-white" : "text-black"
+                        isActive ? "text-white" : "text-[var(--color-text)]"
                       )}>
                         {item.label}
                       </div>
@@ -112,7 +112,7 @@ export function PWABottomNavigation() {
                     </div>
                     <ChevronRight className={cn(
                       "h-6 w-6 stroke-[3px]",
-                      isActive ? "text-white" : "text-black"
+                      isActive ? "text-white" : "text-[var(--color-text)]"
                     )} />
                   </Link>
                 );
@@ -128,7 +128,7 @@ export function PWABottomNavigation() {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <nav
-          className="bg-white border-4 border-black rounded-[28px] shadow-[6px_6px_0px_0px_#000] overflow-hidden"
+          className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[28px] shadow-brutal-lg overflow-hidden"
           aria-label="Bottom navigation"
         >
           <div className="flex items-stretch h-16">
@@ -147,15 +147,15 @@ export function PWABottomNavigation() {
                     className={cn(
                       "flex items-center justify-center h-10 w-10 rounded-[14px] transition-all duration-200 border-2",
                       isActive 
-                        ? "bg-[var(--color-primary)] border-black shadow-[2px_2px_0px_0px_#000] text-white" 
-                        : "bg-transparent border-transparent text-black"
+                        ? "bg-[var(--color-primary)] border-[var(--color-border)] shadow-brutal-sm text-white" 
+                        : "bg-transparent border-transparent text-[var(--color-text)]"
                     )}
                   >
                     {Icon && <Icon className="h-5 w-5 stroke-[2.5px]" />}
                   </span>
                   <span className={cn(
                     "text-[10px] font-black uppercase tracking-wider mt-1 transition-colors",
-                    isActive ? "text-black" : "text-gray-500"
+                    isActive ? "text-[var(--color-text)]" : "text-[var(--color-text)] opacity-60"
                   )}>{item.label}</span>
                 </>
               );

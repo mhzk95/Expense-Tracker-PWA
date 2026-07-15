@@ -73,7 +73,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
     }
   };
 
-  const focusClass = "focus:shadow-[4px_4px_0px_0px_#000] focus:-translate-y-0.5";
+  const focusClass = "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5";
 
   const getButtonClass = () => {
     switch (type) {
@@ -91,23 +91,23 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Account Name</label>
+        <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Account Name</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={`w-full bg-white border-2 border-black rounded-xl px-4 py-3 text-black font-bold outline-none transition-all ${focusClass}`}
+          className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-4 py-3 text-[var(--color-text)] font-bold outline-none transition-all ${focusClass}`}
           placeholder="e.g. Main Checking"
           required
         />
       </div>
 
       <div>
-        <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Type</label>
+        <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Type</label>
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className={`w-full bg-white border-2 border-black rounded-xl px-4 py-3 text-black font-bold outline-none transition-all appearance-none ${focusClass}`}
+          className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-4 py-3 text-[var(--color-text)] font-bold outline-none transition-all appearance-none ${focusClass}`}
         >
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
@@ -117,7 +117,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       </div>
 
       <div>
-        <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Current Balance</label>
+        <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Current Balance</label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">₹</span>
           <input
@@ -125,16 +125,16 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             step="0.01"
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
-            className={`w-full bg-white border-2 border-black rounded-xl pl-8 pr-4 py-3 text-black font-bold outline-none transition-all ${focusClass}`}
+            className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-8 pr-4 py-3 text-[var(--color-text)] font-bold outline-none transition-all ${focusClass}`}
             placeholder="0.00"
             required
           />
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-[16px] border-[3px] border-black">
+      <div className="flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-[3px] border-[var(--color-border)]">
         <div>
-          <label className="block text-sm font-black text-black">Exclude from Net Worth</label>
+          <label className="block text-sm font-black text-[var(--color-text)]">Exclude from Net Worth</label>
           <p className="text-[10px] font-bold text-gray-500 mt-0.5 leading-tight uppercase tracking-wider">
             Spendings from this account will not affect overall net worth.
           </p>
@@ -143,10 +143,10 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
           <button
             type="button"
             onClick={() => setExcludeFromNetWorth(!excludeFromNetWorth)}
-            className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-black transition-colors duration-200 ease-in-out focus:outline-none ${excludeFromNetWorth ? 'bg-amber-400' : 'bg-gray-300'}`}
+            className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-[var(--color-border)] transition-colors duration-200 ease-in-out focus:outline-none ${excludeFromNetWorth ? 'bg-amber-400' : 'bg-gray-300'}`}
           >
             <span
-              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] ring-0 transition duration-200 ease-in-out ${excludeFromNetWorth ? 'translate-x-5' : 'translate-x-0'}`}
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] ring-0 transition duration-200 ease-in-out ${excludeFromNetWorth ? 'translate-x-5' : 'translate-x-0'}`}
             />
           </button>
         </div>
@@ -155,7 +155,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !name || !balance}
-        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
+        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
       >
         {isSubmitting ? "Adding..." : initialData ? "Update Account" : "Add Account"}
       </button>

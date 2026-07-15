@@ -73,10 +73,10 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className="flex items-center gap-2 mt-3 bg-white rounded-[16px] px-3 py-2 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] w-fit max-w-full overflow-hidden">
+    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] w-fit max-w-full overflow-hidden">
       <button
         onClick={(e) => { e.stopPropagation(); toggle(); }}
-        className="w-8 h-8 rounded-xl border-2 border-black bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
+        className="w-8 h-8 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
       >
         {playing
           ? <Pause className="w-4 h-4 text-white stroke-[3px]" />
@@ -95,7 +95,7 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
         ))}
       </div>
 
-      <span className="text-xs font-black text-black flex-shrink-0 ml-2 tracking-wide">
+      <span className="text-xs font-black text-[var(--color-text)] flex-shrink-0 ml-2 tracking-wide">
         {formatDuration(durationMs ?? 0)}
       </span>
     </div>
@@ -131,19 +131,19 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       {/* Left Column: Time & Timeline Line */}
       <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
         <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end pr-2">
-          <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black flex-shrink-0 whitespace-nowrap">{time}</span>
-          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-[3px] border-black bg-white z-10 flex-shrink-0" />
+          <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[var(--color-text)] flex-shrink-0 whitespace-nowrap">{time}</span>
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] z-10 flex-shrink-0" />
         </div>
         {/* The continuous line extending down */}
         <div className="absolute right-[5px] sm:right-[7px] top-6 sm:top-7 bottom-[-24px] sm:bottom-[-32px] w-[3px] bg-black" />
       </div>
 
       {/* Right Column: Card */}
-      <div className="flex-1 min-w-0 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-[20px] p-3 sm:p-4 flex gap-3 sm:gap-4 relative hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] transition-all duration-300">
+      <div className="flex-1 min-w-0 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-[20px] p-3 sm:p-4 flex gap-3 sm:gap-4 relative hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_var(--color-border)] transition-all duration-300">
         {/* Cover Image Thumbnail (Left) */}
         {photos.length > 0 && (
           <div
-            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-white border-[3px] border-black flex-shrink-0 cursor-pointer relative rounded-xl sm:rounded-2xl overflow-hidden shadow-[2px_2px_0px_0px_#000]"
+            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-xl sm:rounded-2xl overflow-hidden shadow-[2px_2px_0px_0px_var(--color-border)]"
             onClick={() => setLightbox(true)}
           >
             <TelegramLazyImage
@@ -154,7 +154,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
               photoIndex={0}
             />
             {photos.length > 1 && (
-              <div className="absolute bottom-1 right-1 bg-white border-[2px] border-black text-black text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_#000]">
+              <div className="absolute bottom-1 right-1 bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] text-[var(--color-text)] text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_var(--color-border)]">
                 +{photos.length - 1}
               </div>
             )}
@@ -165,13 +165,13 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
         <div className="flex-1 min-w-0 py-1 pr-1">
           {/* Title & Menu */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-black font-black text-lg uppercase tracking-wide text-balance truncate">
+            <h3 className="text-[var(--color-text)] font-black text-lg uppercase tracking-wide text-balance truncate">
               {entry.title || (entry.event || "Memory")}
             </h3>
             <div className="relative flex-shrink-0">
               <button
                 onClick={() => setShowMenu(v => !v)}
-                className="p-1 text-black hover:bg-gray-100 border-[2px] border-transparent hover:border-black rounded-lg transition-all"
+                className="p-1 text-[var(--color-text)] hover:bg-gray-100 border-[2px] border-transparent hover:border-[var(--color-border)] rounded-lg transition-all"
               >
                 <MoreVertical className="w-5 h-5 stroke-[2.5px]" />
               </button>
@@ -181,7 +181,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
                     className="fixed inset-0 z-20" 
                     onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
                   />
-                  <div className="absolute right-0 top-8 z-30 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
+                  <div className="absolute right-0 top-8 z-30 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-gray-100 transition-colors"
@@ -197,14 +197,14 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           {/* Location */}
           {locationDisplay && (
             <div className="flex items-center gap-1.5 mt-1">
-              <MapPin className="w-4 h-4 text-black stroke-[3px] flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-[var(--color-text)] stroke-[3px] flex-shrink-0" />
               <span className="text-xs font-bold text-gray-700 truncate">{locationDisplay}</span>
             </div>
           )}
 
           {/* Description */}
           {entry.content && (
-            <p className="text-sm font-medium text-black mt-2 line-clamp-2 leading-relaxed">
+            <p className="text-sm font-medium text-[var(--color-text)] mt-2 line-clamp-2 leading-relaxed">
               {entry.content}
             </p>
           )}
@@ -213,7 +213,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {tags.map(tag => (
-                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-black bg-gray-100 px-2 py-1 rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)] bg-gray-100 px-2 py-1 rounded-md border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
                   #{tag}
                 </span>
               ))}
@@ -231,12 +231,12 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
 
           {/* Linked transaction */}
           {linkedTxn && (
-            <div className="mt-3 py-2 px-3 bg-white border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] flex items-center justify-between">
+            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <LinkIcon className="w-4 h-4 text-black stroke-[2.5px] flex-shrink-0" />
+                <LinkIcon className="w-4 h-4 text-[var(--color-text)] stroke-[2.5px] flex-shrink-0" />
                 <span className="text-xs font-bold text-gray-800 truncate">{linkedTxn.description}</span>
               </div>
-              <span className="text-sm font-black text-black flex-shrink-0 ml-2">
+              <span className="text-sm font-black text-[var(--color-text)] flex-shrink-0 ml-2">
                 {formatCurrency(linkedTxn.amount, linkedTxn.currency)}
               </span>
             </div>
@@ -250,7 +250,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setLightbox(false)}
         >
-          <button className="absolute top-5 right-5 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white">
+          <button className="absolute top-5 right-5 p-2 bg-[var(--color-surface)]/10 hover:bg-[var(--color-surface)]/20 rounded-full text-white">
             <X className="w-5 h-5" />
           </button>
           <TelegramLazyImage
@@ -321,7 +321,7 @@ export default function JournalPage() {
     <div className="pb-32 min-h-screen relative overflow-hidden flex flex-col">
       
       {/* Sticky Header / Search Area */}
-      <div className="sticky top-0 z-40 bg-white pt-4 pb-4 px-2 sm:px-4 border-b-4 border-black shadow-[0_4px_0_0_#000]">
+      <div className="sticky top-0 z-40 bg-[var(--color-surface)] pt-4 pb-4 px-2 sm:px-4 border-b-4 border-[var(--color-border)] shadow-[0_4px_0_0_var(--color-border)]">
         <PageHeader 
           title="Journal"
           subtitle={loading ? "Loading..." : `${entries.length} memories`}
@@ -329,7 +329,7 @@ export default function JournalPage() {
           action={
             <button
               onClick={() => setShowSearch(v => !v)}
-              className="p-3 text-black bg-white border-2 border-black rounded-xl hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+              className="p-3 text-[var(--color-text)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
               <Search className="w-5 h-5 stroke-[2.5px]" />
             </button>
@@ -346,12 +346,12 @@ export default function JournalPage() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search memories..."
-              className="w-full bg-white border-[3px] border-black rounded-[16px] pl-12 pr-12 py-3 text-sm text-black placeholder-gray-500 outline-none focus:shadow-[4px_4px_0px_0px_#000] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all font-bold"
+              className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] pl-12 pr-12 py-3 text-sm text-[var(--color-text)] placeholder-gray-500 outline-none focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all font-bold"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-black hover:bg-gray-200 rounded-lg transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-gray-200 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5 stroke-[2.5px]" />
               </button>
@@ -365,7 +365,7 @@ export default function JournalPage() {
             <button
               onClick={() => setSelectedTag(null)}
               className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border-[2px] ${
-                !selectedTag ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000]" : "bg-white border-black text-black hover:bg-gray-100"
+                !selectedTag ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
               }`}
             >
               All
@@ -375,7 +375,7 @@ export default function JournalPage() {
                 key={tag}
                 onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
                 className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border-[2px] ${
-                  selectedTag === tag ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000]" : "bg-white border-black text-black hover:bg-gray-100"
+                  selectedTag === tag ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
                 }`}
               >
                 #{tag}
@@ -398,14 +398,14 @@ export default function JournalPage() {
           </div>
         ) : filteredEntries.length === 0 ? (
           <div className="text-center py-20 px-4">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-black shadow-[6px_6px_0px_0px_#000]">
+            <div className="w-24 h-24 bg-[var(--color-surface)] rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-[var(--color-border)] shadow-[6px_6px_0px_0px_var(--color-border)]">
               <span className="text-4xl">📔</span>
             </div>
-            <h3 className="text-black font-black uppercase tracking-widest text-xl mb-2">No memories yet</h3>
+            <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-xl mb-2">No memories yet</h3>
             <p className="text-gray-600 font-bold text-sm mb-8">Capture your first memory with a photo, voice note, or reflection.</p>
             <button
               onClick={() => setIsFormOpen(true)}
-              className="px-6 py-3 bg-[var(--color-primary)] text-white font-black uppercase tracking-wider rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+              className="px-6 py-3 bg-[var(--color-primary)] text-white font-black uppercase tracking-wider rounded-xl border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
             >
               Capture a memory
             </button>
@@ -421,7 +421,7 @@ export default function JournalPage() {
                     onClick={() => setCollapsedDays(prev => ({ ...prev, [group.label]: !prev[group.label] }))}
                     className="flex items-center gap-3 mb-6 ml-[65px] sm:ml-[85px] w-full text-left group/btn"
                   >
-                    <span className="text-xs font-black text-black group-hover/btn:text-gray-700 transition-colors uppercase tracking-widest flex items-center gap-1">
+                    <span className="text-xs font-black text-[var(--color-text)] group-hover/btn:text-gray-700 transition-colors uppercase tracking-widest flex items-center gap-1">
                       {group.label}
                     </span>
                     <div className="flex-1 h-1 bg-black group-hover/btn:bg-gray-800 transition-colors mr-4 sm:mr-8 rounded-full" />
@@ -461,7 +461,7 @@ export default function JournalPage() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-16 h-16 bg-[var(--color-primary)] rounded-full border-4 border-black shadow-[6px_6px_0px_0px_#000] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-16 h-16 bg-[var(--color-primary)] rounded-full border-4 border-[var(--color-border)] shadow-[6px_6px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
         aria-label="Add journal entry"
       >
         <Plus className="w-8 h-8 text-white stroke-[3px]" />

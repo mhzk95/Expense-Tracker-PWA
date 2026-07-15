@@ -33,11 +33,11 @@ export function EmptyState({
       )}
     >
       {/* Icon area */}
-      <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
-        {icon ?? <PackageOpen className="h-10 w-10 text-black stroke-[2.5px]" />}
+      <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+        {icon ?? <PackageOpen className="h-10 w-10 text-[var(--color-text)] stroke-[2.5px]" />}
       </div>
 
-      <h3 className="text-xl font-black text-black uppercase tracking-tight">{title}</h3>
+      <h3 className="text-xl font-black text-[var(--color-text)] uppercase tracking-tight">{title}</h3>
 
       {description && (
         <p className="mt-2 max-w-sm text-sm font-bold text-gray-600 uppercase tracking-widest leading-relaxed">

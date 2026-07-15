@@ -19,9 +19,15 @@
   --radius-brutal-nav: 28px;
   --radius-brutal-full: 9999px;
 
-  --shadow-brutal: 4px 4px 0px 0px #000000;
-  --shadow-brutal-sm: 2px 2px 0px 0px #000000;
-  --shadow-brutal-lg: 6px 6px 0px 0px #000000;
+  --color-bg: var(--theme-bg);
+  --color-surface: var(--theme-surface);
+  --color-surface-hover: var(--theme-surface-hover);
+  --color-text: var(--theme-text);
+  --color-border: var(--theme-border);
+
+  --shadow-brutal: 4px 4px 0px 0px var(--theme-border);
+  --shadow-brutal-sm: 2px 2px 0px 0px var(--theme-border);
+  --shadow-brutal-lg: 6px 6px 0px 0px var(--theme-border);
   
   --border-brutal: 3px;
   --border-brutal-sm: 2px;
@@ -41,22 +47,51 @@
   --color-primary: #8b5cf6; /* Base violet, dynamically set by accents */
   --color-primary-rgb: 139, 92, 246;
   
-  --color-bg: #fdfbf7; /* Warm off-white */
-  --color-text: #000000;
-  --color-border: #000000;
+  --theme-bg: #fdfbf7; /* Warm off-white */
+  --theme-text: #000000;
+  --theme-border: #000000;
 
   --color-success: #6ee7b7; /* Bright mint green */
   --color-warning: #fcd34d; /* Bright yellow */
   --color-danger: #fca5a5;  /* Bright red/pink */
   --color-info: #93c5fd;    /* Bright blue */
   
-  --color-surface: #ffffff;
-  --color-surface-hover: #f3f4f6;
+  --theme-surface: #ffffff;
+  --theme-surface-hover: #f3f4f6;
 }
 
 /* ─── Theming System ───────────────────────────────────────────────────────── */
-/* We keep theme switching mechanism for accent colors, but strip the dark variants 
-   since Neo-Brutalism in this context relies on stark light backgrounds and black borders */
+[data-theme='argentina'] {
+  --theme-bg: #74acdf;
+  --theme-surface: #ffffff;
+  --theme-surface-hover: #f1f5f9;
+  --theme-text: #0a1128;
+  --theme-border: #0a1128;
+}
+
+[data-theme='brazil'] {
+  --theme-bg: #009c3b;
+  --theme-surface: #ffffff;
+  --theme-surface-hover: #f1f5f9;
+  --theme-text: #002776;
+  --theme-border: #002776;
+}
+
+[data-theme='france'] {
+  --theme-bg: #002654;
+  --theme-surface: #ffffff;
+  --theme-surface-hover: #f1f5f9;
+  --theme-text: #002654;
+  --theme-border: #ed2939;
+}
+
+[data-theme='germany'] {
+  --theme-bg: #e2e8f0;
+  --theme-surface: #ffffff;
+  --theme-surface-hover: #f1f5f9;
+  --theme-text: #000000;
+  --theme-border: #000000;
+}
 
 /* ─── Base Resets ─────────────────────────────────────────────────────────── */
 *,
@@ -82,7 +117,7 @@ body {
 }
 
 *:focus-visible {
-  outline: 3px solid var(--color-border);
+  outline: 3px solid var(--theme-border);
   outline-offset: 2px;
 }
 
@@ -100,12 +135,12 @@ textarea:focus-visible {
 
 ::-webkit-scrollbar-track {
   background: var(--color-bg);
-  border-left: 2px solid var(--color-border);
+  border-left: 2px solid var(--theme-border);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-text);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--theme-border);
   border-radius: 4px;
 }
 
@@ -144,7 +179,7 @@ textarea:focus-visible {
 /* ─── Neo-Brutalist UI Primitives ────────────────────────────────────────── */
 .brutal-card {
   background-color: var(--color-surface);
-  border: 3px solid var(--color-border);
+  border: 3px solid var(--theme-border);
   border-radius: 24px;
   box-shadow: var(--shadow-brutal);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -165,7 +200,7 @@ textarea:focus-visible {
   background-color: var(--color-primary);
   color: #ffffff;
   font-weight: 700;
-  border: 3px solid var(--color-border);
+  border: 3px solid var(--theme-border);
   border-radius: 20px;
   box-shadow: var(--shadow-brutal);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -187,7 +222,7 @@ textarea:focus-visible {
 
 .brutal-input {
   background-color: var(--color-surface);
-  border: 3px solid var(--color-border);
+  border: 3px solid var(--theme-border);
   border-radius: 18px;
   color: var(--color-text);
   outline: none;

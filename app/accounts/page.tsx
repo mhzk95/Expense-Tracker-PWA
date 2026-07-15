@@ -69,24 +69,24 @@ export default function AccountsPage() {
       ) : (
         <>
           {/* Net worth summary */}
-          <div className="bg-[var(--color-primary)] border-[3px] sm:border-[4px] border-black rounded-[24px] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#000]">
+          <div className="bg-[var(--color-primary)] border-[3px] sm:border-[4px] border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 shadow-[6px_6px_0px_0px_var(--color-border)]">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-14 w-14 rounded-2xl bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] flex items-center justify-center">
-                <TrendingUp className="h-7 w-7 text-black stroke-[3px]" />
+              <div className="h-14 w-14 rounded-2xl bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center">
+                <TrendingUp className="h-7 w-7 text-[var(--color-text)] stroke-[3px]" />
               </div>
               <div>
-                <p className="text-xs font-black text-black/80 uppercase tracking-widest">Net Worth</p>
-                <p className="text-4xl sm:text-5xl font-black text-white mt-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-tight">{formatCurrency(netWorth)}</p>
+                <p className="text-xs font-black text-[var(--color-text)]/80 uppercase tracking-widest">Net Worth</p>
+                <p className="text-4xl sm:text-5xl font-black text-white mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(netWorth)}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 pt-5 border-t-[4px] border-black/20">
+            <div className="grid grid-cols-2 gap-4 pt-5 border-t-[4px] border-[var(--color-border)]/20">
               <div>
-                <p className="text-[11px] font-black text-black/80 uppercase tracking-widest">Total Assets</p>
-                <p className="text-xl sm:text-2xl font-black text-emerald-300 mt-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-tight">{formatCurrency(totalAssets)}</p>
+                <p className="text-[11px] font-black text-[var(--color-text)]/80 uppercase tracking-widest">Total Assets</p>
+                <p className="text-xl sm:text-2xl font-black text-emerald-300 mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(totalAssets)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-black text-black/80 uppercase tracking-widest">Total Liabilities</p>
-                <p className="text-xl sm:text-2xl font-black text-red-300 mt-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-tight">{formatCurrency(totalLiabilities)}</p>
+                <p className="text-[11px] font-black text-[var(--color-text)]/80 uppercase tracking-widest">Total Liabilities</p>
+                <p className="text-xl sm:text-2xl font-black text-red-300 mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(totalLiabilities)}</p>
               </div>
             </div>
           </div>

@@ -66,13 +66,13 @@ export function MobileWebHeader() {
   return (
     <>
       {/* ── Header bar ──────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[var(--color-bg)] border-b-[3px] border-black">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[var(--color-bg)] border-b-[3px] border-[var(--color-border)]">
         {/* Brand + page title */}
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl overflow-hidden bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center">
+          <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center">
             <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-black font-black uppercase tracking-wider text-sm">{pageTitle}</span>
+          <span className="text-[var(--color-text)] font-black uppercase tracking-wider text-sm">{pageTitle}</span>
         </div>
 
         {/* Right side: status + menu */}
@@ -80,7 +80,7 @@ export function MobileWebHeader() {
           {/* Network indicator */}
           <span
             className={cn(
-              "h-3 w-3 rounded-full border-2 border-black shadow-[1px_1px_0px_0px_#000]",
+              "h-3 w-3 rounded-full border-2 border-[var(--color-border)] shadow-[1px_1px_0px_0px_var(--color-border)]",
               isOnline ? "bg-emerald-400" : "bg-red-400"
             )}
             title={isOnline ? "Online" : "Offline"}
@@ -90,7 +90,7 @@ export function MobileWebHeader() {
           <button
             id="mobile-menu-toggle"
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex items-center justify-center h-10 w-10 rounded-xl bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] text-black active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+            className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] text-[var(--color-text)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -103,16 +103,16 @@ export function MobileWebHeader() {
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-[var(--color-bg)] animate-in slide-in-from-right duration-200">
           {/* Menu header */}
-          <div className="flex items-center justify-between px-4 h-16 border-b-[3px] border-black bg-white">
+          <div className="flex items-center justify-between px-4 h-16 border-b-[3px] border-[var(--color-border)] bg-[var(--color-surface)]">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-xl overflow-hidden bg-white border-[3px] border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center">
+              <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center">
                 <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="text-black font-black uppercase tracking-wider text-sm">Menu</span>
+              <span className="text-[var(--color-text)] font-black uppercase tracking-wider text-sm">Menu</span>
             </div>
             <button
               onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-primary)] border-[3px] border-black shadow-[2px_2px_0px_0px_#000] text-white active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+              className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] text-white active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               aria-label="Close menu"
             >
               <X className="h-6 w-6 stroke-[3px]" />
@@ -133,8 +133,8 @@ export function MobileWebHeader() {
                   className={cn(
                     "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] active:translate-y-1 active:translate-x-1 active:shadow-none",
                     isActive
-                      ? "bg-[var(--color-primary)] text-white border-black shadow-[4px_4px_0px_0px_#000]"
-                      : "bg-white text-black border-black shadow-[4px_4px_0px_0px_#000]"
+                      ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
+                      : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
                   )}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -142,7 +142,7 @@ export function MobileWebHeader() {
                     <Icon
                       className={cn(
                         "h-6 w-6 stroke-[3px]",
-                        isActive ? "text-white" : "text-black"
+                        isActive ? "text-white" : "text-[var(--color-text)]"
                       )}
                     />
                   )}
@@ -163,8 +163,8 @@ export function MobileWebHeader() {
               className={cn(
                 "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] mt-6 active:translate-y-1 active:translate-x-1 active:shadow-none",
                 pathname === "/pwa-diagnostics"
-                  ? "bg-emerald-400 text-black border-black shadow-[4px_4px_0px_0px_#000]"
-                  : "bg-white text-black border-black shadow-[4px_4px_0px_0px_#000]"
+                  ? "bg-emerald-400 text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
               )}
             >
               <Stethoscope className="h-6 w-6 stroke-[3px]" />
@@ -176,12 +176,12 @@ export function MobileWebHeader() {
           </nav>
 
           {/* Status footer */}
-          <div className="px-6 py-5 border-t-[3px] border-black bg-white">
-            <div className="flex items-center gap-3 text-sm font-bold text-black uppercase tracking-widest">
+          <div className="px-6 py-5 border-t-[3px] border-[var(--color-border)] bg-[var(--color-surface)]">
+            <div className="flex items-center gap-3 text-sm font-bold text-[var(--color-text)] uppercase tracking-widest">
               <span
                 className={cn(
-                  "h-3 w-3 rounded-full border-2 border-black",
-                  isOnline ? "bg-emerald-400 shadow-[2px_2px_0px_0px_#000]" : "bg-red-400 shadow-[2px_2px_0px_0px_#000]"
+                  "h-3 w-3 rounded-full border-2 border-[var(--color-border)]",
+                  isOnline ? "bg-emerald-400 shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-red-400 shadow-[2px_2px_0px_0px_var(--color-border)]"
                 )}
               />
               {isOnline ? "Connected" : "Offline"}

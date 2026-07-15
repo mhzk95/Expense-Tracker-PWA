@@ -53,21 +53,21 @@ export function CategorySpending() {
   if (txLoading || catLoading) {
     return (
       <Card className="flex flex-col h-full animate-pulse">
-        <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black">
-          <div className="h-4 w-36 bg-gray-200 border-2 border-black rounded-full" />
-          <div className="h-3 w-24 bg-gray-200 border-2 border-black rounded-full" />
+        <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-[var(--color-border)]">
+          <div className="h-4 w-36 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+          <div className="h-3 w-24 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
         </div>
         <div className="p-5 flex-1 space-y-5">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-black bg-gray-200" />
-                  <div className="h-4 w-20 bg-gray-200 border-2 border-black rounded-full" />
+                  <div className="w-4 h-4 rounded-full border-2 border-[var(--color-border)] bg-gray-200" />
+                  <div className="h-4 w-20 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
                 </div>
-                <div className="h-4 w-12 bg-gray-200 border-2 border-black rounded-full" />
+                <div className="h-4 w-12 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
               </div>
-              <div className="h-3 w-full bg-gray-200 border-2 border-black rounded-full" />
+              <div className="h-3 w-full bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
             </div>
           ))}
         </div>
@@ -77,7 +77,7 @@ export function CategorySpending() {
 
   return (
     <Card className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black bg-[var(--color-primary)]">
+      <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-[var(--color-border)] bg-[var(--color-primary)]">
         <h2 className="text-base font-black uppercase tracking-wider text-white">Where your money goes</h2>
         <Link
           href="/analytics"
@@ -100,19 +100,19 @@ export function CategorySpending() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-4 h-4 rounded-full border-2 border-black"
+                      className="w-4 h-4 rounded-full border-2 border-[var(--color-border)]"
                       style={{ backgroundColor: cat.color }}
                     />
-                    <span className="font-bold text-black text-base">{cat.name}</span>
+                    <span className="font-bold text-[var(--color-text)] text-base">{cat.name}</span>
                   </div>
-                  <span className="font-black text-black tabular-nums text-lg">
+                  <span className="font-black text-[var(--color-text)] tabular-nums text-lg">
                     {formatCurrency(cat.amount)}
                   </span>
                 </div>
 
-                <div className="h-3 w-full bg-gray-200 border-[3px] border-black rounded-full overflow-hidden">
+                <div className="h-3 w-full bg-gray-200 border-[3px] border-[var(--color-border)] rounded-full overflow-hidden">
                   <div
-                    className="h-full border-r-[3px] border-black"
+                    className="h-full border-r-[3px] border-[var(--color-border)]"
                     style={{
                       width: `${cat.percentage}%`,
                       backgroundColor: cat.color,

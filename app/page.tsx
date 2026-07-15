@@ -16,19 +16,19 @@ function DashboardSkeleton() {
       {/* PageHeader Skeleton */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="h-8 w-48 bg-gray-200 border-2 border-black rounded-[20px] mb-2 shadow-[2px_2px_0px_0px_#000]" />
-          <div className="h-4 w-64 bg-gray-200 border-2 border-black rounded-[20px] shadow-[2px_2px_0px_0px_#000]" />
+          <div className="h-8 w-48 bg-gray-200 border-2 border-[var(--color-border)] rounded-[20px] mb-2 shadow-[2px_2px_0px_0px_var(--color-border)]" />
+          <div className="h-4 w-64 bg-gray-200 border-2 border-[var(--color-border)] rounded-[20px] shadow-[2px_2px_0px_0px_var(--color-border)]" />
         </div>
-        <div className="h-10 w-32 bg-gray-200 border-2 border-black rounded-[20px] shadow-[2px_2px_0px_0px_#000]" />
+        <div className="h-10 w-32 bg-gray-200 border-2 border-[var(--color-border)] rounded-[20px] shadow-[2px_2px_0px_0px_var(--color-border)]" />
       </div>
 
       {/* Stats Skeleton */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="brutal-card p-5 h-28 flex flex-col justify-between">
-            <div className="h-3 w-16 bg-gray-200 border border-black rounded-full" />
-            <div className="h-6 w-24 bg-gray-200 border border-black rounded-full mt-2" />
-            <div className="h-3 w-20 bg-gray-200 border border-black rounded-full mt-2" />
+            <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
+            <div className="h-6 w-24 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
+            <div className="h-3 w-20 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
           </div>
         ))}
       </div>
@@ -37,16 +37,16 @@ function DashboardSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Transactions Skeleton */}
         <div className="space-y-3">
-          <div className="h-5 w-36 bg-gray-200 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000]" />
+          <div className="h-5 w-36 bg-gray-200 border-2 border-[var(--color-border)] rounded-lg shadow-[2px_2px_0px_0px_var(--color-border)]" />
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="brutal-card p-4 flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-gray-200 border-2 border-black" />
+                <div className="h-12 w-12 rounded-xl bg-gray-200 border-2 border-[var(--color-border)]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-24 bg-gray-200 border-2 border-black rounded-full" />
-                  <div className="h-3 w-16 bg-gray-200 border border-black rounded-full" />
+                  <div className="h-4 w-24 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
                 </div>
-                <div className="h-5 w-16 bg-gray-200 border-2 border-black rounded-full" />
+                <div className="h-5 w-16 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
               </div>
             ))}
           </div>
@@ -54,13 +54,13 @@ function DashboardSkeleton() {
 
         {/* Category Spending Skeleton */}
         <div className="space-y-3">
-          <div className="h-5 w-36 bg-gray-200 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000]" />
+          <div className="h-5 w-36 bg-gray-200 border-2 border-[var(--color-border)] rounded-lg shadow-[2px_2px_0px_0px_var(--color-border)]" />
           <div className="brutal-card p-5 h-[368px] flex flex-col justify-between">
-            <div className="h-4 w-28 bg-gray-200 border-2 border-black rounded-full animate-pulse" />
+            <div className="h-4 w-28 bg-gray-200 border-2 border-[var(--color-border)] rounded-full animate-pulse" />
             <div className="h-48 w-48 rounded-full border-[12px] border-gray-200 mx-auto flex items-center justify-center" />
             <div className="flex justify-center gap-4">
-              <div className="h-4 w-16 bg-gray-200 border-2 border-black rounded-full" />
-              <div className="h-4 w-16 bg-gray-200 border-2 border-black rounded-full" />
+              <div className="h-4 w-16 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+              <div className="h-4 w-16 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
             </div>
           </div>
         </div>

@@ -175,10 +175,10 @@ export function CommandBar() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-[0_4px_20px_rgba(124,58,237,0.5)] hover:bg-violet-500 hover:scale-105 transition-all"
+        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center border-4 border-[var(--color-border)] shadow-brutal-lg hover:bg-violet-400 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:translate-x-1.5 active:translate-y-1.5 active:shadow-none"
         aria-label="Smart Entry"
       >
-        <Sparkles className="h-6 w-6" />
+        <Sparkles className="h-6 w-6 stroke-[2.5px]" />
       </button>
 
       {/* Modal */}
@@ -190,28 +190,28 @@ export function CommandBar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md"
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed top-[20%] left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-50 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+              className="fixed top-[20%] left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-50 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[24px] overflow-hidden shadow-[8px_8px_0px_0px_var(--color-border)]"
             >
-              <div className="p-4 border-b border-slate-800/60 flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-violet-500/20 flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-violet-400" />
+              <div className="p-4 border-b-4 border-[var(--color-border)] bg-[var(--color-primary)] flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center shadow-brutal-sm">
+                  <Sparkles className="h-5 w-5 text-[var(--color-text)] stroke-[2.5px]" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white font-medium">Smart Entry</h3>
-                  <p className="text-[10px] text-slate-400">Log txns, type URLs, or say "Remind me to..."</p>
+                  <h3 className="text-white font-black uppercase tracking-wider">Smart Entry</h3>
+                  <p className="text-[10px] text-white/90 font-bold">Log txns, type URLs, or say "Remind me to..."</p>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white min-w-tap-target min-h-tap-target flex items-center justify-center -mr-2">
-                  <X className="h-5 w-5" />
+                <button onClick={() => setIsOpen(false)} className="text-white hover:text-white/80 min-w-tap-target min-h-tap-target flex items-center justify-center -mr-2 transition-colors">
+                  <X className="h-6 w-6 stroke-[3px]" />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-4 space-y-4">
+              <form onSubmit={handleSubmit} className="p-5 space-y-4 bg-[var(--color-bg)]">
                 <div className="relative">
                   <input
                     type="text"
@@ -219,11 +219,11 @@ export function CommandBar() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="E.g., Spent 45 on gas, or https://..."
-                    className="w-full bg-transparent border-none text-xl text-white focus:ring-0 px-2 py-4 placeholder:text-slate-600 pr-24"
+                    className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] text-xl text-[var(--color-text)] font-bold focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-x-1 focus:-translate-y-1 transition-all outline-none rounded-[16px] px-4 py-4 placeholder:text-gray-400 pr-20"
                   />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="min-w-tap-target min-h-tap-target flex items-center justify-center text-slate-500 hover:text-violet-400 bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-colors">
-                      <ImageIcon className="h-4 w-4" />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="min-w-tap-target min-h-tap-target flex items-center justify-center bg-[var(--color-surface-hover)] border-2 border-[var(--color-border)] rounded-xl text-[var(--color-text)] hover:bg-[var(--color-border)] hover:text-[var(--color-surface)] shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+                      <ImageIcon className="h-5 w-5 stroke-[2.5px]" />
                     </button>
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
                   </div>
@@ -237,10 +237,10 @@ export function CommandBar() {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="flex items-center gap-3 p-3 bg-violet-500/10 border border-violet-500/20 rounded-2xl">
+                      <div className="flex items-center gap-3 p-4 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-brutal text-white">
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-violet-300 font-medium">Ready to log</p>
-                          <p className="text-sm text-white font-semibold truncate">
+                          <p className="text-[10px] uppercase font-black tracking-widest opacity-80">Ready to log</p>
+                          <p className="text-base font-bold truncate mt-1">
                             {parsed.type === "transaction" 
                               ? `${parsed.txType === "expense" ? "-" : "+"}${parsed.amount} for ${parsed.description}`
                               : parsed.type === "reminder"
@@ -253,9 +253,9 @@ export function CommandBar() {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="min-h-tap-target min-w-tap-target px-4 shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                          className="h-12 px-5 shrink-0 rounded-xl bg-[var(--color-border)] text-[var(--color-surface)] text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-90 transition-all border-2 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50 shadow-brutal-sm active:shadow-none"
                         >
-                          {isSubmitting ? "Saving" : "Save"} <Send className="h-4 w-4" />
+                          {isSubmitting ? "Saving" : "Save"} <Send className="h-4 w-4 stroke-[3px]" />
                         </button>
                       </div>
                     </motion.div>

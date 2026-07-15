@@ -24,7 +24,7 @@ export function PageHeader({ title, subtitle, action, className }: PageHeaderPro
       )}
     >
       <div>
-        <h1 className="text-3xl font-black text-black tracking-tight uppercase">{title}</h1>
+        <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight uppercase">{title}</h1>
         {subtitle && (
           <p className="mt-1 text-xs font-bold text-gray-600 uppercase tracking-widest">{subtitle}</p>
         )}

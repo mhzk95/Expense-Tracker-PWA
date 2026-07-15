@@ -58,9 +58,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   
   const availableCategories = categories.filter(c => c.type === type);
   const focusStyles = {
-    expense: "focus:shadow-[4px_4px_0px_0px_#000] focus:-translate-y-0.5",
-    income: "focus:shadow-[4px_4px_0px_0px_#000] focus:-translate-y-0.5",
-    transfer: "focus:shadow-[4px_4px_0px_0px_#000] focus:-translate-y-0.5",
+    expense: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    income: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    transfer: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
   };
   const activeFocus = focusStyles[type];
   
@@ -666,22 +666,22 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
         
         {/* Main Details Card - Structured Stacking Context relative z-30 */}
-        <div className="relative z-30 p-4 bg-white border-[3px] border-black rounded-[24px] shadow-[4px_4px_0px_0px_#000] space-y-4">
+        <div className="relative z-30 p-4 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)] space-y-4">
           {/* Type Toggle */}
-          <div className="flex p-1 bg-gray-100 rounded-xl border-2 border-black shadow-inner">
+          <div className="flex p-1 bg-gray-100 rounded-xl border-2 border-[var(--color-border)] shadow-inner">
             {(["expense", "income", "transfer"] as const).map((t) => {
               const isActive = type === t;
               const activeClasses = 
-                t === "expense" ? "bg-red-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]" :
-                t === "income" ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]" :
-                "bg-blue-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]";
+                t === "expense" ? "bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" :
+                t === "income" ? "bg-emerald-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" :
+                "bg-blue-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]";
               return (
                 <button
                   key={t}
                   type="button"
                   onClick={() => handleTypeChange(t)}
                   className={`flex-1 py-2 text-[11px] font-black uppercase tracking-widest rounded-lg transition-all ${
-                    isActive ? activeClasses : "text-gray-500 hover:text-black border-2 border-transparent"
+                    isActive ? activeClasses : "text-gray-500 hover:text-[var(--color-text)] border-2 border-transparent"
                   }`}
                 >
                   {t}
@@ -694,14 +694,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <div className="relative z-20">
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
-                <label className="block text-[10px] font-black text-black uppercase tracking-widest">Amount</label>
+                <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Amount</label>
                 {showLivePreview && livePreviewValue && (
-                  <span className="text-[10px] text-black font-black truncate bg-emerald-300 px-2 py-0.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                  <span className="text-[10px] text-[var(--color-text)] font-black truncate bg-emerald-300 px-2 py-0.5 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
                     = ₹{livePreviewValue}
                   </span>
                 )}
               </div>
-              <label className="flex items-center gap-1 text-[10px] text-white font-black cursor-pointer bg-[var(--color-primary)] px-3 py-1 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all uppercase tracking-widest">
+              <label className="flex items-center gap-1 text-[10px] text-white font-black cursor-pointer bg-[var(--color-primary)] px-3 py-1 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all uppercase tracking-widest">
                 {isScanning ? <Loader2 className="w-3 h-3 animate-spin stroke-[3px]" /> : <Camera className="w-3 h-3 stroke-[3px]" />}
                 <span>Scan</span>
                 <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
@@ -709,7 +709,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </div>
 
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black text-xl font-black">₹</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text)] text-xl font-black">₹</span>
               <input
                 type="text"
                 inputMode="none"
@@ -727,7 +727,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   setShowAccountDropdown(false);
                   setShowToAccountDropdown(false);
                 }}
-                className={`w-full bg-white border-2 border-black rounded-xl pl-9 pr-4 py-3 text-2xl font-black text-black transition-all outline-none ${activeFocus}`}
+                className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-9 pr-4 py-3 text-2xl font-black text-[var(--color-text)] transition-all outline-none ${activeFocus}`}
                 placeholder="0.00"
                 required
                 autoFocus={!editingTransaction}
@@ -752,7 +752,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     handleQuickAdd(val);
                     vibrate([20]);
                   }}
-                  className="px-2.5 py-1 text-[10px] font-black bg-white border-2 border-black rounded-lg text-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none"
+                  className="px-2.5 py-1 text-[10px] font-black bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none"
                 >
                   +{val}
                 </button>
@@ -763,7 +763,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   setAmount("");
                   vibrate([20]);
                 }}
-                className="px-2.5 py-1 text-[10px] font-black bg-red-400 border-2 border-black rounded-lg text-black hover:bg-red-500 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none ml-auto"
+                className="px-2.5 py-1 text-[10px] font-black bg-red-400 border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-red-500 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none ml-auto"
               >
                 Clear
               </button>
@@ -777,32 +777,32 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="overflow-hidden bg-white border-[3px] border-black rounded-[24px] p-3 space-y-2 mt-3 shadow-[8px_8px_0px_0px_#000] relative z-40"
+                  className="overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] p-3 space-y-2 mt-3 shadow-[8px_8px_0px_0px_var(--color-border)] relative z-40"
                 >
                   <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
-                    <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">C</button>
-                    <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center justify-center">⌫</button>
-                    <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">/</button>
-                    <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">*</button>
+                    <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">C</button>
+                    <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center justify-center">⌫</button>
+                    <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">/</button>
+                    <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">*</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">7</button>
-                    <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">8</button>
-                    <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">9</button>
-                    <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">-</button>
+                    <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">7</button>
+                    <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">8</button>
+                    <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">9</button>
+                    <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">-</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">4</button>
-                    <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">5</button>
-                    <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">6</button>
-                    <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">+</button>
+                    <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">4</button>
+                    <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">5</button>
+                    <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">6</button>
+                    <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">+</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">1</button>
-                    <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">2</button>
-                    <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">3</button>
-                    <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">=</button>
+                    <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">1</button>
+                    <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">2</button>
+                    <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">3</button>
+                    <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">=</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">0</button>
-                    <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-white border-2 border-black text-black font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">.</button>
-                    <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-400 border-2 border-black text-black font-black hover:bg-emerald-500 transition-all shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">Next</button>
+                    <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">0</button>
+                    <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">.</button>
+                    <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-400 border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-emerald-500 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">Next</button>
                   </div>
                 </motion.div>
               )}
@@ -810,11 +810,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </div>
 
           {/* Core Details Group */}
-          <div className="bg-gray-100 border-[3px] border-black rounded-[16px] p-4 space-y-4 shadow-inner">
+          <div className="bg-gray-100 border-[3px] border-[var(--color-border)] rounded-[16px] p-4 space-y-4 shadow-inner">
             {/* Date & Time Selection (Side by Side) - relative z-10 */}
             <div className="relative z-10 grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Date</label>
+              <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Date</label>
               <input
                 type="date"
                 value={date}
@@ -825,12 +825,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   setShowAccountDropdown(false);
                   setShowToAccountDropdown(false);
                 }}
-                className={`w-full bg-white border-2 border-black rounded-xl px-3 py-2.5 text-xs text-black font-bold transition-all outline-none ${activeFocus}`}
+                className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none ${activeFocus}`}
                 required
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Time</label>
+              <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Time</label>
               <input
                 type="time"
                 value={time}
@@ -841,7 +841,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   setShowAccountDropdown(false);
                   setShowToAccountDropdown(false);
                 }}
-                className={`w-full bg-white border-2 border-black rounded-xl px-3 py-2.5 text-xs text-black font-bold transition-all outline-none ${activeFocus}`}
+                className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none ${activeFocus}`}
                 required
               />
             </div>
@@ -851,7 +851,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           {type !== "transfer" ? (
             <div className="relative z-25 grid grid-cols-2 gap-3">
               <div className="relative z-50">
-                <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Category</label>
+                <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Category</label>
                 
                 <div className="relative">
                   <button
@@ -862,7 +862,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedCat = categories.find(c => c.id === categoryId);
@@ -878,7 +878,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           >
                             <IconComp className="w-3 h-3 stroke-[3px]" style={{ color: selectedCat.color }} />
                           </span>
-                          <span className="text-xs font-black truncate text-black">{selectedCat.name}</span>
+                          <span className="text-xs font-black truncate text-[var(--color-text)]">{selectedCat.name}</span>
                         </span>
                       );
                     })()}
@@ -891,16 +891,16 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 mt-1 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-xl shadow-xl overflow-hidden max-h-60 flex flex-col"
+                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] overflow-hidden max-h-60 flex flex-col"
                       >
-                        <div className="relative p-2 border-b border-slate-700/50">
-                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+                        <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-gray-100">
+                          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text)] stroke-[3px]" />
                           <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Search categories..."
                             value={categorySearch}
                             onChange={(e) => setCategorySearch(e.target.value)}
-                            className="w-full bg-slate-950/50 border border-slate-800/80 rounded-lg pl-8 pr-2 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500/50 transition-colors"
+                            className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[var(--color-text)] font-black placeholder-gray-500 outline-none transition-all focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5 focus:-translate-x-0.5"
                           />
                         </div>
 
@@ -920,9 +920,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           if (suggested.length === 0) return null;
 
                           return (
-                            <div className="flex flex-col gap-1">
-                              <span className="text-[9px] uppercase tracking-wider font-semibold text-slate-500">Suggestions</span>
-                              <div className="flex flex-wrap gap-1">
+                            <div className="flex flex-col gap-2 p-3 border-b-[4px] border-[var(--color-border)] bg-[var(--color-surface)]">
+                              <span className="text-[10px] uppercase tracking-widest font-black text-[var(--color-text)]">Suggestions</span>
+                              <div className="flex flex-wrap gap-2">
                                 {suggested.map(cat => {
                                   const IconComp = getCategoryIcon(cat.icon);
                                   return (
@@ -934,10 +934,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                         setIsCategoryManuallySet(true);
                                         setShowCategoryDropdown(false);
                                       }}
-                                      className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800/50 text-[10px] text-slate-300 hover:text-white transition-all"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[10px] font-black text-[var(--color-text)] hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                                     >
-                                      <span className="w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: `${cat.color}20` }}>
-                                        <IconComp className="w-2 h-2" style={{ color: cat.color }} />
+                                      <span className="w-4 h-4 rounded-full flex items-center justify-center border border-[var(--color-border)] shadow-[1px_1px_0px_0px_var(--color-border)]" style={{ backgroundColor: `${cat.color}20` }}>
+                                        <IconComp className="w-2.5 h-2.5 stroke-[3px]" style={{ color: cat.color }} />
                                       </span>
                                       {cat.name}
                                     </button>
@@ -963,14 +963,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                     setIsCategoryManuallySet(true);
                                     setShowCategoryDropdown(false);
                                   }}
-                                  className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs transition-colors border-b border-slate-800/50 last:border-0 ${
-                                    isSelected ? "bg-slate-800/80 text-white font-medium" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b-[3px] border-[var(--color-border)] last:border-b-0 ${
+                                    isSelected ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100 active:bg-gray-200"
                                   }`}
                                 >
-                                  <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${cat.color}20` }}>
-                                    <IconComp className="w-3 h-3" style={{ color: cat.color }} />
+                                  <span className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 border-2 ${isSelected ? 'border-white' : 'border-[var(--color-border)]'} shadow-[2px_2px_0px_0px_var(--color-border)]`} style={{ backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : `${cat.color}20` }}>
+                                    <IconComp className="w-4 h-4 stroke-[3px]" style={{ color: isSelected ? 'white' : cat.color }} />
                                   </span>
-                                  <span className="flex-1 truncate">{cat.name}</span>
+                                  <span className={`flex-1 truncate text-xs font-black uppercase tracking-wider`}>{cat.name}</span>
                                 </button>
                               );
                             })}
@@ -981,10 +981,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                               setIsCreatingCategory(true);
                               setShowCategoryDropdown(false);
                             }}
-                            className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs text-[var(--color-primary)] stroke-[3px] hover:bg-slate-800 transition-colors font-semibold"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-4 text-center text-xs text-white bg-black hover:bg-gray-800 transition-colors border-t-[4px] border-[var(--color-border)] font-black uppercase tracking-widest active:bg-gray-900"
                           >
-                            <Plus className="w-4 h-4 opacity-70" />
-                            <span>New Category</span>
+                            <Plus className="w-5 h-5 stroke-[3px]" />
+                            <span>Add New Category</span>
                           </button>
                         </div>
                       </motion.div>
@@ -994,7 +994,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               </div>
 
               <div className="relative z-45">
-                <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Account</label>
+                <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Account</label>
                 
                 <div className="relative">
                   <button
@@ -1005,14 +1005,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
                       if (!selectedAcc) {
                         return <span className="text-gray-500 text-xs font-bold">Select...</span>;
                       }
-                      return <span className="text-xs font-black truncate text-black">{selectedAcc.name}</span>;
+                      return <span className="text-xs font-black truncate text-[var(--color-text)]">{selectedAcc.name}</span>;
                     })()}
                     <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
                   </button>
@@ -1023,7 +1023,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-[-60px] md:left-0 right-0 mt-2 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.length === 0 ? (
                           <div className="text-slate-500 text-[11px] p-2 text-center">No accounts</div>
@@ -1039,8 +1039,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                   setIsAccountManuallySet(true);
                                   setShowAccountDropdown(false);
                                 }}
-                                className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors ${
-                                  isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                                className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
+                                  isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
                                 }`}
                               >
                                 {acc.name}
@@ -1057,7 +1057,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           ) : (
             <div className="relative z-25 grid grid-cols-2 gap-3">
               <div className="relative z-50">
-                <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">From Account</label>
+                <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">From Account</label>
                 
                 <div className="relative">
                   <button
@@ -1068,14 +1068,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
                       if (!selectedAcc) {
                         return <span className="text-gray-500 text-xs font-bold">Select...</span>;
                       }
-                      return <span className="text-xs font-black truncate text-black">{selectedAcc.name}</span>;
+                      return <span className="text-xs font-black truncate text-[var(--color-text)]">{selectedAcc.name}</span>;
                     })()}
                     <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
                   </button>
@@ -1086,7 +1086,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-0 right-0 mt-2 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.map((acc) => {
                           const isSelected = acc.id === accountId;
@@ -1099,8 +1099,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setIsAccountManuallySet(true);
                                 setShowAccountDropdown(false);
                               }}
-                              className={`w-full px-3 py-2.5 rounded-lg text-left text-[11px] transition-colors ${
-                                isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
+                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
                               }`}
                             >
                                 {acc.name}
@@ -1114,7 +1114,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               </div>
 
               <div className="relative z-45">
-                <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">To Account</label>
+                <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">To Account</label>
                 
                 <div className="relative">
                   <button
@@ -1125,14 +1125,14 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-slate-950/40 border border-slate-800/80 rounded-xl px-3 py-2.5 text-white transition-all shadow-inner outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === toAccountId);
                       if (!selectedAcc) {
                         return <span className="text-gray-500 text-xs font-bold">Select...</span>;
                       }
-                      return <span className="text-xs font-black truncate text-black">{selectedAcc.name}</span>;
+                      return <span className="text-xs font-black truncate text-[var(--color-text)]">{selectedAcc.name}</span>;
                     })()}
                     <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
                   </button>
@@ -1143,7 +1143,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-[-60px] md:left-0 right-0 mt-2 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-2xl shadow-2xl p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         <option value="" disabled>Select destination</option>
                         {accounts.filter(a => a.id !== accountId).map((acc) => {
@@ -1157,8 +1157,8 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setIsAccountManuallySet(true);
                                 setShowToAccountDropdown(false);
                               }}
-                              className={`w-full px-3 py-2.5 rounded-lg text-left text-[11px] transition-colors ${
-                                isSelected ? "bg-slate-900 text-white font-medium border border-slate-800" : "text-slate-300 hover:bg-slate-900/50 hover:text-white"
+                              className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
+                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
                               }`}
                             >
                               {acc.name}
@@ -1209,7 +1209,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             setShowAccountDropdown(false);
             setShowToAccountDropdown(false);
           }}
-          className="w-full py-3 px-4 rounded-xl border-[3px] border-black bg-gray-100 text-black font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-gray-200 shadow-[4px_4px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none"
+          className="w-full py-3 px-4 rounded-xl border-[3px] border-[var(--color-border)] bg-gray-100 text-[var(--color-text)] font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-gray-200 shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none"
         >
           <span>{showOptionalDetails ? "Hide Optional Details" : "Show Optional Details"}</span>
           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showOptionalDetails ? "rotate-180" : ""}`} />
@@ -1224,12 +1224,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               transition={{ duration: 0.15 }}
               className="space-y-4 overflow-hidden pt-1 relative z-20"
             >
-              <div className="p-4 bg-white border-[3px] border-black rounded-[24px] shadow-[4px_4px_0px_0px_#000] space-y-4">
+              <div className="p-4 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)] space-y-4">
                 
                 {/* Payee / Merchant with Auto Suggest */}
                 {type !== "transfer" && (
                   <div className="relative">
-                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Payee / Merchant</label>
+                    <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Payee / Merchant</label>
                     <input
                       id="payee-input"
                       type="text"
@@ -1246,7 +1246,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         setPayee(e.target.value);
                         setShowPayeeSuggestions(true);
                       }}
-                      className={`w-full bg-white border-2 border-black rounded-xl px-3 py-2.5 text-xs text-black font-bold transition-all outline-none ${activeFocus}`}
+                      className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none ${activeFocus}`}
                       placeholder="E.g., Uber, Starbucks, Amazon..."
                     />
                     <AnimatePresence>
@@ -1255,7 +1255,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 5 }}
-                          className="absolute z-[70] left-0 right-0 mt-1 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                          className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                         >
                           {payeeSuggestions.slice(0, 5).map(p => (
                             <button
@@ -1279,7 +1279,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
                 {/* Item Name with Auto Suggest */}
                 <div className="relative">
-                  <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Item Name</label>
+                  <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Item Name</label>
                   <input
                     id="item-name-input"
                     type="text"
@@ -1296,7 +1296,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setDescription(e.target.value);
                       setShowItemSuggestions(true);
                     }}
-                    className={`w-full bg-white border-2 border-black rounded-xl px-3 py-2.5 text-xs text-black font-bold transition-all outline-none ${activeFocus}`}
+                    className={`w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none ${activeFocus}`}
                     placeholder={type === "transfer" ? "Transfer" : "E.g., Grocery Shopping, Coffee..."}
                   />
                   <AnimatePresence>
@@ -1305,7 +1305,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 mt-1 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {itemSuggestions.slice(0, 5).map(i => (
                           <button
@@ -1328,7 +1328,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
 
                 {/* Location */}
                 <div className="relative">
-                  <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Location</label>
+                  <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Location</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -1341,7 +1341,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         setShowToAccountDropdown(false);
                       }}
                       onChange={handleLocationInputChange}
-                      className={`flex-1 min-w-0 bg-white border-2 border-black rounded-xl pl-3 pr-8 py-2.5 text-xs text-black font-bold transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed ${activeFocus}`}
+                      className={`flex-1 min-w-0 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-3 pr-8 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed ${activeFocus}`}
                       placeholder="Search or paste map link..."
                     />
                     <AnimatePresence>
@@ -1365,7 +1365,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         await fetchLocation();
                       }}
                       disabled={locationLoading}
-                      className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-white border-2 border-black text-black hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all outline-none ${activeFocus}`}
+                      className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all outline-none ${activeFocus}`}
                       title="Use current location"
                     >
                       {locationLoading ? (
@@ -1380,7 +1380,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                 {/* Notes with Inline Hashtags */}
                 <div className="relative">
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-[10px] font-black text-black uppercase tracking-widest">Notes</label>
+                    <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Notes</label>
                     <AnimatePresence>
                       {selectedWordRange && (
                         <motion.button
@@ -1420,7 +1420,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       onChange={handleNoteChange}
                       onSelect={handleNoteSelect}
                       rows={2}
-                      className={`relative z-10 w-full bg-white border-2 border-black rounded-xl px-3 py-2.5 text-xs text-black font-bold transition-all outline-none resize-none bg-transparent ${activeFocus}`}
+                      className={`relative z-10 w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs text-[var(--color-text)] font-bold transition-all outline-none resize-none bg-transparent ${activeFocus}`}
                       placeholder="E.g., split with friends... Use #tag for tags"
                     />
                   </div>
@@ -1431,7 +1431,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-white border-[3px] border-black rounded-[16px] shadow-[8px_8px_0px_0px_#000] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {tagSuggestions.slice(0, 5).map(t => (
                           <button
@@ -1456,9 +1456,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         </AnimatePresence>
 
         {/* Needs Review Toggle - relative z-10 */}
-        <div className="relative z-10 flex items-center justify-between p-4 bg-gray-50 rounded-[16px] border-[3px] border-black">
+        <div className="relative z-10 flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-[3px] border-[var(--color-border)]">
           <div className="pr-4">
-            <label className="block text-[10px] font-black text-black uppercase tracking-widest">Needs Review</label>
+            <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Needs Review</label>
             <p className="text-[10px] font-bold text-gray-500 mt-0.5 leading-tight uppercase tracking-wider">
               Flag this transaction for verification or matching later.
             </p>
@@ -1466,25 +1466,25 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           <button
             type="button"
             onClick={() => setNeedsReview(!needsReview)}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-black transition-colors duration-200 ease-in-out focus:outline-none ${needsReview ? 'bg-amber-400' : 'bg-gray-300'}`}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-[var(--color-border)] transition-colors duration-200 ease-in-out focus:outline-none ${needsReview ? 'bg-amber-400' : 'bg-gray-300'}`}
           >
             <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] ring-0 transition duration-200 ease-in-out ${needsReview ? 'translate-x-5' : 'translate-x-0'}`}
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] ring-0 transition duration-200 ease-in-out ${needsReview ? 'translate-x-5' : 'translate-x-0'}`}
             />
           </button>
         </div>
 
       </div>
 
-      <div className="absolute bottom-0 inset-x-0 p-4 bg-white border-t-[3px] border-black flex-shrink-0 z-20">
+      <div className="absolute bottom-0 inset-x-0 p-4 bg-[var(--color-surface)] border-t-[3px] border-[var(--color-border)] flex-shrink-0 z-[100]">
         <button
           type="submit"
           disabled={isSubmitting || !amount}
-          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-[3px] border-black transition-all disabled:opacity-50 shadow-[4px_4px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none ${
+          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-[3px] border-[var(--color-border)] transition-all disabled:opacity-50 shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none ${
             type === "expense"
-              ? "bg-red-400 hover:bg-red-500 text-black"
+              ? "bg-red-400 hover:bg-red-500 text-[var(--color-text)]"
               : type === "income"
-              ? "bg-emerald-400 hover:bg-emerald-500 text-black"
+              ? "bg-emerald-400 hover:bg-emerald-500 text-[var(--color-text)]"
               : "bg-[var(--color-primary)] hover:bg-violet-500 text-white"
           }`}
         >

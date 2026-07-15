@@ -209,24 +209,24 @@ export default function TransactionsPage() {
             type="button"
             onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
             className={cn(
-              "bg-white border-[3px] sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
+              "bg-[var(--color-surface)] border-[3px] sm:border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] sm:shadow-[6px_6px_0px_0px_var(--color-border)] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
               selectedDateRange === 'today' ? "bg-emerald-400" : ""
             )}
           >
             <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black bg-white flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_0px_#000]">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
                 <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
               </div>
               <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-black">Today</span>
-                <span className="text-lg sm:text-2xl font-black text-black tracking-tight truncate mt-0.5">
+                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-[var(--color-text)]">Today</span>
+                <span className="text-lg sm:text-2xl font-black text-[var(--color-text)] tracking-tight truncate mt-0.5">
                   {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
                 </span>
                 <span className="text-[10px] sm:text-xs font-bold text-gray-700 mt-0.5 uppercase tracking-wider">Spent</span>
               </div>
             </div>
-            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-black w-full flex justify-center">
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black">{todayTxns.length} Transactions</span>
+            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-[var(--color-border)] w-full flex justify-center">
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[var(--color-text)]">{todayTxns.length} Transactions</span>
             </div>
           </button>
 
@@ -235,24 +235,24 @@ export default function TransactionsPage() {
             type="button"
             onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
             className={cn(
-              "bg-white border-[3px] sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
+              "bg-[var(--color-surface)] border-[3px] sm:border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] sm:shadow-[6px_6px_0px_0px_var(--color-border)] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
               selectedDateRange === 'month' ? "bg-[var(--color-primary)] text-white" : ""
             )}
           >
             <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black bg-white flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_0px_#000]">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
                 <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
               </div>
               <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className={cn("text-[9px] sm:text-[10px] uppercase font-black tracking-widest", selectedDateRange === 'month' ? "text-white" : "text-black")}>{currentMonthName} Total</span>
-                <span className={cn("text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5", selectedDateRange === 'month' ? "text-white" : "text-black")}>
+                <span className={cn("text-[9px] sm:text-[10px] uppercase font-black tracking-widest", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>{currentMonthName} Total</span>
+                <span className={cn("text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>
                   {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
                 </span>
                 <span className={cn("text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider", selectedDateRange === 'month' ? "text-white/80" : "text-gray-700")}>Spent</span>
               </div>
             </div>
-            <div className={cn("mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-black w-full flex justify-center", selectedDateRange === 'month' ? "border-white" : "border-black")}>
-              <span className={cn("text-[10px] sm:text-xs font-black uppercase tracking-wider", selectedDateRange === 'month' ? "text-white" : "text-black")}>{monthTxns.length} Transactions</span>
+            <div className={cn("mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-[var(--color-border)] w-full flex justify-center", selectedDateRange === 'month' ? "border-white" : "border-[var(--color-border)]")}>
+              <span className={cn("text-[10px] sm:text-xs font-black uppercase tracking-wider", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>{monthTxns.length} Transactions</span>
             </div>
           </button>
         </div>
@@ -279,12 +279,12 @@ export default function TransactionsPage() {
                   }
                 }}
                 placeholder="Search transactions..."
-                className="w-full h-full bg-white border-[3px] border-black rounded-[16px] px-4 text-sm text-black placeholder-gray-500 outline-none shadow-[4px_4px_0px_0px_#000] focus:shadow-[6px_6px_0px_0px_#000] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all font-bold"
+                className="w-full h-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] px-4 text-sm text-[var(--color-text)] placeholder-gray-500 outline-none shadow-[4px_4px_0px_0px_var(--color-border)] focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all font-bold"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black p-1 bg-gray-200 border-2 border-black rounded-lg hover:bg-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text)] p-1 bg-gray-200 border-2 border-[var(--color-border)] rounded-lg hover:bg-gray-300"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4 stroke-[3px]" />
@@ -295,10 +295,10 @@ export default function TransactionsPage() {
             <button
               onClick={() => setShowFiltersPanel(!showFiltersPanel)}
               className={cn(
-                "flex items-center justify-center w-[52px] h-full rounded-[16px] border-[3px] transition-all select-none shrink-0 font-bold active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_#000]",
+                "flex items-center justify-center w-[52px] h-full rounded-[16px] border-[3px] transition-all select-none shrink-0 font-bold active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
                 showFiltersPanel || selectedType || selectedCategory || selectedDateRange
-                  ? "bg-[var(--color-primary)] text-white border-black"
-                  : "bg-white text-black border-black hover:bg-gray-100"
+                  ? "bg-[var(--color-primary)] text-white border-[var(--color-border)]"
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-gray-100"
               )}
               title="Filter transactions"
               aria-label="Filter transactions"
@@ -319,10 +319,10 @@ export default function TransactionsPage() {
                 }
               }}
               className={cn(
-                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-black transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_#000]",
+                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-[var(--color-border)] transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
                 isSelectMode || selectedTxIds.size > 0
                   ? "bg-[var(--color-primary)] text-white"
-                  : "bg-white text-black hover:bg-gray-100"
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100"
               )}
             >
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -334,10 +334,10 @@ export default function TransactionsPage() {
             <button
               onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
               className={cn(
-                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-black transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_#000]",
+                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-[var(--color-border)] transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
                 showOnlyNeedsReview
-                  ? "bg-amber-400 text-black"
-                  : "bg-white text-black hover:bg-amber-50"
+                  ? "bg-amber-400 text-[var(--color-text)]"
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-amber-50"
               )}
             >
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -384,10 +384,10 @@ export default function TransactionsPage() {
               className="overflow-hidden"
             >
               <div className="pt-3">
-                <div className="bg-white border-[3px] border-black rounded-[20px] p-5 space-y-5 shadow-[4px_4px_0px_0px_#000]">
+                <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] p-5 space-y-5 shadow-[4px_4px_0px_0px_var(--color-border)]">
                   {/* Type filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-3">Type</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Type</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[
                         { label: "All", value: null },
@@ -401,8 +401,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedType === opt.value
-                              ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000]"
-                              : "bg-white border-black text-black hover:bg-gray-100"
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
                           )}
                         >
                           {opt.label}
@@ -413,7 +413,7 @@ export default function TransactionsPage() {
 
                   {/* Date filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-3">Date Range</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Date Range</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[
                         { label: "All Time", value: null },
@@ -427,8 +427,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedDateRange === opt.value
-                              ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000]"
-                              : "bg-white border-black text-black hover:bg-gray-100"
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
                           )}
                         >
                           {opt.label}
@@ -439,15 +439,15 @@ export default function TransactionsPage() {
 
                   {/* Category filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-black block mb-3">Category</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Category</span>
                     <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                       <button
                         onClick={() => setSelectedCategory(null)}
                         className={cn(
                           "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                           selectedCategory === null
-                            ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000]"
-                            : "bg-white border-black text-black hover:bg-gray-100"
+                            ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
+                            : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
                         )}
                       >
                         All Categories
@@ -459,8 +459,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedCategory === cat.id
-                              ? "border-black text-black shadow-[2px_2px_0px_0px_#000]"
-                              : "bg-white border-black text-black hover:bg-gray-100"
+                              ? "border-[var(--color-border)] text-[var(--color-text)] shadow-[2px_2px_0px_0px_var(--color-border)]"
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
                           )}
                           style={selectedCategory === cat.id ? { backgroundColor: cat.color } : {}}
                         >
@@ -496,13 +496,13 @@ export default function TransactionsPage() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
-              <div className="h-12 w-12 rounded-xl bg-gray-200 border-2 border-black" />
+            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+              <div className="h-12 w-12 rounded-xl bg-gray-200 border-2 border-[var(--color-border)]" />
               <div className="flex-1 space-y-1.5">
-                <div className="h-4 w-24 bg-gray-200 border-2 border-black rounded-full" />
-                <div className="h-3 w-16 bg-gray-200 border border-black rounded-full" />
+                <div className="h-4 w-24 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+                <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
               </div>
-              <div className="h-4 w-12 bg-gray-200 border-2 border-black rounded-full" />
+              <div className="h-4 w-12 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
             </div>
           ))}
         </div>
@@ -556,20 +556,20 @@ export default function TransactionsPage() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className={cn("w-6 h-6 stroke-[2.5px]", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-black")} />
+                    <Calendar className={cn("w-6 h-6 stroke-[2.5px]", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-[var(--color-text)]")} />
                     <div className="flex flex-col">
-                      <span className="text-[12px] font-black text-black uppercase tracking-widest">{group.label}</span>
+                      <span className="text-[12px] font-black text-[var(--color-text)] uppercase tracking-widest">{group.label}</span>
                       <span className="text-xs font-bold text-gray-500 mt-0.5">{group.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-end">
-                      <span className={cn("text-[14px] font-black tracking-tight", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-black")}>
+                      <span className={cn("text-[14px] font-black tracking-tight", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-[var(--color-text)]")}>
                         {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
                       </span>
                       <span className={cn("text-[10px] font-black uppercase tracking-widest mt-0.5", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-gray-500")}>{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
                     </div>
-                    <ChevronDown className={cn("w-5 h-5 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-black" : "text-gray-400")} />
+                    <ChevronDown className={cn("w-5 h-5 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-[var(--color-text)]" : "text-gray-400")} />
                   </div>
                 </div>
 
@@ -618,9 +618,9 @@ export default function TransactionsPage() {
                           >
                             <div
                               className={cn(
-                                "bg-white rounded-[16px] flex items-center w-full transition-all duration-300 select-none border-[3px] border-black active:translate-x-1 active:translate-y-1 shadow-[4px_4px_0px_0px_#000] active:shadow-none hover:bg-gray-50 px-4 py-3 gap-3 sm:gap-4",
+                                "bg-[var(--color-surface)] rounded-[16px] flex items-center w-full transition-all duration-300 select-none border-[3px] border-[var(--color-border)] active:translate-x-1 active:translate-y-1 shadow-[4px_4px_0px_0px_var(--color-border)] active:shadow-none hover:bg-[var(--color-bg)] px-4 py-3 gap-3 sm:gap-4",
                                 txn.needsReview && "border-l-[6px] border-l-amber-400 bg-amber-50 hover:bg-amber-100",
-                                selectedTxn?.id === txn.id && "shadow-[6px_6px_0px_0px_#000] ring-4 ring-black",
+                                selectedTxn?.id === txn.id && "shadow-[6px_6px_0px_0px_var(--color-border)] ring-4 ring-black",
                                 isSelected && "bg-[var(--color-primary)] ring-4 ring-black"
                               )}
                               style={{ WebkitTouchCallout: "none" }}
@@ -645,18 +645,18 @@ export default function TransactionsPage() {
                               {(isSelectMode || selectedTxIds.size > 0) && (
                                 <div className="flex-shrink-0 mr-1">
                                   {isSelected ? (
-                                    <div className="h-6 w-6 rounded-lg bg-black border-[3px] border-black flex items-center justify-center text-white shadow-[2px_2px_0px_0px_#000]">
+                                    <div className="h-6 w-6 rounded-lg bg-black border-[3px] border-[var(--color-border)] flex items-center justify-center text-white shadow-[2px_2px_0px_0px_var(--color-border)]">
                                       <Check className="h-4 w-4 stroke-[4px]" />
                                     </div>
                                   ) : (
-                                    <div className="h-6 w-6 rounded-lg border-[3px] border-black bg-white shadow-[2px_2px_0px_0px_#000]" />
+                                    <div className="h-6 w-6 rounded-lg border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)]" />
                                   )}
                                 </div>
                               )}
 
                               {/* Icon */}
                               <div
-                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0px_0px_#000] bg-white"
+                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] bg-[var(--color-surface)]"
                                 style={{
                                   backgroundColor: baseColor,
                                   color: "#000"
@@ -673,7 +673,7 @@ export default function TransactionsPage() {
 
                               {/* Details */}
                               <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
-                                <h3 className={cn("text-[13px] sm:text-[14px] font-black tracking-wide uppercase truncate leading-tight", isSelected ? "text-white" : "text-black")}>
+                                <h3 className={cn("text-[13px] sm:text-[14px] font-black tracking-wide uppercase truncate leading-tight", isSelected ? "text-white" : "text-[var(--color-text)]")}>
                                   {txn.payee || txn.description || "No Title"}
                                 </h3>
 
@@ -688,14 +688,14 @@ export default function TransactionsPage() {
                                 <span
                                   className={cn(
                                     "text-[15px] sm:text-lg font-black tabular-nums text-right text-balance leading-tight mt-0.5",
-                                    isIncome ? (isSelected ? "text-white" : "text-emerald-600") : isTransfer ? (isSelected ? "text-white" : "text-gray-500") : (isSelected ? "text-white" : "text-black")
+                                    isIncome ? (isSelected ? "text-white" : "text-emerald-600") : isTransfer ? (isSelected ? "text-white" : "text-gray-500") : (isSelected ? "text-white" : "text-[var(--color-text)]")
                                   )}
                                 >
                                   {isIncome ? "+" : isTransfer ? "" : "−"}
                                   {formatCurrency(txn.amount, txn.currency)}
                                 </span>
                                 {txn.needsReview && (
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-black bg-amber-400 border-2 border-black px-2 py-0.5 rounded-md leading-none mt-1">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-[var(--color-text)] bg-amber-400 border-2 border-[var(--color-border)] px-2 py-0.5 rounded-md leading-none mt-1">
                                     Review
                                   </span>
                                 )}
@@ -741,7 +741,7 @@ export default function TransactionsPage() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-[84px] inset-x-4 z-40 bg-[var(--color-primary)] border-4 border-black rounded-[24px] p-4 shadow-[6px_6px_0px_0px_#000] flex items-center justify-between gap-3 max-w-md mx-auto"
+            className="fixed bottom-[84px] inset-x-4 z-40 bg-[var(--color-primary)] border-4 border-[var(--color-border)] rounded-[24px] p-4 shadow-[6px_6px_0px_0px_var(--color-border)] flex items-center justify-between gap-3 max-w-md mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col">
@@ -753,7 +753,7 @@ export default function TransactionsPage() {
               {/* Mark as Reviewed */}
               <button
                 onClick={handleBulkMarkReviewed}
-                className="flex items-center justify-center p-3 rounded-xl bg-amber-400 text-black border-2 border-black hover:bg-amber-300 shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="flex items-center justify-center p-3 rounded-xl bg-amber-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-amber-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                 title="Mark Reviewed"
               >
                 <Check className="h-5 w-5 stroke-[3px]" />
@@ -763,7 +763,7 @@ export default function TransactionsPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowBulkCategoryPicker(!showBulkCategoryPicker)}
-                  className="flex items-center justify-center p-3 rounded-xl bg-white text-black border-2 border-black hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                  className="flex items-center justify-center p-3 rounded-xl bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                   title="Change Category"
                 >
                   <Tag className="h-5 w-5 stroke-[2.5px]" />
@@ -775,16 +775,16 @@ export default function TransactionsPage() {
                       initial={{ scale: 0.95, opacity: 0, y: 10 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
                       exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                      className="absolute bottom-16 right-0 bg-white border-[3px] border-black rounded-[20px] p-3 shadow-[6px_6px_0px_0px_#000] w-56 max-h-56 overflow-y-auto space-y-2 z-50 scrollbar-none"
+                      className="absolute bottom-16 right-0 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] p-3 shadow-[6px_6px_0px_0px_var(--color-border)] w-56 max-h-56 overflow-y-auto space-y-2 z-50 scrollbar-none"
                     >
                       <div className="text-[10px] uppercase font-black tracking-widest text-gray-500 p-1 mb-1">Change Category</div>
                       {categories.map(cat => (
                         <button
                           key={cat.id}
                           onClick={() => handleBulkChangeCategory(cat.id)}
-                          className="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-black border-2 border-transparent hover:border-black hover:shadow-[2px_2px_0px_0px_#000] transition-all flex items-center gap-3"
+                          className="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-[var(--color-text)] border-2 border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)] transition-all flex items-center gap-3"
                         >
-                          <span className="w-3 h-3 rounded-full border-2 border-black" style={{ backgroundColor: cat.color }} />
+                          <span className="w-3 h-3 rounded-full border-2 border-[var(--color-border)]" style={{ backgroundColor: cat.color }} />
                           {cat.name}
                         </button>
                       ))}
@@ -796,7 +796,7 @@ export default function TransactionsPage() {
               {/* Bulk Delete */}
               <button
                 onClick={handleBulkDelete}
-                className="flex items-center justify-center p-3 rounded-xl bg-red-400 text-black border-2 border-black hover:bg-red-300 shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="flex items-center justify-center p-3 rounded-xl bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-red-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                 title="Delete Selected"
               >
                 <Trash2 className="h-5 w-5 stroke-[2.5px]" />
@@ -808,7 +808,7 @@ export default function TransactionsPage() {
                   setSelectedTxIds(new Set());
                   setIsSelectMode(false);
                 }}
-                className="flex items-center justify-center px-4 py-3 rounded-xl bg-gray-200 text-black border-2 border-black hover:bg-gray-300 shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none font-bold uppercase tracking-wider ml-1"
+                className="flex items-center justify-center px-4 py-3 rounded-xl bg-gray-200 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-gray-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none font-bold uppercase tracking-wider ml-1"
               >
                 Cancel
               </button>

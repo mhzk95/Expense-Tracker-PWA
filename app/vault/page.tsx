@@ -97,14 +97,14 @@ export default function VaultPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => lock()}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-black uppercase tracking-widest text-black bg-gray-100 hover:bg-gray-200 border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-gray-100 hover:bg-gray-200 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1"
               >
                 <Lock className="h-4 w-4 stroke-[3px]" />
                 Lock
               </button>
               <button
                 onClick={() => setIsFormOpen(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:bg-violet-500 border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:bg-violet-500 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1"
               >
                 <Plus className="h-4 w-4 stroke-[3px]" />
                 Add Secret
@@ -116,12 +116,12 @@ export default function VaultPage() {
 
       {!isUnlocked ? (
         <div className="max-w-md mx-auto pt-10">
-          <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] p-8 text-center relative">
-            <div className="w-20 h-20 bg-[var(--color-primary-glow)] border-2 border-black shadow-[2px_2px_0px_0px_#000] rounded-[12px] flex items-center justify-center mx-auto mb-6">
+          <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-8 text-center relative">
+            <div className="w-20 h-20 bg-[var(--color-primary-glow)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] rounded-[12px] flex items-center justify-center mx-auto mb-6">
               {(hasBiometricsSetup || hasManualPin) ? <Lock className="w-10 h-10 text-[var(--color-primary)] stroke-[2.5px]" /> : <ShieldAlert className="w-10 h-10 text-emerald-500 stroke-[2.5px]" />}
             </div>
             
-            <h2 className="text-xl font-black text-black uppercase tracking-widest mb-2">
+            <h2 className="text-xl font-black text-[var(--color-text)] uppercase tracking-widest mb-2">
               {!hasSetupPin ? "Setup Vault" : "Unlock Vault"}
             </h2>
             
@@ -144,13 +144,13 @@ export default function VaultPage() {
                   <button
                     onClick={handleBiometricAction}
                     disabled={isProcessing}
-                    className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all disabled:opacity-50"
+                    className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all disabled:opacity-50"
                   >
                     {isProcessing ? "Authenticating..." : "Setup Biometrics"}
                   </button>
                   <div className="relative">
-                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t-2 border-black"></div></div>
-                    <div className="relative flex justify-center text-xs font-black uppercase tracking-widest"><span className="bg-white px-3 text-black">Or use PIN</span></div>
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t-2 border-[var(--color-border)]"></div></div>
+                    <div className="relative flex justify-center text-xs font-black uppercase tracking-widest"><span className="bg-[var(--color-surface)] px-3 text-[var(--color-text)]">Or use PIN</span></div>
                   </div>
                   <form onSubmit={handlePinAction} className="flex flex-col sm:flex-row gap-3">
                     <input
@@ -158,10 +158,10 @@ export default function VaultPage() {
                       value={pinInput}
                       onChange={e => setPinInput(e.target.value)}
                       placeholder="Enter a secure PIN"
-                      className="flex-1 min-w-0 bg-white border-2 border-black shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] px-4 py-3 font-bold text-black focus:outline-none focus:shadow-[2px_2px_0px_0px_var(--color-primary)] placeholder:text-gray-400"
+                      className="flex-1 min-w-0 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] px-4 py-3 font-bold text-[var(--color-text)] focus:outline-none focus:shadow-[2px_2px_0px_0px_var(--color-primary)] placeholder:text-gray-400"
                       required
                     />
-                    <button type="submit" disabled={isProcessing || !pinInput} className="bg-black hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none text-white py-3 sm:px-6 rounded-[12px] font-black uppercase tracking-widest text-xs border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all">
+                    <button type="submit" disabled={isProcessing || !pinInput} className="bg-black hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none text-white py-3 sm:px-6 rounded-[12px] font-black uppercase tracking-widest text-xs border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all">
                       Save
                     </button>
                   </form>
@@ -173,7 +173,7 @@ export default function VaultPage() {
                     <button
                       onClick={handleBiometricAction}
                       disabled={isProcessing}
-                      className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all disabled:opacity-50"
+                      className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all disabled:opacity-50"
                     >
                       {isProcessing ? "Authenticating..." : "Unlock with Biometrics"}
                     </button>
@@ -184,11 +184,11 @@ export default function VaultPage() {
                         value={pinInput}
                         onChange={e => setPinInput(e.target.value)}
                         placeholder="Enter your PIN"
-                        className="flex-1 min-w-0 bg-white border-2 border-black shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] px-4 py-3 text-center tracking-[0.3em] font-mono font-bold text-lg text-black focus:outline-none focus:shadow-[2px_2px_0px_0px_var(--color-primary)] placeholder:text-gray-400 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
+                        className="flex-1 min-w-0 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] px-4 py-3 text-center tracking-[0.3em] font-mono font-bold text-lg text-[var(--color-text)] focus:outline-none focus:shadow-[2px_2px_0px_0px_var(--color-primary)] placeholder:text-gray-400 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
                         required
                         autoFocus
                       />
-                      <button type="submit" disabled={isProcessing || !pinInput} className="bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none text-white py-3 sm:px-6 rounded-[12px] font-black uppercase tracking-widest text-xs border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all">
+                      <button type="submit" disabled={isProcessing || !pinInput} className="bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none text-white py-3 sm:px-6 rounded-[12px] font-black uppercase tracking-widest text-xs border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all">
                         Unlock
                       </button>
                     </form>
@@ -276,11 +276,11 @@ export default function VaultPage() {
           </div>
 
           {entries.length === 0 ? (
-            <div className="text-center py-16 px-4 border-[3px] border-dashed border-black bg-white rounded-[16px]">
-              <div className="w-16 h-16 bg-gray-100 border-2 border-black rounded-[12px] flex items-center justify-center mx-auto mb-4">
-                <KeyRound className="w-8 h-8 text-black stroke-[2.5px]" />
+            <div className="text-center py-16 px-4 border-[3px] border-dashed border-[var(--color-border)] bg-[var(--color-surface)] rounded-[16px]">
+              <div className="w-16 h-16 bg-gray-100 border-2 border-[var(--color-border)] rounded-[12px] flex items-center justify-center mx-auto mb-4">
+                <KeyRound className="w-8 h-8 text-[var(--color-text)] stroke-[2.5px]" />
               </div>
-              <h3 className="text-black font-black uppercase tracking-widest text-lg mb-1">Vault is empty</h3>
+              <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-lg mb-1">Vault is empty</h3>
               <p className="text-gray-500 font-bold text-sm">Add your first password or secure note.</p>
             </div>
           ) : (
@@ -291,14 +291,14 @@ export default function VaultPage() {
                   onDelete={() => deleteEntry(entry.id)}
                   deleteMessage={`Delete "${entry.title}"?`}
                 >
-                  <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] px-5 py-4 flex items-center justify-between w-full">
+                  <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] px-5 py-4 flex items-center justify-between w-full">
                     <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-black text-left">{entry.title}</h3>
+                      <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-text)] text-left">{entry.title}</h3>
                       <p className="text-[10px] font-bold text-gray-500 text-left mt-0.5">Saved {formatDate(entry.createdAt, "medium")}</p>
                     </div>
                     <button
                       onClick={() => handleRead(entry)}
-                      className="p-2.5 bg-white hover:bg-[var(--color-primary)] hover:text-white border-2 border-black rounded-[10px] shadow-[2px_2px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1 text-black"
+                      className="p-2.5 bg-[var(--color-surface)] hover:bg-[var(--color-primary)] hover:text-white border-2 border-[var(--color-border)] rounded-[10px] shadow-[2px_2px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:translate-x-1 active:translate-y-1 text-[var(--color-text)]"
                       title="Reveal secret"
                     >
                       <Eye className="w-4 h-4 stroke-[2.5px]" />
@@ -319,15 +319,15 @@ export default function VaultPage() {
       {/* Read Entry Modal */}
       <AdaptiveOverlay isOpen={!!viewingEntry} onClose={() => setViewingEntry(null)} title={viewingEntry?.title || "Secret"}>
         <div className="space-y-4">
-          <div className="bg-gray-100 border-2 border-black shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] p-4 overflow-x-auto">
-            <pre className="text-black font-mono font-bold text-sm whitespace-pre-wrap leading-relaxed">{viewingEntry?.text}</pre>
+          <div className="bg-gray-100 border-2 border-[var(--color-border)] shadow-[inset_0px_2px_4px_rgba(0,0,0,0.05)] rounded-[12px] p-4 overflow-x-auto">
+            <pre className="text-[var(--color-text)] font-mono font-bold text-sm whitespace-pre-wrap leading-relaxed">{viewingEntry?.text}</pre>
           </div>
           <button
             onClick={() => {
               navigator.clipboard.writeText(viewingEntry?.text || "");
               alert("Copied to clipboard");
             }}
-            className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all"
+            className="w-full bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none text-white font-black uppercase tracking-widest text-sm rounded-[12px] py-4 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all"
           >
             Copy to Clipboard
           </button>

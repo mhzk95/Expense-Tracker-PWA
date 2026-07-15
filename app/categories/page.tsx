@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useCategories } from "@/hooks/useCategories";
 import { Target, Plus, Trash2, Edit2, ChevronLeft } from "lucide-react";
+import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { hexToRgb, getCategoryIcon, ICON_MAP, vibrate } from "@/lib/utils/helpers";
 
 const AVAILABLE_ICONS = [
@@ -103,28 +104,29 @@ export default function CategoriesPage() {
                 setIsAdding(true);
                 vibrate([10]);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-violet-600 hover:bg-violet-500 transition-colors shadow-lg shadow-violet-500/20"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-[3px] border-[var(--color-border)] transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4 stroke-[3px]" />
               Add New
             </button>
           )
         }
       />
 
-      {isAdding && (
-        <div className="p-5 bg-white border-[3px] sm:border-[4px] border-black shadow-[4px_4px_0px_0px_#000] rounded-[16px] sm:rounded-[24px] mb-6">
-          <h3 className="text-sm font-black uppercase tracking-widest text-black mb-4">
-            {editingId ? "Edit Category" : "New Category"}
-          </h3>
+      <AdaptiveOverlay
+        isOpen={isAdding}
+        onClose={resetForm}
+        title={editingId ? "Edit Category" : "New Category"}
+      >
+        <div className="p-4 sm:p-5 bg-[var(--color-surface)] mb-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Name</label>
+              <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest mb-1.5">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-white border-[3px] border-black rounded-xl px-3 py-2.5 text-sm font-bold text-black focus:shadow-[4px_4px_0px_0px_#000] outline-none transition-shadow"
+                className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-text)] focus:shadow-[4px_4px_0px_0px_var(--color-border)] outline-none transition-shadow"
                 placeholder="e.g. Groceries"
                 required
               />
@@ -140,7 +142,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("expense")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-black text-gray-500 peer-checked:bg-red-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-red-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Expense
                 </div>
               </label>
@@ -153,7 +155,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("income")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-black text-gray-500 peer-checked:bg-emerald-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-emerald-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Income
                 </div>
               </label>
@@ -161,8 +163,8 @@ export default function CategoriesPage() {
 
             {/* Icon Picker Grid */}
             <div className="space-y-1.5">
-              <label className="block text-[10px] font-black text-black uppercase tracking-widest">Icon</label>
-              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-gray-50 border-[3px] border-black rounded-xl max-h-[140px] overflow-y-auto scrollbar-none shadow-inner">
+              <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Icon</label>
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-xl max-h-[140px] overflow-y-auto scrollbar-none shadow-inner">
                 {AVAILABLE_ICONS.map((ico) => {
                   const IconComp = ICON_MAP[ico.name] || Target;
                   const isSelected = icon === ico.name;
@@ -176,8 +178,8 @@ export default function CategoriesPage() {
                       }}
                       className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all active:translate-x-0.5 active:translate-y-0.5 border-2 ${
                         isSelected 
-                          ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000] active:shadow-none" 
-                          : "bg-white border-transparent text-black hover:border-black hover:shadow-[2px_2px_0px_0px_#000]"
+                          ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none" 
+                          : "bg-[var(--color-surface)] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
                       }`}
                       title={ico.label}
                     >
@@ -190,8 +192,8 @@ export default function CategoriesPage() {
 
             {/* Robust Color Picker */}
             <div className="space-y-1.5">
-              <label className="block text-[10px] font-black text-black uppercase tracking-widest">Color</label>
-              <div className="flex flex-wrap items-center gap-2 bg-gray-50 border-[3px] border-black rounded-xl p-3 shadow-inner">
+              <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Color</label>
+              <div className="flex flex-wrap items-center gap-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-xl p-3 shadow-inner">
                 {colors.map((c) => (
                   <button
                     key={c}
@@ -201,7 +203,7 @@ export default function CategoriesPage() {
                       vibrate([10]);
                     }}
                     className={`w-8 h-8 rounded-full border-2 transition-all active:scale-90 ${
-                      color.toLowerCase() === c.toLowerCase() ? "border-black scale-110 shadow-[2px_2px_0px_0px_#000]" : "border-transparent"
+                      color.toLowerCase() === c.toLowerCase() ? "border-[var(--color-border)] scale-110 shadow-[2px_2px_0px_0px_var(--color-border)]" : "border-transparent"
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -209,7 +211,7 @@ export default function CategoriesPage() {
                 
                 {/* Custom Color Wheel Native Input */}
                 <div 
-                  className="relative w-8 h-8 rounded-full border-2 border-dashed border-gray-400 hover:border-black transition-colors flex items-center justify-center overflow-hidden cursor-pointer"
+                  className="relative w-8 h-8 rounded-full border-2 border-dashed border-gray-400 hover:border-[var(--color-border)] transition-colors flex items-center justify-center overflow-hidden cursor-pointer"
                   style={{ backgroundColor: colors.includes(color.toLowerCase()) ? "transparent" : color }}
                 >
                   <input
@@ -221,7 +223,7 @@ export default function CategoriesPage() {
                   {colors.includes(color.toLowerCase()) ? (
                     <span className="text-[10px] text-gray-400 font-bold pointer-events-none">+</span>
                   ) : (
-                    <span className="w-2 h-2 rounded-full border border-black bg-white pointer-events-none" />
+                    <span className="w-2 h-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] pointer-events-none" />
                   )}
                 </div>
 
@@ -231,7 +233,7 @@ export default function CategoriesPage() {
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#ffffff"
-                  className="w-20 bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold uppercase outline-none focus:shadow-[2px_2px_0px_0px_#000] text-center font-mono ml-auto"
+                  className="w-20 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] font-bold uppercase outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)] text-center font-mono ml-auto"
                 />
               </div>
             </div>
@@ -240,20 +242,20 @@ export default function CategoriesPage() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-black bg-gray-200 hover:bg-gray-300 rounded-[12px] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-gray-200 hover:bg-gray-300 rounded-[12px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 {editingId ? "Save Changes" : "Create"}
               </button>
             </div>
           </form>
         </div>
-      )}
+      </AdaptiveOverlay>
 
       <div className="space-y-6">
         {["expense", "income"].map((groupType) => {
@@ -262,27 +264,27 @@ export default function CategoriesPage() {
 
           return (
             <div key={groupType} className="space-y-3">
-              <h3 className="text-xs font-black uppercase tracking-widest text-black px-1 mt-2">
+              <h3 className="text-xs font-black uppercase tracking-widest text-[var(--color-text)] px-1 mt-2">
                 {groupType} Categories
               </h3>
               
-              {/* Brick Wall Layout - Masonry-like dense grid of category chips */}
-              <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
+              {/* Single column on mobile so names don't truncate, 2 on tablet, 3 on desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {grouped.map((cat) => {
                   const IconComp = getCategoryIcon(cat.icon);
                   return (
                     <div 
                       key={cat.id}
-                      className="group relative bg-white flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 rounded-[16px] overflow-visible transition-all duration-300"
+                      className="group relative bg-[var(--color-surface)] flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:shadow-[6px_6px_0px_0px_var(--color-border)] hover:-translate-y-1 rounded-[16px] overflow-visible transition-all duration-300"
                     >
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
-                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border-[3px] border-black shadow-[2px_2px_0px_0px_#000]"
+                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]"
                           style={{ backgroundColor: cat.color || "#94a3b8" }}
                         >
-                          <IconComp className="w-4 h-4 stroke-[3px] text-black" />
+                          <IconComp className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
                         </div>
-                        <span className="text-xs font-black uppercase tracking-wider text-black truncate">{cat.name}</span>
+                        <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate">{cat.name}</span>
                       </div>
 
                       {/* Edit / Delete actions */}
@@ -292,7 +294,7 @@ export default function CategoriesPage() {
                             e.stopPropagation();
                             handleEdit(cat);
                           }}
-                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-black hover:bg-gray-100 text-gray-500 hover:text-black transition-colors"
+                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-[var(--color-border)] hover:bg-gray-100 text-gray-500 hover:text-[var(--color-text)] transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4 stroke-[3px]" />
@@ -319,13 +321,13 @@ export default function CategoriesPage() {
         })}
 
         {!loading && categories.length === 0 && !isAdding && (
-          <div className="text-center p-10 bg-white border-4 border-black border-dashed rounded-[24px]">
-            <Target className="w-12 h-12 text-black mx-auto mb-4 stroke-[2.5px]" />
-            <h3 className="text-lg font-black uppercase tracking-widest text-black mb-2">No Categories</h3>
+          <div className="text-center p-10 bg-[var(--color-surface)] border-4 border-[var(--color-border)] border-dashed rounded-[24px]">
+            <Target className="w-12 h-12 text-[var(--color-text)] mx-auto mb-4 stroke-[2.5px]" />
+            <h3 className="text-lg font-black uppercase tracking-widest text-[var(--color-text)] mb-2">No Categories</h3>
             <p className="text-sm font-bold text-gray-500 mb-6">Add your first category to start tracking.</p>
             <button
               onClick={() => setIsAdding(true)}
-              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
             >
               Add Category
             </button>

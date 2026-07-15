@@ -43,15 +43,15 @@ export function SpendingHeatmap() {
   if (loading) {
     return (
       <Card className="p-6 animate-pulse">
-        <div className="flex items-center justify-between mb-4 border-b-2 border-black pb-4">
-          <div className="h-4 w-48 bg-gray-200 border-2 border-black rounded-full" />
+        <div className="flex items-center justify-between mb-4 border-b-2 border-[var(--color-border)] pb-4">
+          <div className="h-4 w-48 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
         </div>
-        <div className="w-full overflow-hidden h-28 bg-white border-4 border-black rounded-[20px] shadow-[4px_4px_0px_0px_#000] flex items-center justify-center">
+        <div className="w-full overflow-hidden h-28 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center">
           <div className="flex gap-[4px]">
             {[...Array(24)].map((_, i) => (
               <div key={i} className="flex flex-col gap-[4px]">
                 {[...Array(7)].map((_, j) => (
-                  <div key={j} className="w-3 h-3 rounded-sm bg-gray-200 border border-black" />
+                  <div key={j} className="w-3 h-3 rounded-sm bg-gray-200 border border-[var(--color-border)]" />
                 ))}
               </div>
             ))}
@@ -64,15 +64,15 @@ export function SpendingHeatmap() {
   const getColor = (amount: number) => {
     if (amount === 0) return "bg-gray-100 border-gray-300";
     const intensity = amount / maxAmount;
-    if (intensity < 0.2) return "bg-emerald-300 border-black";
-    if (intensity < 0.5) return "bg-emerald-400 border-black";
-    if (intensity < 0.8) return "bg-emerald-500 border-black";
-    return "bg-emerald-600 border-black";
+    if (intensity < 0.2) return "bg-emerald-300 border-[var(--color-border)]";
+    if (intensity < 0.5) return "bg-emerald-400 border-[var(--color-border)]";
+    if (intensity < 0.8) return "bg-emerald-500 border-[var(--color-border)]";
+    return "bg-emerald-600 border-[var(--color-border)]";
   };
   
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-4 border-b-[3px] border-black pb-4 bg-[var(--color-primary)] -mt-6 -mx-6 px-6 pt-6">
+      <div className="flex items-center justify-between mb-4 border-b-[3px] border-[var(--color-border)] pb-4 bg-[var(--color-primary)] -mt-6 -mx-6 px-6 pt-6">
         <h3 className="text-base font-black text-white uppercase tracking-wider">Spending Heatmap (Last 365 Days)</h3>
       </div>
       
@@ -91,14 +91,14 @@ export function SpendingHeatmap() {
           ))}
         </div>
       </div>
-      <div className="flex justify-end items-center gap-3 mt-4 text-sm text-black font-bold tracking-wide uppercase">
+      <div className="flex justify-end items-center gap-3 mt-4 text-sm text-[var(--color-text)] font-bold tracking-wide uppercase">
         <span>Less</span>
         <div className="flex gap-[4px]">
           <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-gray-100 border-gray-300" />
-          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-300 border-black" />
-          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-400 border-black" />
-          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-500 border-black" />
-          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-600 border-black" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-300 border-[var(--color-border)]" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-400 border-[var(--color-border)]" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-500 border-[var(--color-border)]" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-600 border-[var(--color-border)]" />
         </div>
         <span>More</span>
       </div>

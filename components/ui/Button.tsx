@@ -14,9 +14,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     const variants = {
       primary: "brutal-btn bg-[var(--color-primary)] text-white",
-      secondary: "brutal-btn brutal-btn-secondary bg-white text-black",
-      danger: "brutal-btn bg-[var(--color-danger)] text-black",
-      ghost: "bg-transparent text-black border-2 border-transparent hover:border-black rounded-xl",
+      secondary: "brutal-btn brutal-btn-secondary bg-[var(--color-surface)] text-[var(--color-text)]",
+      danger: "brutal-btn bg-[var(--color-danger)] text-[var(--color-text)]",
+      ghost: "bg-transparent text-[var(--color-text)] border-2 border-transparent hover:border-[var(--color-border)] rounded-xl",
     };
 
     const sizes = {

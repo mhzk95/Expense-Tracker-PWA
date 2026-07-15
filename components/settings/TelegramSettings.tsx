@@ -8,18 +8,18 @@ export function TelegramSettings() {
   const isConnected = hasToken && hasChatId;
 
   return (
-    <div className="space-y-4 p-5 rounded-[16px] border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-white mt-4">
+    <div className="space-y-4 p-5 rounded-[16px] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] bg-[var(--color-surface)] mt-4">
       <div className="flex items-center gap-4 mb-2">
         <div className="p-2.5 bg-blue-100 border-2 border-blue-500 rounded-[10px] shadow-[2px_2px_0px_0px_#3b82f6]">
           <Send className="h-5 w-5 text-blue-600 stroke-[2.5px]" />
         </div>
         <div className="flex-1">
-          <h3 className="text-sm font-black text-black uppercase tracking-widest">Telegram Image CDN</h3>
+          <h3 className="text-sm font-black text-[var(--color-text)] uppercase tracking-widest">Telegram Image CDN</h3>
           <p className="text-xs font-bold text-gray-500 mt-0.5">Receipts and image storage</p>
         </div>
       </div>
 
-      <div className={`flex items-center gap-3 p-4 rounded-[12px] border-2 shadow-[2px_2px_0px_0px_#000] ${isConnected ? 'bg-emerald-50 border-emerald-500 shadow-[2px_2px_0px_0px_#10b981]' : 'bg-red-50 border-red-500 shadow-[2px_2px_0px_0px_#ef4444]'}`}>
+      <div className={`flex items-center gap-3 p-4 rounded-[12px] border-2 shadow-[2px_2px_0px_0px_var(--color-border)] ${isConnected ? 'bg-emerald-50 border-emerald-500 shadow-[2px_2px_0px_0px_#10b981]' : 'bg-red-50 border-red-500 shadow-[2px_2px_0px_0px_#ef4444]'}`}>
         {isConnected ? (
           <>
             <CheckCircle2 className="h-5 w-5 text-emerald-600 stroke-[2.5px]" />

@@ -75,33 +75,33 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
           transformStyle: "preserve-3d",
           backgroundColor: baseColor
         }}
-        className="relative w-full aspect-[1.58/1] rounded-[24px] p-6 sm:p-8 overflow-hidden cursor-pointer border-[4px] border-black transition-all duration-300 shadow-[8px_8px_0px_0px_#000] hover:shadow-[12px_12px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:translate-x-1 active:shadow-none group-hover:-translate-y-1"
+        className="relative w-full aspect-[1.58/1] rounded-[24px] p-6 sm:p-8 overflow-hidden cursor-pointer border-[4px] border-[var(--color-border)] transition-all duration-300 shadow-[8px_8px_0px_0px_var(--color-border)] hover:shadow-[12px_12px_0px_0px_var(--color-border)] hover:-translate-y-1 active:translate-y-1 active:translate-x-1 active:shadow-none group-hover:-translate-y-1"
       >
         <div className="relative h-full flex flex-col justify-between z-20" style={{ transform: "translateZ(30px)" }}>
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-white text-[11px] sm:text-xs font-black tracking-widest uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">{typeLabel}</p>
-              <h3 className="text-white text-xl sm:text-2xl font-black tracking-tight mt-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] uppercase">{account.name}</h3>
+              <p className="text-white text-[11px] sm:text-xs font-black tracking-widest uppercase drop-shadow-[2px_2px_0px_var(--color-border)]">{typeLabel}</p>
+              <h3 className="text-white text-xl sm:text-2xl font-black tracking-tight mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] uppercase">{account.name}</h3>
             </div>
-            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-white flex items-center justify-center border-2 border-black shadow-[4px_4px_0px_0px_#000]">
-              <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-black stroke-[3px]" />
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-[var(--color-surface)] flex items-center justify-center border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+              <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-[var(--color-text)] stroke-[3px]" />
             </div>
           </div>
           
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <p className="text-white text-xs font-bold tracking-[0.3em] font-mono drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+              <p className="text-white text-xs font-bold tracking-[0.3em] font-mono drop-shadow-[1px_1px_0px_var(--color-border)]">
                 {account.lastFour ? `•••• •••• •••• ${account.lastFour}` : "•••• •••• •••• ••••"}
               </p>
             </div>
             <div className="flex justify-between items-end gap-2">
-              <p className="text-white font-black text-3xl sm:text-4xl tracking-tighter truncate drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+              <p className="text-white font-black text-3xl sm:text-4xl tracking-tighter truncate drop-shadow-[2px_2px_0px_var(--color-border)]">
                 {formatCurrency(account.balance, account.currency)}
               </p>
               <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={(e) => { e.stopPropagation(); vibrate([50]); onEdit?.(); }} 
-                  className="p-2.5 text-black hover:bg-gray-100 bg-white rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 md:hidden transition-all"
+                  className="p-2.5 text-[var(--color-text)] hover:bg-gray-100 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 md:hidden transition-all"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
                 </button>
@@ -112,13 +112,13 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
                       vibrate([50, 50, 50]);
                       if (confirm("Are you sure you want to delete this account?")) onDelete();
                     }} 
-                    className="p-2.5 text-white hover:bg-red-400 bg-red-500 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 md:hidden transition-all"
+                    className="p-2.5 text-white hover:bg-red-400 bg-red-500 rounded-xl border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 md:hidden transition-all"
                   >
                     <Trash2 className="w-4 h-4 stroke-[3px]" />
                   </button>
                 )}
                 {account.isDefault && (
-                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-white border-2 border-black text-black font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]">
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--color-border)]">
                     Default
                   </span>
                 )}
@@ -136,7 +136,7 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
             vibrate([50]);
             onEdit?.();
           }}
-          className="p-3 text-black bg-white border-[3px] border-black rounded-[14px] shadow-[4px_4px_0px_0px_#000] hover:bg-gray-100 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+          className="p-3 text-[var(--color-text)] bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[14px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-gray-100 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
           title="Edit account"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
@@ -152,7 +152,7 @@ export function AccountCard({ account, icon: Icon, typeLabel, onDelete, onEdit, 
                  vibrate([50]);
               }
             }}
-            className="p-3 text-white bg-red-500 border-[3px] border-black rounded-[14px] shadow-[4px_4px_0px_0px_#000] hover:bg-red-400 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+            className="p-3 text-white bg-red-500 border-[3px] border-[var(--color-border)] rounded-[14px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-red-400 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
             title="Delete account"
           >
             <Trash2 className="w-5 h-5 stroke-[3px]" />

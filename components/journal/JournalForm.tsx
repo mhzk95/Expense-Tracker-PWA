@@ -311,9 +311,9 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           </div>
         ) : (
           <div className="-mx-4 -mt-4 mb-2">
-            <label className="flex items-center justify-center w-full h-32 bg-gray-100 border-[3px] border-b border-black cursor-pointer hover:bg-gray-200 transition-colors">
-              <div className="flex flex-col items-center gap-2 text-black">
-                <div className="p-3 bg-white rounded-2xl shadow-[4px_4px_0px_0px_#000] border-2 border-black"><ImageIcon className="w-6 h-6 text-black" /></div>
+            <label className="flex items-center justify-center w-full h-32 bg-gray-100 border-[3px] border-b border-[var(--color-border)] cursor-pointer hover:bg-gray-200 transition-colors">
+              <div className="flex flex-col items-center gap-2 text-[var(--color-text)]">
+                <div className="p-3 bg-[var(--color-surface)] rounded-2xl shadow-[4px_4px_0px_0px_var(--color-border)] border-2 border-[var(--color-border)]"><ImageIcon className="w-6 h-6 text-[var(--color-text)]" /></div>
                 <span className="text-[11px] font-black uppercase tracking-widest mt-2">Add a photo</span>
               </div>
               <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -322,14 +322,14 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         )}
 
         {/* Audio Recorder */}
-        <div className="bg-white border-[3px] border-black rounded-[24px] p-4 flex flex-col items-center justify-center min-h-[100px] shadow-[4px_4px_0px_0px_#000]">
+        <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] p-4 flex flex-col items-center justify-center min-h-[100px] shadow-[4px_4px_0px_0px_var(--color-border)]">
           {recorder.state === "idle" && (
             <button
               type="button"
               onClick={recorder.start}
-              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-black text-black hover:bg-gray-100 transition-colors rounded-xl"
+              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-black text-[var(--color-text)] hover:bg-gray-100 transition-colors rounded-xl"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
                 <Mic className="w-6 h-6 text-white stroke-[3px]" />
               </div>
               <span className="text-[11px] uppercase tracking-widest mt-1">Record a voice note</span>
@@ -338,7 +338,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
           {(recorder.state === "recording" || recorder.state === "paused") && (
             <div className="w-full space-y-3">
-              <div className="text-center text-black font-mono text-lg font-black tracking-wider">
+              <div className="text-center text-[var(--color-text)] font-mono text-lg font-black tracking-wider">
                 {formatDuration(recorder.durationMs)}
               </div>
               {/* Live waveform */}
@@ -358,16 +358,16 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
                 <button
                   type="button"
                   onClick={recorder.stop}
-                  className="w-14 h-14 rounded-full bg-red-400 hover:bg-red-500 flex items-center justify-center border-[3px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
+                  className="w-14 h-14 rounded-full bg-red-400 hover:bg-red-500 flex items-center justify-center border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
                 >
-                  <Square className="w-5 h-5 text-black fill-black" />
+                  <Square className="w-5 h-5 text-[var(--color-text)] fill-black" />
                 </button>
                 {recorder.state === "recording" ? (
-                  <button type="button" onClick={recorder.pause} className="p-2 text-gray-500 hover:text-black transition-colors">
+                  <button type="button" onClick={recorder.pause} className="p-2 text-gray-500 hover:text-[var(--color-text)] transition-colors">
                     <Pause className="w-6 h-6 stroke-[3px]" />
                   </button>
                 ) : (
-                  <button type="button" onClick={recorder.resume} className="p-2 text-gray-500 hover:text-black transition-colors">
+                  <button type="button" onClick={recorder.resume} className="p-2 text-gray-500 hover:text-[var(--color-text)] transition-colors">
                     <Play className="w-6 h-6 stroke-[3px]" />
                   </button>
                 )}
@@ -380,7 +380,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
               <button
                 type="button"
                 onClick={togglePlayback}
-                className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+                className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               >
                 {isPlayingBack ? <Pause className="w-4 h-4 text-white fill-white" /> : <Play className="w-4 h-4 text-white fill-white ml-0.5" />}
               </button>
@@ -389,7 +389,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
                   <div key={i} className="w-1 rounded-full bg-black/80" style={{ height: `${Math.max(3, amp * 30)}px` }} />
                 ))}
               </div>
-              <div className="text-xs text-black font-black font-mono flex-shrink-0">
+              <div className="text-xs text-[var(--color-text)] font-black font-mono flex-shrink-0">
                 {formatDuration(recorder.result.durationMs)}
               </div>
               <button type="button" onClick={discardAudio} className="p-1.5 text-gray-500 hover:text-red-500 transition-colors ml-1">
@@ -402,36 +402,36 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         {/* 2x2 Grid Metadata */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {/* Date & Time */}
-          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
-            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><Calendar className="w-3.5 h-3.5 stroke-[3px]" /> Date & Time</span>
-            <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs sm:text-sm text-black outline-none w-full font-bold" />
+          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><Calendar className="w-3.5 h-3.5 stroke-[3px]" /> Date & Time</span>
+            <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs sm:text-sm text-[var(--color-text)] outline-none w-full font-bold" />
           </div>
 
           {/* Location */}
-          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-gray-50 border-[3px] border-black rounded-[16px] p-3 text-left hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-0.5 flex flex-col justify-center min-h-[64px] transition-all">
-            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><MapPin className="w-3.5 h-3.5 stroke-[3px]" /> Location</span>
-            <span className="text-xs text-black truncate w-full font-bold">{getLocationDisplay() || "Add location..."}</span>
+          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 text-left hover:shadow-[4px_4px_0px_0px_var(--color-border)] hover:-translate-y-0.5 flex flex-col justify-center min-h-[64px] transition-all">
+            <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><MapPin className="w-3.5 h-3.5 stroke-[3px]" /> Location</span>
+            <span className="text-xs text-[var(--color-text)] truncate w-full font-bold">{getLocationDisplay() || "Add location..."}</span>
           </button>
 
           {/* Event */}
-          <div className="bg-gray-50 border-[3px] border-black rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
-            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Event <span className="lowercase opacity-50">(optional)</span></span>
-            <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-black outline-none w-full placeholder-gray-400 font-bold" />
+          <div className="bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Event <span className="lowercase opacity-50">(optional)</span></span>
+            <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-[var(--color-text)] outline-none w-full placeholder-gray-400 font-bold" />
           </div>
 
           {/* Mood */}
-          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
-            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Mood</span>
-            <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs sm:text-sm text-black outline-none w-full appearance-none font-bold z-10 cursor-pointer">
-              <option value="" className="text-black">Select mood...</option>
-              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="text-black">{m.emoji} {m.label}</option>)}
+          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Mood</span>
+            <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs sm:text-sm text-[var(--color-text)] outline-none w-full appearance-none font-bold z-10 cursor-pointer">
+              <option value="" className="text-[var(--color-text)]">Select mood...</option>
+              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="text-[var(--color-text)]">{m.emoji} {m.label}</option>)}
             </select>
           </div>
 
           {/* Reflection */}
-          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[80px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
-            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-2">Reflection <span className="lowercase opacity-50">(optional)</span></span>
-            <textarea rows={2} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-sm text-black outline-none w-full placeholder-gray-400 resize-none font-bold overflow-hidden" />
+          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[80px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-2">Reflection <span className="lowercase opacity-50">(optional)</span></span>
+            <textarea rows={2} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-sm text-[var(--color-text)] outline-none w-full placeholder-gray-400 resize-none font-bold overflow-hidden" />
           </div>
         </div>
 
@@ -440,7 +440,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           <button
             type="submit"
             disabled={isSubmitting || (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0)}
-            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
+            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
           >
             <Lock className="w-5 h-5 text-white stroke-[2.5px]" />
             {isSubmitting ? "Saving memory..." : "Save Memory"}

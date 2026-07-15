@@ -64,19 +64,19 @@ export function CloudSyncSettings() {
 
   return (
     <div className="space-y-2 pt-4">
-      <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
+      <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
         Cloud Database
       </h2>
-      <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] p-5 space-y-4">
+      <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-5 space-y-4">
         
         {/* Auth Status */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className={`h-10 w-10 rounded-[10px] bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] ${session ? 'text-emerald-500' : 'text-black'}`}>
+            <div className={`h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center shadow-[2px_2px_0px_0px_var(--color-border)] ${session ? 'text-emerald-500' : 'text-[var(--color-text)]'}`}>
               {session ? <Cloud className="h-5 w-5 stroke-[2.5px]" /> : <CloudOff className="h-5 w-5 stroke-[2.5px]" />}
             </div>
             <div>
-              <p className="font-black text-black text-sm uppercase tracking-widest">
+              <p className="font-black text-[var(--color-text)] text-sm uppercase tracking-widest">
                 {status === "loading" ? "Checking status..." : session ? "Connected to Cloud" : "Local Only Mode"}
               </p>
               <p className="text-xs font-bold text-gray-500 mt-0.5">
@@ -94,7 +94,7 @@ export function CloudSyncSettings() {
                   signIn();
                 }
               }}
-              className="text-xs font-black text-black uppercase tracking-widest px-4 py-2 rounded-lg bg-gray-100 hover:bg-[var(--color-primary)] hover:text-white border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+              className="text-xs font-black text-[var(--color-text)] uppercase tracking-widest px-4 py-2 rounded-lg bg-gray-100 hover:bg-[var(--color-primary)] hover:text-white border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
               {session ? "Sign Out" : "Sign In"}
             </button>
@@ -103,10 +103,10 @@ export function CloudSyncSettings() {
 
         {/* Sync Controls */}
         {session && (
-          <div className="pt-4 border-t-[3px] border-black">
+          <div className="pt-4 border-t-[3px] border-[var(--color-border)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-black uppercase tracking-widest text-black">Migrate & Sync</p>
+                <p className="text-sm font-black uppercase tracking-widest text-[var(--color-text)]">Migrate & Sync</p>
                 <p className="text-xs font-bold text-gray-500 mt-0.5">
                   Last sync: {lastSync || "Never"}
                 </p>
@@ -114,7 +114,7 @@ export function CloudSyncSettings() {
               <button
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] disabled:opacity-50 text-white rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_#000] text-xs font-black uppercase tracking-widest transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] disabled:opacity-50 text-white rounded-lg border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] text-xs font-black uppercase tracking-widest transition-all"
               >
                 <RefreshCw className={`h-4 w-4 stroke-[3px] ${isSyncing ? 'animate-spin' : ''}`} />
                 {isSyncing ? "Syncing..." : "Sync Now"}
@@ -136,13 +136,13 @@ export function CloudSyncSettings() {
           <div className="flex flex-col gap-3 pt-2">
             <button
               onClick={handleSignOut}
-              className="w-full py-3 bg-red-500 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] text-white rounded-xl text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_#000] transition-all"
+              className="w-full py-3 bg-red-500 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] text-white rounded-xl text-xs font-black uppercase tracking-widest border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all"
             >
               Sign Out & Delete Local Data
             </button>
             <button
               onClick={() => setShowConfirmSignOut(false)}
-              className="w-full py-3 bg-white hover:bg-gray-100 text-black border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#000] rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+              className="w-full py-3 bg-[var(--color-surface)] hover:bg-gray-100 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] rounded-xl text-xs font-black uppercase tracking-widest transition-all"
             >
               Keep Me Connected
             </button>

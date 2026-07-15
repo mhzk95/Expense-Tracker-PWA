@@ -68,9 +68,9 @@ export function DashboardStats() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="brutal-card p-5 h-28 flex flex-col justify-between animate-pulse">
-            <div className="h-3 w-16 bg-gray-200 border border-black rounded-full" />
-            <div className="h-6 w-24 bg-gray-200 border border-black rounded-full mt-2" />
-            <div className="h-3 w-20 bg-gray-200 border border-black rounded-full mt-2" />
+            <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
+            <div className="h-6 w-24 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
+            <div className="h-3 w-20 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
           </div>
         ))}
       </div>
@@ -85,7 +85,7 @@ export function DashboardStats() {
         rawValue={netWorth}
         trend={""}
         trendDirection="neutral"
-        icon={<Wallet className="h-6 w-6 stroke-[2.5px] text-black" />}
+        icon={<Wallet className="h-6 w-6 stroke-[2.5px] text-[var(--color-text)]" />}
       />
       <StatCard
         label="Monthly Income"
@@ -93,7 +93,7 @@ export function DashboardStats() {
         rawValue={monthlyIncome}
         trend={formatTrend(incomeTrend)}
         trendDirection={incomeTrend > 0 ? "up" : incomeTrend < 0 ? "down" : "neutral"}
-        icon={<TrendingUp className="h-6 w-6 stroke-[2.5px] text-black" />}
+        icon={<TrendingUp className="h-6 w-6 stroke-[2.5px] text-[var(--color-text)]" />}
       />
       <StatCard
         label="Monthly Expenses"
@@ -101,7 +101,7 @@ export function DashboardStats() {
         rawValue={monthlyExpenses}
         trend={formatTrend(expenseTrend)}
         trendDirection={expenseTrend < 0 ? "up" : expenseTrend > 0 ? "down" : "neutral"}
-        icon={<TrendingDown className="h-6 w-6 stroke-[2.5px] text-black" />}
+        icon={<TrendingDown className="h-6 w-6 stroke-[2.5px] text-[var(--color-text)]" />}
       />
       <StatCard
         label="Total Savings"
@@ -109,7 +109,7 @@ export function DashboardStats() {
         rawValue={totalAssets}
         trend={""}
         trendDirection="neutral"
-        icon={<PiggyBank className="h-6 w-6 stroke-[2.5px] text-black" />}
+        icon={<PiggyBank className="h-6 w-6 stroke-[2.5px] text-[var(--color-text)]" />}
       />
     </div>
   );

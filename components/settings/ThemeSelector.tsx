@@ -6,12 +6,11 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 
 const THEMES = [
-  { id: "dark", name: "Slate Dark", bg: "#020617", surface: "#0f172a", primary: "var(--color-primary)" },
-  { id: "light", name: "Slate Light", bg: "#f8fafc", surface: "#ffffff", primary: "var(--color-primary)" },
-  { id: "amoled", name: "AMOLED Black", bg: "#000000", surface: "#0a0a0a", primary: "var(--color-primary)" },
-  { id: "navy", name: "Midnight Navy", bg: "#02040a", surface: "#0a0f1c", primary: "var(--color-primary)" },
-  { id: "arena", name: "Arena", bg: "#050b14", surface: "#0b1424", primary: "var(--color-primary)" },
-  { id: "system", name: "Match System", bg: "linear-gradient(135deg, #f8fafc 50%, #020617 50%)", surface: "linear-gradient(135deg, #ffffff 50%, #0f172a 50%)", primary: "var(--color-primary)" },
+  { id: "light", name: "Classic", icon: "🏛️", bg: "#fdfbf7", surface: "#ffffff", primary: "var(--color-primary)" },
+  { id: "argentina", name: "Argentina", icon: "🇦🇷", bg: "#74acdf", surface: "#ffffff", primary: "#0a1128" },
+  { id: "brazil", name: "Brazil", icon: "🇧🇷", bg: "#009c3b", surface: "#ffffff", primary: "#ffdf00" },
+  { id: "france", name: "France", icon: "🇫🇷", bg: "#002654", surface: "#ffffff", primary: "#ed2939" },
+  { id: "germany", name: "Germany", icon: "🇩🇪", bg: "#e2e8f0", surface: "#ffffff", primary: "#dd0000" },
 ];
 
 const ACCENT_MAP: Record<string, string> = {
@@ -43,35 +42,10 @@ export function ThemeSelector() {
   const handleThemeChange = (newTheme: string) => {
     setActiveTheme(newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
-    
-    if (newTheme === "arena") {
-      localStorage.setItem("et_accent_color", "sky");
-      window.dispatchEvent(new Event("app:accent:changed"));
-    }
-    
-    let isDark = newTheme === "dark" || newTheme === "amoled" || newTheme === "navy" || newTheme === "arena";
-    if (newTheme === "system") {
-      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-    } else {
-      document.documentElement.setAttribute("data-theme", newTheme);
-    }
+    document.documentElement.setAttribute("data-theme", newTheme);
     
     // Update PWA status bar dynamically
-    const darkColor = "#020617";
-    const lightColor = "#ffffff";
-    const amoledColor = "#000000";
-    const navyColor = "#02040a";
-    const arenaColor = "#050b14";
-    
-    let themeColor = lightColor;
-    if (isDark) {
-       themeColor = darkColor;
-       if (newTheme === "amoled") themeColor = amoledColor;
-       if (newTheme === "navy") themeColor = navyColor;
-       if (newTheme === "arena") themeColor = arenaColor;
-    }
-
+    const themeColor = THEMES.find(t => t.id === newTheme)?.bg || "#fdfbf7";
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.removeAttribute("media");
@@ -81,7 +55,7 @@ export function ThemeSelector() {
 
   return (
     <div className="space-y-2 pt-4">
-      <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
+      <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
         Appearance
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -91,7 +65,7 @@ export function ThemeSelector() {
             <button
               key={theme.id}
               onClick={() => handleThemeChange(theme.id)}
-              className="flex flex-col items-center gap-2 p-3 bg-white rounded-[16px] transition-all border-2 border-black"
+              className="flex flex-col items-center gap-2 p-3 bg-[var(--color-surface)] rounded-[16px] transition-all border-2 border-[var(--color-border)]"
               style={{
                 borderColor: isActive ? "var(--color-primary)" : "black",
                 boxShadow: isActive ? "4px 4px 0px 0px var(--color-primary)" : "2px 2px 0px 0px #000",
@@ -109,14 +83,14 @@ export function ThemeSelector() {
                   <div className="h-1.5 w-10 rounded-full bg-slate-500/30" />
                 </div>
                 
-                {/* Mock Content Card */}
                 <div 
-                  className="flex-1 rounded-lg p-2 flex flex-col gap-1.5 shadow-sm ring-1 ring-slate-500/10"
+                  className="flex-1 rounded-lg p-2 flex flex-col gap-1.5 shadow-sm ring-1 ring-slate-500/10 items-center justify-center relative"
                   style={{ background: theme.surface }}
                 >
-                  <div className="w-3/4 h-1.5 rounded-full bg-slate-500/40" />
-                  <div className="w-1/2 h-1.5 rounded-full bg-slate-500/20" />
-                  <div className="mt-auto w-full h-1.5 rounded-full bg-slate-500/10" />
+                  <span className="text-3xl opacity-80 absolute">{theme.icon}</span>
+                  <div className="w-3/4 h-1.5 rounded-full bg-slate-500/40 relative z-10 opacity-30" />
+                  <div className="w-1/2 h-1.5 rounded-full bg-slate-500/20 relative z-10 opacity-30" />
+                  <div className="mt-auto w-full h-1.5 rounded-full bg-slate-500/10 relative z-10 opacity-30" />
                 </div>
 
                 {/* Active checkmark overlay */}
@@ -150,19 +124,19 @@ export function ThemeSelector() {
         </h3>
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none px-1">
           {THEMES.find(t => t.id === activeTheme) && [
-            { label: "Background", color: THEMES.find(t => t.id === activeTheme)!.bg.includes("linear-gradient") ? "#0f172a" : THEMES.find(t => t.id === activeTheme)!.bg },
-            { label: "Surface", color: THEMES.find(t => t.id === activeTheme)!.surface.includes("linear-gradient") ? "#1e293b" : THEMES.find(t => t.id === activeTheme)!.surface },
-            { label: "Primary", color: accentHex },
-            { label: "Success", color: "#10b981" },
-            { label: "Danger", color: "#ef4444" },
-            { label: "Warning", color: "#f59e0b" },
+            { label: "Background", color: THEMES.find(t => t.id === activeTheme)!.bg },
+            { label: "Surface", color: THEMES.find(t => t.id === activeTheme)!.surface },
+            { label: "Primary", color: THEMES.find(t => t.id === activeTheme)!.primary },
+            { label: "Success", color: "#6ee7b7" },
+            { label: "Danger", color: "#fca5a5" },
+            { label: "Warning", color: "#fcd34d" },
           ].map((c) => (
             <div key={c.label} className="flex flex-col items-center gap-1.5 flex-shrink-0">
               <div 
-                className="w-10 h-10 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]" 
+                className="w-10 h-10 rounded-full border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" 
                 style={{ background: c.color }}
               />
-              <span className="text-[9px] font-black text-black uppercase tracking-widest">{c.label}</span>
+              <span className="text-[9px] font-black text-[var(--color-text)] uppercase tracking-widest">{c.label}</span>
               <span className="text-[8px] font-bold text-gray-500 font-mono">{c.color}</span>
             </div>
           ))}

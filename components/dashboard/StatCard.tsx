@@ -58,7 +58,7 @@ export function StatCard({
       
       {/* Decorative partially clipped icon */}
       {icon && (
-        <div className="absolute -top-4 -right-4 w-20 h-20 sm:w-24 sm:h-24 text-black/[0.05] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
+        <div className="absolute -top-4 -right-4 w-20 h-20 sm:w-24 sm:h-24 text-[var(--color-text)]/[0.05] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
           {decorativeIcon}
         </div>
       )}
@@ -66,14 +66,14 @@ export function StatCard({
       <div className="relative z-10 flex flex-col justify-between h-full flex-1">
         {/* Label */}
         <div>
-          <p className="text-xs font-black text-black uppercase tracking-widest leading-none text-balance">
+          <p className="text-xs font-black text-[var(--color-text)] uppercase tracking-widest leading-none text-balance">
             {label}
           </p>
         </div>
 
         {/* Value */}
         <div className="mt-2 sm:mt-4 mb-1 sm:mb-2 flex items-baseline">
-          <p className="text-xl sm:text-3xl font-black text-black tracking-tight whitespace-nowrap tabular-nums leading-none">
+          <p className="text-xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight whitespace-nowrap tabular-nums leading-none">
             {rawValue !== undefined ? (
               <CountUp
                 end={rawValue}

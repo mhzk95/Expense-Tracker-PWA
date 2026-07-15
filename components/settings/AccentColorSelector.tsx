@@ -29,10 +29,10 @@ export function AccentColorSelector() {
 
   return (
     <div className="space-y-2 pt-4">
-      <h2 className="text-[10px] font-black text-black uppercase tracking-widest px-1">
+      <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
         Accent Color
       </h2>
-      <div className="bg-white border-[3px] border-black rounded-[16px] shadow-[4px_4px_0px_0px_#000] p-4">
+      <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {ACCENTS.map((accent) => {
             const isActive = activeAccent === accent.id;
@@ -42,12 +42,12 @@ export function AccentColorSelector() {
                 onClick={() => handleAccentChange(accent.id)}
                 className={cn(
                   "flex flex-col items-center gap-2 p-3 rounded-[12px] transition-all border-2",
-                  isActive ? "bg-gray-100 border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]" : "border-transparent hover:border-black hover:shadow-[2px_2px_0px_0px_#000]"
+                  isActive ? "bg-gray-100 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] translate-x-[-2px] translate-y-[-2px]" : "border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
                 )}
               >
                 {/* Color Dot */}
                 <div
-                  className="h-10 w-10 rounded-[8px] border-2 border-black flex items-center justify-center transition-transform active:scale-95 relative shadow-[2px_2px_0px_0px_#000]"
+                  className="h-10 w-10 rounded-[8px] border-2 border-[var(--color-border)] flex items-center justify-center transition-transform active:scale-95 relative shadow-[2px_2px_0px_0px_var(--color-border)]"
                   style={{
                     backgroundColor: accent.hex,
                   }}
@@ -56,7 +56,7 @@ export function AccentColorSelector() {
                     <Check className="h-5 w-5 text-white font-bold stroke-[3px]" />
                   )}
                 </div>
-                <span className={`text-[10px] uppercase font-black tracking-widest mt-1 ${isActive ? "text-black" : "text-gray-500"}`}>{accent.name}</span>
+                <span className={`text-[10px] uppercase font-black tracking-widest mt-1 ${isActive ? "text-[var(--color-text)]" : "text-gray-500"}`}>{accent.name}</span>
               </button>
             );
           })}
