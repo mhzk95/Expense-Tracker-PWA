@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <PageHeader title="Analytics" subtitle="Loading insights..." />
         <div className="animate-pulse flex flex-col gap-6">
-          <div className="h-40 brutal-card" />
-          <div className="h-64 brutal-card" />
+          <div className="h-40 bg-gray-200 border-4 border-gray-300 rounded-[24px]" />
+          <div className="h-64 bg-gray-200 border-4 border-gray-300 rounded-[24px]" />
         </div>
       </div>
     );
@@ -62,8 +62,8 @@ export default function AnalyticsPage() {
         title="Analytics"
         subtitle="Insights based on your local cash flow"
         action={
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 transition-all">
-            <Filter className="h-4 w-4" />
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-black hover:bg-gray-100 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+            <Filter className="h-4 w-4 stroke-[2.5px]" />
             All Time
           </button>
         }
@@ -71,41 +71,41 @@ export default function AnalyticsPage() {
 
       {/* Cash Flow Summary */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+        <div className="rounded-[24px] border-[3px] sm:border-[4px] border-black bg-emerald-400 shadow-[4px_4px_0px_0px_#000] p-5">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-emerald-500/20 rounded-lg">
-              <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <div className="p-2 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
+              <TrendingUp className="h-5 w-5 text-black stroke-[3px]" />
             </div>
-            <span className="text-sm font-medium text-slate-300">Total Income</span>
+            <span className="text-[11px] font-black uppercase tracking-widest text-black">Total Income</span>
           </div>
-          <p className="text-2xl font-bold text-white tabular-nums">{formatCurrency(totalIncome)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-black tabular-nums">{formatCurrency(totalIncome)}</p>
         </div>
 
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
+        <div className="rounded-[24px] border-[3px] sm:border-[4px] border-black bg-red-400 shadow-[4px_4px_0px_0px_#000] p-5">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-red-500/20 rounded-lg">
-              <TrendingDown className="h-4 w-4 text-red-400" />
+            <div className="p-2 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
+              <TrendingDown className="h-5 w-5 text-black stroke-[3px]" />
             </div>
-            <span className="text-sm font-medium text-slate-300">Total Expenses</span>
+            <span className="text-[11px] font-black uppercase tracking-widest text-black">Total Expenses</span>
           </div>
-          <p className="text-2xl font-bold text-white tabular-nums">{formatCurrency(totalExpenses)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-black tabular-nums">{formatCurrency(totalExpenses)}</p>
         </div>
       </div>
 
-      <div className="brutal-card p-6 flex items-center justify-between">
-        <span className="text-slate-300 font-medium">Net Cash Flow</span>
-        <span className={`text-xl font-bold tabular-nums ${netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+      <div className="bg-white border-[3px] sm:border-[4px] border-black rounded-[24px] shadow-[4px_4px_0px_0px_#000] p-6 flex items-center justify-between">
+        <span className="text-sm font-black uppercase tracking-widest text-black">Net Cash Flow</span>
+        <span className={`text-2xl font-black tabular-nums px-3 py-1 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] ${netCashFlow >= 0 ? 'bg-emerald-300 text-black' : 'bg-red-300 text-black'}`}>
           {netCashFlow > 0 ? "+" : ""}{formatCurrency(netCashFlow)}
         </span>
       </div>
 
       {/* Spending Breakdown */}
-      <div className="brutal-card p-6">
-        <h3 className="text-lg font-semibold text-white mb-6">Spending Breakdown</h3>
+      <div className="bg-white border-[3px] sm:border-[4px] border-black rounded-[24px] shadow-[4px_4px_0px_0px_#000] p-6 sm:p-8">
+        <h3 className="text-xl font-black uppercase tracking-tight text-black mb-6">Spending Breakdown</h3>
         
         {totalExpenses === 0 ? (
-          <div className="text-center py-8 text-slate-500">
-            No expenses recorded yet.
+          <div className="text-center py-10 border-4 border-dashed border-gray-300 rounded-[20px]">
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">No expenses recorded yet.</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -114,22 +114,22 @@ export default function AnalyticsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-3 h-3 rounded-full"
+                      className="w-4 h-4 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]"
                       style={{ backgroundColor: cat.color }}
                     />
-                    <span className="text-sm font-medium text-slate-200">{cat.name}</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-black">{cat.name}</span>
                   </div>
-                  <div className="text-right">
-                    <span className="text-sm font-semibold text-white block tabular-nums">
+                  <div className="text-right flex items-center gap-3">
+                    <span className="text-sm font-black text-gray-500">{Math.round(cat.percentage)}%</span>
+                    <span className="text-sm font-black text-black block tabular-nums">
                       {formatCurrency(cat.amount)}
                     </span>
-                    <span className="text-xs text-slate-500">{Math.round(cat.percentage)}%</span>
                   </div>
                 </div>
                 
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-4 w-full bg-gray-100 border-2 border-black rounded-full overflow-hidden shadow-inner">
                   <div
-                    className="h-full rounded-full transition-all duration-1000 ease-out"
+                    className="h-full border-r-2 border-black transition-all duration-1000 ease-out"
                     style={{
                       width: `${cat.percentage}%`,
                       backgroundColor: cat.color,

@@ -580,7 +580,7 @@ export default function TransactionsPage() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15 }}
-                      className="space-y-3 overflow-hidden"
+                      className="space-y-3 overflow-hidden px-2 -mx-2 py-2 -my-2"
                     >
                       {group.txns.map((txn) => {
                         let category = categories.find((c) => c.id === txn.categoryId);

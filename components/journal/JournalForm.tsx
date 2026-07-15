@@ -311,10 +311,10 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           </div>
         ) : (
           <div className="-mx-4 -mt-4 mb-2">
-            <label className="flex items-center justify-center w-full h-32 bg-slate-900/30 border-b border-slate-800/60 cursor-pointer hover:bg-slate-900/50 transition-colors">
-              <div className="flex flex-col items-center gap-2 text-slate-500">
-                <div className="p-3 bg-slate-800 rounded-2xl shadow-inner"><ImageIcon className="w-6 h-6 text-slate-400" /></div>
-                <span className="text-xs font-semibold uppercase tracking-wider">Add a photo</span>
+            <label className="flex items-center justify-center w-full h-32 bg-gray-100 border-[3px] border-b border-black cursor-pointer hover:bg-gray-200 transition-colors">
+              <div className="flex flex-col items-center gap-2 text-black">
+                <div className="p-3 bg-white rounded-2xl shadow-[4px_4px_0px_0px_#000] border-2 border-black"><ImageIcon className="w-6 h-6 text-black" /></div>
+                <span className="text-[11px] font-black uppercase tracking-widest mt-2">Add a photo</span>
               </div>
               <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
             </label>
@@ -322,23 +322,23 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         )}
 
         {/* Audio Recorder */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-4 flex flex-col items-center justify-center min-h-[100px] shadow-sm">
+        <div className="bg-white border-[3px] border-black rounded-[24px] p-4 flex flex-col items-center justify-center min-h-[100px] shadow-[4px_4px_0px_0px_#000]">
           {recorder.state === "idle" && (
             <button
               type="button"
               onClick={recorder.start}
-              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-medium text-slate-400 hover:text-violet-400 transition-colors"
+              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-black text-black hover:bg-gray-100 transition-colors rounded-xl"
             >
-              <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center border border-violet-500/20">
-                <Mic className="w-5 h-5 text-violet-400" />
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                <Mic className="w-6 h-6 text-white stroke-[3px]" />
               </div>
-              <span className="text-xs">Record a voice note</span>
+              <span className="text-[11px] uppercase tracking-widest mt-1">Record a voice note</span>
             </button>
           )}
 
           {(recorder.state === "recording" || recorder.state === "paused") && (
             <div className="w-full space-y-3">
-              <div className="text-center text-white font-mono text-lg font-semibold tracking-wider">
+              <div className="text-center text-black font-mono text-lg font-black tracking-wider">
                 {formatDuration(recorder.durationMs)}
               </div>
               {/* Live waveform */}
@@ -346,29 +346,29 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
                 {recorder.waveformData.slice(-40).map((amp, i) => (
                   <div
                     key={i}
-                    className={`w-1 rounded-full transition-all ${recorder.state === "recording" ? "bg-violet-500" : "bg-slate-600"}`}
+                    className={`w-1 rounded-full transition-all ${recorder.state === "recording" ? "bg-black" : "bg-gray-400"}`}
                     style={{ height: `${Math.max(4, amp * 38)}px` }}
                   />
                 ))}
               </div>
               <div className="flex items-center justify-center gap-6 pt-2">
-                <button type="button" onClick={recorder.cancel} className="p-2 text-slate-500 hover:text-red-400 transition-colors">
-                  <Trash2 className="w-5 h-5" />
+                <button type="button" onClick={recorder.cancel} className="p-2 text-gray-500 hover:text-red-500 transition-colors">
+                  <Trash2 className="w-6 h-6 stroke-[3px]" />
                 </button>
                 <button
                   type="button"
                   onClick={recorder.stop}
-                  className="w-14 h-14 rounded-full bg-violet-600 hover:bg-violet-500 flex items-center justify-center shadow-lg shadow-violet-500/30 transition-all active:scale-95"
+                  className="w-14 h-14 rounded-full bg-red-400 hover:bg-red-500 flex items-center justify-center border-[3px] border-black shadow-[4px_4px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
                 >
-                  <Square className="w-5 h-5 text-white fill-white" />
+                  <Square className="w-5 h-5 text-black fill-black" />
                 </button>
                 {recorder.state === "recording" ? (
-                  <button type="button" onClick={recorder.pause} className="p-2 text-slate-400 hover:text-white transition-colors">
-                    <Pause className="w-5 h-5" />
+                  <button type="button" onClick={recorder.pause} className="p-2 text-gray-500 hover:text-black transition-colors">
+                    <Pause className="w-6 h-6 stroke-[3px]" />
                   </button>
                 ) : (
-                  <button type="button" onClick={recorder.resume} className="p-2 text-slate-400 hover:text-white transition-colors">
-                    <Play className="w-5 h-5" />
+                  <button type="button" onClick={recorder.resume} className="p-2 text-gray-500 hover:text-black transition-colors">
+                    <Play className="w-6 h-6 stroke-[3px]" />
                   </button>
                 )}
               </div>
@@ -380,20 +380,20 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
               <button
                 type="button"
                 onClick={togglePlayback}
-                className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-violet-500/20"
+                className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               >
                 {isPlayingBack ? <Pause className="w-4 h-4 text-white fill-white" /> : <Play className="w-4 h-4 text-white fill-white ml-0.5" />}
               </button>
               <div className="flex-1 flex items-center gap-[2px] h-8 overflow-hidden">
                 {recorder.waveformData.slice(0, 40).map((amp, i) => (
-                  <div key={i} className="w-1 rounded-full bg-violet-500/80" style={{ height: `${Math.max(3, amp * 30)}px` }} />
+                  <div key={i} className="w-1 rounded-full bg-black/80" style={{ height: `${Math.max(3, amp * 30)}px` }} />
                 ))}
               </div>
-              <div className="text-xs text-slate-400 font-mono flex-shrink-0">
+              <div className="text-xs text-black font-black font-mono flex-shrink-0">
                 {formatDuration(recorder.result.durationMs)}
               </div>
-              <button type="button" onClick={discardAudio} className="p-1.5 text-slate-500 hover:text-red-400 transition-colors ml-1">
-                <Trash2 className="w-4 h-4" />
+              <button type="button" onClick={discardAudio} className="p-1.5 text-gray-500 hover:text-red-500 transition-colors ml-1">
+                <Trash2 className="w-5 h-5 stroke-[3px]" />
               </button>
             </div>
           )}
@@ -402,51 +402,51 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         {/* 2x2 Grid Metadata */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {/* Date & Time */}
-          <div className="col-span-2 et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><Calendar className="w-3 h-3 text-violet-400" /> Date & Time</span>
-            <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full font-medium" />
+          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><Calendar className="w-3.5 h-3.5 stroke-[3px]" /> Date & Time</span>
+            <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs sm:text-sm text-black outline-none w-full font-bold" />
           </div>
 
           {/* Location */}
-          <button type="button" onClick={() => setShowLocationPicker(true)} className="et-form-container rounded-2xl p-3 text-left hover:opacity-90 flex flex-col justify-center min-h-[64px] shadow-inner">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5"><MapPin className="w-3 h-3 text-violet-400" /> Location</span>
-            <span className="text-xs text-white truncate w-full font-medium">{getLocationDisplay() || "Add location..."}</span>
+          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-gray-50 border-[3px] border-black rounded-[16px] p-3 text-left hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-0.5 flex flex-col justify-center min-h-[64px] transition-all">
+            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><MapPin className="w-3.5 h-3.5 stroke-[3px]" /> Location</span>
+            <span className="text-xs text-black truncate w-full font-bold">{getLocationDisplay() || "Add location..."}</span>
           </button>
 
           {/* Event */}
-          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Event <span className="lowercase font-normal opacity-70">(optional)</span></span>
-            <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 font-medium" />
+          <div className="bg-gray-50 border-[3px] border-black rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Event <span className="lowercase opacity-50">(optional)</span></span>
+            <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-black outline-none w-full placeholder-gray-400 font-bold" />
           </div>
 
           {/* Mood */}
-          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Mood</span>
-            <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs text-white outline-none w-full appearance-none font-medium z-10 cursor-pointer">
-              <option value="" className="bg-slate-950 text-slate-50">Select mood...</option>
-              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="bg-slate-950 text-slate-50">{m.emoji} {m.label}</option>)}
+          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Mood</span>
+            <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs sm:text-sm text-black outline-none w-full appearance-none font-bold z-10 cursor-pointer">
+              <option value="" className="text-black">Select mood...</option>
+              {MOODS.map(m => <option key={m.label} value={`${m.label} ${m.emoji}`} className="text-black">{m.emoji} {m.label}</option>)}
             </select>
           </div>
 
           {/* Reflection */}
-          <div className="et-form-container rounded-2xl p-3 flex flex-col justify-center min-h-[64px] shadow-inner">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">Reflection <span className="lowercase font-normal opacity-70">(optional)</span></span>
-            <textarea rows={1} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-xs text-white outline-none w-full placeholder-slate-500 resize-none font-medium overflow-hidden" />
+          <div className="col-span-2 bg-gray-50 border-[3px] border-black rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[80px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_#000] focus-within:-translate-y-0.5 transition-all">
+            <span className="text-[10px] text-black font-black uppercase tracking-widest flex items-center gap-1.5 mb-2">Reflection <span className="lowercase opacity-50">(optional)</span></span>
+            <textarea rows={2} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-sm text-black outline-none w-full placeholder-gray-400 resize-none font-bold overflow-hidden" />
           </div>
         </div>
 
         {/* Submit */}
-        <div className="pt-2">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={isSubmitting || (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0)}
-            className="w-full bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/20 text-white font-semibold rounded-2xl py-4 transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
           >
-            <Lock className="w-4 h-4 text-white/80" />
+            <Lock className="w-5 h-5 text-white stroke-[2.5px]" />
             {isSubmitting ? "Saving memory..." : "Save Memory"}
           </button>
-          <p className="text-center text-[10px] text-slate-500 flex items-center justify-center gap-1 mt-3">
-            <Lock className="w-2.5 h-2.5" /> Private & encrypted
+          <p className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-center gap-1 mt-4">
+            <Lock className="w-3 h-3 stroke-[3px]" /> Private & encrypted
           </p>
         </div>
 

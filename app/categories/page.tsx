@@ -113,18 +113,18 @@ export default function CategoriesPage() {
       />
 
       {isAdding && (
-        <div className="p-5 brutal-card mb-6">
-          <h3 className="text-sm font-semibold text-white mb-4">
+        <div className="p-5 bg-white border-[3px] sm:border-[4px] border-black shadow-[4px_4px_0px_0px_#000] rounded-[16px] sm:rounded-[24px] mb-6">
+          <h3 className="text-sm font-black uppercase tracking-widest text-black mb-4">
             {editingId ? "Edit Category" : "New Category"}
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Name</label>
+              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                className="w-full bg-white border-[3px] border-black rounded-xl px-3 py-2.5 text-sm font-bold text-black focus:shadow-[4px_4px_0px_0px_#000] outline-none transition-shadow"
                 placeholder="e.g. Groceries"
                 required
               />
@@ -140,7 +140,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("expense")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-semibold rounded-xl border border-slate-800 text-slate-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 peer-checked:border-red-500/50 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-black text-gray-500 peer-checked:bg-red-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Expense
                 </div>
               </label>
@@ -153,7 +153,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("income")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-semibold rounded-xl border border-slate-800 text-slate-400 peer-checked:bg-emerald-500/20 peer-checked:text-emerald-400 peer-checked:border-emerald-500/50 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-black text-gray-500 peer-checked:bg-emerald-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Income
                 </div>
               </label>
@@ -161,8 +161,8 @@ export default function CategoriesPage() {
 
             {/* Icon Picker Grid */}
             <div className="space-y-1.5">
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Icon</label>
-              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-slate-950/40 border border-slate-800 rounded-xl max-h-[140px] overflow-y-auto scrollbar-none">
+              <label className="block text-[10px] font-black text-black uppercase tracking-widest">Icon</label>
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-gray-50 border-[3px] border-black rounded-xl max-h-[140px] overflow-y-auto scrollbar-none shadow-inner">
                 {AVAILABLE_ICONS.map((ico) => {
                   const IconComp = ICON_MAP[ico.name] || Target;
                   const isSelected = icon === ico.name;
@@ -174,14 +174,14 @@ export default function CategoriesPage() {
                         setIcon(ico.name);
                         vibrate([10]);
                       }}
-                      className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-90 ${
+                      className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all active:translate-x-0.5 active:translate-y-0.5 border-2 ${
                         isSelected 
-                          ? "bg-violet-600/20 border border-violet-500/50 text-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.3)]" 
-                          : "bg-slate-900/60 border border-slate-800/40 text-slate-400 hover:bg-slate-900 hover:text-white"
+                          ? "bg-[var(--color-primary)] border-black text-white shadow-[2px_2px_0px_0px_#000] active:shadow-none" 
+                          : "bg-white border-transparent text-black hover:border-black hover:shadow-[2px_2px_0px_0px_#000]"
                       }`}
                       title={ico.label}
                     >
-                      <IconComp className="w-4 h-4" />
+                      <IconComp className="w-5 h-5 stroke-[2.5px]" />
                     </button>
                   );
                 })}
@@ -190,8 +190,8 @@ export default function CategoriesPage() {
 
             {/* Robust Color Picker */}
             <div className="space-y-1.5">
-              <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Color</label>
-              <div className="flex flex-wrap items-center gap-2 bg-slate-950/40 border border-slate-800 rounded-xl p-3">
+              <label className="block text-[10px] font-black text-black uppercase tracking-widest">Color</label>
+              <div className="flex flex-wrap items-center gap-2 bg-gray-50 border-[3px] border-black rounded-xl p-3 shadow-inner">
                 {colors.map((c) => (
                   <button
                     key={c}
@@ -201,18 +201,15 @@ export default function CategoriesPage() {
                       vibrate([10]);
                     }}
                     className={`w-8 h-8 rounded-full border-2 transition-all active:scale-90 ${
-                      color.toLowerCase() === c.toLowerCase() ? "border-white scale-110 shadow-lg" : "border-transparent"
+                      color.toLowerCase() === c.toLowerCase() ? "border-black scale-110 shadow-[2px_2px_0px_0px_#000]" : "border-transparent"
                     }`}
-                    style={{ 
-                      backgroundColor: c,
-                      boxShadow: color.toLowerCase() === c.toLowerCase() ? `0 0 10px ${c}` : undefined
-                    }}
+                    style={{ backgroundColor: c }}
                   />
                 ))}
                 
                 {/* Custom Color Wheel Native Input */}
                 <div 
-                  className="relative w-8 h-8 rounded-full border-2 border-dashed border-slate-700 hover:border-slate-500 transition-colors flex items-center justify-center overflow-hidden cursor-pointer"
+                  className="relative w-8 h-8 rounded-full border-2 border-dashed border-gray-400 hover:border-black transition-colors flex items-center justify-center overflow-hidden cursor-pointer"
                   style={{ backgroundColor: colors.includes(color.toLowerCase()) ? "transparent" : color }}
                 >
                   <input
@@ -222,9 +219,9 @@ export default function CategoriesPage() {
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   />
                   {colors.includes(color.toLowerCase()) ? (
-                    <span className="text-[10px] text-slate-400 font-bold pointer-events-none">+</span>
+                    <span className="text-[10px] text-gray-400 font-bold pointer-events-none">+</span>
                   ) : (
-                    <span className="w-1.5 h-1.5 rounded-full bg-white pointer-events-none" />
+                    <span className="w-2 h-2 rounded-full border border-black bg-white pointer-events-none" />
                   )}
                 </div>
 
@@ -234,22 +231,22 @@ export default function CategoriesPage() {
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#ffffff"
-                  className="w-20 bg-slate-900 border border-slate-800/80 rounded-lg px-2 py-1 text-xs text-white uppercase outline-none focus:border-violet-500/50 text-center font-mono ml-auto"
+                  className="w-20 bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold uppercase outline-none focus:shadow-[2px_2px_0px_0px_#000] text-center font-mono ml-auto"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-3 pt-4">
               <button
                 type="button"
                 onClick={resetForm}
-                className="flex-1 py-2 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-black bg-gray-200 hover:bg-gray-300 rounded-[12px] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 py-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-500 rounded-xl transition-colors"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 {editingId ? "Save Changes" : "Create"}
               </button>
@@ -265,49 +262,40 @@ export default function CategoriesPage() {
 
           return (
             <div key={groupType} className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 mt-2">
+              <h3 className="text-xs font-black uppercase tracking-widest text-black px-1 mt-2">
                 {groupType} Categories
               </h3>
               
               {/* Brick Wall Layout - Masonry-like dense grid of category chips */}
-              <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
                 {grouped.map((cat) => {
                   const IconComp = getCategoryIcon(cat.icon);
                   return (
                     <div 
                       key={cat.id}
-                      className="group relative brutal-card interactive flex items-center justify-between gap-2 px-3 py-2 border rounded-xl overflow-visible transition-all duration-300"
-                      style={{ 
-                        borderColor: `${cat.color || "#94a3b8"}30`,
-                        boxShadow: `0 4px 20px -2px ${(cat.color || "#94a3b8")}15, inset 0 1px 0px rgba(255,255,255,0.05)`,
-                        "--color-primary": cat.color || "#94a3b8",
-                        "--color-primary-rgb": hexToRgb(cat.color || "#94a3b8"),
-                        "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
-                        "--color-primary-glow-hover": "rgba(var(--color-primary-rgb), var(--card-glow-hover-intensity))",
-                        "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
-                      } as React.CSSProperties}
+                      className="group relative bg-white flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 rounded-[16px] overflow-visible transition-all duration-300"
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
-                          className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${cat.color || "#94a3b8"}20` }}
+                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border-[3px] border-black shadow-[2px_2px_0px_0px_#000]"
+                          style={{ backgroundColor: cat.color || "#94a3b8" }}
                         >
-                          <IconComp className="w-3.5 h-3.5" style={{ color: cat.color }} />
+                          <IconComp className="w-4 h-4 stroke-[3px] text-black" />
                         </div>
-                        <span className="text-[11px] font-semibold text-white truncate">{cat.name}</span>
+                        <span className="text-xs font-black uppercase tracking-wider text-black truncate">{cat.name}</span>
                       </div>
 
                       {/* Edit / Delete actions */}
-                      <div className="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleEdit(cat);
                           }}
-                          className="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-black hover:bg-gray-100 text-gray-500 hover:text-black transition-colors"
                           title="Edit"
                         >
-                          <Edit2 className="w-3 h-3" />
+                          <Edit2 className="w-4 h-4 stroke-[3px]" />
                         </button>
                         <button
                           onClick={(e) => {
@@ -316,10 +304,10 @@ export default function CategoriesPage() {
                               deleteCategory(cat.id);
                             }
                           }}
-                          className="p-1 rounded-md hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors"
+                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-red-500 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
                           title="Delete"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-4 h-4 stroke-[3px]" />
                         </button>
                       </div>
                     </div>
@@ -331,13 +319,13 @@ export default function CategoriesPage() {
         })}
 
         {!loading && categories.length === 0 && !isAdding && (
-          <div className="text-center p-10 brutal-card">
-            <Target className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-sm font-medium text-white mb-1">No Categories</h3>
-            <p className="text-xs text-slate-400 mb-4">Add your first category to start tracking.</p>
+          <div className="text-center p-10 bg-white border-4 border-black border-dashed rounded-[24px]">
+            <Target className="w-12 h-12 text-black mx-auto mb-4 stroke-[2.5px]" />
+            <h3 className="text-lg font-black uppercase tracking-widest text-black mb-2">No Categories</h3>
+            <p className="text-sm font-bold text-gray-500 mb-6">Add your first category to start tracking.</p>
             <button
               onClick={() => setIsAdding(true)}
-              className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-500 rounded-xl transition-colors"
+              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
             >
               Add Category
             </button>

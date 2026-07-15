@@ -5,6 +5,7 @@ import { useJournal } from "@/hooks/useJournal";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDate } from "@/lib/utils/helpers";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { JournalForm } from "@/components/journal/JournalForm";
 import { TelegramLazyImage } from "@/components/ui/TelegramLazyImage";
 import { JournalEntity } from "@/lib/db/indexeddb";
@@ -321,22 +322,19 @@ export default function JournalPage() {
       
       {/* Sticky Header / Search Area */}
       <div className="sticky top-0 z-40 bg-white pt-4 pb-4 px-2 sm:px-4 border-b-4 border-black shadow-[0_4px_0_0_#000]">
-        <div className="flex items-center justify-between mb-1">
-          <div>
-            <h1 className="text-2xl font-black text-black uppercase tracking-tight">Journal</h1>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-              {loading ? "Loading..." : `${entries.length} memories`}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+        <PageHeader 
+          title="Journal"
+          subtitle={loading ? "Loading..." : `${entries.length} memories`}
+          className="mb-1"
+          action={
             <button
               onClick={() => setShowSearch(v => !v)}
               className="p-3 text-black bg-white border-2 border-black rounded-xl hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
               <Search className="w-5 h-5 stroke-[2.5px]" />
             </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Search bar (collapsible) */}
         {showSearch && (

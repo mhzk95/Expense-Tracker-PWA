@@ -261,8 +261,8 @@ function ResearchContent() {
         subtitle={searchQuery ? `${displayedItems.length} matches` : (activeTopicId ? `${displayedItems.length} items` : `${items.filter(i => !i.topicId).length} in Inbox`)}
         action={
           <div className="flex gap-2">
-            <button onClick={() => setView("grid")} className={`p-2 rounded-xl ${view === "grid" ? "bg-violet-600 text-white" : "bg-slate-800 text-slate-400"}`}><LayoutGrid className="h-4 w-4" /></button>
-            <button onClick={() => setView("list")} className={`p-2 rounded-xl ${view === "list" ? "bg-violet-600 text-white" : "bg-slate-800 text-slate-400"}`}><List className="h-4 w-4" /></button>
+            <button onClick={() => setView("grid")} className={`p-2 rounded-xl border-[3px] border-black transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_#000] ${view === "grid" ? "bg-[var(--color-primary)] text-white" : "bg-white text-black hover:bg-gray-100"}`}><LayoutGrid className="h-5 w-5 stroke-[2.5px]" /></button>
+            <button onClick={() => setView("list")} className={`p-2 rounded-xl border-[3px] border-black transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_#000] ${view === "list" ? "bg-[var(--color-primary)] text-white" : "bg-white text-black hover:bg-gray-100"}`}><List className="h-5 w-5 stroke-[2.5px]" /></button>
           </div>
         }
       />
@@ -598,27 +598,27 @@ function ResearchContent() {
 
       {/* PRO CLIPPER SHARE MODAL */}
       {shareItem && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-violet-500/10 animate-in slide-in-from-bottom-8 duration-300">
-            <div className="p-5 border-b border-slate-800/60">
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-white border-[4px] border-black rounded-[24px] overflow-hidden shadow-[8px_8px_0px_0px_#000] animate-in slide-in-from-bottom-8 duration-300">
+            <div className="p-5 border-b-[4px] border-black bg-gray-50">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
+                <span className="text-xs font-black text-black uppercase tracking-widest flex items-center gap-1.5">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse border-2 border-black" />
                   Link Saved Instantly
                 </span>
-                <button onClick={closeShareModal} className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-full transition-colors">
-                  <X className="h-4 w-4" />
+                <button onClick={closeShareModal} className="p-1.5 bg-white hover:bg-gray-200 border-2 border-black text-black rounded-lg transition-all active:translate-x-0.5 active:translate-y-0.5">
+                  <X className="h-5 w-5 stroke-[3px]" />
                 </button>
               </div>
 
               <div className="flex items-start gap-3">
                 {shareItem.imageUrl ? (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000]">
                     <img src={shareItem.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 ) : (
-                  <div className="p-2.5 bg-violet-500/20 text-violet-400 rounded-xl shrink-0 mt-1">
-                    <Link2 className="h-5 w-5" />
+                  <div className="p-3 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] text-black rounded-xl shrink-0 mt-1">
+                    <Link2 className="h-6 w-6 stroke-[2.5px]" />
                   </div>
                 )}
                 <div>
@@ -627,7 +627,7 @@ function ResearchContent() {
                       <div className="w-full space-y-2">
                         <input
                           type="text"
-                          className="w-full brutal-input rounded-md px-2 py-1 text-sm"
+                          className="w-full border-2 border-black rounded-lg px-2 py-1 text-sm font-bold text-black focus:shadow-[2px_2px_0px_0px_#000] outline-none"
                           value={shareItem.title || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, title: e.target.value });
@@ -637,7 +637,7 @@ function ResearchContent() {
                         />
                         <input
                           type="text"
-                          className="w-full brutal-input rounded-md px-2 py-1 text-sm"
+                          className="w-full border-2 border-black rounded-lg px-2 py-1 text-sm font-bold text-black focus:shadow-[2px_2px_0px_0px_#000] outline-none"
                           value={shareItem.imageUrl || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, imageUrl: e.target.value });
@@ -645,7 +645,7 @@ function ResearchContent() {
                           }}
                           placeholder="Image URL"
                         />
-                        <button onClick={() => setIsEditingDetails(false)} className="text-xs text-violet-400 font-medium">Done Editing</button>
+                        <button onClick={() => setIsEditingDetails(false)} className="text-[10px] uppercase tracking-widest font-black text-black hover:underline mt-2">Done Editing</button>
                       </div>
                     ) : (
                       <>
@@ -666,16 +666,16 @@ function ResearchContent() {
               </div>
             </div>
 
-            <div className="p-5 space-y-5 bg-slate-900/50">
+            <div className="p-5 space-y-5 bg-white">
               <div>
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 block">Quick File To Topic</label>
+                <label className="text-[10px] font-black text-black uppercase tracking-widest mb-2 block">Quick File To Topic</label>
                 <div className="flex flex-wrap gap-2 items-center">
                   <button
                     onClick={() => {
                       updateItem(shareItem.id, { topicId: undefined });
                       closeShareModal();
                     }}
-                    className="px-3 py-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors border border-slate-700"
+                    className="px-3 py-1.5 bg-gray-100 text-black hover:bg-gray-200 rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                   >
                     Leave in Inbox
                   </button>
@@ -686,15 +686,15 @@ function ResearchContent() {
                         updateItem(shareItem.id, { topicId: t.id });
                         closeShareModal();
                       }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 rounded-lg text-sm font-medium transition-colors border border-violet-500/20"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-black hover:bg-[var(--color-primary)] hover:text-white rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                     >
-                      <Folder className="h-3.5 w-3.5" />
+                      <Folder className="h-4 w-4 stroke-[2.5px]" />
                       {t.title}
                     </button>
                   ))}
                   {topics.length > getSuggestedTopics(shareItem.title, shareItem.content).length && (
                     <select
-                      className="bg-slate-800 border border-slate-700 text-sm font-medium text-slate-300 rounded-lg px-3 py-1.5 outline-none focus:border-violet-500"
+                      className="bg-white border-2 border-black text-xs font-black uppercase tracking-widest text-black rounded-lg px-2 py-1.5 outline-none focus:shadow-[2px_2px_0px_0px_#000]"
                       value=""
                       onChange={(e) => {
                         updateItem(shareItem.id, { topicId: e.target.value });
@@ -712,12 +712,12 @@ function ResearchContent() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider block">Content / Notes</label>
+                  <label className="text-[10px] font-black text-black uppercase tracking-widest block">Content / Notes</label>
                   <CopyButton text={shareItem.content || ""} />
                 </div>
                 <textarea
                   placeholder="Content or notes..."
-                  className="w-full h-24 brutal-input rounded-xl p-3 text-sm resize-none"
+                  className="w-full h-24 border-2 border-black rounded-xl p-3 text-sm font-bold text-black focus:shadow-[4px_4px_0px_0px_#000] outline-none resize-none"
                   value={shareItem.content || ""}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -730,12 +730,12 @@ function ResearchContent() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider block">Extracted Text (OCR)</label>
+                  <label className="text-[10px] font-black text-black uppercase tracking-widest block">Extracted Text (OCR)</label>
                   <CopyButton text={shareItem.ocrText || ""} />
                 </div>
                 <textarea
                   placeholder="Paste or extract any text from image..."
-                  className="w-full h-16 brutal-input rounded-xl p-3 text-sm resize-none"
+                  className="w-full h-16 border-2 border-black rounded-xl p-3 text-sm font-bold text-black focus:shadow-[4px_4px_0px_0px_#000] outline-none resize-none"
                   value={shareItem.ocrText || ""}
                   onChange={(e) => {
                     setShareItem({ ...shareItem, ocrText: e.target.value });
@@ -744,7 +744,7 @@ function ResearchContent() {
                 />
               </div>
 
-              <button onClick={closeShareModal} className="w-full py-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium shadow-lg shadow-violet-500/20 transition-all">
+              <button onClick={closeShareModal} className="w-full py-3 bg-[var(--color-primary)] hover:brightness-110 text-white border-[3px] border-black rounded-[16px] font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                 Done
               </button>
             </div>
@@ -764,25 +764,25 @@ function ResearchSkeleton() {
       {/* Header Skeleton */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="h-8 w-48 bg-slate-900 rounded-xl mb-2" />
-          <div className="h-4 w-32 bg-slate-900 rounded-lg" />
+          <div className="h-8 w-48 bg-gray-200 rounded-xl mb-2" />
+          <div className="h-4 w-32 bg-gray-200 rounded-lg" />
         </div>
         <div className="flex gap-2">
-          <div className="h-9 w-9 bg-slate-900 rounded-xl" />
-          <div className="h-9 w-9 bg-slate-900 rounded-xl" />
+          <div className="h-9 w-9 bg-gray-200 rounded-xl" />
+          <div className="h-9 w-9 bg-gray-200 rounded-xl" />
         </div>
       </div>
 
       {/* Search Bar Skeleton */}
-      <div className="h-12 w-full bg-slate-900 rounded-2xl" />
+      <div className="h-12 w-full bg-gray-200 rounded-2xl" />
 
       {/* Tab Switcher Skeleton */}
-      <div className="h-10 w-full bg-slate-900 rounded-xl" />
+      <div className="h-10 w-full bg-gray-200 rounded-xl" />
 
       {/* Grid items skeleton */}
       <div className="grid grid-cols-2 gap-4">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="h-32 bg-slate-900/60 rounded-2xl border border-slate-900" />
+          <div key={i} className="h-32 bg-gray-200 rounded-2xl border-2 border-gray-300" />
         ))}
       </div>
     </div>

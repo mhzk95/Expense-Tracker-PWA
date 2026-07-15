@@ -292,22 +292,16 @@ export function SwipeToDelete({
           }}
         >
           <div
-            className="brutal-card flex items-center justify-between px-5 py-3 w-full h-full"
-            style={{
-              "--color-primary": glowColor,
-              "--color-primary-rgb": hexToRgb(glowColor),
-              "--color-primary-glow": "rgba(var(--color-primary-rgb), var(--card-glow-intensity))",
-              "--glass-border-gradient": "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.35) 0%, rgba(var(--color-primary-rgb), 0.05) 40%, rgba(var(--color-primary-rgb), 0.02) 60%, var(--color-primary) 100%)"
-            } as React.CSSProperties}
+            className="flex items-center justify-between px-5 py-3 w-full h-full bg-white border-[3px] border-black rounded-[16px] sm:rounded-[24px] shadow-[4px_4px_0px_0px_#000]"
           >
             {/* Title / Info */}
-            <span className="text-sm font-semibold text-white flex items-center gap-2 truncate pr-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse flex-shrink-0" style={{ backgroundColor: glowColor }} />
-              <span className="truncate text-slate-200">{deleteMessage.replace("Delete", "Manage").replace("?", "")}</span>
+            <span className="text-[13px] sm:text-sm font-black uppercase tracking-widest text-black flex items-center gap-2 truncate pr-2">
+              <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style={{ backgroundColor: glowColor }} />
+              <span className="truncate">{deleteMessage.replace("Delete", "Manage").replace("?", "")}</span>
             </span>
 
             {/* Compact Action Buttons */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {onEdit && (
                 <button
                   onClick={(e) => {
@@ -315,10 +309,10 @@ export function SwipeToDelete({
                     onEdit();
                     setIsRevealed(false);
                   }}
-                  className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-blue-600/20 hover:bg-blue-600/35 text-blue-400 border border-blue-500/20 active:scale-95 transition-all shadow-md"
+                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] hover:bg-violet-400 text-white border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
                   title="Edit"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-5 h-5 stroke-[3px]" />
                 </button>
               )}
               <button
@@ -327,10 +321,10 @@ export function SwipeToDelete({
                   handleConfirmDelete(e);
                   setIsRevealed(false);
                 }}
-                className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-red-600/20 hover:bg-red-600/35 text-red-400 border border-red-500/20 active:scale-95 transition-all shadow-md"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-500 hover:bg-red-400 text-white border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
                 title="Delete"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-5 h-5 stroke-[3px]" />
               </button>
               <button
                 onClick={(e) => {
@@ -338,10 +332,10 @@ export function SwipeToDelete({
                   setIsRevealed(false);
                   vibrate([10]);
                 }}
-                className="flex items-center justify-center min-w-tap-target min-h-tap-target rounded-xl bg-slate-800/60 hover:bg-slate-700/60 text-slate-400 border border-slate-700/30 active:scale-95 transition-all shadow-md"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gray-100 hover:bg-white text-black border-2 sm:border-4 border-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none"
                 title="Cancel"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5 stroke-[3px]" />
               </button>
             </div>
           </div>

@@ -40,32 +40,31 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
       {/* Backdrop */}
       <div 
         className={cn(
-          "absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity",
+          "absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity",
           isOpen ? "opacity-100" : "opacity-0"
         )} 
         onClick={onClose} 
       />
 
-      {/* Container */}
       <div 
         className={cn(
-          "relative bg-slate-950/70 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden",
+          "relative bg-white border-[4px] border-black overflow-hidden transition-all",
           isBottomSheet 
-            ? "w-full max-w-lg mt-auto rounded-t-3xl border-b-0 self-end translate-y-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]" 
-            : "w-[90%] max-w-md rounded-3xl scale-100 shadow-[0_10px_50px_rgba(0,0,0,0.5)]",
+            ? "w-full max-w-lg mt-auto rounded-t-[32px] border-b-0 self-end translate-y-0 shadow-[0_-8px_0px_0px_rgba(0,0,0,1)]" 
+            : "w-[90%] max-w-md rounded-[24px] scale-100 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
         )}
       >
         {isBottomSheet && (
           <div className="flex justify-center pt-3 pb-1 w-full">
-            <div className="h-1.5 w-12 bg-white/20 rounded-full" />
+            <div className="h-1.5 w-12 bg-black rounded-full" />
           </div>
         )}
         
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="text-lg font-semibold text-white drop-shadow-sm">{title}</h2>
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b-[4px] border-black">
+          <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">{title}</h2>
           {!isBottomSheet && (
-            <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
-              <X className="w-5 h-5" />
+            <button onClick={onClose} className="p-1 rounded-xl bg-gray-100 hover:bg-gray-200 border-2 border-black text-black active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_#000] active:shadow-none">
+              <X className="w-6 h-6 stroke-[3px]" />
             </button>
           )}
         </div>
