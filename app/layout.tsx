@@ -12,7 +12,7 @@ import { AppShell } from "@/components/app-shell/AppShell";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { OfflineAuthGuard } from "@/components/providers/OfflineAuthGuard";
 import { AppRuntimeProvider } from "@/components/providers/AppRuntimeProvider";
-
+import { ThemeDecal } from "@/components/ui/ThemeDecal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -84,6 +84,7 @@ export default function RootLayout({
          * - Mobile browser → mobile header
          * - Standalone PWA → bottom navigation
          */}
+        <ThemeDecal slot="page-bg" />
         <AppRuntimeProvider>
           <AuthProvider>
             <OfflineAuthGuard>

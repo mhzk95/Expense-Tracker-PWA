@@ -10,34 +10,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/helpers";
-import {
-  LayoutDashboard,
-  ArrowLeftRight,
-  Target,
-  BarChart3,
-  Wallet,
-  BookImage,
-  ShieldAlert,
-  Settings,
-  Menu,
-  X,
-  ChevronRight,
-  Link2,
-  Bell
-} from "lucide-react";
+import { X, ChevronRight, Bell } from "lucide-react";
+import { ThemeIcon } from "@/components/ui/ThemeIcon";
+import { ThemeDecal } from "@/components/ui/ThemeDecal";
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  LayoutDashboard,
-  ArrowLeftRight,
-  Target,
-  BarChart3,
-  Wallet,
-  BookImage,
-  ShieldAlert,
-  Settings,
-  Menu,
-  Link2,
-  Bell
+const ICON_MAP: Record<string, string> = {
+  LayoutDashboard: "nav-home",
+  ArrowLeftRight: "nav-transactions",
+  Target: "nav-research",
+  BarChart3: "nav-research",
+  Wallet: "action-add",
+  BookImage: "nav-journal",
+  ShieldAlert: "nav-journal",
+  Settings: "action-settings",
+  Menu: "nav-more",
+  Link2: "nav-journal",
+  Bell: "nav-journal"
 };
 
 export function PWABottomNavigation() {
@@ -79,7 +67,7 @@ export function PWABottomNavigation() {
             </div>
             <div className="p-3 space-y-2 bg-[var(--color-bg)]">
               {moreItems.map((item) => {
-                const Icon = ICON_MAP[item.icon];
+                const iconName = ICON_MAP[item.icon] as any;
                 const isActive = pathname.startsWith(item.href);
                 return (
                   <Link
@@ -96,7 +84,7 @@ export function PWABottomNavigation() {
                       "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 border-2",
                       isActive ? "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)]" : "bg-[var(--color-surface-hover)] border-transparent text-[var(--color-text)] group-hover:border-[var(--color-border)]"
                     )}>
-                      {Icon && <Icon className="h-6 w-6 stroke-[2.5px]" />}
+                      {iconName && <ThemeIcon name={iconName} className="h-6 w-6 stroke-[2.5px]" />}
                     </div>
                     <div className="flex-1">
                       <div className={cn(
@@ -133,7 +121,7 @@ export function PWABottomNavigation() {
         >
           <div className="flex items-stretch h-16">
             {BOTTOM_NAV_ITEMS.map((item) => {
-              const Icon = ICON_MAP[item.icon];
+              const iconName = ICON_MAP[item.icon] as any;
               const isMoreBtn = item.id === "more";
               
               const isMoreItemActive = moreItems.some(mi => pathname.startsWith(mi.href));
@@ -151,7 +139,7 @@ export function PWABottomNavigation() {
                         : "bg-transparent border-transparent text-[var(--color-text)]"
                     )}
                   >
-                    {Icon && <Icon className="h-5 w-5 stroke-[2.5px]" />}
+                    {iconName && <ThemeIcon name={iconName} className="h-5 w-5 stroke-[2.5px]" />}
                   </span>
                   <span className={cn(
                     "text-[10px] font-black uppercase tracking-wider mt-1 transition-colors",

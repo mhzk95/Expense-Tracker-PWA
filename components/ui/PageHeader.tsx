@@ -7,6 +7,7 @@
 
 import { cn } from "@/lib/utils/helpers";
 import type { ReactNode } from "react";
+import { ThemeDecal } from "@/components/ui/ThemeDecal";
 
 interface PageHeaderProps {
   title: string;
@@ -19,12 +20,13 @@ export function PageHeader({ title, subtitle, action, className }: PageHeaderPro
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-4 mb-8",
+        "flex items-start justify-between gap-4 mb-8 relative",
         className
       )}
     >
+      <ThemeDecal slot="header-bg" />
       <div>
-        <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight uppercase">{title}</h1>
+        <h1 className="text-3xl font-display font-black text-[var(--color-text)] tracking-tight uppercase">{title}</h1>
         {subtitle && (
           <p className="mt-1 text-xs font-bold text-gray-600 uppercase tracking-widest">{subtitle}</p>
         )}

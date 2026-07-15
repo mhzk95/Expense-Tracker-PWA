@@ -8,6 +8,7 @@ import React, { type ReactNode } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import CountUp from "react-countup";
 import { Card } from "@/components/ui/Card";
+import { ThemeDecal } from "@/components/ui/ThemeDecal";
 
 type TrendDirection = "up" | "down" | "neutral";
 
@@ -54,7 +55,7 @@ export function StatCard({
 
   return (
     <Card className={cn("group p-4 sm:p-6 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
-      {/* Decorative inner borders or harsh lines could go here */}
+      <ThemeDecal slot="stat-card-tr" />
       
       {/* Decorative partially clipped icon */}
       {icon && (

@@ -11,10 +11,17 @@
   --min-width-tap-target: 48px;
 
   /* Brutalist Theme Variables available in Tailwind classes */
-  --radius-brutal-sm: 12px;
-  --radius-brutal-input: 18px;
-  --radius-brutal-btn: 20px;
-  --radius-brutal-card: 24px;
+  /* Theme Skinning Topology Tokens */
+  --radius-theme-base: var(--theme-radius-base);
+  --radius-theme-card: var(--theme-radius-card);
+  --radius-theme-btn: var(--theme-radius-btn);
+  --radius-theme-input: var(--theme-radius-input);
+
+  /* Legacy Brutalist Variables (Retained for fallback/classic mode) */
+  --radius-brutal-sm: var(--theme-radius-base);
+  --radius-brutal-input: var(--theme-radius-input);
+  --radius-brutal-btn: var(--theme-radius-btn);
+  --radius-brutal-card: var(--theme-radius-card);
   --radius-brutal-sheet: 24px;
   --radius-brutal-nav: 28px;
   --radius-brutal-full: 9999px;
@@ -37,6 +44,27 @@
 /* ─── CSS Custom Properties ──────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", sans-serif;
+  
+  /* Skinning Typography Engine */
+  --font-display: var(--font-inter);
+  --font-body: var(--font-inter);
+  --font-numbers: var(--font-inter);
+
+  /* Skinning Topology & Shape */
+  --theme-radius-base: 12px;
+  --theme-radius-card: 24px;
+  --theme-radius-btn: 20px;
+  --theme-radius-input: 18px;
+  --theme-clip-path-card: none;
+  --theme-clip-path-btn: none;
+  --theme-border-style: solid;
+  --theme-border-width: 3px;
+
+  /* Skinning Textures & Backgrounds */
+  --theme-bg-app: none;
+  --theme-bg-card: none;
+  --theme-bg-btn: none;
+  --theme-texture-blend: normal;
 
   /* Sidebar dimensions */
   --sidebar-width: 16rem;
@@ -62,19 +90,42 @@
 
 /* ─── Theming System ───────────────────────────────────────────────────────── */
 [data-theme='argentina'] {
-  --theme-bg: #74acdf;
-  --theme-surface: #ffffff;
-  --theme-surface-hover: #f1f5f9;
-  --theme-text: #0a1128;
-  --theme-border: #0a1128;
+  --theme-bg: #1c2738;
+  --theme-surface: #0a1128;
+  --theme-surface-hover: #121c38;
+  --theme-text: #ffffff;
+  --theme-border: #74acdf;
+  
+  /* Skinning Config */
+  --font-display: 'Impact', sans-serif;
+  --theme-radius-base: 0px;
+  --theme-radius-card: 0px;
+  --theme-radius-btn: 0px;
+  --theme-radius-input: 0px;
+  --theme-border-style: solid;
+  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
 }
 
 [data-theme='brazil'] {
-  --theme-bg: #009c3b;
-  --theme-surface: #ffffff;
-  --theme-surface-hover: #f1f5f9;
+  --theme-bg: #f5f5f5;
+  --theme-surface: #ffdf00;
+  --theme-surface-hover: #f1d300;
   --theme-text: #002776;
-  --theme-border: #002776;
+  --theme-border: #009c3b;
+
+  /* Skinning Config */
+  --font-display: 'Arial Black', sans-serif;
+  --theme-radius-base: 0px;
+  --theme-radius-card: 0px;
+  --theme-radius-btn: 0px;
+  --theme-radius-input: 0px;
+  /* Torn paper clip path simulation */
+  --theme-clip-path-card: polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%);
+  --theme-clip-path-btn: polygon(2% 2%, 100% 0%, 98% 98%, 0% 100%);
+  --theme-border-style: dashed;
+  --theme-texture-blend: multiply;
+  --theme-bg-app: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.1"/></svg>');
+  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
 }
 
 [data-theme='france'] {
@@ -83,6 +134,26 @@
   --theme-surface-hover: #f1f5f9;
   --theme-text: #002654;
   --theme-border: #ed2939;
+}
+
+[data-theme='portugal'] {
+  --theme-bg: #000000;
+  --theme-surface: #7e1e1e; /* Dark Red */
+  --theme-surface-hover: #691717;
+  --theme-text: #ffffff;
+  --theme-border: #144b2a; /* Dark Green */
+
+  /* Skinning Config */
+  --font-display: 'Impact', sans-serif;
+  --theme-radius-base: 8px;
+  --theme-radius-card: 16px;
+  --theme-radius-btn: 12px;
+  --theme-radius-input: 12px;
+  --theme-border-width: 1px;
+  --theme-border-style: solid;
+  --theme-texture-blend: overlay;
+  --theme-bg-app: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.12"/></svg>');
+  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
 }
 
 [data-theme='germany'] {
@@ -106,14 +177,27 @@ html {
 }
 
 body {
-  font-family: var(--font-inter);
+  font-family: var(--font-body);
   background-color: var(--color-bg);
+  background-image: var(--theme-bg-app);
+  background-size: cover;
+  background-attachment: fixed;
   color: var(--color-text);
   min-height: 100vh;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
+}
+
+/* Headings use Display Font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Numbers use Number Font */
+.tabular-nums, .text-5xl {
+  font-family: var(--font-numbers);
 }
 
 *:focus-visible {
@@ -176,11 +260,16 @@ textarea:focus-visible {
   padding-right: env(safe-area-inset-right);
 }
 
-/* ─── Neo-Brutalist UI Primitives ────────────────────────────────────────── */
+/* ─── Neo-Brutalist & Skinning Primitives ──────────────────────────────────── */
 .brutal-card {
   background-color: var(--color-surface);
-  border: 3px solid var(--theme-border);
-  border-radius: 24px;
+  background-image: var(--theme-bg-card);
+  background-blend-mode: var(--theme-texture-blend);
+  border-width: var(--theme-border-width);
+  border-style: var(--theme-border-style);
+  border-color: var(--theme-border);
+  border-radius: var(--radius-theme-card);
+  clip-path: var(--theme-clip-path-card);
   box-shadow: var(--shadow-brutal);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
@@ -198,10 +287,16 @@ textarea:focus-visible {
 
 .brutal-btn {
   background-color: var(--color-primary);
+  background-image: var(--theme-bg-btn);
+  background-blend-mode: var(--theme-texture-blend);
   color: #ffffff;
+  font-family: var(--font-display);
   font-weight: 700;
-  border: 3px solid var(--theme-border);
-  border-radius: 20px;
+  border-width: var(--theme-border-width);
+  border-style: var(--theme-border-style);
+  border-color: var(--theme-border);
+  border-radius: var(--radius-theme-btn);
+  clip-path: var(--theme-clip-path-btn);
   box-shadow: var(--shadow-brutal);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
@@ -222,8 +317,10 @@ textarea:focus-visible {
 
 .brutal-input {
   background-color: var(--color-surface);
-  border: 3px solid var(--theme-border);
-  border-radius: 18px;
+  border-width: var(--theme-border-width);
+  border-style: var(--theme-border-style);
+  border-color: var(--theme-border);
+  border-radius: var(--radius-theme-input);
   color: var(--color-text);
   outline: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;

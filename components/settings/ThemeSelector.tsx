@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils/helpers";
 
 const THEMES = [
   { id: "light", name: "Classic", icon: "🏛️", bg: "#fdfbf7", surface: "#ffffff", primary: "var(--color-primary)" },
-  { id: "argentina", name: "Argentina", icon: "🇦🇷", bg: "#74acdf", surface: "#ffffff", primary: "#0a1128" },
-  { id: "brazil", name: "Brazil", icon: "🇧🇷", bg: "#009c3b", surface: "#ffffff", primary: "#ffdf00" },
+  { id: "argentina", name: "Argentina", icon: "🇦🇷", bg: "#1c2738", surface: "#0a1128", primary: "#74acdf" },
+  { id: "brazil", name: "Brazil", icon: "🇧🇷", bg: "#f5f5f5", surface: "#ffdf00", primary: "#009c3b" },
+  { id: "portugal", name: "Portugal", icon: "🇵🇹", bg: "#000000", surface: "#7e1e1e", primary: "#144b2a" },
   { id: "france", name: "France", icon: "🇫🇷", bg: "#002654", surface: "#ffffff", primary: "#ed2939" },
   { id: "germany", name: "Germany", icon: "🇩🇪", bg: "#e2e8f0", surface: "#ffffff", primary: "#dd0000" },
 ];

@@ -48,13 +48,15 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
 
       <div 
         className={cn(
-          "relative bg-[var(--color-surface)] border-[4px] border-[var(--color-border)] overflow-hidden transition-all",
+          "relative bg-[var(--color-surface)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] overflow-hidden transition-all",
           isBottomSheet 
-            ? "w-full max-w-lg mt-auto rounded-t-[32px] border-b-0 self-end translate-y-0" 
-            : "w-[90%] max-w-md rounded-[24px] scale-100 shadow-brutal",
+            ? "w-full max-w-lg mt-auto rounded-t-[var(--radius-theme-card)] border-b-0 self-end translate-y-0" 
+            : "w-[90%] max-w-md rounded-[var(--radius-theme-card)] scale-100 shadow-brutal",
         )}
         style={{
-          boxShadow: isBottomSheet ? "0 -8px 0px 0px var(--color-border)" : undefined
+          boxShadow: isBottomSheet ? "0 -8px 0px 0px var(--color-border)" : undefined,
+          backgroundImage: "var(--theme-bg-card)",
+          backgroundBlendMode: "var(--theme-texture-blend)" as any
         }}
       >
         {isBottomSheet && (
@@ -63,8 +65,8 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
           </div>
         )}
         
-        <div className="flex items-center justify-between p-4 sm:p-5 border-b-[4px] border-[var(--color-border)]">
-          <h2 className="text-xl sm:text-2xl font-black text-[var(--color-text)] uppercase tracking-tight">{title}</h2>
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)]">
+          <h2 className="text-xl sm:text-3xl font-display font-black text-[var(--color-text)] uppercase tracking-tight">{title}</h2>
           {!isBottomSheet && (
             <button onClick={onClose} className="p-1 rounded-xl bg-[var(--color-surface-hover)] hover:bg-[var(--color-border)] hover:text-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-brutal-sm active:shadow-none">
               <X className="w-6 h-6 stroke-[3px]" />

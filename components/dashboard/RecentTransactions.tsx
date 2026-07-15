@@ -30,10 +30,10 @@ export function RecentTransactions() {
     <div className="flex flex-col gap-3 h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-xl font-black uppercase tracking-wider text-[var(--color-text)] text-balance">Recent Transactions</h2>
+        <h2 className="text-xl font-display font-black uppercase tracking-wider text-[var(--color-text)] text-balance">Recent Transactions</h2>
         <Link
           href="/transactions"
-          className="text-sm text-[var(--color-text)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)] hover:bg-gray-100 font-bold transition-all active:translate-y-0.5 active:translate-x-0.5 active:shadow-none rounded-xl flex items-center justify-center -mr-1 px-3 py-1"
+          className="text-sm text-[var(--color-text)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] bg-[var(--color-surface)] shadow-brutal-sm hover:bg-[var(--color-surface-hover)] font-bold transition-all active:translate-y-0.5 active:translate-x-0.5 active:shadow-none rounded-[var(--radius-theme-btn)] flex items-center justify-center -mr-1 px-3 py-1"
         >
           View all
         </Link>
@@ -45,13 +45,13 @@ export function RecentTransactions() {
           <>
             {[...Array(5)].map((_, i) => (
               <div key={i} className="brutal-card p-4 flex items-start gap-4 animate-pulse">
-                <div className="h-12 w-12 rounded-xl border-2 border-[var(--color-border)] bg-gray-200" />
+                <div className="h-12 w-12 rounded-[var(--radius-theme-base)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] bg-gray-200" />
                 <div className="flex-1 space-y-2 mt-1">
-                  <div className="h-4 w-32 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
-                  <div className="h-3 w-20 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
-                  <div className="h-3 w-16 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+                  <div className="h-4 w-32 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-20 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-16 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
                 </div>
-                <div className="h-4 w-12 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+                <div className="h-4 w-12 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
               </div>
             ))}
           </>
@@ -75,7 +75,7 @@ export function RecentTransactions() {
               >
                 {/* Type icon */}
                 <div
-                  className="flex-shrink-0 h-12 w-12 rounded-xl flex items-center justify-center border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]"
+                  className="flex-shrink-0 h-12 w-12 rounded-[var(--radius-theme-base)] flex items-center justify-center border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm"
                   style={{ 
                     backgroundColor: baseColor,
                     color: "#fff"
@@ -109,7 +109,7 @@ export function RecentTransactions() {
                 <div className="text-right flex flex-col items-end justify-start h-full pt-1">
                   <span
                     className={cn(
-                      "text-lg font-black tabular-nums text-balance",
+                      "text-lg font-numbers font-black tabular-nums text-balance",
                       isIncome ? "text-emerald-600" : isTransfer ? "text-gray-500" : "text-[var(--color-text)]"
                     )}
                   >
@@ -117,7 +117,7 @@ export function RecentTransactions() {
                     {formatCurrency(txn.amount, txn.currency)}
                   </span>
                   {txn.needsReview && (
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-400 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] px-2 py-1 rounded-md leading-none mt-2">
+                    <span className="text-[10px] font-black font-display uppercase tracking-wider text-amber-900 bg-amber-400 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm px-2 py-1 rounded-[var(--radius-theme-base)] leading-none mt-2">
                       Review
                     </span>
                   )}
