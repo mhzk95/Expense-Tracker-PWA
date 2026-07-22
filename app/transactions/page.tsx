@@ -14,14 +14,18 @@ import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { TransactionEntity } from "@/lib/db/indexeddb";
 import { MarqueeText } from "@/components/ui/MarqueeText";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { FlashEntryModal } from "@/components/transactions/FlashEntryModal";
 import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 export default function TransactionsPage() {
   const { transactions: rawTransactions, loading: txLoading, updateTransaction, deleteTransaction } = useTransactions();
   const { categories, loading: catLoading } = useCategories();
   const { accounts, loading: accLoading } = useAccounts();
+  const { manifest: activeManifest } = useTheme();
 
   const loading = txLoading || catLoading || accLoading;
 
@@ -205,56 +209,58 @@ export default function TransactionsPage() {
       {!loading && (
         <div className="grid grid-cols-2 gap-3">
           {/* Today */}
-          <button
-            type="button"
+          <Card
+            variant={selectedDateRange === 'today' ? "primary" : "surface"}
+            isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
             className={cn(
-              "bg-[var(--color-surface)] border-[3px] sm:border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] sm:shadow-[6px_6px_0px_0px_var(--color-border)] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
+              "p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left",
               selectedDateRange === 'today' ? "bg-emerald-400" : ""
             )}
           >
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full relative z-10">
               <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
                 <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
               </div>
               <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-[var(--color-text)]">Today</span>
-                <span className="text-lg sm:text-2xl font-black text-[var(--color-text)] tracking-tight truncate mt-0.5">
+                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Today</span>
+                <span className="text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5 font-numbers">
                   {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
                 </span>
-                <span className="text-[10px] sm:text-xs font-bold text-gray-700 mt-0.5 uppercase tracking-wider">Spent</span>
+                <span className="text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider opacity-80">Spent</span>
               </div>
             </div>
-            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-[var(--color-border)] w-full flex justify-center">
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[var(--color-text)]">{todayTxns.length} Transactions</span>
+            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-2 border-black/20 dark:border-white/20 w-full flex justify-center relative z-10">
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">{todayTxns.length} Transactions</span>
             </div>
-          </button>
+          </Card>
 
           {/* Month */}
-          <button
-            type="button"
+          <Card
+            variant={selectedDateRange === 'month' ? "success" : "surface"}
+            isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
             className={cn(
-              "bg-[var(--color-surface)] border-[3px] sm:border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] sm:shadow-[6px_6px_0px_0px_var(--color-border)] rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
-              selectedDateRange === 'month' ? "bg-[var(--color-primary)] text-white" : ""
+              "p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left",
+              selectedDateRange === 'month' ? "text-white" : ""
             )}
           >
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full relative z-10">
               <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
                 <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
               </div>
               <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className={cn("text-[9px] sm:text-[10px] uppercase font-black tracking-widest", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>{currentMonthName} Total</span>
-                <span className={cn("text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>
+                <span className={cn("text-[9px] sm:text-[10px] uppercase font-black tracking-widest", selectedDateRange === 'month' ? "text-white" : "")}>{currentMonthName} Total</span>
+                <span className={cn("text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5 font-numbers", selectedDateRange === 'month' ? "text-white" : "")}>
                   {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
                 </span>
-                <span className={cn("text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider", selectedDateRange === 'month' ? "text-white/80" : "text-gray-700")}>Spent</span>
+                <span className={cn("text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider", selectedDateRange === 'month' ? "text-white/80" : "opacity-80")}>Spent</span>
               </div>
             </div>
-            <div className={cn("mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-[3px] border-[var(--color-border)] w-full flex justify-center", selectedDateRange === 'month' ? "border-white" : "border-[var(--color-border)]")}>
-              <span className={cn("text-[10px] sm:text-xs font-black uppercase tracking-wider", selectedDateRange === 'month' ? "text-white" : "text-[var(--color-text)]")}>{monthTxns.length} Transactions</span>
+            <div className={cn("mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-2 w-full flex justify-center relative z-10", selectedDateRange === 'month' ? "border-white/20" : "border-black/20 dark:border-white/20")}>
+              <span className={cn("text-[10px] sm:text-xs font-black uppercase tracking-wider", selectedDateRange === 'month' ? "text-white" : "")}>{monthTxns.length} Transactions</span>
             </div>
-          </button>
+          </Card>
         </div>
       )}
 
@@ -265,7 +271,7 @@ export default function TransactionsPage() {
           {/* Search Row */}
           <div className="flex items-stretch gap-2 w-full h-[52px]">
             <div className="relative flex-1 h-full">
-              <input
+              <Input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -279,7 +285,7 @@ export default function TransactionsPage() {
                   }
                 }}
                 placeholder="Search transactions..."
-                className="w-full h-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] px-4 text-sm text-[var(--color-text)] placeholder-gray-500 outline-none shadow-[4px_4px_0px_0px_var(--color-border)] focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all font-bold"
+                className="h-full px-4 text-sm font-bold shadow-[4px_4px_0px_0px_var(--color-border)] focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all"
               />
               {searchQuery && (
                 <button
@@ -308,8 +314,10 @@ export default function TransactionsPage() {
           </div>
 
           {/* Action Buttons Row */}
-          <div className="grid grid-cols-2 gap-4 w-full mt-2">
-            <button
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Card
+              variant="primary"
+              isInteractive
               onClick={() => {
                 if (selectedTxIds.size > 0 || isSelectMode) {
                   setSelectedTxIds(new Set());
@@ -319,32 +327,34 @@ export default function TransactionsPage() {
                 }
               }}
               className={cn(
-                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-[var(--color-border)] transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
-                isSelectMode || selectedTxIds.size > 0
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100"
+                "p-3 sm:p-4 flex items-center justify-center gap-2 group",
+                isSelectMode && "ring-2 ring-offset-2 ring-[var(--color-primary)]"
               )}
             >
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px] flex-shrink-0" />
-                <span className="text-center leading-tight">Select<br className="sm:hidden" /> Multiple</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-balance leading-tight text-center">
+                  Select<br className="sm:hidden" /> Multiple
+                </span>
               </div>
-            </button>
+            </Card>
 
-            <button
+            <Card
+              variant="success"
+              isInteractive
               onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
               className={cn(
-                "flex items-center justify-center py-3.5 px-2 rounded-[16px] border-[3px] border-[var(--color-border)] transition-all text-xs sm:text-sm font-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
-                showOnlyNeedsReview
-                  ? "bg-amber-400 text-[var(--color-text)]"
-                  : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-amber-50"
+                "p-3 sm:p-4 flex items-center justify-center gap-2 group text-white",
+                showOnlyNeedsReview && "ring-2 ring-offset-2 ring-white"
               )}
             >
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <Zap className={cn("w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px] flex-shrink-0", !showOnlyNeedsReview && "text-amber-500")} />
-                <span className="text-center leading-tight">Needs<br className="sm:hidden" /> Review</span>
+                <Zap className={cn("w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px] flex-shrink-0", !showOnlyNeedsReview && "text-yellow-300")} />
+                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-balance leading-tight text-center">
+                  Needs<br className="sm:hidden" /> Review
+                </span>
               </div>
-            </button>
+            </Card>
           </div>
         </div>
 
@@ -616,12 +626,12 @@ export default function TransactionsPage() {
                             glowColor={baseColor}
                             deleteMessage={`Delete "${txn.description}"?`}
                           >
-                            <div
+                            <Card
+                              variant={isSelected ? "primary" : "surface"}
+                              isInteractive
                               className={cn(
-                                "bg-[var(--color-surface)] rounded-[16px] flex items-center w-full transition-all duration-300 select-none border-[3px] border-[var(--color-border)] active:translate-x-1 active:translate-y-1 shadow-[4px_4px_0px_0px_var(--color-border)] active:shadow-none hover:bg-[var(--color-bg)] px-4 py-3 gap-3 sm:gap-4",
-                                txn.needsReview && "border-l-[6px] border-l-amber-400 bg-amber-50 hover:bg-amber-100",
-                                selectedTxn?.id === txn.id && "shadow-[6px_6px_0px_0px_var(--color-border)] ring-4 ring-black",
-                                isSelected && "bg-[var(--color-primary)] ring-4 ring-black"
+                                "flex items-center w-full px-4 py-3 gap-3 sm:gap-4 text-left relative overflow-hidden",
+                                txn.needsReview && "needs-review-card border-l-[6px] border-l-amber-400 bg-amber-50"
                               )}
                               style={{ WebkitTouchCallout: "none" }}
                               onClick={(e) => {
@@ -641,22 +651,45 @@ export default function TransactionsPage() {
                                 }
                               }}
                             >
+                              {/* Amount Splash Decoration */}
+                              {activeManifest?.decorations?.transactionAmountSplash && (
+                                <div 
+                                  className="absolute right-0 top-0 bottom-0 w-32 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-normal opacity-90"
+                                  style={{
+                                    maskImage: activeManifest.decorations.transactionAmountSplash.maskAsset 
+                                      ? activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.src}')` 
+                                      : 'none',
+                                    maskSize: 'cover',
+                                    maskPosition: 'left center',
+                                    maskRepeat: 'no-repeat',
+                                    WebkitMaskImage: activeManifest.decorations.transactionAmountSplash.maskAsset 
+                                      ? activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.src}')` 
+                                      : 'none',
+                                    WebkitMaskSize: 'cover',
+                                    WebkitMaskPosition: 'left center',
+                                    WebkitMaskRepeat: 'no-repeat',
+                                    backgroundImage: activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.assetRef]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.assetRef]?.src}')`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'right center',
+                                  }}
+                                />
+                              )}
                               {/* Checkbox (visible in select mode) */}
                               {(isSelectMode || selectedTxIds.size > 0) && (
-                                <div className="flex-shrink-0 mr-1">
+                                <div className="flex-shrink-0 mr-1 relative z-10">
                                   {isSelected ? (
-                                    <div className="h-6 w-6 rounded-lg bg-black border-[3px] border-[var(--color-border)] flex items-center justify-center text-white shadow-[2px_2px_0px_0px_var(--color-border)]">
+                                    <div className="h-6 w-6 rounded-lg bg-black border-2 border-black flex items-center justify-center text-white">
                                       <Check className="h-4 w-4 stroke-[4px]" />
                                     </div>
                                   ) : (
-                                    <div className="h-6 w-6 rounded-lg border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)]" />
+                                    <div className="h-6 w-6 rounded-lg border-2 border-black bg-white" />
                                   )}
                                 </div>
                               )}
 
                               {/* Icon */}
                               <div
-                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] bg-[var(--color-surface)]"
+                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-[var(--radius-theme-base)] flex items-center justify-center border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm relative z-10 bg-white"
                                 style={{
                                   backgroundColor: baseColor,
                                   color: "#000"
@@ -672,35 +705,35 @@ export default function TransactionsPage() {
                               </div>
 
                               {/* Details */}
-                              <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
-                                <h3 className={cn("text-[13px] sm:text-[14px] font-black tracking-wide uppercase truncate leading-tight", isSelected ? "text-white" : "text-[var(--color-text)]")}>
+                              <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5 relative z-10">
+                                <h3 className={cn("text-[13px] sm:text-[14px] font-black tracking-wide uppercase truncate leading-tight font-display")}>
                                   {txn.payee || txn.description || "No Title"}
                                 </h3>
 
-                                <div className={cn("text-[10px] font-black uppercase tracking-widest leading-tight", isSelected ? "text-white/80" : "text-gray-500")}>
+                                <div className={cn("text-[10px] font-black uppercase tracking-widest leading-tight opacity-70")}>
                                   <span className="truncate block">{category?.name ?? "Uncategorized"}</span>
                                   <span className="truncate block">{timeStr}</span>
                                 </div>
                               </div>
 
                               {/* Amount & Review Badge */}
-                              <div className="text-right flex flex-col items-end justify-start h-full pt-1">
+                              <div className="text-right flex flex-col items-end justify-start h-full pt-1 relative z-10">
                                 <span
                                   className={cn(
-                                    "text-[15px] sm:text-lg font-black tabular-nums text-right text-balance leading-tight mt-0.5",
-                                    isIncome ? (isSelected ? "text-white" : "text-emerald-600") : isTransfer ? (isSelected ? "text-white" : "text-gray-500") : (isSelected ? "text-white" : "text-[var(--color-text)]")
+                                    "text-[15px] sm:text-lg font-black tabular-nums text-right text-balance leading-tight mt-0.5 font-numbers",
+                                    isIncome ? (isSelected ? "text-black" : "text-emerald-600") : isTransfer ? "opacity-60" : ""
                                   )}
                                 >
                                   {isIncome ? "+" : isTransfer ? "" : "−"}
                                   {formatCurrency(txn.amount, txn.currency)}
                                 </span>
                                 {txn.needsReview && (
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-[var(--color-text)] bg-amber-400 border-2 border-[var(--color-border)] px-2 py-0.5 rounded-md leading-none mt-1">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-black bg-amber-400 border-2 border-black px-2 py-0.5 rounded-md leading-none mt-1">
                                     Review
                                   </span>
                                 )}
                               </div>
-                            </div>
+                            </Card>
                           </SwipeToDelete>
                         );
                       })}

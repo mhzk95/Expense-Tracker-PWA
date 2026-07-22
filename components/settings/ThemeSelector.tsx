@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { STORAGE_KEYS } from "@/lib/constants/app";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 const THEMES = [
   { id: "light", name: "Classic", icon: "🏛️", bg: "#fdfbf7", surface: "#ffffff", primary: "var(--color-primary)" },
   { id: "argentina", name: "Argentina", icon: "🇦🇷", bg: "#1c2738", surface: "#0a1128", primary: "#74acdf" },
-  { id: "brazil", name: "Brazil", icon: "🇧🇷", bg: "#f5f5f5", surface: "#ffdf00", primary: "#009c3b" },
   { id: "portugal", name: "Portugal", icon: "🇵🇹", bg: "#000000", surface: "#7e1e1e", primary: "#144b2a" },
   { id: "france", name: "France", icon: "🇫🇷", bg: "#002654", surface: "#ffffff", primary: "#ed2939" },
   { id: "germany", name: "Germany", icon: "🇩🇪", bg: "#e2e8f0", surface: "#ffffff", primary: "#dd0000" },
+  { id: "neon-brutal", name: "Neon Brutal", icon: "⚡", bg: "#0f1014", surface: "#16181d", primary: "#fde047" },
 ];
 
 const ACCENT_MAP: Record<string, string> = {
@@ -24,13 +25,10 @@ const ACCENT_MAP: Record<string, string> = {
 };
 
 export function ThemeSelector() {
-  const [activeTheme, setActiveTheme] = useState("dark");
+  const { theme: activeTheme, setTheme } = useTheme();
   const [accentHex, setAccentHex] = useState("#8b5cf6");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || "dark";
-    setActiveTheme(savedTheme);
-
     const updateAccent = () => {
       const savedAccent = localStorage.getItem("et_accent_color") || "violet";
       setAccentHex(ACCENT_MAP[savedAccent] || "#8b5cf6");
@@ -41,9 +39,7 @@ export function ThemeSelector() {
   }, []);
 
   const handleThemeChange = (newTheme: string) => {
-    setActiveTheme(newTheme);
-    localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
+    setTheme(newTheme);
     
     // Update PWA status bar dynamically
     const themeColor = THEMES.find(t => t.id === newTheme)?.bg || "#fdfbf7";

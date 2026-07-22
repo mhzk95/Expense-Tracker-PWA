@@ -4,6 +4,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useAccounts } from "@/hooks/useAccounts";
 import { formatCurrency } from "@/lib/utils/helpers";
 import { StatCard } from "./StatCard";
+import { Card } from "@/components/ui/Card";
 import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
 
 export function DashboardStats() {
@@ -67,11 +68,11 @@ export function DashboardStats() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="brutal-card p-5 h-28 flex flex-col justify-between animate-pulse">
+          <Card key={i} className="p-5 h-28 flex flex-col justify-between animate-pulse">
             <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
             <div className="h-6 w-24 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
             <div className="h-3 w-20 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
-          </div>
+          </Card>
         ))}
       </div>
     );
@@ -86,6 +87,7 @@ export function DashboardStats() {
         trend={""}
         trendDirection="neutral"
         icon={<Wallet className="h-6 w-6 stroke-[2.5px] text-[var(--color-text)]" />}
+        variant="primary"
       />
       <StatCard
         label="Monthly Income"

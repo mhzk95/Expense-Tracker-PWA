@@ -12,6 +12,10 @@
 
   /* Brutalist Theme Variables available in Tailwind classes */
   /* Theme Skinning Topology Tokens */
+  --font-display: var(--font-theme-display, "Inter", sans-serif);
+  --font-body: var(--font-theme-body, "Inter", sans-serif);
+  --font-numbers: var(--font-theme-numbers, "Inter", sans-serif);
+
   --radius-theme-base: var(--theme-radius-base);
   --radius-theme-card: var(--theme-radius-card);
   --radius-theme-btn: var(--theme-radius-btn);
@@ -45,11 +49,6 @@
 :root {
   --font-inter: "Inter", sans-serif;
   
-  /* Skinning Typography Engine */
-  --font-display: var(--font-inter);
-  --font-body: var(--font-inter);
-  --font-numbers: var(--font-inter);
-
   /* Skinning Topology & Shape */
   --theme-radius-base: 12px;
   --theme-radius-card: 24px;
@@ -88,81 +87,7 @@
   --theme-surface-hover: #f3f4f6;
 }
 
-/* ─── Theming System ───────────────────────────────────────────────────────── */
-[data-theme='argentina'] {
-  --theme-bg: #1c2738;
-  --theme-surface: #0a1128;
-  --theme-surface-hover: #121c38;
-  --theme-text: #ffffff;
-  --theme-border: #74acdf;
-  
-  /* Skinning Config */
-  --font-display: 'Impact', sans-serif;
-  --theme-radius-base: 0px;
-  --theme-radius-card: 0px;
-  --theme-radius-btn: 0px;
-  --theme-radius-input: 0px;
-  --theme-border-style: solid;
-  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
-}
 
-[data-theme='brazil'] {
-  --theme-bg: #f5f5f5;
-  --theme-surface: #ffdf00;
-  --theme-surface-hover: #f1d300;
-  --theme-text: #002776;
-  --theme-border: #009c3b;
-
-  /* Skinning Config */
-  --font-display: 'Arial Black', sans-serif;
-  --theme-radius-base: 0px;
-  --theme-radius-card: 0px;
-  --theme-radius-btn: 0px;
-  --theme-radius-input: 0px;
-  /* Torn paper clip path simulation */
-  --theme-clip-path-card: polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%);
-  --theme-clip-path-btn: polygon(2% 2%, 100% 0%, 98% 98%, 0% 100%);
-  --theme-border-style: dashed;
-  --theme-texture-blend: multiply;
-  --theme-bg-app: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.1"/></svg>');
-  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
-}
-
-[data-theme='france'] {
-  --theme-bg: #002654;
-  --theme-surface: #ffffff;
-  --theme-surface-hover: #f1f5f9;
-  --theme-text: #002654;
-  --theme-border: #ed2939;
-}
-
-[data-theme='portugal'] {
-  --theme-bg: #000000;
-  --theme-surface: #7e1e1e; /* Dark Red */
-  --theme-surface-hover: #691717;
-  --theme-text: #ffffff;
-  --theme-border: #144b2a; /* Dark Green */
-
-  /* Skinning Config */
-  --font-display: 'Impact', sans-serif;
-  --theme-radius-base: 8px;
-  --theme-radius-card: 16px;
-  --theme-radius-btn: 12px;
-  --theme-radius-input: 12px;
-  --theme-border-width: 1px;
-  --theme-border-style: solid;
-  --theme-texture-blend: overlay;
-  --theme-bg-app: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.12"/></svg>');
-  --theme-bg-card: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
-}
-
-[data-theme='germany'] {
-  --theme-bg: #e2e8f0;
-  --theme-surface: #ffffff;
-  --theme-surface-hover: #f1f5f9;
-  --theme-text: #000000;
-  --theme-border: #000000;
-}
 
 /* ─── Base Resets ─────────────────────────────────────────────────────────── */
 *,

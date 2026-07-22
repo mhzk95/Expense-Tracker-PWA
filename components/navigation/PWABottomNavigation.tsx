@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils/helpers";
 import { X, ChevronRight, Bell } from "lucide-react";
 import { ThemeIcon } from "@/components/ui/ThemeIcon";
 import { ThemeDecal } from "@/components/ui/ThemeDecal";
+import { Button } from "@/components/ui/Button";
+import { useComponentStyle } from "@/hooks/useComponentStyle";
+import { getGeometryClasses, getSurfaceClasses } from "@/lib/theme/style-mapper";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 const ICON_MAP: Record<string, string> = {
   LayoutDashboard: "nav-home",
@@ -40,6 +44,15 @@ export function PWABottomNavigation() {
     (navItem) => !BOTTOM_NAV_ITEMS.some((bottomItem) => bottomItem.id === navItem.id)
   );
 
+  const navStyle = useComponentStyle("navigation");
+  const cardStyle = useComponentStyle("card");
+  const { manifest } = useTheme();
+
+  const navAssetStyles: React.CSSProperties = {
+    ...(navStyle.surface.maskAsset && manifest.assets?.[navStyle.surface.maskAsset] ? { WebkitMaskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, maskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, WebkitMaskSize: '100% 100%', maskSize: '100% 100%', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat' } : {}),
+    ...(navStyle.surface.backgroundAsset && manifest.assets?.[navStyle.surface.backgroundAsset] ? { backgroundImage: `url('${manifest.assets[navStyle.surface.backgroundAsset].src}')`, backgroundSize: 'cover', backgroundPosition: 'center' } : {})
+  };
+
   return (
     <>
       {/* ── "More" Overlay Menu ─────────────────────────────────────────── */}
@@ -47,23 +60,29 @@ export function PWABottomNavigation() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-30 bg-[var(--color-bg)]/80 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setShowMoreMenu(false)}
           />
           
           {/* Menu Sheet */}
           <div 
-            className="fixed left-4 right-4 z-40 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[24px] shadow-brutal-lg overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200"
+            className={cn(
+              "fixed left-4 right-4 z-40 overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200",
+              getGeometryClasses(cardStyle.geometry),
+              getSurfaceClasses(cardStyle.surface)
+            )}
             style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
           >
-            <div className="p-4 border-b-4 border-[var(--color-border)] flex items-center justify-between bg-[var(--color-surface)]">
+            <div className="p-4 flex items-center justify-between border-b border-black/10 dark:border-white/10">
               <h3 className="font-black text-[var(--color-text)] uppercase tracking-wider text-lg">More Options</h3>
-              <button 
+              <Button 
                 onClick={() => setShowMoreMenu(false)}
-                className="h-10 w-10 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-[var(--color-surface)] transition-colors brutal-btn"
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
               >
                 <X className="h-6 w-6 stroke-[3px]" />
-              </button>
+              </Button>
             </div>
             <div className="p-3 space-y-2 bg-[var(--color-bg)]">
               {moreItems.map((item) => {
@@ -76,8 +95,8 @@ export function PWABottomNavigation() {
                     className={cn(
                       "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group border-2",
                       isActive 
-                        ? "bg-[var(--color-primary)] border-[var(--color-border)] shadow-brutal text-white" 
-                        : "bg-[var(--color-surface)] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-brutal"
+                        ? "bg-[var(--theme-primary,var(--color-primary))] border-[var(--color-border)] shadow-brutal text-white" 
+                        : "bg-[var(--theme-surface,var(--color-surface))] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-brutal"
                     )}
                   >
                     <div className={cn(
@@ -112,11 +131,19 @@ export function PWABottomNavigation() {
 
       {/* ── Bottom Navigation Bar ───────────────────────────────────────── */}
       <div 
-        className="fixed bottom-4 left-4 right-4 z-40"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className={cn(
+          "fixed bottom-4 left-4 right-4 z-40",
+          navStyle.layout === "docked" && "bottom-0 left-0 right-0"
+        )}
+        style={{ paddingBottom: navStyle.layout === "docked" ? "env(safe-area-inset-bottom)" : 0 }}
       >
         <nav
-          className="bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[28px] shadow-brutal-lg overflow-hidden"
+          className={cn(
+            "overflow-hidden",
+            getGeometryClasses(navStyle.geometry),
+            getSurfaceClasses(navStyle.surface)
+          )}
+          style={navAssetStyles}
           aria-label="Bottom navigation"
         >
           <div className="flex items-stretch h-16">
@@ -131,25 +158,36 @@ export function PWABottomNavigation() {
 
               const content = (
                 <>
+                  {isActive && (
+                    <div 
+                      className="absolute inset-0 z-0 bg-[var(--theme-primary,var(--color-primary))]"
+                      style={{
+                        ...(navStyle.surface.maskAsset && manifest.assets?.[navStyle.surface.maskAsset] ? { WebkitMaskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, maskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat' } : {}),
+                        backgroundImage: manifest.assets?.['bg-card-primary'] ? `url('${manifest.assets['bg-card-primary'].src}')` : undefined,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }}
+                    />
+                  )}
                   <span
                     className={cn(
-                      "flex items-center justify-center h-10 w-10 rounded-[14px] transition-all duration-200 border-2",
+                      "flex items-center justify-center transition-all duration-200 z-10 relative",
                       isActive 
-                        ? "bg-[var(--color-primary)] border-[var(--color-border)] shadow-brutal-sm text-white" 
-                        : "bg-transparent border-transparent text-[var(--color-text)]"
+                        ? "text-black" 
+                        : "text-[var(--theme-text,var(--color-text))]"
                     )}
                   >
-                    {iconName && <ThemeIcon name={iconName} className="h-5 w-5 stroke-[2.5px]" />}
+                    {iconName && <ThemeIcon name={iconName} className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3px]" />}
                   </span>
                   <span className={cn(
-                    "text-[10px] font-black uppercase tracking-wider mt-1 transition-colors",
-                    isActive ? "text-[var(--color-text)]" : "text-[var(--color-text)] opacity-60"
+                    "text-[9px] sm:text-[10px] font-black uppercase tracking-wider mt-0.5 sm:mt-1 transition-colors z-10 relative",
+                    isActive ? "text-black" : "text-[var(--theme-text,var(--color-text))] opacity-60"
                   )}>{item.label}</span>
                 </>
               );
 
               const commonClasses = cn(
-                "flex-1 flex flex-col items-center justify-center relative transition-transform duration-150 active:scale-95"
+                "flex-1 flex flex-col items-center justify-center relative transition-transform duration-150 active:scale-95 h-full"
               );
 
               if (isMoreBtn) {

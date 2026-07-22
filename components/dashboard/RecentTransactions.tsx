@@ -39,12 +39,14 @@ export function RecentTransactions() {
         </Link>
       </div>
 
+
+
       {/* Transaction rows */}
       <div className="space-y-3 flex-1 flex flex-col justify-start">
         {loading ? (
           <>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="brutal-card p-4 flex items-start gap-4 animate-pulse">
+              <Card key={i} className="p-4 flex items-start gap-4 animate-pulse">
                 <div className="h-12 w-12 rounded-[var(--radius-theme-base)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] bg-gray-200" />
                 <div className="flex-1 space-y-2 mt-1">
                   <div className="h-4 w-32 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
@@ -52,11 +54,11 @@ export function RecentTransactions() {
                   <div className="h-3 w-16 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
                 </div>
                 <div className="h-4 w-12 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
-              </div>
+              </Card>
             ))}
           </>
         ) : recent.length === 0 ? (
-          <div className="brutal-card p-5 text-sm font-bold text-gray-500 text-center uppercase tracking-wider border-dashed bg-[var(--color-surface)]">No transactions found.</div>
+          <Card className="p-5 text-sm font-bold text-gray-500 text-center uppercase tracking-wider border-dashed bg-[var(--color-surface)]">No transactions found.</Card>
         ) : (
           recent.map((txn) => {
             const category = categories.find((c) => c.id === txn.categoryId);
@@ -66,10 +68,10 @@ export function RecentTransactions() {
             const baseColor = category?.color || "#8b5cf6";
 
             return (
-              <div
+              <Card
                 key={txn.id}
                 className={cn(
-                  "brutal-card interactive flex items-center gap-4 px-4 py-3 transition-all duration-300",
+                  "flex items-center gap-4 px-4 py-3 transition-all duration-300",
                   txn.needsReview && "needs-review-card border-l-[6px] border-l-amber-400 bg-amber-50"
                 )}
               >
@@ -122,7 +124,7 @@ export function RecentTransactions() {
                     </span>
                   )}
                 </div>
-              </div>
+              </Card>
             );
           })
         )}

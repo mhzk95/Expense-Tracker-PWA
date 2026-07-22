@@ -12,6 +12,7 @@ import { AppShell } from "@/components/app-shell/AppShell";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { OfflineAuthGuard } from "@/components/providers/OfflineAuthGuard";
 import { AppRuntimeProvider } from "@/components/providers/AppRuntimeProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ThemeDecal } from "@/components/ui/ThemeDecal";
 
 const inter = Inter({
@@ -84,14 +85,16 @@ export default function RootLayout({
          * - Mobile browser → mobile header
          * - Standalone PWA → bottom navigation
          */}
-        <ThemeDecal slot="page-bg" />
-        <AppRuntimeProvider>
-          <AuthProvider>
-            <OfflineAuthGuard>
-              <AppShell>{children}</AppShell>
-            </OfflineAuthGuard>
-          </AuthProvider>
-        </AppRuntimeProvider>
+        <ThemeProvider>
+          <ThemeDecal slot="page-bg" />
+          <AppRuntimeProvider>
+            <AuthProvider>
+              <OfflineAuthGuard>
+                <AppShell>{children}</AppShell>
+              </OfflineAuthGuard>
+            </AuthProvider>
+          </AppRuntimeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

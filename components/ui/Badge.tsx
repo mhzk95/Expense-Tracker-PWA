@@ -1,23 +1,34 @@
 import React from "react";
 import { cn } from "@/lib/utils/helpers";
 
+import { useComponentStyle } from "@/hooks/useComponentStyle";
+import { 
+  getGeometryClasses, 
+  getSurfaceClasses, 
+  getTypographyClasses 
+} from "@/lib/theme/style-mapper";
+
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "success" | "warning" | "danger" | "info";
 }
 
 export const Badge = ({ className = "", variant = "default", children, ...props }: BadgeProps) => {
-  const baseStyles = "inline-flex items-center justify-center font-bold px-2 py-0.5 rounded-[var(--radius-theme-base)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm text-[10px] uppercase tracking-widest font-display";
-  
-  const variants = {
-    default: "bg-[var(--color-surface)] text-[var(--color-text)]",
-    success: "bg-[var(--color-success)] text-[var(--color-text)]",
-    warning: "bg-[var(--color-warning)] text-[var(--color-text)]",
-    danger: "bg-[var(--color-danger)] text-[var(--color-text)]",
-    info: "bg-[var(--color-info)] text-[var(--color-text)]",
-  };
+  const style = useComponentStyle("badge");
+  const baseClasses = "inline-flex items-center justify-center px-2 py-0.5";
+  const resolvedSurface = { ...style.surface, colorIntent: variant === "default" ? "surface" : variant };
 
   return (
-    <span className={cn(baseStyles, variants[variant], className)} {...props}>
+    <span 
+      className={cn(
+        baseClasses, 
+        getGeometryClasses(style.geometry),
+        getSurfaceClasses(resolvedSurface as any),
+        getTypographyClasses(style.typography),
+        "text-[10px]",
+        className
+      )} 
+      {...props}
+    >
       {children}
     </span>
   );

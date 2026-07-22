@@ -23,6 +23,7 @@ interface StatCardProps {
   /** Tailwind gradient or color class for the icon background */
   iconColor?: string;
   className?: string;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "surface";
 }
 
 export function StatCard({
@@ -33,6 +34,7 @@ export function StatCard({
   trendDirection = "neutral",
   icon,
   className,
+  variant = "surface",
 }: StatCardProps) {
   const TrendIcon =
     trendDirection === "up"
@@ -54,7 +56,7 @@ export function StatCard({
     : icon;
 
   return (
-    <Card className={cn("group p-4 sm:p-6 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
+    <Card variant={variant} className={cn("group p-4 sm:p-6 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
       <ThemeDecal slot="stat-card-tr" />
       
       {/* Decorative partially clipped icon */}
