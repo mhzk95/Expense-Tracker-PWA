@@ -14,15 +14,17 @@ export const Card = ({
   className = "",
   style: propStyle, 
   variant = "surface",
+  isInteractive,
   onClick 
 }: { 
   children: React.ReactNode; 
   className?: string;
   style?: React.CSSProperties; 
-  variant?: "primary" | "secondary" | "danger" | "ghost" | "surface";
-  onClick?: () => void;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "surface" | "success" | "warning";
+  isInteractive?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
-  const style = useComponentStyle("card", { isInteractive: !!onClick, semanticVariant: variant });
+  const style = useComponentStyle("card", { isInteractive: isInteractive || !!onClick, semanticVariant: variant });
   const { manifest } = useTheme();
 
   let bgAssetKey = style.surface.backgroundAsset;

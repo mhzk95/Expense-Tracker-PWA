@@ -44,6 +44,7 @@ export interface ThemeManifest {
     card?: { variant: "elevated" | "flat" | "bordered" | "neobrutalist"; maskAsset?: string; backgroundAsset?: string; colorIntentMapping?: "background" | "border"; };
     navigation?: { variant: "floating" | "docked"; maskAsset?: string; backgroundAsset?: string; };
     badge?: { variant?: string; maskAsset?: string; backgroundAsset?: string; };
+    input?: { variant?: string; maskAsset?: string; backgroundAsset?: string; };
   };
 
   capabilities: {
@@ -77,6 +78,7 @@ export interface ThemeManifest {
     headingFontUrl?: string;
     headingFontFamily?: string;
     headingFontFormat?: string;
+    bodyFontFamily?: string;
   };
   // Phase 4: Pure Asset Registry
   assets?: Record<string, { 

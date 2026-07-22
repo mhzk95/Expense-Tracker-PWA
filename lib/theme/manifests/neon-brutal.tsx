@@ -23,7 +23,7 @@ export const neonBrutalTheme: ThemeManifest = {
     navigation: { variant: "floating" },
     input: { variant: "neobrutalist" }
   },
-  capabilities: { layoutDensity: "comfortable", motion: "snappy" },
+  capabilities: { layoutDensity: "comfortable", motion: "full" },
   tokens: {
     colors: {
       background: "#0f1014", // Very dark navy/grey void
