@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils/helpers";
 import { cn } from "@/lib/utils/helpers";
-import { Building2, CreditCard, PiggyBank, TrendingUp, Trash2, Wallet } from "lucide-react";
+import { Building2, CreditCard, PiggyBank, TrendingUp, TrendingDown, Trash2, Wallet } from "lucide-react";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { AddAccountAction } from "@/components/accounts/AddAccountAction";
@@ -18,6 +18,7 @@ import { SwipeToDelete } from "@/components/ui/SwipeToDelete";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { AccountForm } from "@/components/accounts/AccountForm";
+import { Card } from "@/components/ui/Card";
 
 const ACCOUNT_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   Building2,
@@ -69,30 +70,37 @@ export default function AccountsPage() {
       ) : (
         <>
           {/* Net worth summary */}
-          <div className="bg-[var(--color-primary)] border-2 sm:border-[4px] border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 ">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="h-14 w-14 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)]  flex items-center justify-center">
-                <TrendingUp className="h-7 w-7 text-[var(--color-text)] stroke-[3px]" />
+          <div className="grid grid-cols-2 gap-4">
+            <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-success,#10b981)]">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
+                  <TrendingUp className="h-4 w-4 stroke-[3px] text-emerald-500" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Assets</span>
               </div>
-              <div>
-                <p className="text-xs font-black text-[var(--color-text)]/80 uppercase tracking-widest">Net Worth</p>
-                <p className="text-4xl sm:text-5xl font-black text-white mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(netWorth)}</p>
+              <p className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] tabular-nums tracking-tighter leading-none">{formatCurrency(totalAssets)}</p>
+            </Card>
+
+            <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-danger,#ef4444)]">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
+                  <TrendingDown className="h-4 w-4 stroke-[3px] text-red-500" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Liabilities</span>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 pt-5 border-t-[4px] border-[var(--color-border)]/20">
-              <div>
-                <p className="text-[11px] font-black text-[var(--color-text)]/80 uppercase tracking-widest">Total Assets</p>
-                <p className="text-xl sm:text-2xl font-black text-emerald-300 mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(totalAssets)}</p>
-              </div>
-              <div>
-                <p className="text-[11px] font-black text-[var(--color-text)]/80 uppercase tracking-widest">Total Liabilities</p>
-                <p className="text-xl sm:text-2xl font-black text-red-300 mt-1 drop-shadow-[2px_2px_0px_var(--color-border)] tracking-tight">{formatCurrency(totalLiabilities)}</p>
-              </div>
-            </div>
+              <p className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] tabular-nums tracking-tighter leading-none">{formatCurrency(totalLiabilities)}</p>
+            </Card>
           </div>
 
+          <Card variant="surface" className="p-4 flex items-center justify-between border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)]">
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Net Worth</span>
+            <span className={`text-xl font-display font-black tabular-nums tracking-tighter px-3 py-1 border-2 border-[var(--color-border)] rounded-xl  ${netWorth >= 0 ? 'bg-emerald-400 text-black' : 'bg-red-400 text-black'}`}>
+              {netWorth > 0 ? "+" : ""}{formatCurrency(netWorth)}
+            </span>
+          </Card>
+
           {/* Account cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {accounts.map((account) => {
               const Icon = ACCOUNT_ICONS[account.icon ?? "Building2"] ?? Building2;
               

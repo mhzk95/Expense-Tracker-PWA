@@ -4,19 +4,22 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { AccountForm } from "@/components/accounts/AccountForm";
+import { Button } from "@/components/ui/Button";
 
 export function AddAccountAction() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-2 border-[var(--color-border)] transition-all  active:translate-x-1 active:translate-y-1 active:shadow-none"
+        size="sm"
+        variant="primary"
+        className="gap-1.5"
       >
         <Plus className="h-4 w-4 stroke-[3px]" />
-        Add Account
-      </button>
+        Add
+      </Button>
 
       <AdaptiveOverlay isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Account">
         <AccountForm onSuccess={() => setIsOpen(false)} />

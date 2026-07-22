@@ -30,7 +30,8 @@ export const neonBrutalTheme: ThemeManifest = {
       surface: "#131620", // Slightly lighter for cards
       surfaceHover: "#1c212e",
       text: "#ffffff",
-      border: "#334155" // Subtle gray border
+      border: "#334155", // Subtle gray border
+      primary: "#facc15" // Yellow primary for buttons and active states
     },
     shapes: {
       radiusBase: "16px",

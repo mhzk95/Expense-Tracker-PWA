@@ -37,7 +37,7 @@ export function getSurfaceClasses(surf: SurfaceStyle): string {
   };
 
   const bgColors: Record<string, string> = {
-    primary: "bg-[var(--theme-primary,var(--color-primary))] text-white",
+    primary: "bg-[var(--theme-primary,var(--color-primary))] text-black",
     secondary: "bg-[var(--theme-surface,var(--color-surface))] text-[var(--theme-text,var(--color-text))]",
     danger: "bg-red-500 text-white",
     ghost: "bg-transparent text-[var(--theme-text,var(--color-text))]",
@@ -95,7 +95,7 @@ export function getInteractionClasses(int: InteractionStyle, isBrutalistContext:
   const focusClass = int.focus ? focuses[int.focus] : focuses.none;
 
   if (isBrutalistContext && int.hover === "lift" && int.pressed === "sink") {
-     return `hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-brutal-sm active:translate-y-0 active:translate-x-0 active:shadow-none transition-all ${focusClass}`;
+     return `hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none shadow-[2px_2px_0px_0px_var(--color-border)] transition-all ${focusClass}`;
   }
 
   return `${hovers[int.hover]} ${presses[int.pressed]} ${focusClass}`;

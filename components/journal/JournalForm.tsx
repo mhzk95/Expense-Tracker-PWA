@@ -18,12 +18,10 @@ import {
   Trash2,
   MapPin,
   X,
-  RotateCcw,
-  Lock,
-  ChevronLeft,
-  Calendar,
+  RotateCcw, Lock, ChevronLeft, Calendar 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 
 const MOODS = [
   { label: "Happy", emoji: "😊" },
@@ -440,14 +438,15 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
         {/* Submit */}
         <div className="pt-4">
-          <button
+          <Button
             type="submit"
-            disabled={isSubmitting || (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0)}
-            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-2 border-[var(--color-border)]  transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
+            disabled={isSubmitting}
+            variant="primary"
+            className="w-full py-4"
           >
-            <Lock className="w-5 h-5 text-white stroke-[2.5px]" />
+            <Lock className="w-5 h-5 stroke-[2.5px] mr-2" />
             {isSubmitting ? "Saving memory..." : "Save Memory"}
-          </button>
+          </Button>
           <p className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-center gap-1 mt-4">
             <Lock className="w-3 h-3 stroke-[3px]" /> Private & encrypted
           </p>

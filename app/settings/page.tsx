@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useVault } from "@/hooks/useVault";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
+import { Button } from "@/components/ui/Button";
 import { SUPPORTED_CURRENCIES, STORAGE_KEYS } from "@/lib/constants/app";
 import { ThemeSelector } from "@/components/settings/ThemeSelector";
 import { CloudSyncSettings } from "@/components/settings/CloudSyncSettings";
@@ -155,12 +156,13 @@ export default function SettingsPage() {
                   <CheckCircle2 className="h-4 w-4 stroke-[3px]" /> Active
                 </div>
               ) : (
-                <button 
+                <Button 
                   onClick={requestNotificationPermission}
-                  className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover: border-2 border-[var(--color-border)]  text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
+                  variant="primary"
+                  size="sm"
                 >
                   Enable
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -258,18 +260,15 @@ export default function SettingsPage() {
       >
         <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 mt-2">
           {SUPPORTED_CURRENCIES.map((c) => (
-            <button
+            <Button
               key={c}
               onClick={() => handleCurrencyChange(c)}
-              className={`w-full text-left px-5 py-4 rounded-[16px] transition-all border-2 font-black uppercase tracking-widest ${
-                currency === c ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] " : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]  hover:translate-x-[-1px] hover:translate-y-[-1px] hover:"
-              }`}
+              variant={currency === c ? "primary" : "secondary"}
+              className="w-full text-left justify-between"
             >
-              <div className="flex justify-between items-center">
-                <span>{c}</span>
-                {currency === c && <div className="h-3 w-3 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)]" />}
-              </div>
-            </button>
+              <span>{c}</span>
+              {currency === c && <div className="h-3 w-3 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)]" />}
+            </Button>
           ))}
         </div>
       </AdaptiveOverlay>

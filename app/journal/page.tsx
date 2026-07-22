@@ -329,13 +329,24 @@ export default function JournalPage() {
           title="Journal"
           subtitle={loading ? "Loading..." : `${entries.length} memories`}
           action={
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={() => setShowSearch(v => !v)}
-            >
-              <Search className="w-5 h-5 stroke-[2.5px]" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setShowSearch(v => !v)}
+              >
+                <Search className="w-5 h-5 stroke-[2.5px]" />
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsFormOpen(true)}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4 stroke-[3px]" />
+                Add
+              </Button>
+            </div>
           }
         />
 
@@ -461,14 +472,7 @@ export default function JournalPage() {
         )}
       </div>
 
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border border-dashed border-[var(--color-border)] flex items-center justify-center z-30  hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-        aria-label="Add journal entry"
-      >
-        <Plus className="w-6 h-6 text-black stroke-[3px]" />
-      </button>
+      {/* Floating Action Button Removed (Moved to header) */}
 
       {/* New Entry Sheet */}
       <AdaptiveOverlay

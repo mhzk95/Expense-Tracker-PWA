@@ -160,36 +160,23 @@ export function PWABottomNavigation() {
                 : (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
 
               const content = (
-                <>
-                  {isActive && (
-                    <>
-                      <div 
-                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-0 bg-[var(--color-border)] rounded-[14px] translate-x-1 translate-y-1"
-                      />
-                      <div 
-                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-10 bg-[var(--color-primary)] border-2 sm:border-2 border-[var(--color-border)] rounded-[14px]"
-                      />
-                    </>
-                  )}
-                  <span
-                    className={cn(
-                      "flex items-center justify-center transition-all duration-200 z-10 relative",
-                      isActive 
-                        ? "text-black" 
-                        : "text-gray-500"
-                    )}
-                  >
+                <div className={cn(
+                  "flex flex-col items-center justify-center w-full h-full relative z-10 rounded-xl transition-all duration-200 mx-1",
+                  isActive 
+                    ? "bg-[var(--color-primary)] text-black border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] my-1" 
+                    : "text-gray-500 hover:text-[var(--color-text)]"
+                )}>
+                  <span className="flex items-center justify-center">
                     {iconName && <ThemeIcon name={iconName} className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3px]" />}
                   </span>
-                  <span className={cn(
-                    "text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors z-10 relative",
-                    isActive ? "text-black" : "text-gray-500"
-                  )}>{item.label}</span>
-                </>
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 sm:mt-1">
+                    {item.label}
+                  </span>
+                </div>
               );
 
               const commonClasses = cn(
-                "flex-1 flex flex-col items-center justify-center relative transition-transform duration-150 active:scale-95 h-full"
+                "flex-1 flex items-center justify-center relative transition-transform duration-150 active:scale-95 h-full"
               );
 
               if (isMoreBtn) {

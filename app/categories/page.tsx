@@ -6,6 +6,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { Target, Plus, Trash2, Edit2, ChevronLeft } from "lucide-react";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { hexToRgb, getCategoryIcon, ICON_MAP, vibrate } from "@/lib/utils/helpers";
 
 const AVAILABLE_ICONS = [
@@ -100,16 +101,18 @@ export default function CategoriesPage() {
         subtitle={loading ? "Loading..." : `${categories.length} custom categories`}
         action={
           !isAdding && (
-            <button
+            <Button
               onClick={() => {
                 setIsAdding(true);
                 vibrate([10]);
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-2 border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+              variant="primary"
+              size="sm"
+              className="gap-1.5"
             >
               <Plus className="h-4 w-4 stroke-[3px]" />
-              Add New
-            </button>
+              Add
+            </Button>
           )
         }
       />
@@ -240,19 +243,21 @@ export default function CategoriesPage() {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <button
+              <Button
                 type="button"
                 onClick={resetForm}
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-surfaceHover)] hover:bg-[var(--color-surfaceHover)] rounded-[12px] border-2 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                variant="secondary"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                variant="primary"
+                className="flex-1"
               >
                 {editingId ? "Save Changes" : "Create"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -277,45 +282,47 @@ export default function CategoriesPage() {
                     <Card 
                       key={cat.id}
                       variant="surface"
-                      className="group relative flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 pl-5 sm:pl-6 hover:bg-[var(--color-surfaceHover)] transition-all duration-300 overflow-hidden border-2 border-[var(--color-border)]"
+                      className="group p-0"
                     >
-                      {/* Accent Strip */}
-                      <div
-                        className="absolute left-0 top-0 bottom-0 w-2.5 border-r-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: cat.color || "#94a3b8" }}
-                      />
+                      <div className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left hover:bg-[var(--color-surfaceHover)] transition-all duration-300">
+                        {/* Accent Strip */}
+                        <div
+                          className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0"
+                          style={{ backgroundColor: cat.color || "#94a3b8" }}
+                        />
 
-                      <div className="flex items-center gap-3 min-w-0 flex-1 ml-1">
-                        <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
-                          <IconComp className="w-4 h-4 stroke-[3px]" style={{ color: cat.color }} />
+                        <div className="flex items-center gap-3 min-w-0 flex-1 ml-1 z-10">
+                          <div className="w-11 h-11 rounded-[10px] flex items-center justify-center flex-shrink-0 relative z-10" style={{ backgroundColor: cat.color || "#94a3b8", color: "#000" }}>
+                            <IconComp className="w-5 h-5 stroke-[2.5px]" />
+                          </div>
+                          <span className="text-[13px] font-black uppercase tracking-wider text-[var(--color-text)] truncate pt-0.5">{cat.name}</span>
                         </div>
-                        <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate">{cat.name}</span>
-                      </div>
 
-                      {/* Edit / Delete actions */}
-                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(cat);
-                          }}
-                          className="p-2 rounded-xl border-2 border-transparent hover:border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)] text-gray-500 hover:text-[var(--color-text)] transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 className="w-4 h-4 stroke-[3px]" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm(`Delete "${cat.name}" category?`)) {
-                              deleteCategory(cat.id);
-                            }
-                          }}
-                          className="p-2 rounded-xl border-2 border-transparent hover:border-red-500 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4 stroke-[3px]" />
-                        </button>
+                        {/* Edit / Delete actions */}
+                        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(cat);
+                            }}
+                            className="p-2 rounded-xl border-2 border-transparent hover:border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)] text-gray-500 hover:text-[var(--color-text)] transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-4 h-4 stroke-[3px]" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (confirm(`Delete "${cat.name}" category?`)) {
+                                deleteCategory(cat.id);
+                              }
+                            }}
+                            className="p-2 rounded-xl border-2 border-transparent hover:border-red-500 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4 stroke-[3px]" />
+                          </button>
+                        </div>
                       </div>
                     </Card>
                   );
@@ -330,12 +337,12 @@ export default function CategoriesPage() {
             <Target className="w-12 h-12 text-[var(--color-text)] mx-auto mb-4 stroke-[2.5px]" />
             <h3 className="text-lg font-black uppercase tracking-widest text-[var(--color-text)] mb-2">No Categories</h3>
             <p className="text-sm font-bold text-gray-500 mb-6">Add your first category to start tracking.</p>
-            <button
+            <Button
               onClick={() => setIsAdding(true)}
-              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+              variant="primary"
             >
               Add Category
-            </button>
+            </Button>
           </div>
         )}
       </div>
