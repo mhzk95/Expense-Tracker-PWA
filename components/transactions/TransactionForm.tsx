@@ -58,9 +58,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   
   const availableCategories = categories.filter(c => c.type === type);
   const focusStyles = {
-    expense: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
-    income: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
-    transfer: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    expense: "focus: focus:-translate-y-0.5",
+    income: "focus: focus:-translate-y-0.5",
+    transfer: "focus: focus:-translate-y-0.5",
   };
   const activeFocus = focusStyles[type];
   
@@ -666,15 +666,15 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
         
         {/* Main Details Card - Structured Stacking Context relative z-30 */}
-        <div className="relative z-30 p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] shadow-[2px_2px_0px_0px_var(--color-border)] space-y-4">
+        <div className="relative z-30 p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px]  space-y-4">
           {/* Type Toggle */}
-          <div className="flex p-1 bg-gray-100 rounded-xl border-2 border-[var(--color-border)] shadow-inner">
+          <div className="flex p-1 bg-[var(--color-surfaceHover)] rounded-xl border-2 border-[var(--color-border)] shadow-inner">
             {(["expense", "income", "transfer"] as const).map((t) => {
               const isActive = type === t;
               const activeClasses = 
-                t === "expense" ? "bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" :
-                t === "income" ? "bg-emerald-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" :
-                "bg-blue-400 text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]";
+                t === "expense" ? "bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] " :
+                t === "income" ? "bg-emerald-400 text-[var(--color-text)] border-2 border-[var(--color-border)] " :
+                "bg-blue-400 text-[var(--color-text)] border-2 border-[var(--color-border)] ";
               return (
                 <button
                   key={t}
@@ -696,12 +696,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               <div className="flex items-center gap-1.5 min-w-0">
                 <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Amount</label>
                 {showLivePreview && livePreviewValue && (
-                  <span className="text-[10px] text-[var(--color-text)] font-black truncate bg-emerald-300 px-2 py-0.5 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                  <span className="text-[10px] text-[var(--color-text)] font-black truncate bg-emerald-300 px-2 py-0.5 rounded-lg border-2 border-[var(--color-border)] ">
                     = ₹{livePreviewValue}
                   </span>
                 )}
               </div>
-              <label className="flex items-center gap-1 text-[10px] text-white font-black cursor-pointer bg-[var(--color-primary)] px-3 py-1 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all uppercase tracking-widest">
+              <label className="flex items-center gap-1 text-[10px] text-white font-black cursor-pointer bg-[var(--color-primary)] px-3 py-1 rounded-lg border-2 border-[var(--color-border)]  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all uppercase tracking-widest">
                 {isScanning ? <Loader2 className="w-3 h-3 animate-spin stroke-[3px]" /> : <Camera className="w-3 h-3 stroke-[3px]" />}
                 <span>Scan</span>
                 <input type="file" accept="image/*" onChange={handleScanReceipt} className="hidden" disabled={isScanning} />
@@ -752,7 +752,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                     handleQuickAdd(val);
                     vibrate([20]);
                   }}
-                  className="px-2.5 py-1 text-[10px] font-black bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none"
+                  className="px-2.5 py-1 text-[10px] font-black bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none"
                 >
                   +{val}
                 </button>
@@ -763,7 +763,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   setAmount("");
                   vibrate([20]);
                 }}
-                className="px-2.5 py-1 text-[10px] font-black bg-red-400 border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-red-500 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none ml-auto"
+                className="px-2.5 py-1 text-[10px] font-black bg-red-400 border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] hover:bg-red-500 transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none ml-auto"
               >
                 Clear
               </button>
@@ -777,32 +777,32 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] p-3 space-y-2 mt-3 shadow-[4px_4px_0px_0px_var(--color-border)] relative z-40"
+                  className="overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] p-3 space-y-2 mt-3  relative z-40"
                 >
                   <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
-                    <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">C</button>
-                    <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center justify-center">⌫</button>
-                    <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">/</button>
-                    <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">*</button>
+                    <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">C</button>
+                    <button type="button" onClick={() => handleKeypadPress("⌫")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center justify-center">⌫</button>
+                    <button type="button" onClick={() => handleKeypadPress("/")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">/</button>
+                    <button type="button" onClick={() => handleKeypadPress("*")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">*</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">7</button>
-                    <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">8</button>
-                    <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">9</button>
-                    <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">-</button>
+                    <button type="button" onClick={() => handleKeypadPress("7")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">7</button>
+                    <button type="button" onClick={() => handleKeypadPress("8")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">8</button>
+                    <button type="button" onClick={() => handleKeypadPress("9")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">9</button>
+                    <button type="button" onClick={() => handleKeypadPress("-")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">-</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">4</button>
-                    <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">5</button>
-                    <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">6</button>
-                    <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">+</button>
+                    <button type="button" onClick={() => handleKeypadPress("4")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">4</button>
+                    <button type="button" onClick={() => handleKeypadPress("5")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">5</button>
+                    <button type="button" onClick={() => handleKeypadPress("6")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">6</button>
+                    <button type="button" onClick={() => handleKeypadPress("+")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">+</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">1</button>
-                    <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">2</button>
-                    <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">3</button>
-                    <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">=</button>
+                    <button type="button" onClick={() => handleKeypadPress("1")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">1</button>
+                    <button type="button" onClick={() => handleKeypadPress("2")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">2</button>
+                    <button type="button" onClick={() => handleKeypadPress("3")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">3</button>
+                    <button type="button" onClick={() => handleKeypadPress("=")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">=</button>
 
-                    <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">0</button>
-                    <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">.</button>
-                    <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-400 border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-emerald-500 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">Next</button>
+                    <button type="button" onClick={() => handleKeypadPress("0")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">0</button>
+                    <button type="button" onClick={() => handleKeypadPress(".")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">.</button>
+                    <button type="button" onClick={() => handleKeypadPress("Next")} className="col-span-2 h-10 rounded-xl bg-emerald-400 border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-emerald-500 transition-all  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">Next</button>
                   </div>
                 </motion.div>
               )}
@@ -810,7 +810,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </div>
 
           {/* Core Details Group */}
-          <div className="bg-gray-100 border-2 border-[var(--color-border)] rounded-[16px] p-4 space-y-4 shadow-inner">
+          <div className="bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-[16px] p-4 space-y-4 shadow-inner">
             {/* Date & Time Selection (Side by Side) - relative z-10 */}
             <div className="relative z-10 grid grid-cols-2 gap-3">
             <div>
@@ -862,7 +862,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedCat = categories.find(c => c.id === categoryId);
@@ -891,16 +891,16 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] overflow-hidden max-h-60 flex flex-col"
+                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  overflow-hidden max-h-60 flex flex-col"
                       >
-                        <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-gray-100">
+                        <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-[var(--color-surfaceHover)]">
                           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text)] stroke-[3px]" />
                           <input
                             type="text"
                             placeholder="Search categories..."
                             value={categorySearch}
                             onChange={(e) => setCategorySearch(e.target.value)}
-                            className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[var(--color-text)] font-black placeholder-gray-500 outline-none transition-all focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5 focus:-translate-x-0.5"
+                            className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[var(--color-text)] font-black placeholder-gray-500 outline-none transition-all focus: focus:-translate-y-0.5 focus:-translate-x-0.5"
                           />
                         </div>
 
@@ -934,7 +934,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                         setIsCategoryManuallySet(true);
                                         setShowCategoryDropdown(false);
                                       }}
-                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[10px] font-black text-[var(--color-text)] hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[10px] font-black text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                                     >
                                       <span className="w-4 h-4 rounded-full flex items-center justify-center border border-[var(--color-border)] shadow-[1px_1px_0px_0px_var(--color-border)]" style={{ backgroundColor: `${cat.color}20` }}>
                                         <IconComp className="w-2.5 h-2.5 stroke-[3px]" style={{ color: cat.color }} />
@@ -964,10 +964,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                     setShowCategoryDropdown(false);
                                   }}
                                   className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b-[3px] border-[var(--color-border)] last:border-b-0 ${
-                                    isSelected ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100 active:bg-gray-200"
+                                    isSelected ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] active:bg-[var(--color-surfaceHover)]"
                                   }`}
                                 >
-                                  <span className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 border-2 ${isSelected ? 'border-white' : 'border-[var(--color-border)]'} shadow-[2px_2px_0px_0px_var(--color-border)]`} style={{ backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : `${cat.color}20` }}>
+                                  <span className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 border-2 ${isSelected ? 'border-white' : 'border-[var(--color-border)]'} `} style={{ backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : `${cat.color}20` }}>
                                     <IconComp className="w-4 h-4 stroke-[3px]" style={{ color: isSelected ? 'white' : cat.color }} />
                                   </span>
                                   <span className={`flex-1 truncate text-xs font-black uppercase tracking-wider`}>{cat.name}</span>
@@ -1005,7 +1005,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
@@ -1023,7 +1023,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.length === 0 ? (
                           <div className="text-slate-500 text-[11px] p-2 text-center">No accounts</div>
@@ -1040,7 +1040,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                   setShowAccountDropdown(false);
                                 }}
                                 className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
-                                  isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                                  isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] " : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:"
                                 }`}
                               >
                                 {acc.name}
@@ -1068,7 +1068,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
@@ -1086,7 +1086,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.map((acc) => {
                           const isSelected = acc.id === accountId;
@@ -1100,7 +1100,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setShowAccountDropdown(false);
                               }}
                               className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
-                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] " : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:"
                               }`}
                             >
                                 {acc.name}
@@ -1125,7 +1125,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === toAccountId);
@@ -1143,7 +1143,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         <option value="" disabled>Select destination</option>
                         {accounts.filter(a => a.id !== accountId).map((acc) => {
@@ -1158,7 +1158,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                                 setShowToAccountDropdown(false);
                               }}
                               className={`w-full px-3 py-2 rounded-lg text-left text-[11px] transition-colors border-2 ${
-                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                                isSelected ? "bg-[var(--color-primary)] text-white font-black border-[var(--color-border)] " : "text-[var(--color-text)] font-bold border-transparent hover:border-[var(--color-border)] hover:"
                               }`}
                             >
                               {acc.name}
@@ -1209,7 +1209,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             setShowAccountDropdown(false);
             setShowToAccountDropdown(false);
           }}
-          className="w-full py-3 px-4 rounded-xl border-2 border-[var(--color-border)] bg-gray-100 text-[var(--color-text)] font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-gray-200 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none"
+          className="w-full py-3 px-4 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surfaceHover)] text-[var(--color-text)] font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-[var(--color-surfaceHover)]  active:translate-y-1 active:translate-x-1 active:shadow-none"
         >
           <span>{showOptionalDetails ? "Hide Optional Details" : "Show Optional Details"}</span>
           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showOptionalDetails ? "rotate-180" : ""}`} />
@@ -1224,7 +1224,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               transition={{ duration: 0.15 }}
               className="space-y-4 overflow-hidden pt-1 relative z-20"
             >
-              <div className="p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] shadow-[2px_2px_0px_0px_var(--color-border)] space-y-4">
+              <div className="p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px]  space-y-4">
                 
                 {/* Payee / Merchant with Auto Suggest */}
                 {type !== "transfer" && (
@@ -1255,7 +1255,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 5 }}
-                          className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                          className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                         >
                           {payeeSuggestions.slice(0, 5).map(p => (
                             <button
@@ -1305,7 +1305,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {itemSuggestions.slice(0, 5).map(i => (
                           <button
@@ -1365,7 +1365,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         await fetchLocation();
                       }}
                       disabled={locationLoading}
-                      className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all outline-none ${activeFocus}`}
+                      className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all outline-none ${activeFocus}`}
                       title="Use current location"
                     >
                       {locationLoading ? (
@@ -1431,7 +1431,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {tagSuggestions.slice(0, 5).map(t => (
                           <button
@@ -1469,7 +1469,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-[var(--color-border)] transition-colors duration-200 ease-in-out focus:outline-none ${needsReview ? 'bg-amber-400' : 'bg-gray-300'}`}
           >
             <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] ring-0 transition duration-200 ease-in-out ${needsReview ? 'translate-x-5' : 'translate-x-0'}`}
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)]  ring-0 transition duration-200 ease-in-out ${needsReview ? 'translate-x-5' : 'translate-x-0'}`}
             />
           </button>
         </div>
@@ -1480,7 +1480,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <button
           type="submit"
           disabled={isSubmitting || !amount}
-          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-2 border-[var(--color-border)] transition-all disabled:opacity-50 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none ${
+          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-2 border-[var(--color-border)] transition-all disabled:opacity-50  active:translate-y-1 active:translate-x-1 active:shadow-none ${
             type === "expense"
               ? "bg-red-400 hover:bg-red-500 text-[var(--color-text)]"
               : type === "income"

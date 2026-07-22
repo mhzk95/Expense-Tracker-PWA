@@ -175,7 +175,7 @@ export function CommandBar() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-[16px] bg-[var(--color-primary)] text-white flex items-center justify-center border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-primary)]/90 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:translate-x-1.5 active:translate-y-1.5 active:shadow-none transform -rotate-2"
+        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-[16px] bg-[var(--color-primary)] text-white flex items-center justify-center border-2 border-[var(--color-border)]  hover:bg-[var(--color-primary)]/90 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:translate-x-1.5 active:translate-y-1.5 active:shadow-none"
         aria-label="Smart Entry"
       >
         <Sparkles className="h-6 w-6 stroke-[2.5px]" />
@@ -219,7 +219,7 @@ export function CommandBar() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="E.g., Spent 45 on gas, or https://..."
-                    className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] text-xl text-[var(--color-text)] font-bold focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-x-1 focus:-translate-y-1 transition-all outline-none rounded-[16px] px-4 py-4 placeholder:text-gray-400 pr-20"
+                    className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xl text-[var(--color-text)] font-bold focus: focus:-translate-x-1 focus:-translate-y-1 transition-all outline-none rounded-[16px] px-4 py-4 placeholder:text-gray-400 pr-20"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                     <button type="button" onClick={() => fileInputRef.current?.click()} className="min-w-tap-target min-h-tap-target flex items-center justify-center bg-[var(--color-surface-hover)] border-2 border-[var(--color-border)] rounded-xl text-[var(--color-text)] hover:bg-[var(--color-border)] hover:text-[var(--color-surface)] shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
@@ -237,7 +237,7 @@ export function CommandBar() {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="flex items-center gap-3 p-4 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-brutal text-white">
+                      <div className="flex items-center gap-3 p-4 bg-[var(--color-primary)] border-2 border-[var(--color-border)] rounded-[16px] shadow-brutal text-white">
                         <div className="flex-1 min-w-0">
                           <p className="text-[10px] uppercase font-black tracking-widest opacity-80">Ready to log</p>
                           <p className="text-base font-bold truncate mt-1">

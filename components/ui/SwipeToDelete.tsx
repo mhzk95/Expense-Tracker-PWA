@@ -292,7 +292,7 @@ export function SwipeToDelete({
           }}
         >
           <div
-            className="flex items-center justify-between px-5 py-3 w-full h-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] sm:rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)]"
+            className="flex items-center justify-between px-5 py-3 w-full h-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] sm:rounded-[24px] "
           >
             {/* Title / Info */}
             <span className="text-[13px] sm:text-sm font-black uppercase tracking-widest text-[var(--color-text)] flex items-center gap-2 truncate pr-2">
@@ -309,7 +309,7 @@ export function SwipeToDelete({
                     onEdit();
                     setIsRevealed(false);
                   }}
-                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] hover:bg-violet-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
+                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-primary)] hover:bg-violet-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all  active:shadow-none"
                   title="Edit"
                 >
                   <Edit2 className="w-5 h-5 stroke-[3px]" />
@@ -321,7 +321,7 @@ export function SwipeToDelete({
                   handleConfirmDelete(e);
                   setIsRevealed(false);
                 }}
-                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-500 hover:bg-red-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-500 hover:bg-red-400 text-white border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all  active:shadow-none"
                 title="Delete"
               >
                 <Trash2 className="w-5 h-5 stroke-[3px]" />
@@ -332,7 +332,7 @@ export function SwipeToDelete({
                   setIsRevealed(false);
                   vibrate([10]);
                 }}
-                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gray-100 hover:bg-[var(--color-surface)] text-[var(--color-text)] border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
+                className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-surfaceHover)] hover:bg-[var(--color-surface)] text-[var(--color-text)] border-2 sm:border-4 border-[var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all  active:shadow-none"
                 title="Cancel"
               >
                 <X className="w-5 h-5 stroke-[3px]" />

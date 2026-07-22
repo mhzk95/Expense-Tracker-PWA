@@ -86,7 +86,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
           {/* Visual Header */}
           <div className="flex flex-col items-center mt-2">
             <div 
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border-2 border-[var(--color-border)] "
               style={{ backgroundColor: baseColor, color: "black" }}
             >
               <IconComp className="w-8 h-8 stroke-[3px]" />
@@ -95,7 +95,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
             
             <div className="flex items-center gap-2 mb-5">
               <span 
-                className="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border-[2.5px] border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-[2px_2px_0px_0px_var(--color-border)]"
+                className="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border-[2.5px] border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] "
                 style={{ backgroundColor: baseColor }}
               >
                 {category?.name || "Uncategorized"}
@@ -114,11 +114,11 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
           </div>
 
           {/* Payment Method Block */}
-          <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer">
+          <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-2 border-[var(--color-border)]  active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer">
             <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] mb-3 block">Payment Method</span>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)] flex items-center justify-center text-white border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)] flex items-center justify-center text-white border-2 border-[var(--color-border)] ">
                   <CreditCard className="w-6 h-6 stroke-[2.5px]" />
                 </div>
                 <div>
@@ -132,14 +132,14 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
 
           {/* Metadata Block */}
           <div className="grid grid-cols-2 gap-3">
-             <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+             <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-2 border-[var(--color-border)] ">
                 <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-1">Transaction ID</span>
                 <span className="text-sm text-[var(--color-text)] font-bold uppercase">TXN_{txn.id.substring(0,8).toUpperCase()}</span>
              </div>
-             <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+             <div className="bg-[var(--color-surface)] rounded-[20px] p-4 border-2 border-[var(--color-border)] ">
                 <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-1">Status</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className={cn("w-3 h-3 rounded-full border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]", txn.needsReview ? "bg-amber-400" : "bg-emerald-400")} />
+                  <div className={cn("w-3 h-3 rounded-full border-2 border-[var(--color-border)] ", txn.needsReview ? "bg-amber-400" : "bg-emerald-400")} />
                   <span className="text-sm text-[var(--color-text)] font-black uppercase tracking-wide">{txn.needsReview ? "Needs Review" : "Completed"}</span>
                 </div>
              </div>
@@ -147,7 +147,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
 
           {/* Geolocation Block */}
           {locDisplay && (
-            <div className="bg-[var(--color-surface)] rounded-[20px] overflow-hidden border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+            <div className="bg-[var(--color-surface)] rounded-[20px] overflow-hidden border-2 border-[var(--color-border)] ">
               <div className="p-4 border-b-[3px] border-[var(--color-border)] flex items-start gap-3 bg-[var(--color-surface)]">
                  <div className="mt-0.5 text-[var(--color-text)]"><MapPin className="w-5 h-5 stroke-[2.5px]" /></div>
                  <div>
@@ -155,7 +155,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
                    <p className="text-sm font-bold text-[var(--color-text)] uppercase">{locDisplay}</p>
                  </div>
               </div>
-              <div className="h-24 bg-gray-100 w-full relative overflow-hidden group cursor-pointer flex items-center justify-center">
+              <div className="h-24 bg-[var(--color-surfaceHover)] w-full relative overflow-hidden group cursor-pointer flex items-center justify-center">
                  <div className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">Tap to view map</div>
               </div>
             </div>
@@ -166,7 +166,7 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
             <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-2 pl-1">Notes</span>
             <div className="relative">
               <textarea 
-                className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] p-4 text-sm font-bold text-[var(--color-text)] placeholder-gray-500 outline-none focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:-translate-x-1 focus:-translate-y-1 shadow-[4px_4px_0px_0px_var(--color-border)] resize-none transition-all"
+                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px] p-4 text-sm font-bold text-[var(--color-text)] placeholder-gray-500 outline-none focus: focus:-translate-x-1 focus:-translate-y-1  resize-none transition-all"
                 placeholder="Add notes about this transaction..."
                 rows={3}
                 defaultValue={txn.note || ""}
@@ -176,23 +176,23 @@ export function TransactionDetailSheet({ txn, onClose }: Props) {
 
           {/* Bottom Action Row */}
           <div className="flex items-center gap-3 overflow-x-auto scrollbar-none pb-4 pt-2">
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)]  hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               <Receipt className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
               Attach Receipt
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)]  hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               <Split className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
               Split
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)]  hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               <Tag className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
               Re-Categorize
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)]  hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               <Flag className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
               Flag
             </button>
-            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+            <button className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)]  hover:bg-[var(--color-bg)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all shrink-0 text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               <Repeat className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
               Repeat
             </button>

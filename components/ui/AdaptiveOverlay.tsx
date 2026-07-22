@@ -57,7 +57,7 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
         {/* Tilted background shadow only for centered modals */}
         {!isBottomSheet && (
           <>
-            <div className="absolute inset-0 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] rounded-[var(--radius-theme-card)] translate-x-2 translate-y-2 z-0" />
+            <div className="absolute inset-0 bg-[var(--color-primary)] border-2 border-[var(--color-border)] rounded-[var(--radius-theme-card)] translate-x-2 translate-y-2 z-0" />
             <div className="absolute inset-0 bg-[var(--color-border)] translate-x-2 translate-y-2 rounded-[var(--radius-theme-card)] z-0" />
           </>
         )}

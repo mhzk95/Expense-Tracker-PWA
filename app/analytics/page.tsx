@@ -19,8 +19,8 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <PageHeader title="Analytics" subtitle="Loading insights..." />
         <div className="animate-pulse flex flex-col gap-6">
-          <div className="h-40 bg-gray-200 border-4 border-gray-300 rounded-[24px]" />
-          <div className="h-64 bg-gray-200 border-4 border-gray-300 rounded-[24px]" />
+          <div className="h-40 bg-[var(--color-surfaceHover)] border-4 border-gray-300 rounded-[24px]" />
+          <div className="h-64 bg-[var(--color-surfaceHover)] border-4 border-gray-300 rounded-[24px]" />
         </div>
       </div>
     );
@@ -75,7 +75,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-2 gap-4">
         <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-success,#10b981)]">
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
               <TrendingUp className="h-4 w-4 stroke-[3px] text-emerald-500" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Income</span>
@@ -85,7 +85,7 @@ export default function AnalyticsPage() {
 
         <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-danger,#ef4444)]">
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
               <TrendingDown className="h-4 w-4 stroke-[3px] text-red-500" />
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Expenses</span>
@@ -96,7 +96,7 @@ export default function AnalyticsPage() {
 
       <Card variant="surface" className="p-4 flex items-center justify-between border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)]">
         <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Net Cash Flow</span>
-        <span className={`text-xl font-display font-black tabular-nums tracking-tighter px-3 py-1 border-2 border-[var(--color-border)] rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)] ${netCashFlow >= 0 ? 'bg-emerald-400 text-black' : 'bg-red-400 text-black'}`}>
+        <span className={`text-xl font-display font-black tabular-nums tracking-tighter px-3 py-1 border-2 border-[var(--color-border)] rounded-xl  ${netCashFlow >= 0 ? 'bg-emerald-400 text-black' : 'bg-red-400 text-black'}`}>
           {netCashFlow > 0 ? "+" : ""}{formatCurrency(netCashFlow)}
         </span>
       </Card>

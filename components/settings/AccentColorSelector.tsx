@@ -32,7 +32,7 @@ export function AccentColorSelector() {
       <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
         Accent Color
       </h2>
-      <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-4">
+      <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {ACCENTS.map((accent) => {
             const isActive = activeAccent === accent.id;
@@ -42,12 +42,12 @@ export function AccentColorSelector() {
                 onClick={() => handleAccentChange(accent.id)}
                 className={cn(
                   "flex flex-col items-center gap-2 p-3 rounded-[12px] transition-all border-2",
-                  isActive ? "bg-gray-100 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] translate-x-[-2px] translate-y-[-2px]" : "border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                  isActive ? "bg-[var(--color-surfaceHover)] border-[var(--color-border)]  translate-x-[-2px] translate-y-[-2px]" : "border-transparent hover:border-[var(--color-border)] hover:"
                 )}
               >
                 {/* Color Dot */}
                 <div
-                  className="h-10 w-10 rounded-[8px] border-2 border-[var(--color-border)] flex items-center justify-center transition-transform active:scale-95 relative shadow-[2px_2px_0px_0px_var(--color-border)]"
+                  className="h-10 w-10 rounded-[8px] border-2 border-[var(--color-border)] flex items-center justify-center transition-transform active:scale-95 relative "
                   style={{
                     backgroundColor: accent.hex,
                   }}

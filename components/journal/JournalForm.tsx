@@ -330,9 +330,9 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
             <button
               type="button"
               onClick={recorder.start}
-              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-black text-[var(--color-text)] hover:bg-gray-100 transition-colors rounded-xl"
+              className="w-full flex flex-col items-center justify-center gap-2 py-2 text-sm font-black text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] transition-colors rounded-xl"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center border-2 border-[var(--color-border)] ">
                 <Mic className="w-6 h-6 text-white stroke-[3px]" />
               </div>
               <span className="text-[11px] uppercase tracking-widest mt-1">Record a voice note</span>
@@ -361,7 +361,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
                 <button
                   type="button"
                   onClick={recorder.stop}
-                  className="w-14 h-14 rounded-full bg-red-400 hover:bg-red-500 flex items-center justify-center border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
+                  className="w-14 h-14 rounded-full bg-red-400 hover:bg-red-500 flex items-center justify-center border-2 border-[var(--color-border)]  active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
                 >
                   <Square className="w-5 h-5 text-[var(--color-text)] fill-black" />
                 </button>
@@ -383,7 +383,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
               <button
                 type="button"
                 onClick={togglePlayback}
-                className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+                className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border-2 border-[var(--color-border)]  active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               >
                 {isPlayingBack ? <Pause className="w-4 h-4 text-white fill-white" /> : <Play className="w-4 h-4 text-white fill-white ml-0.5" />}
               </button>
@@ -443,7 +443,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           <button
             type="submit"
             disabled={isSubmitting || (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0)}
-            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
+            className="w-full bg-[var(--color-primary)] text-white font-black uppercase tracking-widest rounded-xl py-4 border-2 border-[var(--color-border)]  transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none"
           >
             <Lock className="w-5 h-5 text-white stroke-[2.5px]" />
             {isSubmitting ? "Saving memory..." : "Save Memory"}

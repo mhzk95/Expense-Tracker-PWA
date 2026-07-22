@@ -106,7 +106,7 @@ export default function SettingsPage() {
           <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
             {section.title}
           </h2>
-          <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] divide-y-2 divide-black overflow-hidden">
+          <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] divide-y-2 divide-[var(--color-border)] overflow-hidden">
             {section.items.map((item) => {
               const Icon = item.icon;
               return (
@@ -114,9 +114,9 @@ export default function SettingsPage() {
                   key={item.id}
                   id={`settings-${item.id}-btn`}
                   onClick={() => setActiveModal(item.id as "currency")}
-                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-100 transition-colors text-left group"
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-[var(--color-surfaceHover)] transition-colors text-left group"
                 >
-                  <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_var(--color-border)]">
+                  <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center flex-shrink-0  transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:">
                     <Icon className="h-5 w-5 stroke-[2.5px] text-[var(--color-text)]" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -136,10 +136,10 @@ export default function SettingsPage() {
           <h2 className="text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest px-1">
             Device
           </h2>
-          <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] overflow-hidden">
+          <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-4">
-                <div className={`h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center flex-shrink-0 transition-colors ${notificationPermission === "granted" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text)]"}`}>
+                <div className={`h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-[var(--color-border)]  flex items-center justify-center flex-shrink-0 transition-colors ${notificationPermission === "granted" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text)]"}`}>
                   <Bell className={`h-5 w-5 stroke-[2.5px] ${notificationPermission === "granted" ? "text-white" : "text-[var(--color-text)]"}`} />
                 </div>
                 <div>
@@ -157,7 +157,7 @@ export default function SettingsPage() {
               ) : (
                 <button 
                   onClick={requestNotificationPermission}
-                  className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
+                  className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover: border-2 border-[var(--color-border)]  text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
                 >
                   Enable
                 </button>
@@ -172,7 +172,7 @@ export default function SettingsPage() {
           <ShieldAlert className="w-4 h-4 stroke-[3px] text-red-500" />
           Security
         </h2>
-        <div className="bg-red-50 border-[3px] border-red-500 rounded-[16px] shadow-[4px_4px_0px_0px_#ef4444] overflow-hidden">
+        <div className="bg-red-50 border-2 border-red-500 rounded-[16px]  overflow-hidden">
           <button
             onClick={() => {
               if (confirm("Are you sure? This will delete all encrypted data in your vault and reset biometrics/PIN.")) {
@@ -182,7 +182,7 @@ export default function SettingsPage() {
             }}
             className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-100 transition-colors text-left group"
           >
-            <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-red-500 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#ef4444] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#ef4444]">
+            <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-red-500 flex items-center justify-center flex-shrink-0  transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:">
               <Lock className="h-5 w-5 stroke-[2.5px] text-red-600" />
             </div>
             <div className="flex-1 min-w-0">
@@ -198,7 +198,7 @@ export default function SettingsPage() {
           <Database className="w-4 h-4 stroke-[3px] text-red-500" />
           Developer Options
         </h2>
-        <div className="bg-red-50 border-[3px] border-red-500 rounded-[16px] shadow-[4px_4px_0px_0px_#ef4444] overflow-hidden">
+        <div className="bg-red-50 border-2 border-red-500 rounded-[16px]  overflow-hidden">
           <button
             onClick={async () => {
               if (confirm("WARNING: This will clear all local data, caches, and unregister Service Workers. You will be logged out. Are you absolutely sure?")) {
@@ -240,7 +240,7 @@ export default function SettingsPage() {
             }}
             className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-100 transition-colors text-left group"
           >
-            <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-red-500 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#ef4444] transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#ef4444]">
+            <div className="h-10 w-10 rounded-[10px] bg-[var(--color-surface)] border-2 border-red-500 flex items-center justify-center flex-shrink-0  transition-colors group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:">
               <Trash2 className="h-5 w-5 stroke-[2.5px] text-red-600" />
             </div>
             <div className="flex-1 min-w-0">
@@ -261,8 +261,8 @@ export default function SettingsPage() {
             <button
               key={c}
               onClick={() => handleCurrencyChange(c)}
-              className={`w-full text-left px-5 py-4 rounded-[16px] transition-all border-[3px] font-black uppercase tracking-widest ${
-                currency === c ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]" : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_var(--color-border)]"
+              className={`w-full text-left px-5 py-4 rounded-[16px] transition-all border-2 font-black uppercase tracking-widest ${
+                currency === c ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] " : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]  hover:translate-x-[-1px] hover:translate-y-[-1px] hover:"
               }`}
             >
               <div className="flex justify-between items-center">

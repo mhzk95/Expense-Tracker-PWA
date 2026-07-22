@@ -261,8 +261,8 @@ function ResearchContent() {
         subtitle={searchQuery ? `${displayedItems.length} matches` : (activeTopicId ? `${displayedItems.length} items` : `${items.filter(i => !i.topicId).length} in Inbox`)}
         action={
           <div className="flex gap-2">
-            <button onClick={() => setView("grid")} className={`p-2 rounded-xl border-[3px] border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)] ${view === "grid" ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100"}`}><LayoutGrid className="h-5 w-5 stroke-[2.5px]" /></button>
-            <button onClick={() => setView("list")} className={`p-2 rounded-xl border-[3px] border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)] ${view === "list" ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-gray-100"}`}><List className="h-5 w-5 stroke-[2.5px]" /></button>
+            <button onClick={() => setView("grid")} className={`p-2 rounded-xl border-2 border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none ${view === "grid" ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"}`}><LayoutGrid className="h-5 w-5 stroke-[2.5px]" /></button>
+            <button onClick={() => setView("list")} className={`p-2 rounded-xl border-2 border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none ${view === "list" ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"}`}><List className="h-5 w-5 stroke-[2.5px]" /></button>
           </div>
         }
       />
@@ -285,16 +285,16 @@ function ResearchContent() {
       </div>
 
       {!searchQuery && !activeTopicId && (
-        <div className="flex bg-gray-100 border-[3px] border-[var(--color-border)] rounded-[16px] p-1 mb-6 shadow-[4px_4px_0px_0px_var(--color-border)]">
+        <div className="flex bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-[16px] p-1 mb-6">
           <button
             onClick={() => setActiveTab("inbox")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[12px] text-sm font-black uppercase tracking-widest transition-all ${activeTab === "inbox" ? "bg-[var(--color-primary)] border-2 border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-gray-500 hover:text-[var(--color-text)] border-2 border-transparent"}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[12px] text-sm font-black uppercase tracking-widest transition-all ${activeTab === "inbox" ? "bg-[var(--color-primary)] border-2 border-[var(--color-border)] text-white " : "text-gray-500 hover:text-[var(--color-text)] border-2 border-transparent"}`}
           >
             <Inbox className="h-5 w-5 stroke-[2.5px]" /> Inbox
           </button>
           <button
             onClick={() => setActiveTab("topics")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[12px] text-sm font-black uppercase tracking-widest transition-all ${activeTab === "topics" ? "bg-[var(--color-primary)] border-2 border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-gray-500 hover:text-[var(--color-text)] border-2 border-transparent"}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[12px] text-sm font-black uppercase tracking-widest transition-all ${activeTab === "topics" ? "bg-[var(--color-primary)] border-2 border-[var(--color-border)] text-white " : "text-gray-500 hover:text-[var(--color-text)] border-2 border-transparent"}`}
           >
             <Folder className="h-5 w-5 stroke-[2.5px]" /> Topics
           </button>
@@ -302,7 +302,7 @@ function ResearchContent() {
       )}
 
       {!searchQuery && activeTopicId && (
-        <button onClick={() => setActiveTopicId(null)} className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[var(--color-text)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] px-4 py-2 rounded-xl hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all mb-4 w-fit">
+        <button onClick={() => setActiveTopicId(null)} className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[var(--color-text)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] px-4 py-2 rounded-xl hover:bg-[var(--color-surfaceHover)]  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all mb-4 w-fit">
           <ChevronLeft className="h-4 w-4 stroke-[3px]" /> Back to Topics
         </button>
       )}
@@ -311,14 +311,14 @@ function ResearchContent() {
       {!searchQuery && activeTab === "topics" && !activeTopicId && (
         <div className="grid grid-cols-2 gap-4">
           {isCreatingTopic ? (
-            <div className="flex flex-col items-center justify-center p-4 bg-[var(--color-primary)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)]">
+            <div className="flex flex-col items-center justify-center p-4 bg-[var(--color-primary)] border-2 border-[var(--color-border)] rounded-[16px]">
               <input
                 autoFocus
                 type="text"
                 value={newTopicName}
                 onChange={e => setNewTopicName(e.target.value)}
                 placeholder="Topic Name..."
-                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm font-black text-center placeholder-gray-500 mb-2 px-3 py-2 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm font-black text-center placeholder-gray-500 mb-2 px-3 py-2 outline-none focus:"
                 onKeyDown={e => {
                   if (e.key === "Enter" && newTopicName.trim()) {
                     addTopic({ id: crypto.randomUUID(), title: newTopicName.trim(), status: "active" });
@@ -335,7 +335,7 @@ function ResearchContent() {
             </div>
           ) : (
             <button onClick={() => setIsCreatingTopic(true)} className="flex flex-col items-center justify-center p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] border-dashed rounded-[16px] active:translate-x-1 active:translate-y-1 hover:bg-[var(--color-bg)] transition-all group">
-              <div className="h-10 w-10 rounded-xl border-2 border-[var(--color-border)] bg-gray-100 flex items-center justify-center group-hover:bg-[var(--color-primary)] text-[var(--color-text)] group-hover:text-white mb-2 transition-colors shadow-[2px_2px_0px_0px_var(--color-border)]">
+              <div className="h-10 w-10 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surfaceHover)] flex items-center justify-center group-hover:bg-[var(--color-primary)] text-[var(--color-text)] group-hover:text-white mb-2 transition-colors ">
                 <FolderPlus className="h-5 w-5 stroke-[2.5px]" />
               </div>
               <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">New Topic</span>
@@ -345,8 +345,8 @@ function ResearchContent() {
           {topics.map(topic => {
             const count = items.filter(i => i.topicId === topic.id && !i.isArchived).length;
             return (
-              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[var(--color-primary)] hover:text-white transition-all text-left group">
-                <div className="p-2 bg-gray-100 border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-xl mb-3 shadow-[2px_2px_0px_0px_var(--color-border)] group-hover:bg-[var(--color-surface)] group-hover:text-[var(--color-primary)]">
+              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[var(--color-primary)] hover:text-white transition-all text-left group">
+                <div className="p-2 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-xl mb-3  group-hover:bg-[var(--color-surface)] group-hover:text-[var(--color-primary)]">
                   <Folder className="h-5 w-5 stroke-[2.5px]" />
                 </div>
                 <h3 className="text-[var(--color-text)] group-hover:text-white font-black text-sm uppercase tracking-wide mb-1 line-clamp-1">{topic.title}</h3>
@@ -382,26 +382,26 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-4 sm:mb-5 w-full" : "w-full"} relative group bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none flex flex-col justify-between transition-all duration-300 !overflow-visible ${item.isPinned ? 'ring-2 ring-black bg-[var(--color-primary)]' : ''}`}>
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-4 sm:mb-5 w-full" : "w-full"} relative group bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none flex flex-col justify-between transition-all duration-300 !overflow-visible ${item.isPinned ? 'ring-2 ring-black bg-[var(--color-primary)]' : ''}`}>
 
                         {/* Action Menu Toggle (Mobile & Hover) */}
                         <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
                           <button 
                             onClick={(e) => { e.preventDefault(); setOpenMenuId(openMenuId === item.id ? null : item.id); }}
-                            className={`p-1.5 rounded-lg border-2 border-transparent transition-all ${item.isPinned ? 'text-white hover:border-white hover:bg-black/20' : 'text-[var(--color-text)] hover:border-[var(--color-border)] hover:bg-gray-100'}`}
+                            className={`p-1.5 rounded-lg border-2 border-transparent transition-all ${item.isPinned ? 'text-white hover:border-white hover:bg-black/20' : 'text-[var(--color-text)] hover:border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]'}`}
                           >
                             <MoreHorizontal className="h-5 w-5 stroke-[2.5px]" />
                           </button>
 
                           {openMenuId === item.id && (
-                            <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--color-surface)] border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-[16px] overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[16px] overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
                               <button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   updateItem(item.id, { isPinned: !item.isPinned });
                                   setOpenMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-gray-100 text-[var(--color-text)] transition-colors"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-[var(--color-surfaceHover)] text-[var(--color-text)] transition-colors"
                               >
                                 <Pin className="h-4 w-4 stroke-[3px]" /> {item.isPinned ? "Unpin Item" : "Pin Item"}
                               </button>
@@ -412,7 +412,7 @@ function ResearchContent() {
                                   setIsEditingDetails(true);
                                   setOpenMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-gray-100 text-[var(--color-text)] transition-colors"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-[var(--color-surfaceHover)] text-[var(--color-text)] transition-colors"
                               >
                                 <FileText className="h-4 w-4 stroke-[3px]" /> Edit / Move
                               </button>
@@ -435,7 +435,7 @@ function ResearchContent() {
                                   }
                                   setOpenMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-gray-100 text-[var(--color-text)] transition-colors"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest hover:bg-[var(--color-surfaceHover)] text-[var(--color-text)] transition-colors"
                               >
                                 <Bell className="h-4 w-4 stroke-[3px]" /> Add Reminder
                               </button>
@@ -467,7 +467,7 @@ function ResearchContent() {
                         <div className="p-3 sm:p-4">
                           <div className="flex items-center gap-2 mb-2 sm:mb-3 pr-12 sm:pr-16">
                             {item.domain && (
-                              <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden bg-gray-100 border-2 border-[var(--color-border)] px-1.5 py-0.5 rounded-[6px] shadow-[1px_1px_0px_0px_var(--color-border)]">
+                              <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] px-1.5 py-0.5 rounded-[6px] shadow-[1px_1px_0px_0px_var(--color-border)]">
                                 <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-3 h-3 rounded-[3px]" alt="" />
                                 <span className="text-[9px] sm:text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest truncate">{item.domain}</span>
                               </div>
@@ -503,7 +503,7 @@ function ResearchContent() {
 
                           {/* OCR Text Display */}
                           {item.ocrText && (
-                            <div className="mt-3 p-2 bg-gray-100 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                            <div className="mt-3 p-2 bg-[var(--color-surfaceHover)] rounded-lg border-2 border-[var(--color-border)] ">
                               <div className="flex items-center justify-between mb-1.5">
                                 <p className="text-[9px] text-[var(--color-text)] uppercase font-black tracking-widest flex items-center gap-1"><FileText className="h-3 w-3 stroke-[2.5px]" /> Extracted Text</p>
                                 <CopyButton text={item.ocrText || ""} />
@@ -514,7 +514,7 @@ function ResearchContent() {
 
                           {item.url && isLink && (
                             <div className="flex items-center gap-2 mt-4">
-                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] border-2 border-[var(--color-border)] px-4 py-2 rounded-xl transition-all shadow-[4px_4px_0px_0px_var(--color-border)]">
+                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover: border-2 border-[var(--color-border)] px-4 py-2 rounded-xl transition-all">
                                 Visit Link <ExternalLink className="h-4 w-4 stroke-[3px]" />
                               </a>
                               <CopyButton text={item.url || ""} />
@@ -530,14 +530,14 @@ function ResearchContent() {
                                   <button
                                     key={t.id}
                                     onClick={() => updateItem(item.id, { topicId: t.id })}
-                                    className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest px-3 py-1.5 bg-gray-100 hover:bg-[var(--color-primary)] text-[var(--color-text)] hover:text-white border-2 border-[var(--color-border)] rounded-[8px] transition-all shadow-[2px_2px_0px_0px_var(--color-border)]"
+                                    className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest px-3 py-1.5 bg-[var(--color-surfaceHover)] hover:bg-[var(--color-primary)] text-[var(--color-text)] hover:text-white border-2 border-[var(--color-border)] rounded-[8px] transition-all "
                                   >
                                     {t.title} <ArrowRight className="h-3 w-3 stroke-[3px] opacity-80" />
                                   </button>
                                 ))}
                                 {topics.length > suggestedTopics.length && (
                                   <select
-                                    className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-widest text-[var(--color-text)] rounded-[8px] px-2 py-1.5 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                                    className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-widest text-[var(--color-text)] rounded-[8px] px-2 py-1.5 outline-none focus:"
                                     value=""
                                     onChange={(e) => updateItem(item.id, { topicId: e.target.value })}
                                   >
@@ -606,18 +606,18 @@ function ResearchContent() {
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse border-2 border-[var(--color-border)]" />
                   Link Saved Instantly
                 </span>
-                <button onClick={closeShareModal} className="p-1.5 bg-[var(--color-surface)] hover:bg-gray-200 border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-lg transition-all active:translate-x-0.5 active:translate-y-0.5">
+                <button onClick={closeShareModal} className="p-1.5 bg-[var(--color-surface)] hover:bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-lg transition-all active:translate-x-0.5 active:translate-y-0.5">
                   <X className="h-5 w-5 stroke-[3px]" />
                 </button>
               </div>
 
               <div className="flex items-start gap-3">
                 {shareItem.imageUrl ? (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] ">
                     <img src={shareItem.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 ) : (
-                  <div className="p-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] text-[var(--color-text)] rounded-xl shrink-0 mt-1">
+                  <div className="p-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)]  text-[var(--color-text)] rounded-xl shrink-0 mt-1">
                     <Link2 className="h-6 w-6 stroke-[2.5px]" />
                   </div>
                 )}
@@ -627,7 +627,7 @@ function ResearchContent() {
                       <div className="w-full space-y-2">
                         <input
                           type="text"
-                          className="w-full border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-sm font-bold text-[var(--color-text)] focus:shadow-[2px_2px_0px_0px_var(--color-border)] outline-none"
+                          className="w-full border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-sm font-bold text-[var(--color-text)] focus: outline-none"
                           value={shareItem.title || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, title: e.target.value });
@@ -637,7 +637,7 @@ function ResearchContent() {
                         />
                         <input
                           type="text"
-                          className="w-full border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-sm font-bold text-[var(--color-text)] focus:shadow-[2px_2px_0px_0px_var(--color-border)] outline-none"
+                          className="w-full border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-sm font-bold text-[var(--color-text)] focus: outline-none"
                           value={shareItem.imageUrl || ""}
                           onChange={(e) => {
                             setShareItem({ ...shareItem, imageUrl: e.target.value });
@@ -675,7 +675,7 @@ function ResearchContent() {
                       updateItem(shareItem.id, { topicId: undefined });
                       closeShareModal();
                     }}
-                    className="px-3 py-1.5 bg-gray-100 text-[var(--color-text)] hover:bg-gray-200 rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                    className="px-3 py-1.5 bg-[var(--color-surfaceHover)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-[var(--color-border)]  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                   >
                     Leave in Inbox
                   </button>
@@ -686,7 +686,7 @@ function ResearchContent() {
                         updateItem(shareItem.id, { topicId: t.id });
                         closeShareModal();
                       }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white rounded-lg text-xs font-black uppercase tracking-widest transition-colors border-2 border-[var(--color-border)]  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                     >
                       <Folder className="h-4 w-4 stroke-[2.5px]" />
                       {t.title}
@@ -694,7 +694,7 @@ function ResearchContent() {
                   ))}
                   {topics.length > getSuggestedTopics(shareItem.title, shareItem.content).length && (
                     <select
-                      className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-widest text-[var(--color-text)] rounded-lg px-2 py-1.5 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                      className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-widest text-[var(--color-text)] rounded-lg px-2 py-1.5 outline-none focus:"
                       value=""
                       onChange={(e) => {
                         updateItem(shareItem.id, { topicId: e.target.value });
@@ -717,7 +717,7 @@ function ResearchContent() {
                 </div>
                 <textarea
                   placeholder="Content or notes..."
-                  className="w-full h-24 border-2 border-[var(--color-border)] rounded-xl p-3 text-sm font-bold text-[var(--color-text)] focus:shadow-[4px_4px_0px_0px_var(--color-border)] outline-none resize-none"
+                  className="w-full h-24 border-2 border-[var(--color-border)] rounded-xl p-3 text-sm font-bold text-[var(--color-text)] focus: outline-none resize-none"
                   value={shareItem.content || ""}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -735,7 +735,7 @@ function ResearchContent() {
                 </div>
                 <textarea
                   placeholder="Paste or extract any text from image..."
-                  className="w-full h-16 border-2 border-[var(--color-border)] rounded-xl p-3 text-sm font-bold text-[var(--color-text)] focus:shadow-[4px_4px_0px_0px_var(--color-border)] outline-none resize-none"
+                  className="w-full h-16 border-2 border-[var(--color-border)] rounded-xl p-3 text-sm font-bold text-[var(--color-text)] focus: outline-none resize-none"
                   value={shareItem.ocrText || ""}
                   onChange={(e) => {
                     setShareItem({ ...shareItem, ocrText: e.target.value });
@@ -744,7 +744,7 @@ function ResearchContent() {
                 />
               </div>
 
-              <button onClick={closeShareModal} className="w-full py-3 bg-[var(--color-primary)] hover:brightness-110 text-white border-[3px] border-[var(--color-border)] rounded-[16px] font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+              <button onClick={closeShareModal} className="w-full py-3 bg-[var(--color-primary)] hover:brightness-110 text-white border-2 border-[var(--color-border)] rounded-[16px] font-black uppercase tracking-widest active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                 Done
               </button>
             </div>
@@ -764,25 +764,25 @@ function ResearchSkeleton() {
       {/* Header Skeleton */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="h-8 w-48 bg-gray-200 rounded-xl mb-2" />
-          <div className="h-4 w-32 bg-gray-200 rounded-lg" />
+          <div className="h-8 w-48 bg-[var(--color-surfaceHover)] rounded-xl mb-2" />
+          <div className="h-4 w-32 bg-[var(--color-surfaceHover)] rounded-lg" />
         </div>
         <div className="flex gap-2">
-          <div className="h-9 w-9 bg-gray-200 rounded-xl" />
-          <div className="h-9 w-9 bg-gray-200 rounded-xl" />
+          <div className="h-9 w-9 bg-[var(--color-surfaceHover)] rounded-xl" />
+          <div className="h-9 w-9 bg-[var(--color-surfaceHover)] rounded-xl" />
         </div>
       </div>
 
       {/* Search Bar Skeleton */}
-      <div className="h-12 w-full bg-gray-200 rounded-2xl" />
+      <div className="h-12 w-full bg-[var(--color-surfaceHover)] rounded-2xl" />
 
       {/* Tab Switcher Skeleton */}
-      <div className="h-10 w-full bg-gray-200 rounded-xl" />
+      <div className="h-10 w-full bg-[var(--color-surfaceHover)] rounded-xl" />
 
       {/* Grid items skeleton */}
       <div className="grid grid-cols-2 gap-4">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="h-32 bg-gray-200 rounded-2xl border-2 border-gray-300" />
+          <div key={i} className="h-32 bg-[var(--color-surfaceHover)] rounded-2xl border-2 border-gray-300" />
         ))}
       </div>
     </div>

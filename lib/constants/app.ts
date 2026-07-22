@@ -82,13 +82,7 @@ export const NAV_ITEMS = [
     icon: "Link2",
     description: "Web clipper and research collections",
   },
-  {
-    id: "reminders",
-    label: "Reminders",
-    href: "/reminders",
-    icon: "Bell",
-    description: "Action items and tasks",
-  },
+
   {
     id: "settings",
     label: "Settings",

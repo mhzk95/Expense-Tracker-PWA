@@ -62,14 +62,14 @@ export function VaultForm({ onSuccess, onCancel }: VaultFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-3 text-[var(--color-text)] font-black uppercase tracking-widest text-xs bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[12px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-gray-100 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+          className="flex-1 py-3 text-[var(--color-text)] font-black uppercase tracking-widest text-xs bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[12px]  hover:bg-[var(--color-surfaceHover)] hover:translate-x-0.5 hover:translate-y-0.5 hover: active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting || !title.trim() || !secretContent.trim()}
-          className="flex-1 bg-emerald-400 hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase tracking-widest text-xs border-2 border-[var(--color-border)] rounded-[12px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 py-3"
+          className="flex-1 bg-emerald-400 hover:bg-emerald-300 text-[var(--color-text)] font-black uppercase tracking-widest text-xs border-2 border-[var(--color-border)] rounded-[12px]  hover:translate-x-0.5 hover:translate-y-0.5 hover: active:translate-x-1 active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 py-3"
         >
           {isSubmitting ? "Encrypting..." : "Save Securely"}
         </button>

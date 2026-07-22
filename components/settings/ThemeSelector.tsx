@@ -130,7 +130,7 @@ export function ThemeSelector() {
           ].map((c) => (
             <div key={c.label} className="flex flex-col items-center gap-1.5 flex-shrink-0">
               <div 
-                className="w-10 h-10 rounded-full border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" 
+                className="w-10 h-10 rounded-full border-2 border-[var(--color-border)] " 
                 style={{ background: c.color }}
               />
               <span className="text-[9px] font-black text-[var(--color-text)] uppercase tracking-widest">{c.label}</span>

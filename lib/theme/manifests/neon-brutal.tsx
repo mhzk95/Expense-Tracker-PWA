@@ -26,11 +26,11 @@ export const neonBrutalTheme: ThemeManifest = {
   capabilities: { layoutDensity: "comfortable", motion: "full" },
   tokens: {
     colors: {
-      background: "#0f1014", // Very dark navy/grey void
-      surface: "#16181d",
-      surfaceHover: "#1d2027",
+      background: "#0a0b10", // Very dark navy/grey void
+      surface: "#131620", // Slightly lighter for cards
+      surfaceHover: "#1c212e",
       text: "#ffffff",
-      border: "#27272a" // Subtle border for unaccented surfaces
+      border: "#334155" // Subtle gray border
     },
     shapes: {
       radiusBase: "16px",

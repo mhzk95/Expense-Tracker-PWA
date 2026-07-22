@@ -405,7 +405,7 @@ export default function TransactionsPage() {
               className="overflow-hidden"
             >
               <div className="pt-3">
-                <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] p-5 space-y-5 shadow-[4px_4px_0px_0px_var(--color-border)]">
+                <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px] p-5 space-y-5 ">
                   {/* Type filter */}
                   <div>
                     <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Type</span>
@@ -422,8 +422,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedType === opt.value
-                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
-                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
                         >
                           {opt.label}
@@ -448,8 +448,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedDateRange === opt.value
-                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
-                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
                         >
                           {opt.label}
@@ -467,8 +467,8 @@ export default function TransactionsPage() {
                         className={cn(
                           "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                           selectedCategory === null
-                            ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]"
-                            : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
+                            ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                            : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                         )}
                       >
                         All Categories
@@ -480,8 +480,8 @@ export default function TransactionsPage() {
                           className={cn(
                             "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
                             selectedCategory === cat.id
-                              ? "border-[var(--color-border)] text-[var(--color-text)] shadow-[2px_2px_0px_0px_var(--color-border)]"
-                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
+                              ? "border-[var(--color-border)] text-[var(--color-text)] "
+                              : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
                           style={selectedCategory === cat.id ? { backgroundColor: cat.color } : {}}
                         >
@@ -517,13 +517,13 @@ export default function TransactionsPage() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
-              <div className="h-12 w-12 rounded-xl bg-gray-200 border-2 border-[var(--color-border)]" />
+            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-[var(--color-surface)] border-2 border-[var(--color-border)] ">
+              <div className="h-12 w-12 rounded-xl bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)]" />
               <div className="flex-1 space-y-1.5">
-                <div className="h-4 w-24 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
-                <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
+                <div className="h-4 w-24 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-full" />
+                <div className="h-3 w-16 bg-[var(--color-surfaceHover)] border border-[var(--color-border)] rounded-full" />
               </div>
-              <div className="h-4 w-12 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+              <div className="h-4 w-12 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-full" />
             </div>
           ))}
         </div>
@@ -778,7 +778,7 @@ export default function TransactionsPage() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-[84px] inset-x-4 z-40 bg-[var(--color-primary)] border-4 border-[var(--color-border)] rounded-[24px] p-4 shadow-[6px_6px_0px_0px_var(--color-border)] flex items-center justify-between gap-3 max-w-md mx-auto"
+            className="fixed bottom-[84px] inset-x-4 z-40 bg-[var(--color-primary)] border-4 border-[var(--color-border)] rounded-[24px] p-4  flex items-center justify-between gap-3 max-w-md mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col">
@@ -790,7 +790,7 @@ export default function TransactionsPage() {
               {/* Mark as Reviewed */}
               <button
                 onClick={handleBulkMarkReviewed}
-                className="flex items-center justify-center p-3 rounded-xl bg-amber-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-amber-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="flex items-center justify-center p-3 rounded-xl bg-amber-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-amber-300  transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                 title="Mark Reviewed"
               >
                 <Check className="h-5 w-5 stroke-[3px]" />
@@ -800,7 +800,7 @@ export default function TransactionsPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowBulkCategoryPicker(!showBulkCategoryPicker)}
-                  className="flex items-center justify-center p-3 rounded-xl bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                  className="flex items-center justify-center p-3 rounded-xl bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]  transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                   title="Change Category"
                 >
                   <Tag className="h-5 w-5 stroke-[2.5px]" />
@@ -812,14 +812,14 @@ export default function TransactionsPage() {
                       initial={{ scale: 0.95, opacity: 0, y: 10 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
                       exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                      className="absolute bottom-16 right-0 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] p-3 shadow-[6px_6px_0px_0px_var(--color-border)] w-56 max-h-56 overflow-y-auto space-y-2 z-50 scrollbar-none"
+                      className="absolute bottom-16 right-0 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px] p-3  w-56 max-h-56 overflow-y-auto space-y-2 z-50 scrollbar-none"
                     >
                       <div className="text-[10px] uppercase font-black tracking-widest text-gray-500 p-1 mb-1">Change Category</div>
                       {categories.map(cat => (
                         <button
                           key={cat.id}
                           onClick={() => handleBulkChangeCategory(cat.id)}
-                          className="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-[var(--color-text)] border-2 border-transparent hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)] transition-all flex items-center gap-3"
+                          className="w-full text-left px-3 py-2 rounded-xl text-sm font-bold text-[var(--color-text)] border-2 border-transparent hover:border-[var(--color-border)] hover: transition-all flex items-center gap-3"
                         >
                           <span className="w-3 h-3 rounded-full border-2 border-[var(--color-border)]" style={{ backgroundColor: cat.color }} />
                           {cat.name}
@@ -833,7 +833,7 @@ export default function TransactionsPage() {
               {/* Bulk Delete */}
               <button
                 onClick={handleBulkDelete}
-                className="flex items-center justify-center p-3 rounded-xl bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-red-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="flex items-center justify-center p-3 rounded-xl bg-red-400 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-red-300  transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                 title="Delete Selected"
               >
                 <Trash2 className="h-5 w-5 stroke-[2.5px]" />
@@ -845,7 +845,7 @@ export default function TransactionsPage() {
                   setSelectedTxIds(new Set());
                   setIsSelectMode(false);
                 }}
-                className="flex items-center justify-center px-4 py-3 rounded-xl bg-gray-200 text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-gray-300 shadow-[2px_2px_0px_0px_var(--color-border)] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none font-bold uppercase tracking-wider ml-1"
+                className="flex items-center justify-center px-4 py-3 rounded-xl bg-[var(--color-surfaceHover)] text-[var(--color-text)] border-2 border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]  transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none font-bold uppercase tracking-wider ml-1"
               >
                 Cancel
               </button>

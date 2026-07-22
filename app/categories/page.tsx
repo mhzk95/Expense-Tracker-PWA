@@ -105,7 +105,7 @@ export default function CategoriesPage() {
                 setIsAdding(true);
                 vibrate([10]);
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-[3px] border-[var(--color-border)] transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transform -rotate-2"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-2 border-[var(--color-border)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
             >
               <Plus className="h-4 w-4 stroke-[3px]" />
               Add New
@@ -143,7 +143,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("expense")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-red-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-red-400 peer-checked:text-white peer-checked: active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Expense
                 </div>
               </label>
@@ -156,7 +156,7 @@ export default function CategoriesPage() {
                   onChange={() => setType("income")}
                   className="peer sr-only"
                 />
-                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-emerald-400 peer-checked:text-white peer-checked:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                <div className="px-3 py-2 text-center text-xs font-black uppercase tracking-widest rounded-xl border-2 border-[var(--color-border)] text-gray-500 peer-checked:bg-emerald-400 peer-checked:text-white peer-checked: active:translate-x-0.5 active:translate-y-0.5 transition-all">
                   Income
                 </div>
               </label>
@@ -179,8 +179,8 @@ export default function CategoriesPage() {
                       }}
                       className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all active:translate-x-0.5 active:translate-y-0.5 border-2 ${
                         isSelected 
-                          ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none" 
-                          : "bg-[var(--color-surface)] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                          ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white  active:shadow-none" 
+                          : "bg-[var(--color-surface)] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:"
                       }`}
                       title={ico.label}
                     >
@@ -204,7 +204,7 @@ export default function CategoriesPage() {
                       vibrate([10]);
                     }}
                     className={`w-8 h-8 rounded-full border-2 transition-all active:scale-90 ${
-                      color.toLowerCase() === c.toLowerCase() ? "border-[var(--color-border)] scale-110 shadow-[2px_2px_0px_0px_var(--color-border)]" : "border-transparent"
+                      color.toLowerCase() === c.toLowerCase() ? "border-[var(--color-border)] scale-110 " : "border-transparent"
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -234,7 +234,7 @@ export default function CategoriesPage() {
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#ffffff"
-                  className="w-20 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] font-bold uppercase outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)] text-center font-mono ml-auto"
+                  className="w-20 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] font-bold uppercase outline-none focus: text-center font-mono ml-auto"
                 />
               </div>
             </div>
@@ -243,13 +243,13 @@ export default function CategoriesPage() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-gray-200 hover:bg-gray-300 rounded-[12px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-surfaceHover)] hover:bg-[var(--color-surfaceHover)] rounded-[12px] border-2 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-[12px] border-2 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
               >
                 {editingId ? "Save Changes" : "Create"}
               </button>
@@ -277,11 +277,11 @@ export default function CategoriesPage() {
                     <Card 
                       key={cat.id}
                       variant="surface"
-                      className="group relative flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 pl-5 sm:pl-6 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--color-border)] transition-all duration-300"
+                      className="group relative flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 pl-5 sm:pl-6 hover:bg-[var(--color-surfaceHover)] transition-all duration-300 overflow-hidden border-2 border-[var(--color-border)]"
                     >
                       {/* Accent Strip */}
                       <div
-                        className="absolute left-0 top-0 bottom-0 w-2.5 rounded-l-[14px] border-r-2 border-[var(--color-border)]"
+                        className="absolute left-0 top-0 bottom-0 w-2.5 border-r-2 border-[var(--color-border)]"
                         style={{ backgroundColor: cat.color || "#94a3b8" }}
                       />
 
@@ -299,7 +299,7 @@ export default function CategoriesPage() {
                             e.stopPropagation();
                             handleEdit(cat);
                           }}
-                          className="p-2 rounded-xl border-2 border-transparent hover:border-[var(--color-border)] hover:bg-gray-100 text-gray-500 hover:text-[var(--color-text)] transition-colors"
+                          className="p-2 rounded-xl border-2 border-transparent hover:border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)] text-gray-500 hover:text-[var(--color-text)] transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4 stroke-[3px]" />
@@ -332,7 +332,7 @@ export default function CategoriesPage() {
             <p className="text-sm font-bold text-gray-500 mb-6">Add your first category to start tracking.</p>
             <button
               onClick={() => setIsAdding(true)}
-              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+              className="px-6 py-3 text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 rounded-xl border-4 border-[var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
             >
               Add Category
             </button>

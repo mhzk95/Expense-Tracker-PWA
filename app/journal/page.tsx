@@ -76,10 +76,10 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] w-fit max-w-full overflow-hidden">
+    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-2 border-[var(--color-border)]  w-fit max-w-full overflow-hidden">
       <button
         onClick={(e) => { e.stopPropagation(); toggle(); }}
-        className="w-8 h-8 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
+        className="w-8 h-8 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all  active:shadow-none"
       >
         {playing
           ? <Pause className="w-4 h-4 text-white stroke-[3px]" />
@@ -135,18 +135,18 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
         <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end pr-2">
           <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[var(--color-text)] flex-shrink-0 whitespace-nowrap">{time}</span>
-          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-[3px] border-[var(--color-border)] bg-[var(--color-surface)] z-10 flex-shrink-0" />
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-[var(--color-border)] bg-[var(--color-surface)] z-10 flex-shrink-0" />
         </div>
         {/* The continuous line extending down */}
         <div className="absolute right-[5px] sm:right-[7px] top-6 sm:top-7 bottom-[-24px] sm:bottom-[-32px] w-[3px] bg-black" />
       </div>
 
       {/* Right Column: Card */}
-      <Card variant="surface" className="flex-1 min-w-0 p-3 sm:p-4 flex gap-3 sm:gap-4 relative transition-all duration-300 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)]">
+      <Card variant="surface" className="flex-1 min-w-0 p-3 sm:p-4 flex gap-3 sm:gap-4 relative transition-all duration-300 border-2 border-[var(--color-border)] rounded-[16px] overflow-hidden hover:bg-[var(--color-surfaceHover)]">
         {/* Cover Image Thumbnail (Left) */}
         {photos.length > 0 && (
           <div
-            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-[12px] sm:rounded-[16px] overflow-hidden shadow-[2px_2px_0px_0px_var(--color-border)]"
+            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-[12px] sm:rounded-[16px] overflow-hidden "
             onClick={() => setLightbox(true)}
           >
             <TelegramLazyImage
@@ -157,7 +157,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
               photoIndex={0}
             />
             {photos.length > 1 && (
-              <div className="absolute bottom-1 right-1 bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] text-[var(--color-text)] text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_var(--color-border)]">
+              <div className="absolute bottom-1 right-1 bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] text-[var(--color-text)] text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg ">
                 +{photos.length - 1}
               </div>
             )}
@@ -174,7 +174,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
             <div className="relative flex-shrink-0">
               <button
                 onClick={() => setShowMenu(v => !v)}
-                className="p-1 text-[var(--color-text)] hover:bg-gray-100 border-[2px] border-transparent hover:border-[var(--color-border)] rounded-lg transition-all"
+                className="p-1 text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] border-[2px] border-transparent hover:border-[var(--color-border)] rounded-lg transition-all"
               >
                 <MoreVertical className="w-5 h-5 stroke-[2.5px]" />
               </button>
@@ -187,7 +187,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
                   <div className="absolute right-0 top-8 z-30 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
-                      className="flex items-center gap-2 w-full px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-2 w-full px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-[var(--color-surfaceHover)] transition-colors"
                     >
                       <Trash2 className="w-4 h-4 stroke-[2.5px] text-red-500" /> Delete
                     </button>
@@ -216,7 +216,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {tags.map(tag => (
-                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)] bg-gray-100 px-2 py-1 rounded-md border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-surfaceHover)] px-2 py-1 rounded-md border-2 border-[var(--color-border)] ">
                   #{tag}
                 </span>
               ))}
@@ -234,7 +234,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
 
           {/* Linked transaction */}
           {linkedTxn && (
-            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-between">
+            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl  flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <LinkIcon className="w-4 h-4 text-[var(--color-text)] stroke-[2.5px] flex-shrink-0" />
                 <span className="text-xs font-bold text-gray-800 truncate">{linkedTxn.description}</span>
@@ -333,7 +333,6 @@ export default function JournalPage() {
               variant="secondary"
               size="icon"
               onClick={() => setShowSearch(v => !v)}
-              className="transform -rotate-2"
             >
               <Search className="w-5 h-5 stroke-[2.5px]" />
             </Button>
@@ -355,7 +354,7 @@ export default function JournalPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-gray-200 rounded-lg transition-colors z-10"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors z-10"
               >
                 <X className="w-5 h-5 stroke-[2.5px]" />
               </button>
@@ -402,14 +401,14 @@ export default function JournalPage() {
           </div>
         ) : filteredEntries.length === 0 ? (
           <div className="text-center py-20 px-4">
-            <div className="w-24 h-24 bg-[var(--color-surface)] rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-[var(--color-border)] shadow-[6px_6px_0px_0px_var(--color-border)]">
+            <div className="w-24 h-24 bg-[var(--color-surface)] rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
               <span className="text-4xl">📔</span>
             </div>
             <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-xl mb-2">No memories yet</h3>
-            <p className="text-gray-600 font-bold text-sm mb-8">Capture your first memory with a photo, voice note, or reflection.</p>
+            <p className="text-gray-500 font-bold text-sm mb-8">Capture your first memory with a photo, voice note, or reflection.</p>
             <button
               onClick={() => setIsFormOpen(true)}
-              className="px-6 py-3 bg-[var(--color-primary)] text-white font-black uppercase tracking-wider rounded-xl border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+              className="px-6 py-3 bg-[var(--color-primary)] text-black font-black uppercase tracking-wider rounded-xl border-2 border-[var(--color-border)] hover:brightness-110 active:scale-95 transition-all"
             >
               Capture a memory
             </button>
@@ -465,7 +464,7 @@ export default function JournalPage() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_var(--color-border)] transition-all transform -rotate-2"
+        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border border-dashed border-[var(--color-border)] flex items-center justify-center z-30  hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
         aria-label="Add journal entry"
       >
         <Plus className="w-6 h-6 text-black stroke-[3px]" />

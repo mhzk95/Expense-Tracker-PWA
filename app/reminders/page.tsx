@@ -160,9 +160,9 @@ export default function RemindersPage() {
         title="Reminders"
         subtitle={`${filteredReminders.length} ${filter} tasks`}
         action={
-          <div className="flex gap-2 bg-gray-100 p-1.5 rounded-[12px] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
-            <button onClick={() => setFilter("pending")} className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all border-[2px] ${filter === "pending" ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-gray-500 hover:text-[var(--color-text)] border-transparent"}`}>Pending</button>
-            <button onClick={() => setFilter("completed")} className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all border-[2px] ${filter === "completed" ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]" : "text-gray-500 hover:text-[var(--color-text)] border-transparent"}`}>Completed</button>
+          <div className="flex gap-2 bg-[var(--color-surfaceHover)] p-1.5 rounded-[12px] border-2 border-[var(--color-border)] ">
+            <button onClick={() => setFilter("pending")} className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all border-[2px] ${filter === "pending" ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] " : "text-gray-500 hover:text-[var(--color-text)] border-transparent"}`}>Pending</button>
+            <button onClick={() => setFilter("completed")} className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all border-[2px] ${filter === "completed" ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] " : "text-gray-500 hover:text-[var(--color-text)] border-transparent"}`}>Completed</button>
           </div>
         }
       />
@@ -178,10 +178,10 @@ export default function RemindersPage() {
               onKeyDown={handleAddTask}
               onFocus={() => setShowTaskOptions(true)}
               placeholder="Add a new task (Press Enter)..." 
-              className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] py-4 pl-12 pr-16 shadow-[4px_4px_0px_0px_var(--color-border)] focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:translate-x-[-2px] focus:translate-y-[-2px] outline-none text-[var(--color-text)] font-bold placeholder-gray-500 transition-all"
+              className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] py-4 pl-12 pr-16  focus: focus:translate-x-[-2px] focus:translate-y-[-2px] outline-none text-[var(--color-text)] font-bold placeholder-gray-500 transition-all"
             />
             {newTaskInput && (
-              <button onClick={handleAddTask} className="absolute right-3 top-1/2 -translate-y-1/2 bg-[var(--color-primary)] border-2 border-[var(--color-border)] hover:bg-violet-500 text-white p-2 rounded-[12px] shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+              <button onClick={handleAddTask} className="absolute right-3 top-1/2 -translate-y-1/2 bg-[var(--color-primary)] border-2 border-[var(--color-border)] hover:bg-violet-500 text-white p-2 rounded-[12px]  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
                 <ArrowUpCircle className="h-5 w-5 stroke-[2.5px]" />
               </button>
             )}
@@ -193,7 +193,7 @@ export default function RemindersPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex flex-wrap items-center gap-3 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-4 mt-2"
+                className="flex flex-wrap items-center gap-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-4 mt-2"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-[200px]">
                   <Calendar className="h-5 w-5 text-[var(--color-text)] stroke-[2.5px] shrink-0" />
@@ -206,7 +206,7 @@ export default function RemindersPage() {
                         if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
                       } catch (err) {}
                     }}
-                    className="bg-gray-100 border-2 border-[var(--color-border)] font-bold text-[var(--color-text)] text-xs rounded-lg px-3 py-2 w-full cursor-pointer focus:shadow-[2px_2px_0px_0px_var(--color-border)] outline-none transition-all"
+                    className="bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] font-bold text-[var(--color-text)] text-xs rounded-lg px-3 py-2 w-full cursor-pointer focus: outline-none transition-all"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function RemindersPage() {
                   <select 
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as any)}
-                    className="bg-gray-100 border-2 border-[var(--color-border)] font-bold text-[var(--color-text)] text-xs rounded-lg px-3 py-2 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)] transition-all"
+                    className="bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] font-bold text-[var(--color-text)] text-xs rounded-lg px-3 py-2 outline-none focus: transition-all"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -222,7 +222,7 @@ export default function RemindersPage() {
                     <option value="critical">Critical Priority</option>
                   </select>
                 </div>
-                <button onClick={() => setShowTaskOptions(false)} className="p-1.5 hover:bg-gray-200 rounded-lg ml-auto transition-colors border-2 border-transparent hover:border-[var(--color-border)]">
+                <button onClick={() => setShowTaskOptions(false)} className="p-1.5 hover:bg-[var(--color-surfaceHover)] rounded-lg ml-auto transition-colors border-2 border-transparent hover:border-[var(--color-border)]">
                   <X className="h-5 w-5 text-[var(--color-text)] stroke-[2.5px]" />
                 </button>
               </motion.div>
@@ -233,7 +233,7 @@ export default function RemindersPage() {
 
       {filteredReminders.length === 0 && filter === "pending" ? (
         <div className="text-center p-12 bg-[var(--color-surface)] border-4 border-[var(--color-border)] border-dashed rounded-[24px]">
-          <div className="h-20 w-20 bg-emerald-100 rounded-[20px] flex items-center justify-center mx-auto mb-6 border-4 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+          <div className="h-20 w-20 bg-emerald-100 rounded-[20px] flex items-center justify-center mx-auto mb-6 border-4 border-[var(--color-border)] ">
             <CheckCircle2 className="h-10 w-10 text-emerald-500 stroke-[3px]" />
           </div>
           <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-xl mb-2">Inbox Zero</h3>
@@ -247,7 +247,7 @@ export default function RemindersPage() {
             const groupColor = groupName === "Overdue" ? "text-red-600 bg-red-100 border-red-600" : 
                                groupName === "Today" ? "text-[var(--color-primary)] bg-violet-100 border-[var(--color-primary)]" : 
                                groupName === "Upcoming" ? "text-blue-600 bg-blue-100 border-blue-600" : 
-                               "text-gray-600 bg-gray-100 border-gray-600";
+                               "text-gray-600 bg-[var(--color-surfaceHover)] border-gray-600";
 
             return (
               <div key={groupName} className="space-y-4">
@@ -261,15 +261,15 @@ export default function RemindersPage() {
                 <AnimatePresence mode="popLayout">
                   {items.map((reminder: any) => (
                     <AnimatedCard key={reminder.id} className="w-full relative group">
-                      <div className={`p-4 sm:p-5 flex items-start gap-4 transition-all bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none ${
+                      <div className={`p-4 sm:p-5 flex items-start gap-4 transition-all bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px]  hover:translate-x-[-2px] hover:translate-y-[-2px] hover: active:translate-x-1 active:translate-y-1 active:shadow-none ${
                         reminder.priority === 'critical' ? 'bg-red-50' :
                         reminder.priority === 'high' ? 'bg-orange-50' :
                         ''
                       }`}>
                         <button 
                           onClick={() => updateReminder(reminder.id, { status: reminder.status === 'pending' ? 'completed' : 'pending' })}
-                          className={`mt-1 flex-shrink-0 h-7 w-7 rounded-[8px] border-2 border-[var(--color-border)] flex items-center justify-center transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
-                            reminder.status === 'completed' ? 'bg-emerald-400 text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-transparent hover:bg-gray-100'
+                          className={`mt-1 flex-shrink-0 h-7 w-7 rounded-[8px] border-2 border-[var(--color-border)] flex items-center justify-center transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
+                            reminder.status === 'completed' ? 'bg-emerald-400 text-[var(--color-text)]' : 'bg-[var(--color-surface)] text-transparent hover:bg-[var(--color-surfaceHover)]'
                           }`}
                         >
                           <CheckCircle2 className="h-5 w-5 stroke-[3px]" />
@@ -283,7 +283,7 @@ export default function RemindersPage() {
                             {reminder.priority === 'critical' && <AlertTriangle className="h-5 w-5 stroke-[2.5px] text-red-500 flex-shrink-0" />}
                             {reminder.priority === 'high' && <AlertCircle className="h-5 w-5 stroke-[2.5px] text-orange-500 flex-shrink-0" />}
                             {reminder.notes && reminder.notes.length > 0 && expandedId !== reminder.id && (
-                              <span className="text-[10px] text-[var(--color-text)] font-bold uppercase tracking-widest bg-gray-200 px-2 py-1 rounded-md ml-1 border-2 border-[var(--color-border)] shadow-[1px_1px_0px_0px_var(--color-border)]">Has Notes</span>
+                              <span className="text-[10px] text-[var(--color-text)] font-bold uppercase tracking-widest bg-[var(--color-surfaceHover)] px-2 py-1 rounded-md ml-1 border-2 border-[var(--color-border)] shadow-[1px_1px_0px_0px_var(--color-border)]">Has Notes</span>
                             )}
                           </div>
                           
@@ -291,7 +291,7 @@ export default function RemindersPage() {
                           {reminder.contextTags && reminder.contextTags.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-3">
                               {reminder.contextTags.map((tag: string) => (
-                                <span key={tag} className="px-2 py-1 text-[10px] font-black uppercase tracking-widest rounded-[6px] bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                                <span key={tag} className="px-2 py-1 text-[10px] font-black uppercase tracking-widest rounded-[6px] bg-[var(--color-surface)] text-[var(--color-text)] border-2 border-[var(--color-border)] ">
                                   #{tag}
                                 </span>
                               ))}
@@ -310,9 +310,9 @@ export default function RemindersPage() {
                                   router.push('/research');
                                 }
                               }}
-                              className="mt-4 p-3 bg-gray-100 border-[3px] border-[var(--color-border)] rounded-xl flex items-center gap-3 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-primary)] hover:text-white transition-all group"
+                              className="mt-4 p-3 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-xl flex items-center gap-3 hover:translate-x-[-2px] hover:translate-y-[-2px] hover: hover:bg-[var(--color-primary)] hover:text-white transition-all group"
                             >
-                              <div className="p-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-lg shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
+                              <div className="p-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-lg shrink-0 ">
                                 <Link2 className="h-4 w-4 stroke-[2.5px]" />
                               </div>
                               <div className="min-w-0">
@@ -337,7 +337,7 @@ export default function RemindersPage() {
                                 <div className="border-t-[3px] border-[var(--color-border)] pt-4 pb-2">
                                   {editingNotesId === reminder.id ? (
                                     <div className="space-y-4">
-                                      <div className="flex flex-wrap items-center gap-3 p-4 bg-gray-100 rounded-[16px] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]">
+                                      <div className="flex flex-wrap items-center gap-3 p-4 bg-[var(--color-surfaceHover)] rounded-[16px] border-2 border-[var(--color-border)] ">
                                         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
                                           <Calendar className="h-5 w-5 text-[var(--color-text)] stroke-[2.5px] shrink-0" />
                                           <input 
@@ -349,7 +349,7 @@ export default function RemindersPage() {
                                                 if ('showPicker' in e.currentTarget) e.currentTarget.showPicker();
                                               } catch (err) {}
                                             }}
-                                            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold text-xs rounded-lg px-3 py-2 w-full cursor-pointer focus:shadow-[2px_2px_0px_0px_var(--color-border)] outline-none transition-all"
+                                            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold text-xs rounded-lg px-3 py-2 w-full cursor-pointer focus: outline-none transition-all"
                                           />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -357,7 +357,7 @@ export default function RemindersPage() {
                                           <select 
                                             value={notesEditPriority}
                                             onChange={(e) => setNotesEditPriority(e.target.value as any)}
-                                            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold text-xs rounded-lg px-3 py-2 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)] transition-all"
+                                            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-bold text-xs rounded-lg px-3 py-2 outline-none focus: transition-all"
                                           >
                                             <option value="low">Low Priority</option>
                                             <option value="medium">Medium Priority</option>
@@ -371,12 +371,12 @@ export default function RemindersPage() {
                                         value={notesEditValue}
                                         onChange={(e) => setNotesEditValue(e.target.value)}
                                         placeholder="- [ ] Subtask 1&#10;- [x] Completed task&#10;Some notes here..."
-                                        className="w-full h-32 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-4 text-sm resize-none font-bold outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[6px_6px_0px_0px_var(--color-border)] transition-all"
+                                        className="w-full h-32 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-4 text-sm resize-none font-bold outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus: transition-all"
                                       />
                                       <div className="flex justify-end gap-3 mt-4">
                                         <button 
                                           onClick={() => setEditingNotesId(null)}
-                                          className="px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-gray-100 rounded-lg transition-colors border-2 border-transparent hover:border-[var(--color-border)]"
+                                          className="px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors border-2 border-transparent hover:border-[var(--color-border)]"
                                         >
                                           Cancel
                                         </button>
@@ -389,7 +389,7 @@ export default function RemindersPage() {
                                             });
                                             setEditingNotesId(null);
                                           }}
-                                          className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-border)] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
+                                          className="px-4 py-2 bg-[var(--color-primary)] hover:translate-x-0.5 hover:translate-y-0.5 hover: border-2 border-[var(--color-border)]  text-white text-xs font-black uppercase tracking-widest rounded-lg transition-all"
                                         >
                                           Save All
                                         </button>
@@ -438,14 +438,14 @@ export default function RemindersPage() {
                           {reminder.status === "pending" && (
                             <button 
                               onClick={() => setSnoozeOpenId(snoozeOpenId === reminder.id ? null : reminder.id)}
-                              className="p-2 bg-gray-100 border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white rounded-[8px] transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                              className="p-2 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white rounded-[8px] transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                             >
                               <Clock className="h-4 w-4 stroke-[2.5px]" />
                             </button>
                           )}
                           <button 
                             onClick={(e) => { e.stopPropagation(); deleteReminder(reminder.id); }}
-                            className="p-2 bg-gray-100 border-2 border-[var(--color-border)] text-red-600 hover:bg-red-500 hover:text-white rounded-[8px] transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                            className="p-2 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] text-red-600 hover:bg-red-500 hover:text-white rounded-[8px] transition-all  active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                           >
                             <Trash2 className="h-4 w-4 stroke-[2.5px]" />
                           </button>
@@ -454,17 +454,17 @@ export default function RemindersPage() {
                               <motion.div 
                                 initial={{ opacity: 0, scale: 0.9, x: 10 }}
                                 animate={{ opacity: 1, scale: 1, x: 0 }}
-                                className="absolute right-12 top-0 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-[16px] overflow-hidden w-48 z-20"
+                                className="absolute right-12 top-0 bg-[var(--color-surface)] border-2 border-[var(--color-border)]  rounded-[16px] overflow-hidden w-48 z-20"
                               >
-                                <div className="p-3 border-b-2 border-[var(--color-border)] flex justify-between items-center bg-gray-100">
+                                <div className="p-3 border-b-2 border-[var(--color-border)] flex justify-between items-center bg-[var(--color-surfaceHover)]">
                                   <span className="text-[10px] uppercase font-black text-[var(--color-text)] tracking-widest">Snooze</span>
                                   <button onClick={() => setSnoozeOpenId(null)} className="text-[var(--color-text)] hover:text-red-500"><X className="h-4 w-4 stroke-[3px]"/></button>
                                 </div>
                                 <div className="flex flex-col p-1">
-                                  <button onClick={() => handleSnooze(reminder.id, "later")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-gray-100 rounded-lg transition-colors">Later Today</button>
-                                  <button onClick={() => handleSnooze(reminder.id, "tomorrow")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-gray-100 rounded-lg transition-colors">Tomorrow</button>
-                                  <button onClick={() => handleSnooze(reminder.id, "weekend")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-gray-100 rounded-lg transition-colors">This Weekend</button>
-                                  <button onClick={() => handleSnooze(reminder.id, "next_week")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-gray-100 rounded-lg transition-colors">Next Week</button>
+                                  <button onClick={() => handleSnooze(reminder.id, "later")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors">Later Today</button>
+                                  <button onClick={() => handleSnooze(reminder.id, "tomorrow")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors">Tomorrow</button>
+                                  <button onClick={() => handleSnooze(reminder.id, "weekend")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors">This Weekend</button>
+                                  <button onClick={() => handleSnooze(reminder.id, "next_week")} className="text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors">Next Week</button>
                                 </div>
                               </motion.div>
                             )}

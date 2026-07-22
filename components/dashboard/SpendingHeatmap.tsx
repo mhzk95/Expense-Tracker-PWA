@@ -62,7 +62,7 @@ export function SpendingHeatmap() {
   }
   
   const getColor = (amount: number) => {
-    if (amount === 0) return "bg-gray-100 border-gray-300";
+    if (amount === 0) return "bg-[var(--color-surfaceHover)] border-gray-300";
     const intensity = amount / maxAmount;
     if (intensity < 0.2) return "bg-emerald-300 border-[var(--color-border)]";
     if (intensity < 0.5) return "bg-emerald-400 border-[var(--color-border)]";
@@ -94,7 +94,7 @@ export function SpendingHeatmap() {
       <div className="flex justify-end items-center gap-3 mt-4 text-sm text-[var(--color-text)] font-bold tracking-wide uppercase">
         <span>Less</span>
         <div className="flex gap-[4px]">
-          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-gray-100 border-gray-300" />
+          <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-[var(--color-surfaceHover)] border-gray-300" />
           <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-300 border-[var(--color-border)]" />
           <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-400 border-[var(--color-border)]" />
           <div className="w-[14px] h-[14px] rounded-sm border-[1.5px] bg-emerald-500 border-[var(--color-border)]" />

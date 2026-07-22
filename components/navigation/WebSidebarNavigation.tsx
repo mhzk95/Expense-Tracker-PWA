@@ -67,7 +67,7 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
           collapsed && "justify-center px-0"
         )}
       >
-        <div className="flex-shrink-0 h-12 w-12 rounded-xl overflow-hidden flex items-center justify-center bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)]">
+        <div className="flex-shrink-0 h-12 w-12 rounded-xl overflow-hidden flex items-center justify-center bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)]">
           <img src="/icon-192x192.png" alt="ExpenseTracker Logo" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
@@ -94,11 +94,11 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
               key={item.id}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-sm font-bold transition-all duration-150 border-[3px]",
+                "flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-sm font-bold transition-all duration-150 border-2",
                 collapsed && "justify-center px-0 py-3.5 mx-2",
                 isActive
-                  ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] translate-x-0 translate-y-0"
-                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-transparent hover:border-[var(--color-border)] hover:shadow-[4px_4px_0px_0px_var(--color-border)]"
+                  ? "bg-[var(--color-primary)] text-white border-[var(--color-border)]  translate-x-0 translate-y-0"
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-transparent hover:border-[var(--color-border)] hover:"
               )}
               title={collapsed ? item.label : undefined}
               aria-current={isActive ? "page" : undefined}
@@ -125,10 +125,10 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
           <Link
             href="/pwa-diagnostics"
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-[16px] text-sm font-bold transition-all duration-150 border-[3px]",
+              "flex items-center gap-3 px-4 py-3 rounded-[16px] text-sm font-bold transition-all duration-150 border-2",
               pathname === "/pwa-diagnostics"
-                ? "bg-emerald-400 text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
-                : "bg-[var(--color-surface)] text-[var(--color-text)] border-transparent hover:border-[var(--color-border)] hover:shadow-[4px_4px_0px_0px_var(--color-border)]"
+                ? "bg-emerald-400 text-[var(--color-text)] border-[var(--color-border)] "
+                : "bg-[var(--color-surface)] text-[var(--color-text)] border-transparent hover:border-[var(--color-border)] hover:"
             )}
           >
             <Stethoscope className="h-5 w-5 stroke-[2.5px]" />
@@ -142,7 +142,7 @@ export function WebSidebarNavigation({ className }: WebSidebarNavigationProps) {
         <button
           onClick={() => setCollapsed((c) => !c)}
           className={cn(
-            "w-full flex items-center gap-3 px-4 py-3 rounded-[16px] text-[var(--color-text)] font-bold transition-all border-[3px] border-transparent hover:border-[var(--color-border)] hover:shadow-[4px_4px_0px_0px_var(--color-border)]",
+            "w-full flex items-center gap-3 px-4 py-3 rounded-[16px] text-[var(--color-text)] font-bold transition-all border-2 border-transparent hover:border-[var(--color-border)] hover:",
             collapsed && "justify-center px-0 py-3 mx-1 w-auto"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}

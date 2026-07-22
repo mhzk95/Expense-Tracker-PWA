@@ -73,7 +73,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
     }
   };
 
-  const focusClass = "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5";
+  const focusClass = "focus: focus:-translate-y-0.5";
 
   const getButtonClass = () => {
     switch (type) {
@@ -146,7 +146,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
             className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-[var(--color-border)] transition-colors duration-200 ease-in-out focus:outline-none ${excludeFromNetWorth ? 'bg-amber-400' : 'bg-gray-300'}`}
           >
             <span
-              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] ring-0 transition duration-200 ease-in-out ${excludeFromNetWorth ? 'translate-x-5' : 'translate-x-0'}`}
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)]  ring-0 transition duration-200 ease-in-out ${excludeFromNetWorth ? 'translate-x-5' : 'translate-x-0'}`}
             />
           </button>
         </div>
@@ -155,7 +155,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !name || !balance}
-        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
+        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-2 border-[var(--color-border)]  transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
       >
         {isSubmitting ? "Adding..." : initialData ? "Update Account" : "Add Account"}
       </button>

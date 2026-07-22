@@ -167,7 +167,7 @@ export function PWABottomNavigation() {
                         className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-0 bg-[var(--color-border)] rounded-[14px] translate-x-1 translate-y-1"
                       />
                       <div 
-                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-10 bg-[var(--color-primary)] border-2 sm:border-[3px] border-[var(--color-border)] rounded-[14px]"
+                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-10 bg-[var(--color-primary)] border-2 sm:border-2 border-[var(--color-border)] rounded-[14px]"
                       />
                     </>
                   )}

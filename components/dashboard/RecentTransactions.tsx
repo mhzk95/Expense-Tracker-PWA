@@ -47,13 +47,13 @@ export function RecentTransactions() {
           <>
             {[...Array(5)].map((_, i) => (
               <Card key={i} className="p-4 flex items-start gap-4 animate-pulse">
-                <div className="h-12 w-12 rounded-[var(--radius-theme-base)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] bg-gray-200" />
+                <div className="h-12 w-12 rounded-[var(--radius-theme-base)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] bg-[var(--color-surfaceHover)]" />
                 <div className="flex-1 space-y-2 mt-1">
-                  <div className="h-4 w-32 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
-                  <div className="h-3 w-20 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
-                  <div className="h-3 w-16 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                  <div className="h-4 w-32 bg-[var(--color-surfaceHover)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-20 bg-[var(--color-surfaceHover)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-16 bg-[var(--color-surfaceHover)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
                 </div>
-                <div className="h-4 w-12 bg-gray-200 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
+                <div className="h-4 w-12 bg-[var(--color-surfaceHover)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] rounded-full" />
               </Card>
             ))}
           </>

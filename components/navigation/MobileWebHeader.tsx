@@ -69,7 +69,7 @@ export function MobileWebHeader() {
       <header className="sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[var(--color-bg)] border-b-[3px] border-[var(--color-border)]">
         {/* Brand + page title */}
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center">
+          <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)]  flex items-center justify-center">
             <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="text-[var(--color-text)] font-black uppercase tracking-wider text-sm">{pageTitle}</span>
@@ -90,7 +90,7 @@ export function MobileWebHeader() {
           <button
             id="mobile-menu-toggle"
             onClick={() => setMenuOpen((o) => !o)}
-            className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] text-[var(--color-text)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+            className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)]  text-[var(--color-text)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -105,14 +105,14 @@ export function MobileWebHeader() {
           {/* Menu header */}
           <div className="flex items-center justify-between px-4 h-16 border-b-[3px] border-[var(--color-border)] bg-[var(--color-surface)]">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center">
+              <div className="h-8 w-8 rounded-xl overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)]  flex items-center justify-center">
                 <img src="/icon-192x192.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-[var(--color-text)] font-black uppercase tracking-wider text-sm">Menu</span>
             </div>
             <button
               onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] text-white active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
+              className="flex items-center justify-center h-10 w-10 rounded-xl bg-[var(--color-primary)] border-2 border-[var(--color-border)]  text-white active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all"
               aria-label="Close menu"
             >
               <X className="h-6 w-6 stroke-[3px]" />
@@ -131,10 +131,10 @@ export function MobileWebHeader() {
                   key={item.id}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] active:translate-y-1 active:translate-x-1 active:shadow-none",
+                    "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-2 active:translate-y-1 active:translate-x-1 active:shadow-none",
                     isActive
-                      ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
-                      : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
+                      ? "bg-[var(--color-primary)] text-white border-[var(--color-border)] "
+                      : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] "
                   )}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -161,10 +161,10 @@ export function MobileWebHeader() {
             <Link
               href="/pwa-diagnostics"
               className={cn(
-                "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-[3px] mt-6 active:translate-y-1 active:translate-x-1 active:shadow-none",
+                "flex items-center gap-4 px-4 py-4 rounded-[20px] transition-all duration-200 border-2 mt-6 active:translate-y-1 active:translate-x-1 active:shadow-none",
                 pathname === "/pwa-diagnostics"
-                  ? "bg-emerald-400 text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
-                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)]"
+                  ? "bg-emerald-400 text-[var(--color-text)] border-[var(--color-border)] "
+                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] "
               )}
             >
               <Stethoscope className="h-6 w-6 stroke-[3px]" />
@@ -181,7 +181,7 @@ export function MobileWebHeader() {
               <span
                 className={cn(
                   "h-3 w-3 rounded-full border-2 border-[var(--color-border)]",
-                  isOnline ? "bg-emerald-400 shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-red-400 shadow-[2px_2px_0px_0px_var(--color-border)]"
+                  isOnline ? "bg-emerald-400 " : "bg-red-400 "
                 )}
               />
               {isOnline ? "Connected" : "Offline"}

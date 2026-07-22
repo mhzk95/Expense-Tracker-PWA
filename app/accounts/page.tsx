@@ -69,9 +69,9 @@ export default function AccountsPage() {
       ) : (
         <>
           {/* Net worth summary */}
-          <div className="bg-[var(--color-primary)] border-[3px] sm:border-[4px] border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 shadow-[6px_6px_0px_0px_var(--color-border)]">
+          <div className="bg-[var(--color-primary)] border-2 sm:border-[4px] border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 ">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-14 w-14 rounded-2xl bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center">
+              <div className="h-14 w-14 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)]  flex items-center justify-center">
                 <TrendingUp className="h-7 w-7 text-[var(--color-text)] stroke-[3px]" />
               </div>
               <div>
