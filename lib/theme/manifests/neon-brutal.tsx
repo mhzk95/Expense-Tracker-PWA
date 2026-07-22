@@ -21,7 +21,7 @@ export const neonBrutalTheme: ThemeManifest = {
     button: { variant: "neobrutalist", backgroundAsset: "bg-neon-yellow" },
     card: { variant: "neobrutalist", colorIntentMapping: "border" },
     navigation: { variant: "floating" },
-    input: { variant: "neobrutalist" }
+    input: { variant: "bordered" }
   },
   capabilities: { layoutDensity: "comfortable", motion: "full" },
   tokens: {

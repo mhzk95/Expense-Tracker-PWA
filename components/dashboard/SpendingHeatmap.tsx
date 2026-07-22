@@ -42,16 +42,16 @@ export function SpendingHeatmap() {
   
   if (loading) {
     return (
-      <Card className="p-6 animate-pulse">
-        <div className="flex items-center justify-between mb-4 border-b-2 border-[var(--color-border)] pb-4">
-          <div className="h-4 w-48 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+      <Card variant="surface" className="p-4 sm:p-5 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-success,#10b981)] animate-pulse">
+        <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-dashed border-[var(--color-border)]">
+          <div className="h-3 w-48 bg-[var(--color-border)] rounded-full" />
         </div>
-        <div className="w-full overflow-hidden h-28 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center">
+        <div className="w-full overflow-hidden h-28 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl flex items-center justify-center">
           <div className="flex gap-[4px]">
             {[...Array(24)].map((_, i) => (
               <div key={i} className="flex flex-col gap-[4px]">
                 {[...Array(7)].map((_, j) => (
-                  <div key={j} className="w-3 h-3 rounded-sm bg-gray-200 border border-[var(--color-border)]" />
+                  <div key={j} className="w-[14px] h-[14px] rounded-sm bg-[var(--color-border)]" />
                 ))}
               </div>
             ))}
@@ -71,9 +71,9 @@ export function SpendingHeatmap() {
   };
   
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-4 border-b-[3px] border-[var(--color-border)] pb-4 bg-[var(--color-primary)] -mt-6 -mx-6 px-6 pt-6">
-        <h3 className="text-base font-black text-white uppercase tracking-wider">Spending Heatmap (Last 365 Days)</h3>
+    <Card variant="surface" className="p-4 sm:p-5 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-success,#10b981)] transition-all overflow-hidden relative">
+      <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-dashed border-[var(--color-border)]">
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Spending Heatmap (Last 365 Days)</h3>
       </div>
       
       <div className="w-full overflow-x-auto pb-4 pt-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-transparent">

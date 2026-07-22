@@ -197,12 +197,8 @@ export default function TransactionsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Transactions"
-        subtitle={loading ? "Loading..." : `${transactions.length} transactions`}
-        action={
-          <div className="flex items-center gap-2">
-            <AddTransactionAction />
-          </div>
-        }
+        subtitle={loading ? "Loading..." : `${transactions.length} Transactions`}
+        action={<AddTransactionAction />}
       />
 
       {/* Top Cards */}
@@ -210,55 +206,75 @@ export default function TransactionsPage() {
         <div className="grid grid-cols-2 gap-3">
           {/* Today */}
           <Card
-            variant={selectedDateRange === 'today' ? "primary" : "surface"}
+            variant="surface"
             isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
             className={cn(
-              "p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left",
-              selectedDateRange === 'today' ? "bg-emerald-400" : ""
+              "p-3 flex flex-col relative overflow-hidden group text-left transition-transform",
+              selectedDateRange === 'today' ? "scale-[0.98]" : ""
             )}
+            style={{ 
+              borderColor: '#1f2937', 
+              boxShadow: selectedDateRange === 'today' ? 'inset 0 0 0 2px #10b981' : '3px 3px 0px 0px #10b981',
+              borderWidth: '2px'
+            }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full relative z-10">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
-                <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
+            <div className="flex flex-col gap-2.5 w-full relative z-10">
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-[10px] bg-emerald-500 flex items-center justify-center text-black shrink-0">
+                  <Calendar className="w-5 h-5 stroke-[2.5px]" />
+                </div>
+                <span className="text-emerald-500 font-bold opacity-60">--</span>
               </div>
-              <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Today</span>
-                <span className="text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5 font-numbers">
-                  {todayTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(todayTotal), "INR")}
+              <div className="flex flex-col overflow-hidden mt-1">
+                <span className="text-[10px] uppercase font-black tracking-widest text-emerald-500">Today</span>
+                <span className="text-[28px] font-black tracking-tighter truncate leading-none mt-1 font-numbers text-white">
+                  {todayTotal < 0 ? "-" : ""}₹{Math.abs(todayTotal).toFixed(2)}
                 </span>
-                <span className="text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider opacity-80">Spent</span>
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">0 Spent</span>
               </div>
             </div>
-            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-2 border-black/20 dark:border-white/20 w-full flex justify-center relative z-10">
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">{todayTxns.length} Transactions</span>
+            <div className="mt-3 pt-3 border-t-2 border-dashed border-gray-800 w-full flex justify-start relative z-10">
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border border-emerald-500/30 px-2 py-0.5 rounded flex items-center justify-center">
+                {todayTxns.length} Expenses
+              </span>
             </div>
           </Card>
 
           {/* Month */}
           <Card
-            variant={selectedDateRange === 'month' ? "success" : "surface"}
+            variant="surface"
             isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
             className={cn(
-              "p-3 sm:p-5 flex flex-col relative overflow-hidden group text-left",
-              selectedDateRange === 'month' ? "text-white" : ""
+              "p-3 flex flex-col relative overflow-hidden group text-left transition-transform",
+              selectedDateRange === 'month' ? "scale-[0.98]" : ""
             )}
+            style={{ 
+              borderColor: '#1f2937', 
+              boxShadow: selectedDateRange === 'month' ? 'inset 0 0 0 2px #a855f7' : '3px 3px 0px 0px #a855f7',
+              borderWidth: '2px'
+            }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 w-full relative z-10">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-text)] shrink-0 shadow-[2px_2px_0px_0px_var(--color-border)]">
-                <Calendar className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5px]" />
+            <div className="flex flex-col gap-2.5 w-full relative z-10">
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-[10px] bg-purple-500 flex items-center justify-center text-black shrink-0">
+                  <Calendar className="w-5 h-5 stroke-[2.5px]" />
+                </div>
+                <span className="text-[10px] text-red-500 font-bold tracking-widest">↑ 12%</span>
               </div>
-              <div className="flex flex-col flex-1 overflow-hidden mt-1 sm:mt-0">
-                <span className={cn("text-[9px] sm:text-[10px] uppercase font-black tracking-widest", selectedDateRange === 'month' ? "text-white" : "")}>{currentMonthName} Total</span>
-                <span className={cn("text-lg sm:text-2xl font-black tracking-tight truncate mt-0.5 font-numbers", selectedDateRange === 'month' ? "text-white" : "")}>
-                  {monthTotal < 0 ? "-" : ""}{formatCurrency(Math.abs(monthTotal), "INR")}
+              <div className="flex flex-col overflow-hidden mt-1">
+                <span className="text-[10px] uppercase font-black tracking-widest text-purple-400">{currentMonthName} Total</span>
+                <span className="text-[28px] font-black tracking-tighter truncate leading-none mt-1 font-numbers text-white">
+                  {monthTotal < 0 ? "-" : ""}₹{Math.abs(monthTotal).toFixed(2)}
                 </span>
-                <span className={cn("text-[10px] sm:text-xs font-bold mt-0.5 uppercase tracking-wider", selectedDateRange === 'month' ? "text-white/80" : "opacity-80")}>Spent</span>
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">Spent</span>
               </div>
             </div>
-            <div className={cn("mt-2 sm:mt-4 pt-2 sm:pt-4 border-t-2 w-full flex justify-center relative z-10", selectedDateRange === 'month' ? "border-white/20" : "border-black/20 dark:border-white/20")}>
-              <span className={cn("text-[10px] sm:text-xs font-black uppercase tracking-wider", selectedDateRange === 'month' ? "text-white" : "")}>{monthTxns.length} Transactions</span>
+            <div className="mt-3 pt-3 border-t-2 border-dashed border-gray-800 w-full flex justify-start relative z-10">
+              <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded flex items-center justify-center">
+                {monthTxns.length} Expenses
+              </span>
             </div>
           </Card>
         </div>
@@ -267,9 +283,9 @@ export default function TransactionsPage() {
       {/* Unified Search and filter toolbar + panel container to prevent layout jerking */}
       <div className="space-y-0">
         {/* Search and filter toolbar */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {/* Search Row */}
-          <div className="flex items-stretch gap-2 w-full h-[52px]">
+          <div className="flex items-stretch gap-2 w-full h-[48px]">
             <div className="relative flex-1 h-full">
               <Input
                 type="text"
@@ -285,12 +301,15 @@ export default function TransactionsPage() {
                   }
                 }}
                 placeholder="Search transactions..."
-                className="h-full px-4 text-sm font-bold shadow-[4px_4px_0px_0px_var(--color-border)] focus:shadow-[6px_6px_0px_0px_var(--color-border)] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all"
+                className="h-full px-10 text-[13px] font-bold border-2 border-gray-800 bg-[#16181d] text-white focus:border-gray-600 transition-all rounded-xl"
               />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </div>
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text)] p-1 bg-gray-200 border-2 border-[var(--color-border)] rounded-lg hover:bg-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4 stroke-[3px]" />
@@ -301,23 +320,21 @@ export default function TransactionsPage() {
             <button
               onClick={() => setShowFiltersPanel(!showFiltersPanel)}
               className={cn(
-                "flex items-center justify-center w-[52px] h-full rounded-[16px] border-[3px] transition-all select-none shrink-0 font-bold active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_var(--color-border)]",
+                "flex items-center justify-center w-[48px] h-full rounded-xl border-2 transition-all select-none shrink-0 font-bold",
                 showFiltersPanel || selectedType || selectedCategory || selectedDateRange
-                  ? "bg-[var(--color-primary)] text-white border-[var(--color-border)]"
-                  : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-gray-100"
+                  ? "bg-emerald-500 text-black border-emerald-500"
+                  : "bg-[#16181d] text-gray-400 border-gray-800 hover:border-gray-600"
               )}
               title="Filter transactions"
               aria-label="Filter transactions"
             >
-              <Filter className="h-5 w-5 stroke-[2.5px]" />
+              <Filter className="h-4 w-4 stroke-[2.5px]" />
             </button>
           </div>
 
           {/* Action Buttons Row */}
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            <Card
-              variant="primary"
-              isInteractive
+          <div className="grid grid-cols-2 gap-3 mt-1">
+            <button
               onClick={() => {
                 if (selectedTxIds.size > 0 || isSelectMode) {
                   setSelectedTxIds(new Set());
@@ -327,34 +344,28 @@ export default function TransactionsPage() {
                 }
               }}
               className={cn(
-                "p-3 sm:p-4 flex items-center justify-center gap-2 group",
-                isSelectMode && "ring-2 ring-offset-2 ring-[var(--color-primary)]"
+                "h-[48px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+                isSelectMode ? "border-emerald-500 bg-emerald-500/10" : "border-gray-800 bg-[#16181d]"
               )}
             >
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px] flex-shrink-0" />
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-balance leading-tight text-center">
-                  Select<br className="sm:hidden" /> Multiple
-                </span>
-              </div>
-            </Card>
+              <CheckSquare className="w-4 h-4 stroke-[2.5px] text-emerald-500" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-white">
+                Select Multiple
+              </span>
+            </button>
 
-            <Card
-              variant="success"
-              isInteractive
+            <button
               onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
               className={cn(
-                "p-3 sm:p-4 flex items-center justify-center gap-2 group text-white",
-                showOnlyNeedsReview && "ring-2 ring-offset-2 ring-white"
+                "h-[48px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+                showOnlyNeedsReview ? "border-yellow-400 bg-yellow-400/10" : "border-gray-800 bg-[#16181d]"
               )}
             >
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <Zap className={cn("w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px] flex-shrink-0", !showOnlyNeedsReview && "text-yellow-300")} />
-                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-balance leading-tight text-center">
-                  Needs<br className="sm:hidden" /> Review
-                </span>
-              </div>
-            </Card>
+              <Zap className={cn("w-4 h-4 stroke-[2.5px]", showOnlyNeedsReview ? "text-yellow-400" : "text-yellow-500")} />
+              <span className="text-[11px] font-black uppercase tracking-widest text-white">
+                Needs Review
+              </span>
+            </button>
           </div>
         </div>
 
@@ -555,7 +566,7 @@ export default function TransactionsPage() {
             return sortedGroups.map((group) => (
               <div key={group.key} className="space-y-3 mb-6 last:mb-0">
                 <div
-                  className="flex items-center justify-between px-2 cursor-pointer group/header select-none mb-4"
+                  className="flex items-center justify-between px-2 cursor-pointer group/header select-none mb-4 mt-2"
                   onClick={() => {
                     setCollapsedGroups(prev => {
                       const next = new Set(prev);
@@ -566,20 +577,20 @@ export default function TransactionsPage() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className={cn("w-6 h-6 stroke-[2.5px]", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-[var(--color-text)]")} />
+                    <Calendar className={cn("w-5 h-5 stroke-[2.5px]", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-yellow-400")} />
                     <div className="flex flex-col">
-                      <span className="text-[12px] font-black text-[var(--color-text)] uppercase tracking-widest">{group.label}</span>
-                      <span className="text-xs font-bold text-gray-500 mt-0.5">{group.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                      <span className={cn("text-[11px] font-black uppercase tracking-widest", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-yellow-400")}>{group.label}</span>
+                      <span className="text-[10px] font-bold text-gray-500 mt-0.5 uppercase tracking-widest">{group.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className="flex flex-col items-end">
-                      <span className={cn("text-[14px] font-black tracking-tight", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-[var(--color-text)]")}>
-                        {group.total < 0 ? "-" : ""}{formatCurrency(Math.abs(group.total), "INR")}
+                      <span className="text-[13px] font-black tracking-tighter text-white font-numbers">
+                        {group.total < 0 ? "-" : ""}₹{Math.abs(group.total).toFixed(2)}
                       </span>
-                      <span className={cn("text-[10px] font-black uppercase tracking-widest mt-0.5", group.isToday ? "text-emerald-500" : group.isYesterday ? "text-blue-500" : "text-gray-500")}>{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest mt-0.5 text-gray-500">{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
                     </div>
-                    <ChevronDown className={cn("w-5 h-5 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-[var(--color-text)]" : "text-gray-400")} />
+                    <ChevronDown className={cn("w-4 h-4 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-white" : "text-gray-500")} />
                   </div>
                 </div>
 
@@ -630,10 +641,13 @@ export default function TransactionsPage() {
                               variant={isSelected ? "primary" : "surface"}
                               isInteractive
                               className={cn(
-                                "flex items-center w-full px-4 py-3 gap-3 sm:gap-4 text-left relative overflow-hidden",
-                                txn.needsReview && "needs-review-card border-l-[6px] border-l-amber-400 bg-amber-50"
+                                "p-0 relative overflow-hidden transition-transform",
+                                isSelected ? "scale-[0.98]" : "",
+                                txn.needsReview && "needs-review-card bg-yellow-400/10"
                               )}
-                              style={{ WebkitTouchCallout: "none" }}
+                              style={{ 
+                                WebkitTouchCallout: "none"
+                              }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (isSelectMode || selectedTxIds.size > 0) {
@@ -651,87 +665,77 @@ export default function TransactionsPage() {
                                 }
                               }}
                             >
-                              {/* Amount Splash Decoration */}
-                              {activeManifest?.decorations?.transactionAmountSplash && (
+                              <div className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left">
+                                {/* Left Color Accent Strip */}
                                 <div 
-                                  className="absolute right-0 top-0 bottom-0 w-32 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-normal opacity-90"
-                                  style={{
-                                    maskImage: activeManifest.decorations.transactionAmountSplash.maskAsset 
-                                      ? activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.src}')` 
-                                      : 'none',
-                                    maskSize: 'cover',
-                                    maskPosition: 'left center',
-                                    maskRepeat: 'no-repeat',
-                                    WebkitMaskImage: activeManifest.decorations.transactionAmountSplash.maskAsset 
-                                      ? activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.maskAsset]?.src}')` 
-                                      : 'none',
-                                    WebkitMaskSize: 'cover',
-                                    WebkitMaskPosition: 'left center',
-                                    WebkitMaskRepeat: 'no-repeat',
-                                    backgroundImage: activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.assetRef]?.content || `url('${activeManifest.assets?.[activeManifest.decorations.transactionAmountSplash.assetRef]?.src}')`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'right center',
-                                  }}
+                                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
+                                  style={{ backgroundColor: txn.needsReview ? '#facc15' : baseColor }} 
                                 />
-                              )}
-                              {/* Checkbox (visible in select mode) */}
-                              {(isSelectMode || selectedTxIds.size > 0) && (
-                                <div className="flex-shrink-0 mr-1 relative z-10">
-                                  {isSelected ? (
-                                    <div className="h-6 w-6 rounded-lg bg-black border-2 border-black flex items-center justify-center text-white">
-                                      <Check className="h-4 w-4 stroke-[4px]" />
-                                    </div>
-                                  ) : (
-                                    <div className="h-6 w-6 rounded-lg border-2 border-black bg-white" />
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Icon */}
-                              <div
-                                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-[var(--radius-theme-base)] flex items-center justify-center border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm relative z-10 bg-white"
-                                style={{
-                                  backgroundColor: baseColor,
-                                  color: "#000"
-                                }}
-                              >
-                                {(() => {
-                                  if (isTransfer) {
-                                    return <ArrowLeftRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />;
-                                  }
-                                  const IconComp = getCategoryIcon(category?.icon);
-                                  return <IconComp className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />;
-                                })()}
-                              </div>
-
-                              {/* Details */}
-                              <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5 relative z-10">
-                                <h3 className={cn("text-[13px] sm:text-[14px] font-black tracking-wide uppercase truncate leading-tight font-display")}>
-                                  {txn.payee || txn.description || "No Title"}
-                                </h3>
-
-                                <div className={cn("text-[10px] font-black uppercase tracking-widest leading-tight opacity-70")}>
-                                  <span className="truncate block">{category?.name ?? "Uncategorized"}</span>
-                                  <span className="truncate block">{timeStr}</span>
-                                </div>
-                              </div>
-
-                              {/* Amount & Review Badge */}
-                              <div className="text-right flex flex-col items-end justify-start h-full pt-1 relative z-10">
-                                <span
-                                  className={cn(
-                                    "text-[15px] sm:text-lg font-black tabular-nums text-right text-balance leading-tight mt-0.5 font-numbers",
-                                    isIncome ? (isSelected ? "text-black" : "text-emerald-600") : isTransfer ? "opacity-60" : ""
-                                  )}
-                                >
-                                  {isIncome ? "+" : isTransfer ? "" : "−"}
-                                  {formatCurrency(txn.amount, txn.currency)}
-                                </span>
-                                {txn.needsReview && (
-                                  <span className="text-[9px] font-black uppercase tracking-wider text-black bg-amber-400 border-2 border-black px-2 py-0.5 rounded-md leading-none mt-1">
-                                    Review
-                                  </span>
+                                
+                                {/* Checkbox (visible in select mode) */}
+                                {(isSelectMode || selectedTxIds.size > 0) && (
+                                  <div className="flex-shrink-0 ml-1 mr-1 relative z-10">
+                                    {isSelected ? (
+                                      <div className="h-6 w-6 rounded-lg bg-emerald-500 border-2 border-emerald-500 flex items-center justify-center text-black">
+                                        <Check className="h-4 w-4 stroke-[4px]" />
+                                      </div>
+                                    ) : (
+                                      <div className="h-6 w-6 rounded-lg border-2 border-gray-600 bg-transparent" />
+                                    )}
+                                  </div>
                                 )}
+
+                                {/* Icon */}
+                                <div
+                                  className={cn("flex-shrink-0 w-11 h-11 rounded-[10px] flex items-center justify-center relative z-10", !(isSelectMode || selectedTxIds.size > 0) && "ml-1")}
+                                  style={{
+                                    backgroundColor: baseColor,
+                                    color: "#000"
+                                  }}
+                                >
+                                  {(() => {
+                                    if (isTransfer) {
+                                      return <ArrowLeftRight className="w-5 h-5 stroke-[2.5px]" />;
+                                    }
+                                    const IconComp = getCategoryIcon(category?.icon);
+                                    return <IconComp className="w-5 h-5 stroke-[2.5px]" />;
+                                  })()}
+                                </div>
+
+                                {/* Details */}
+                                <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
+                                  <h3 className="text-[13px] font-black uppercase truncate leading-tight text-white pt-0.5">
+                                    {txn.payee || txn.description || "No Title"}
+                                  </h3>
+
+                                  <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">
+                                    <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                                    <span className="truncate block text-gray-500 flex items-center gap-1 mt-0.5">
+                                      <Clock className="w-3 h-3" />
+                                      {timeStr}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Amount & Review Badge */}
+                                <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
+                                  <div className="flex items-center gap-1">
+                                    <span
+                                      className={cn(
+                                        "text-[15px] font-black tracking-tighter text-right leading-none font-numbers",
+                                        isIncome ? "text-emerald-500" : "text-white"
+                                      )}
+                                    >
+                                      {isIncome ? "+" : isTransfer ? "" : "−"}₹{Math.abs(txn.amount).toFixed(2)}
+                                    </span>
+                                    <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
+                                  </div>
+                                  {txn.needsReview && (
+                                    <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border-2 border-black px-2 py-0.5 rounded flex items-center gap-1 mt-1">
+                                      <Zap className="w-3 h-3" /> Review
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </Card>
                           </SwipeToDelete>

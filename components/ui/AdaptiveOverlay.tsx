@@ -40,7 +40,7 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
       {/* Backdrop */}
       <div 
         className={cn(
-          "absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity",
+          "absolute inset-0 bg-black/80 transition-opacity",
           isOpen ? "opacity-100" : "opacity-0"
         )} 
         onClick={onClose} 
@@ -48,17 +48,33 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
 
       <div 
         className={cn(
-          "relative bg-[var(--color-surface)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] overflow-hidden transition-all",
+          "relative",
           isBottomSheet 
-            ? "w-full max-w-lg mt-auto rounded-t-[var(--radius-theme-card)] border-b-0 self-end translate-y-0" 
-            : "w-[90%] max-w-md rounded-[var(--radius-theme-card)] scale-100 shadow-brutal",
+            ? "w-full max-w-lg mt-auto self-end" 
+            : "w-[90%] max-w-md"
         )}
-        style={{
-          boxShadow: isBottomSheet ? "0 -8px 0px 0px var(--color-border)" : undefined,
-          backgroundImage: "var(--theme-bg-card)",
-          backgroundBlendMode: "var(--theme-texture-blend)" as any
-        }}
       >
+        {/* Tilted background shadow only for centered modals */}
+        {!isBottomSheet && (
+          <>
+            <div className="absolute inset-0 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] rounded-[var(--radius-theme-card)] translate-x-2 translate-y-2 z-0" />
+            <div className="absolute inset-0 bg-[var(--color-border)] translate-x-2 translate-y-2 rounded-[var(--radius-theme-card)] z-0" />
+          </>
+        )}
+        
+        <div 
+          className={cn(
+            "relative z-10 bg-[var(--color-surface)] border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] overflow-hidden transition-all h-full",
+            isBottomSheet 
+              ? "rounded-t-[var(--radius-theme-card)] border-b-0" 
+              : "rounded-[var(--radius-theme-card)] scale-100",
+          )}
+          style={{
+            boxShadow: isBottomSheet ? "0 -8px 0px 0px var(--color-border)" : undefined,
+            backgroundImage: "var(--theme-bg-card)",
+            backgroundBlendMode: "var(--theme-texture-blend)" as any
+          }}
+        >
         {isBottomSheet && (
           <div className="flex justify-center pt-3 pb-1 w-full">
             <div className="h-1.5 w-12 bg-[var(--color-border)] rounded-full" />
@@ -77,6 +93,7 @@ export function AdaptiveOverlay({ isOpen, onClose, title, children, contentClass
         <div className={cn("p-4 max-h-[80vh] overflow-y-auto", contentClassName)}>
           {children}
         </div>
+      </div>
       </div>
     </div>,
     document.body

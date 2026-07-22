@@ -6,6 +6,9 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatDate } from "@/lib/utils/helpers";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 import { JournalForm } from "@/components/journal/JournalForm";
 import { TelegramLazyImage } from "@/components/ui/TelegramLazyImage";
 import { JournalEntity } from "@/lib/db/indexeddb";
@@ -73,7 +76,7 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] w-fit max-w-full overflow-hidden">
+    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] w-fit max-w-full overflow-hidden">
       <button
         onClick={(e) => { e.stopPropagation(); toggle(); }}
         className="w-8 h-8 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:shadow-none"
@@ -139,11 +142,11 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       </div>
 
       {/* Right Column: Card */}
-      <div className="flex-1 min-w-0 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-[20px] p-3 sm:p-4 flex gap-3 sm:gap-4 relative hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_var(--color-border)] transition-all duration-300">
+      <Card variant="surface" className="flex-1 min-w-0 p-3 sm:p-4 flex gap-3 sm:gap-4 relative transition-all duration-300 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)]">
         {/* Cover Image Thumbnail (Left) */}
         {photos.length > 0 && (
           <div
-            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-xl sm:rounded-2xl overflow-hidden shadow-[2px_2px_0px_0px_var(--color-border)]"
+            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-[12px] sm:rounded-[16px] overflow-hidden shadow-[2px_2px_0px_0px_var(--color-border)]"
             onClick={() => setLightbox(true)}
           >
             <TelegramLazyImage
@@ -181,7 +184,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
                     className="fixed inset-0 z-20" 
                     onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
                   />
-                  <div className="absolute right-0 top-8 z-30 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
+                  <div className="absolute right-0 top-8 z-30 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-gray-100 transition-colors"
@@ -231,7 +234,7 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
 
           {/* Linked transaction */}
           {linkedTxn && (
-            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-between">
+            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <LinkIcon className="w-4 h-4 text-[var(--color-text)] stroke-[2.5px] flex-shrink-0" />
                 <span className="text-xs font-bold text-gray-800 truncate">{linkedTxn.description}</span>
@@ -242,12 +245,12 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
           onClick={() => setLightbox(false)}
         >
           <button className="absolute top-5 right-5 p-2 bg-[var(--color-surface)]/10 hover:bg-[var(--color-surface)]/20 rounded-full text-white">
@@ -327,12 +330,13 @@ export default function JournalPage() {
           subtitle={loading ? "Loading..." : `${entries.length} memories`}
           className="mb-1"
           action={
-            <button
+            <Button
+              variant="secondary"
+              size="icon"
               onClick={() => setShowSearch(v => !v)}
-              className="p-3 text-[var(--color-text)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl hover:bg-gray-100 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
             >
               <Search className="w-5 h-5 stroke-[2.5px]" />
-            </button>
+            </Button>
           }
         />
 
@@ -340,18 +344,18 @@ export default function JournalPage() {
         {showSearch && (
           <div className="relative mt-4 mb-2 animate-in slide-in-from-top-2 fade-in duration-200">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 stroke-[2.5px]" />
-            <input
+            <Input
               autoFocus
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search memories..."
-              className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] pl-12 pr-12 py-3 text-sm text-[var(--color-text)] placeholder-gray-500 outline-none focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all font-bold"
+              className="w-full pl-12 pr-12 font-bold"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-gray-200 rounded-lg transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-gray-200 rounded-lg transition-colors z-10"
               >
                 <X className="w-5 h-5 stroke-[2.5px]" />
               </button>
@@ -362,24 +366,24 @@ export default function JournalPage() {
         {/* Tag pills */}
         {allTags.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mt-2">
-            <button
+            <Button
+              variant={!selectedTag ? "primary" : "secondary"}
+              size="sm"
               onClick={() => setSelectedTag(null)}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border-[2px] ${
-                !selectedTag ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
-              }`}
+              className="flex-shrink-0 uppercase tracking-wider"
             >
               All
-            </button>
+            </Button>
             {allTags.map(tag => (
-              <button
+              <Button
                 key={tag}
+                variant={selectedTag === tag ? "primary" : "secondary"}
+                size="sm"
                 onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border-[2px] ${
-                  selectedTag === tag ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white shadow-[2px_2px_0px_0px_var(--color-border)]" : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-gray-100"
-                }`}
+                className="flex-shrink-0 uppercase tracking-wider"
               >
                 #{tag}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -461,10 +465,10 @@ export default function JournalPage() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-16 h-16 bg-[var(--color-primary)] rounded-full border-4 border-[var(--color-border)] shadow-[6px_6px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_var(--color-border)] transition-all"
         aria-label="Add journal entry"
       >
-        <Plus className="w-8 h-8 text-white stroke-[3px]" />
+        <Plus className="w-6 h-6 text-black stroke-[3px]" />
       </button>
 
       {/* New Entry Sheet */}

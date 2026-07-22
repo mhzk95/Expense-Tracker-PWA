@@ -68,10 +68,10 @@ export function DashboardStats() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="p-5 h-28 flex flex-col justify-between animate-pulse">
-            <div className="h-3 w-16 bg-gray-200 border border-[var(--color-border)] rounded-full" />
-            <div className="h-6 w-24 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
-            <div className="h-3 w-20 bg-gray-200 border border-[var(--color-border)] rounded-full mt-2" />
+          <Card key={i} variant="surface" className="px-4 py-3 flex flex-col justify-center min-h-[90px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] animate-pulse">
+            <div className="h-2 w-16 bg-[var(--color-border)] rounded-full mb-2" />
+            <div className="h-6 w-24 bg-[var(--color-border)] rounded-full" />
+            <div className="h-2 w-20 bg-[var(--color-border)] rounded-full mt-2" />
           </Card>
         ))}
       </div>

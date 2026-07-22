@@ -133,14 +133,15 @@ export function resolveInput(manifest: ThemeManifest, variant: string): InputSty
   const base: InputStyle = {
     geometry: { edgeTreatment: "rounded", borderWidth: "thin" },
     surface: { material: "solid", depth: "flat", colorIntent: "surface" },
-    interaction: { hover: "none", pressed: "none" },
+    interaction: { hover: "none", pressed: "none", focus: "ring" },
     placeholderOpacity: "medium"
   };
 
-  if (variant === "neobrutalist") {
+  if (variant === "neobrutalist" || variant === "bordered") {
     base.geometry.edgeTreatment = "sharp";
     base.geometry.borderWidth = "thick";
     base.placeholderOpacity = "high";
+    base.interaction.focus = "brutal-shift";
   }
 
   if (manifest.designLanguage?.edgeTreatment) {

@@ -60,7 +60,7 @@ export function PWABottomNavigation() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-30 bg-black/80 animate-in fade-in duration-200"
             onClick={() => setShowMoreMenu(false)}
           />
           
@@ -139,14 +139,17 @@ export function PWABottomNavigation() {
       >
         <nav
           className={cn(
-            "overflow-hidden",
             getGeometryClasses(navStyle.geometry),
-            getSurfaceClasses(navStyle.surface)
+            getSurfaceClasses(navStyle.surface),
+            "h-[68px] sm:h-[72px]"
           )}
-          style={navAssetStyles}
+          style={{
+            ...navAssetStyles,
+            padding: '4px' // Subtle padding inside nav to contain elements
+          }}
           aria-label="Bottom navigation"
         >
-          <div className="flex items-stretch h-16">
+          <div className="flex items-stretch h-full">
             {BOTTOM_NAV_ITEMS.map((item) => {
               const iconName = ICON_MAP[item.icon] as any;
               const isMoreBtn = item.id === "more";
@@ -159,29 +162,28 @@ export function PWABottomNavigation() {
               const content = (
                 <>
                   {isActive && (
-                    <div 
-                      className="absolute inset-0 z-0 bg-[var(--theme-primary,var(--color-primary))]"
-                      style={{
-                        ...(navStyle.surface.maskAsset && manifest.assets?.[navStyle.surface.maskAsset] ? { WebkitMaskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, maskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat' } : {}),
-                        backgroundImage: manifest.assets?.['bg-card-primary'] ? `url('${manifest.assets['bg-card-primary'].src}')` : undefined,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                      }}
-                    />
+                    <>
+                      <div 
+                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-0 bg-[var(--color-border)] rounded-[14px] translate-x-1 translate-y-1"
+                      />
+                      <div 
+                        className="absolute inset-y-1 inset-x-1 sm:inset-x-2 z-10 bg-[var(--color-primary)] border-2 sm:border-[3px] border-[var(--color-border)] rounded-[14px]"
+                      />
+                    </>
                   )}
                   <span
                     className={cn(
                       "flex items-center justify-center transition-all duration-200 z-10 relative",
                       isActive 
                         ? "text-black" 
-                        : "text-[var(--theme-text,var(--color-text))]"
+                        : "text-gray-500"
                     )}
                   >
                     {iconName && <ThemeIcon name={iconName} className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3px]" />}
                   </span>
                   <span className={cn(
-                    "text-[9px] sm:text-[10px] font-black uppercase tracking-wider mt-0.5 sm:mt-1 transition-colors z-10 relative",
-                    isActive ? "text-black" : "text-[var(--theme-text,var(--color-text))] opacity-60"
+                    "text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors z-10 relative",
+                    isActive ? "text-black" : "text-gray-500"
                   )}>{item.label}</span>
                 </>
               );

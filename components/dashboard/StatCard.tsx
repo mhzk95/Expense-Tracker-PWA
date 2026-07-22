@@ -44,9 +44,15 @@ export function StatCard({
         : Minus;
 
   const trendColor = {
-    up: "text-emerald-600",
-    down: "text-red-600",
+    up: "text-emerald-500",
+    down: "text-red-500",
     neutral: "text-gray-500",
+  }[trendDirection];
+
+  const shadowClass = {
+    up: "shadow-[3px_3px_0px_0px_var(--color-success,#10b981)]",
+    down: "shadow-[3px_3px_0px_0px_var(--color-danger,#ef4444)]",
+    neutral: variant === "primary" ? "shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)]" : "shadow-[3px_3px_0px_0px_var(--color-border)]",
   }[trendDirection];
 
   const decorativeIcon = icon && React.isValidElement(icon)
@@ -56,27 +62,27 @@ export function StatCard({
     : icon;
 
   return (
-    <Card variant={variant} className={cn("group p-4 sm:p-6 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] relative overflow-hidden transition-all duration-300", className)}>
+    <Card variant={variant} className={cn("group px-4 py-3 flex flex-col justify-center min-h-[90px] border-2 border-[var(--color-border)] relative overflow-hidden transition-all duration-300", shadowClass, className)}>
       <ThemeDecal slot="stat-card-tr" />
       
       {/* Decorative partially clipped icon */}
       {icon && (
-        <div className="absolute -top-4 -right-4 w-20 h-20 sm:w-24 sm:h-24 text-[var(--color-text)]/[0.05] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
+        <div className="absolute -top-2 -right-2 w-16 h-16 text-[var(--color-text)]/[0.05] pointer-events-none transition-transform duration-500 group-hover:scale-105 group-hover:translate-x-1 group-hover:-translate-y-1">
           {decorativeIcon}
         </div>
       )}
 
-      <div className="relative z-10 flex flex-col justify-between h-full flex-1">
+      <div className="relative z-10 flex flex-col justify-center h-full flex-1">
         {/* Label */}
         <div>
-          <p className="text-xs font-black text-[var(--color-text)] uppercase tracking-widest leading-none text-balance">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-0.5 leading-none">
             {label}
           </p>
         </div>
 
         {/* Value */}
-        <div className="mt-2 sm:mt-4 mb-1 sm:mb-2 flex items-baseline">
-          <p className="text-xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight whitespace-nowrap tabular-nums leading-none">
+        <div className="flex items-baseline">
+          <p className="text-2xl sm:text-3xl font-display font-black leading-none tracking-tighter text-[var(--color-text)] tabular-nums">
             {rawValue !== undefined ? (
               <CountUp
                 end={rawValue}
@@ -91,13 +97,11 @@ export function StatCard({
 
         {/* Trend */}
         {trend ? (
-          <div className={cn("flex items-center gap-1.5 text-sm font-semibold mt-1", trendColor)}>
-            <TrendIcon className="h-4 w-4" />
+          <div className={cn("flex items-center gap-1 text-[10px] font-black uppercase tracking-widest mt-1.5", trendColor)}>
+            <TrendIcon className="h-3 w-3 stroke-[3px]" />
             <span>{trend}</span>
           </div>
-        ) : (
-          <div className="h-4" />
-        )}
+        ) : null}
       </div>
     </Card>
   );

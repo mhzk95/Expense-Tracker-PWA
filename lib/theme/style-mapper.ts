@@ -86,12 +86,19 @@ export function getInteractionClasses(int: InteractionStyle, isBrutalistContext:
     sink: "active:translate-y-0.5 active:shadow-none transition-all",
     shrink: "active:scale-95 transition-transform"
   };
+  const focuses = {
+    none: "focus-visible:outline-none focus:ring-0",
+    ring: "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,var(--color-primary))]",
+    "brutal-shift": "focus-visible:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_#facc15] focus:-translate-y-1 focus:-translate-x-1"
+  };
   
+  const focusClass = int.focus ? focuses[int.focus] : focuses.none;
+
   if (isBrutalistContext && int.hover === "lift" && int.pressed === "sink") {
-     return "hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-brutal-sm active:translate-y-0 active:translate-x-0 active:shadow-none transition-all";
+     return `hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-brutal-sm active:translate-y-0 active:translate-x-0 active:shadow-none transition-all ${focusClass}`;
   }
 
-  return `${hovers[int.hover]} ${presses[int.pressed]}`;
+  return `${hovers[int.hover]} ${presses[int.pressed]} ${focusClass}`;
 }
 
 export function getTypographyClasses(typo: TypographyStyle): string {

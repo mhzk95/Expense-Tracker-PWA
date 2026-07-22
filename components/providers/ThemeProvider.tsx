@@ -102,11 +102,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     // Set base fonts if defined, using internal theme vars to prevent circular references in tailwind v4
     if (manifest.typography?.headingFontFamily) {
-      document.documentElement.style.setProperty("--font-theme-display", `'${manifest.typography.headingFontFamily.replace(/['"]/g, '')}', sans-serif`);
-      document.documentElement.style.setProperty("--font-theme-numbers", `'${manifest.typography.headingFontFamily.replace(/['"]/g, '')}', sans-serif`);
+      const family = manifest.typography.headingFontFamily;
+      document.documentElement.style.setProperty("--font-theme-display", family);
+      document.documentElement.style.setProperty("--font-theme-numbers", family);
     }
     if (manifest.typography?.bodyFontFamily) {
-      document.documentElement.style.setProperty("--font-theme-body", `'${manifest.typography.bodyFontFamily.replace(/['"]/g, '')}', sans-serif`);
+      document.documentElement.style.setProperty("--font-theme-body", manifest.typography.bodyFontFamily);
     }
   };
 

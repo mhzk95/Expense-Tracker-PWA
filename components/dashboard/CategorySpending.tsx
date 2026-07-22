@@ -52,22 +52,22 @@ export function CategorySpending() {
 
   if (txLoading || catLoading) {
     return (
-      <Card className="flex flex-col h-full animate-pulse">
-        <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-[var(--color-border)]">
-          <div className="h-4 w-36 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
-          <div className="h-3 w-24 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+      <Card variant="surface" className="flex flex-col h-full p-4 sm:p-5 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)] animate-pulse">
+        <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-dashed border-[var(--color-border)]">
+          <div className="h-3 w-36 bg-[var(--color-border)] rounded-full" />
+          <div className="h-2 w-24 bg-[var(--color-border)] rounded-full" />
         </div>
-        <div className="p-5 flex-1 space-y-5">
+        <div className="flex-1 space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="space-y-2">
-              <div className="flex justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-[var(--color-border)] bg-gray-200" />
-                  <div className="h-4 w-20 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+            <div key={i} className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative overflow-hidden border-2 border-[var(--color-border)] rounded-[16px]">
+              <div className="h-10 w-10 bg-[var(--color-border)] rounded-[10px]" />
+              <div className="flex-1 space-y-2">
+                <div className="flex justify-between">
+                  <div className="h-3 w-20 bg-[var(--color-border)] rounded-full" />
+                  <div className="h-3 w-12 bg-[var(--color-border)] rounded-full" />
                 </div>
-                <div className="h-4 w-12 bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
+                <div className="h-2 w-full bg-[var(--color-border)] rounded-full" />
               </div>
-              <div className="h-3 w-full bg-gray-200 border-2 border-[var(--color-border)] rounded-full" />
             </div>
           ))}
         </div>
@@ -76,48 +76,45 @@ export function CategorySpending() {
   }
 
   return (
-    <Card className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-[var(--color-border)] bg-[var(--color-primary)]">
-        <h2 className="text-base font-black uppercase tracking-wider text-white">Where your money goes</h2>
+    <Card variant="surface" className="flex flex-col h-full p-4 sm:p-5 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)] overflow-hidden">
+      <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-dashed border-[var(--color-border)]">
+        <h2 className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Where your money goes</h2>
         <Link
           href="/analytics"
-          className="text-xs flex items-center gap-1 text-white hover:text-white/80 font-bold transition-colors uppercase tracking-wider"
+          className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)] hover:opacity-80 transition-opacity flex items-center gap-1 leading-none"
         >
-          Detailed Analytics
-          <ArrowRight className="h-3 w-3" />
+          Details <ArrowRight className="h-3 w-3 stroke-[3px]" />
         </Link>
       </div>
 
-      <div className="p-5 flex-1 flex flex-col justify-center">
+      <div className="flex-1 flex flex-col justify-center">
         {totalSpent === 0 ? (
-          <div className="text-center text-slate-500 text-sm py-4">
+          <div className="text-center font-black uppercase tracking-widest text-gray-500 text-[10px] py-4">
             No expenses recorded yet.
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-3">
             {sortedCategories.map((cat) => (
-              <div key={cat.id} className="space-y-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="w-4 h-4 rounded-full border-2 border-[var(--color-border)]"
-                      style={{ backgroundColor: cat.color }}
-                    />
-                    <span className="font-bold text-[var(--color-text)] text-base">{cat.name}</span>
+              <div key={cat.id} className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left overflow-hidden border-2 border-[var(--color-border)] bg-[var(--color-surface)]" style={{ borderRadius: '16px' }}>
+                <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" style={{ backgroundColor: cat.color }} />
+                
+                <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 ml-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-black text-[var(--color-text)] text-[13px] uppercase tracking-wide truncate">{cat.name}</span>
+                    <span className="font-black text-[var(--color-text)] tabular-nums text-[15px] font-numbers tracking-tighter">
+                      {formatCurrency(cat.amount)}
+                    </span>
                   </div>
-                  <span className="font-black text-[var(--color-text)] tabular-nums text-lg">
-                    {formatCurrency(cat.amount)}
-                  </span>
-                </div>
 
-                <div className="h-3 w-full bg-gray-200 border-[3px] border-[var(--color-border)] rounded-full overflow-hidden">
-                  <div
-                    className="h-full border-r-[3px] border-[var(--color-border)]"
-                    style={{
-                      width: `${cat.percentage}%`,
-                      backgroundColor: cat.color,
-                    }}
-                  />
+                  <div className="h-2 w-full bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] rounded-full overflow-hidden mt-1.5 shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                    <div
+                      className="h-full border-r-[2px] border-[var(--color-border)]"
+                      style={{
+                        width: `${cat.percentage}%`,
+                        backgroundColor: cat.color,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             ))}

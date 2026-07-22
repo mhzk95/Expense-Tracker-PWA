@@ -70,59 +70,68 @@ export function RecentTransactions() {
             return (
               <Card
                 key={txn.id}
+                variant="surface"
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3 transition-all duration-300",
-                  txn.needsReview && "needs-review-card border-l-[6px] border-l-amber-400 bg-amber-50"
+                  "group relative overflow-hidden transition-all duration-200 border-2 border-[var(--color-border)]",
+                  txn.needsReview && "border-[#facc15]"
                 )}
+                style={{ borderRadius: '16px' }}
               >
-                {/* Type icon */}
-                <div
-                  className="flex-shrink-0 h-12 w-12 rounded-[var(--radius-theme-base)] flex items-center justify-center border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm"
-                  style={{ 
-                    backgroundColor: baseColor,
-                    color: "#fff"
-                  }}
-                >
-                  {(() => {
-                    if (isTransfer) {
-                      return <ArrowLeftRight className="h-5 w-5" />;
-                    }
-                    const IconComp = getCategoryIcon(category?.icon);
-                    return <IconComp className="h-5 w-5" />;
-                  })()}
-                </div>
-
-                {/* Description + category */}
-                <div className="flex-1 min-w-0 flex flex-col justify-center">
-                  <MarqueeText 
-                    text={txn.payee ? txn.payee : txn.description} 
-                    className="text-base font-black text-[var(--color-text)] text-balance uppercase tracking-wide" 
+                <div className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left">
+                  {/* Left Color Accent Strip */}
+                  <div 
+                    className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
+                    style={{ backgroundColor: txn.needsReview ? '#facc15' : baseColor }} 
                   />
-                  <div className="text-xs font-bold text-gray-600 mt-1 flex flex-col min-w-0 uppercase tracking-widest">
-                    {txn.payee && txn.description !== "Quick Entry" ? (
-                      <span className="text-[var(--color-text)] truncate">{txn.description}</span>
-                    ) : null}
-                    <span className="truncate">{category?.name ?? "Uncategorized"}</span>
-                    <span className="whitespace-nowrap mt-0.5 text-gray-500">{formatDate(txn.date, "medium")}</span>
-                  </div>
-                </div>
 
-                {/* Amount + Review Badge */}
-                <div className="text-right flex flex-col items-end justify-start h-full pt-1">
-                  <span
-                    className={cn(
-                      "text-lg font-numbers font-black tabular-nums text-balance",
-                      isIncome ? "text-emerald-600" : isTransfer ? "text-gray-500" : "text-[var(--color-text)]"
-                    )}
+                  {/* Type icon */}
+                  <div
+                    className="flex-shrink-0 w-11 h-11 rounded-[10px] flex items-center justify-center relative z-10 ml-1"
+                    style={{ 
+                      backgroundColor: baseColor,
+                      color: "#000"
+                    }}
                   >
-                    {isIncome ? "+" : isTransfer ? "" : "−"}
-                    {formatCurrency(txn.amount, txn.currency)}
-                  </span>
-                  {txn.needsReview && (
-                    <span className="text-[10px] font-black font-display uppercase tracking-wider text-amber-900 bg-amber-400 border-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] shadow-brutal-sm px-2 py-1 rounded-[var(--radius-theme-base)] leading-none mt-2">
-                      Review
-                    </span>
-                  )}
+                    {(() => {
+                      if (isTransfer) {
+                        return <ArrowLeftRight className="w-5 h-5 stroke-[2.5px]" />;
+                      }
+                      const IconComp = getCategoryIcon(category?.icon);
+                      return <IconComp className="w-5 h-5 stroke-[2.5px]" />;
+                    })()}
+                  </div>
+
+                  {/* Description + category */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
+                    <h3 className="text-[13px] font-black uppercase truncate leading-tight text-white pt-0.5">
+                      {txn.payee || txn.description || "No Title"}
+                    </h3>
+                    <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">
+                      <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                      <span className="truncate block text-gray-500 mt-0.5">
+                        {formatDate(txn.date, "medium")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Amount + Review Badge */}
+                  <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
+                    <div className="flex items-center gap-1">
+                      <span
+                        className={cn(
+                          "text-[15px] font-black tracking-tighter text-right leading-none font-numbers",
+                          isIncome ? "text-emerald-500" : "text-white"
+                        )}
+                      >
+                        {isIncome ? "+" : isTransfer ? "" : "−"}₹{Math.abs(txn.amount).toFixed(2)}
+                      </span>
+                    </div>
+                    {txn.needsReview && (
+                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border-2 border-black px-2 py-0.5 rounded flex items-center gap-1 mt-1">
+                        Review
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Card>
             );

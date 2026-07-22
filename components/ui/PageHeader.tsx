@@ -26,9 +26,9 @@ export function PageHeader({ title, subtitle, action, className }: PageHeaderPro
     >
       <ThemeDecal slot="header-bg" />
       <div>
-        <h1 className="text-3xl font-display font-black text-[var(--color-text)] tracking-tight uppercase">{title}</h1>
+        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-none font-display text-white">{title}</h1>
         {subtitle && (
-          <p className="mt-1 text-xs font-bold text-gray-600 uppercase tracking-widest">{subtitle}</p>
+          <p className="mt-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">{subtitle}</p>
         )}
       </div>
       {action && <div className="flex-shrink-0">{action}</div>}

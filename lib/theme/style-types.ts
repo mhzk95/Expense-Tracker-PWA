@@ -15,6 +15,7 @@ export interface SurfaceStyle {
 export interface InteractionStyle {
   hover: "none" | "lift" | "highlight" | "opacity";
   pressed: "none" | "sink" | "shrink";
+  focus?: "none" | "ring" | "brutal-shift";
 }
 
 export interface BaseComponentStyle {
