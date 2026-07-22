@@ -224,7 +224,10 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() && recorder.state !== "done") return;
+    if (!content.trim() && recorder.state !== "done" && photoBlobs.length === 0) {
+      alert("Please add a note, voice memo, or photo to save this memory.");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -311,9 +314,9 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           </div>
         ) : (
           <div className="-mx-4 -mt-4 mb-2">
-            <label className="flex items-center justify-center w-full h-32 bg-gray-100 border-[3px] border-b border-[var(--color-border)] cursor-pointer hover:bg-gray-200 transition-colors">
+            <label className="flex items-center justify-center w-full h-32 bg-[var(--color-bg)] border-b-2 border-[var(--color-border)] cursor-pointer hover:bg-[var(--color-surface)] transition-colors">
               <div className="flex flex-col items-center gap-2 text-[var(--color-text)]">
-                <div className="p-3 bg-[var(--color-surface)] rounded-2xl shadow-[4px_4px_0px_0px_var(--color-border)] border-2 border-[var(--color-border)]"><ImageIcon className="w-6 h-6 text-[var(--color-text)]" /></div>
+                <div className="p-3 bg-[var(--color-surface)] rounded-2xl border-2 border-[var(--color-border)]"><ImageIcon className="w-6 h-6 text-[var(--color-text)]" /></div>
                 <span className="text-[11px] font-black uppercase tracking-widest mt-2">Add a photo</span>
               </div>
               <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -322,7 +325,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         )}
 
         {/* Audio Recorder */}
-        <div className="bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] p-4 flex flex-col items-center justify-center min-h-[100px] shadow-[4px_4px_0px_0px_var(--color-border)]">
+        <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] p-4 flex flex-col items-center justify-center min-h-[100px]">
           {recorder.state === "idle" && (
             <button
               type="button"
@@ -402,25 +405,25 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
         {/* 2x2 Grid Metadata */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {/* Date & Time */}
-          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+          <div className="col-span-2 bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[64px] focus-within:-translate-y-0.5 focus-within:border-[var(--color-primary)] transition-all">
             <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><Calendar className="w-3.5 h-3.5 stroke-[3px]" /> Date & Time</span>
             <input type="datetime-local" value={customDate} onChange={e=>setCustomDate(e.target.value)} className="bg-transparent text-xs sm:text-sm text-[var(--color-text)] outline-none w-full font-bold" />
           </div>
 
           {/* Location */}
-          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 text-left hover:shadow-[4px_4px_0px_0px_var(--color-border)] hover:-translate-y-0.5 flex flex-col justify-center min-h-[64px] transition-all">
+          <button type="button" onClick={() => setShowLocationPicker(true)} className="bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-[16px] p-3 text-left hover:-translate-y-0.5 hover:border-[var(--color-primary)] flex flex-col justify-center min-h-[64px] transition-all">
             <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1"><MapPin className="w-3.5 h-3.5 stroke-[3px]" /> Location</span>
             <span className="text-xs text-[var(--color-text)] truncate w-full font-bold">{getLocationDisplay() || "Add location..."}</span>
           </button>
 
           {/* Event */}
-          <div className="bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+          <div className="bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] focus-within:-translate-y-0.5 focus-within:border-[var(--color-primary)] transition-all">
             <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Event <span className="lowercase opacity-50">(optional)</span></span>
             <input type="text" value={event} onChange={e=>setEvent(e.target.value)} placeholder="e.g. Dinner" className="bg-transparent text-xs text-[var(--color-text)] outline-none w-full placeholder-gray-400 font-bold" />
           </div>
 
           {/* Mood */}
-          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] relative shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+          <div className="col-span-2 bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-[16px] p-3 flex flex-col justify-center min-h-[64px] relative focus-within:-translate-y-0.5 focus-within:border-[var(--color-primary)] transition-all">
             <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-1">Mood</span>
             <select value={mood} onChange={e=>setMood(e.target.value)} className="bg-transparent text-xs sm:text-sm text-[var(--color-text)] outline-none w-full appearance-none font-bold z-10 cursor-pointer">
               <option value="" className="text-[var(--color-text)]">Select mood...</option>
@@ -429,7 +432,7 @@ export function JournalForm({ onSuccess, onCancel }: JournalFormProps) {
           </div>
 
           {/* Reflection */}
-          <div className="col-span-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[80px] shadow-inner focus-within:shadow-[4px_4px_0px_0px_var(--color-border)] focus-within:-translate-y-0.5 transition-all">
+          <div className="col-span-2 bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-[16px] p-3 sm:p-4 flex flex-col justify-center min-h-[80px] focus-within:-translate-y-0.5 focus-within:border-[var(--color-primary)] transition-all">
             <span className="text-[10px] text-[var(--color-text)] font-black uppercase tracking-widest flex items-center gap-1.5 mb-2">Reflection <span className="lowercase opacity-50">(optional)</span></span>
             <textarea rows={2} value={content} onChange={e=>setContent(e.target.value)} placeholder="Grateful for..." className="bg-transparent text-sm text-[var(--color-text)] outline-none w-full placeholder-gray-400 resize-none font-bold overflow-hidden" />
           </div>

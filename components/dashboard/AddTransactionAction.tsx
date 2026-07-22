@@ -11,7 +11,7 @@ export function AddTransactionAction() {
 
   return (
     <>
-    <div className="relative group shrink-0">
+    <div className="relative group shrink-0 transform -rotate-2">
       {/* Tilted background shadow */}
       <div className="absolute inset-0 bg-[#facc15] border-2 border-[var(--color-border)] rounded-lg translate-x-[4px] translate-y-[4px] shadow-none z-0" />
       <div className="absolute inset-0 bg-black translate-x-1.5 translate-y-1.5 rounded-lg z-0" />

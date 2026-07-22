@@ -26,7 +26,7 @@ export function PageHeader({ title, subtitle, action, className }: PageHeaderPro
     >
       <ThemeDecal slot="header-bg" />
       <div>
-        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-none font-display text-white">{title}</h1>
+        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-none font-display text-[var(--color-text)] transform -rotate-2 origin-left mb-1">{title}</h1>
         {subtitle && (
           <p className="mt-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">{subtitle}</p>
         )}

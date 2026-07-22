@@ -132,7 +132,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-[3px] border-[var(--color-border)]">
+      <div className="flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-2 border-[var(--color-border)]">
         <div>
           <label className="block text-sm font-black text-[var(--color-text)]">Exclude from Net Worth</label>
           <p className="text-[10px] font-bold text-gray-500 mt-0.5 leading-tight uppercase tracking-wider">
@@ -155,7 +155,7 @@ export function AccountForm({ onSuccess, initialData }: AccountFormProps) {
       <button
         type="submit"
         disabled={isSubmitting || !name || !balance}
-        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
+        className={`w-full text-white font-black uppercase tracking-widest rounded-xl py-3 mt-4 border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] transition-all active:scale-[0.98] active:translate-y-1 active:translate-x-1 active:shadow-none disabled:opacity-50 ${getButtonClass()}`}
       >
         {isSubmitting ? "Adding..." : initialData ? "Update Account" : "Add Account"}
       </button>

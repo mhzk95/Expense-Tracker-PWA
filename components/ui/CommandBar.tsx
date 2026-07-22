@@ -175,7 +175,7 @@ export function CommandBar() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center border-4 border-[var(--color-border)] shadow-brutal-lg hover:bg-violet-400 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:translate-x-1.5 active:translate-y-1.5 active:shadow-none"
+        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-[16px] bg-[var(--color-primary)] text-white flex items-center justify-center border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:bg-[var(--color-primary)]/90 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:translate-x-1.5 active:translate-y-1.5 active:shadow-none transform -rotate-2"
         aria-label="Smart Entry"
       >
         <Sparkles className="h-6 w-6 stroke-[2.5px]" />

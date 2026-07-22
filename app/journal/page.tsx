@@ -323,17 +323,17 @@ export default function JournalPage() {
   return (
     <div className="pb-32 min-h-screen relative overflow-hidden flex flex-col">
       
-      {/* Sticky Header / Search Area */}
-      <div className="sticky top-0 z-40 bg-[var(--color-surface)] pt-4 pb-4 px-2 sm:px-4 border-b-4 border-[var(--color-border)] shadow-[0_4px_0_0_var(--color-border)]">
+      {/* Header Area */}
+      <div className="pt-4 pb-4 px-2 sm:px-4">
         <PageHeader 
           title="Journal"
           subtitle={loading ? "Loading..." : `${entries.length} memories`}
-          className="mb-1"
           action={
             <Button
               variant="secondary"
               size="icon"
               onClick={() => setShowSearch(v => !v)}
+              className="transform -rotate-2"
             >
               <Search className="w-5 h-5 stroke-[2.5px]" />
             </Button>
@@ -465,7 +465,7 @@ export default function JournalPage() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_var(--color-border)] transition-all"
+        className="fixed bottom-24 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-[var(--color-primary)] rounded-[16px] border-2 border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] flex items-center justify-center z-30 active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_var(--color-border)] transition-all transform -rotate-2"
         aria-label="Add journal entry"
       >
         <Plus className="w-6 h-6 text-black stroke-[3px]" />

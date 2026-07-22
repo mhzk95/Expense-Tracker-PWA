@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { useCategories } from "@/hooks/useCategories";
 import { Target, Plus, Trash2, Edit2, ChevronLeft } from "lucide-react";
 import { AdaptiveOverlay } from "@/components/ui/AdaptiveOverlay";
+import { Card } from "@/components/ui/Card";
 import { hexToRgb, getCategoryIcon, ICON_MAP, vibrate } from "@/lib/utils/helpers";
 
 const AVAILABLE_ICONS = [
@@ -104,7 +105,7 @@ export default function CategoriesPage() {
                 setIsAdding(true);
                 vibrate([10]);
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-[3px] border-[var(--color-border)] transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-[var(--color-primary)] hover:brightness-110 border-[3px] border-[var(--color-border)] transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none transform -rotate-2"
             >
               <Plus className="h-4 w-4 stroke-[3px]" />
               Add New
@@ -126,7 +127,7 @@ export default function CategoriesPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-text)] focus:shadow-[4px_4px_0px_0px_var(--color-border)] outline-none transition-shadow"
+                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--color-text)] focus:border-[var(--color-primary)] outline-none transition-colors"
                 placeholder="e.g. Groceries"
                 required
               />
@@ -164,7 +165,7 @@ export default function CategoriesPage() {
             {/* Icon Picker Grid */}
             <div className="space-y-1.5">
               <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Icon</label>
-              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-xl max-h-[140px] overflow-y-auto scrollbar-none shadow-inner">
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-xl max-h-[140px] overflow-y-auto scrollbar-none">
                 {AVAILABLE_ICONS.map((ico) => {
                   const IconComp = ICON_MAP[ico.name] || Target;
                   const isSelected = icon === ico.name;
@@ -193,7 +194,7 @@ export default function CategoriesPage() {
             {/* Robust Color Picker */}
             <div className="space-y-1.5">
               <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Color</label>
-              <div className="flex flex-wrap items-center gap-2 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-xl p-3 shadow-inner">
+              <div className="flex flex-wrap items-center gap-2 bg-[var(--color-bg)] border-2 border-[var(--color-border)] rounded-xl p-3">
                 {colors.map((c) => (
                   <button
                     key={c}
@@ -273,16 +274,20 @@ export default function CategoriesPage() {
                 {grouped.map((cat) => {
                   const IconComp = getCategoryIcon(cat.icon);
                   return (
-                    <div 
+                    <Card 
                       key={cat.id}
-                      className="group relative bg-[var(--color-surface)] flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] hover:shadow-[6px_6px_0px_0px_var(--color-border)] hover:-translate-y-1 rounded-[16px] overflow-visible transition-all duration-300"
+                      variant="surface"
+                      className="group relative flex items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3 pl-5 sm:pl-6 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--color-border)] transition-all duration-300"
                     >
-                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <div
-                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]"
-                          style={{ backgroundColor: cat.color || "#94a3b8" }}
-                        >
-                          <IconComp className="w-4 h-4 stroke-[3px] text-[var(--color-text)]" />
+                      {/* Accent Strip */}
+                      <div
+                        className="absolute left-0 top-0 bottom-0 w-2.5 rounded-l-[14px] border-r-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: cat.color || "#94a3b8" }}
+                      />
+
+                      <div className="flex items-center gap-3 min-w-0 flex-1 ml-1">
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
+                          <IconComp className="w-4 h-4 stroke-[3px]" style={{ color: cat.color }} />
                         </div>
                         <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate">{cat.name}</span>
                       </div>
@@ -294,7 +299,7 @@ export default function CategoriesPage() {
                             e.stopPropagation();
                             handleEdit(cat);
                           }}
-                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-[var(--color-border)] hover:bg-gray-100 text-gray-500 hover:text-[var(--color-text)] transition-colors"
+                          className="p-2 rounded-xl border-2 border-transparent hover:border-[var(--color-border)] hover:bg-gray-100 text-gray-500 hover:text-[var(--color-text)] transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4 stroke-[3px]" />
@@ -306,13 +311,13 @@ export default function CategoriesPage() {
                               deleteCategory(cat.id);
                             }
                           }}
-                          className="p-2 rounded-xl border-[2px] border-transparent hover:border-red-500 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
+                          className="p-2 rounded-xl border-2 border-transparent hover:border-red-500 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4 stroke-[3px]" />
                         </button>
                       </div>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>

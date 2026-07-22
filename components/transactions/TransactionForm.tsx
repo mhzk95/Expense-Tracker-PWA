@@ -58,9 +58,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   
   const availableCategories = categories.filter(c => c.type === type);
   const focusStyles = {
-    expense: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
-    income: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
-    transfer: "focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    expense: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    income: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
+    transfer: "focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5",
   };
   const activeFocus = focusStyles[type];
   
@@ -666,7 +666,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none pb-28">
         
         {/* Main Details Card - Structured Stacking Context relative z-30 */}
-        <div className="relative z-30 p-4 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)] space-y-4">
+        <div className="relative z-30 p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] shadow-[2px_2px_0px_0px_var(--color-border)] space-y-4">
           {/* Type Toggle */}
           <div className="flex p-1 bg-gray-100 rounded-xl border-2 border-[var(--color-border)] shadow-inner">
             {(["expense", "income", "transfer"] as const).map((t) => {
@@ -777,7 +777,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] p-3 space-y-2 mt-3 shadow-[8px_8px_0px_0px_var(--color-border)] relative z-40"
+                  className="overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] p-3 space-y-2 mt-3 shadow-[4px_4px_0px_0px_var(--color-border)] relative z-40"
                 >
                   <div className="grid grid-cols-4 gap-1.5 text-center text-sm font-semibold select-none">
                     <button type="button" onClick={() => handleKeypadPress("C")} className="h-10 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-[var(--color-text)] font-black hover:bg-gray-100 transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none">C</button>
@@ -810,7 +810,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
           </div>
 
           {/* Core Details Group */}
-          <div className="bg-gray-100 border-[3px] border-[var(--color-border)] rounded-[16px] p-4 space-y-4 shadow-inner">
+          <div className="bg-gray-100 border-2 border-[var(--color-border)] rounded-[16px] p-4 space-y-4 shadow-inner">
             {/* Date & Time Selection (Side by Side) - relative z-10 */}
             <div className="relative z-10 grid grid-cols-2 gap-3">
             <div>
@@ -862,7 +862,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedCat = categories.find(c => c.id === categoryId);
@@ -891,7 +891,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] overflow-hidden max-h-60 flex flex-col"
+                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] overflow-hidden max-h-60 flex flex-col"
                       >
                         <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-gray-100">
                           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text)] stroke-[3px]" />
@@ -900,7 +900,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                             placeholder="Search categories..."
                             value={categorySearch}
                             onChange={(e) => setCategorySearch(e.target.value)}
-                            className="w-full bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[var(--color-text)] font-black placeholder-gray-500 outline-none transition-all focus:shadow-[4px_4px_0px_0px_var(--color-border)] focus:-translate-y-0.5 focus:-translate-x-0.5"
+                            className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[var(--color-text)] font-black placeholder-gray-500 outline-none transition-all focus:shadow-[2px_2px_0px_0px_var(--color-border)] focus:-translate-y-0.5 focus:-translate-x-0.5"
                           />
                         </div>
 
@@ -1005,7 +1005,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowToAccountDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
@@ -1023,7 +1023,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.length === 0 ? (
                           <div className="text-slate-500 text-[11px] p-2 text-center">No accounts</div>
@@ -1068,7 +1068,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === accountId);
@@ -1086,7 +1086,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.map((acc) => {
                           const isSelected = acc.id === accountId;
@@ -1125,7 +1125,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                       setShowCategoryDropdown(false);
                       setShowKeypad(false);
                     }}
-                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
+                    className={`w-full text-left bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl px-3 py-2.5 text-[var(--color-text)] font-black transition-all shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none outline-none flex items-center justify-between ${activeFocus}`}
                   >
                     {(() => {
                       const selectedAcc = accounts.find(a => a.id === toAccountId);
@@ -1143,7 +1143,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         <option value="" disabled>Select destination</option>
                         {accounts.filter(a => a.id !== accountId).map((acc) => {
@@ -1209,7 +1209,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             setShowAccountDropdown(false);
             setShowToAccountDropdown(false);
           }}
-          className="w-full py-3 px-4 rounded-xl border-[3px] border-[var(--color-border)] bg-gray-100 text-[var(--color-text)] font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-gray-200 shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none"
+          className="w-full py-3 px-4 rounded-xl border-2 border-[var(--color-border)] bg-gray-100 text-[var(--color-text)] font-black uppercase tracking-widest transition-all text-xs flex items-center justify-between hover:bg-gray-200 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none"
         >
           <span>{showOptionalDetails ? "Hide Optional Details" : "Show Optional Details"}</span>
           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showOptionalDetails ? "rotate-180" : ""}`} />
@@ -1224,7 +1224,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
               transition={{ duration: 0.15 }}
               className="space-y-4 overflow-hidden pt-1 relative z-20"
             >
-              <div className="p-4 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] shadow-[4px_4px_0px_0px_var(--color-border)] space-y-4">
+              <div className="p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[24px] shadow-[2px_2px_0px_0px_var(--color-border)] space-y-4">
                 
                 {/* Payee / Merchant with Auto Suggest */}
                 {type !== "transfer" && (
@@ -1255,7 +1255,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 5 }}
-                          className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                          className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                         >
                           {payeeSuggestions.slice(0, 5).map(p => (
                             <button
@@ -1305,7 +1305,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {itemSuggestions.slice(0, 5).map(i => (
                           <button
@@ -1431,7 +1431,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[16px] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
+                        className="absolute z-[70] left-0 right-0 bottom-full mb-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-xl shadow-xl overflow-hidden max-h-40 overflow-y-auto"
                       >
                         {tagSuggestions.slice(0, 5).map(t => (
                           <button
@@ -1456,7 +1456,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         </AnimatePresence>
 
         {/* Needs Review Toggle - relative z-10 */}
-        <div className="relative z-10 flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-[3px] border-[var(--color-border)]">
+        <div className="relative z-10 flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-2 border-[var(--color-border)]">
           <div className="pr-4">
             <label className="block text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest">Needs Review</label>
             <p className="text-[10px] font-bold text-gray-500 mt-0.5 leading-tight uppercase tracking-wider">
@@ -1480,7 +1480,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         <button
           type="submit"
           disabled={isSubmitting || !amount}
-          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-[3px] border-[var(--color-border)] transition-all disabled:opacity-50 shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none ${
+          className={`w-full py-4 font-black uppercase tracking-widest text-sm rounded-xl border-2 border-[var(--color-border)] transition-all disabled:opacity-50 shadow-[2px_2px_0px_0px_var(--color-border)] active:translate-y-1 active:translate-x-1 active:shadow-none ${
             type === "expense"
               ? "bg-red-400 hover:bg-red-500 text-[var(--color-text)]"
               : type === "income"

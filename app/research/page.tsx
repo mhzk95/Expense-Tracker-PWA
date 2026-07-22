@@ -311,14 +311,14 @@ function ResearchContent() {
       {!searchQuery && activeTab === "topics" && !activeTopicId && (
         <div className="grid grid-cols-2 gap-4">
           {isCreatingTopic ? (
-            <div className="flex flex-col items-center justify-center p-6 bg-[var(--color-primary)] border-4 border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)]">
+            <div className="flex flex-col items-center justify-center p-4 bg-[var(--color-primary)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)]">
               <input
                 autoFocus
                 type="text"
                 value={newTopicName}
                 onChange={e => setNewTopicName(e.target.value)}
                 placeholder="Topic Name..."
-                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm font-black text-center placeholder-gray-500 mb-3 px-3 py-2 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)]"
+                className="w-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm font-black text-center placeholder-gray-500 mb-2 px-3 py-2 outline-none focus:shadow-[2px_2px_0px_0px_var(--color-border)]"
                 onKeyDown={e => {
                   if (e.key === "Enter" && newTopicName.trim()) {
                     addTopic({ id: crypto.randomUUID(), title: newTopicName.trim(), status: "active" });
@@ -334,23 +334,23 @@ function ResearchContent() {
               <p className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-text)]/80">Press Enter to save</p>
             </div>
           ) : (
-            <button onClick={() => setIsCreatingTopic(true)} className="flex flex-col items-center justify-center p-6 bg-[var(--color-surface)] border-4 border-[var(--color-border)] border-dashed rounded-[20px] active:translate-x-1 active:translate-y-1 hover:bg-[var(--color-bg)] transition-all group">
-              <div className="h-12 w-12 rounded-xl border-2 border-[var(--color-border)] bg-gray-100 flex items-center justify-center group-hover:bg-[var(--color-primary)] text-[var(--color-text)] group-hover:text-white mb-3 transition-colors shadow-[2px_2px_0px_0px_var(--color-border)]">
-                <FolderPlus className="h-6 w-6 stroke-[2.5px]" />
+            <button onClick={() => setIsCreatingTopic(true)} className="flex flex-col items-center justify-center p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] border-dashed rounded-[16px] active:translate-x-1 active:translate-y-1 hover:bg-[var(--color-bg)] transition-all group">
+              <div className="h-10 w-10 rounded-xl border-2 border-[var(--color-border)] bg-gray-100 flex items-center justify-center group-hover:bg-[var(--color-primary)] text-[var(--color-text)] group-hover:text-white mb-2 transition-colors shadow-[2px_2px_0px_0px_var(--color-border)]">
+                <FolderPlus className="h-5 w-5 stroke-[2.5px]" />
               </div>
-              <span className="text-sm font-black uppercase tracking-wider text-[var(--color-text)]">New Topic</span>
+              <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">New Topic</span>
             </button>
           )}
 
           {topics.map(topic => {
             const count = items.filter(i => i.topicId === topic.id && !i.isArchived).length;
             return (
-              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-6 bg-[var(--color-surface)] border-4 border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[var(--color-primary)] hover:text-white transition-all text-left group">
-                <div className="p-3 bg-gray-100 border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-xl mb-4 shadow-[2px_2px_0px_0px_var(--color-border)] group-hover:bg-[var(--color-surface)] group-hover:text-[var(--color-primary)]">
-                  <Folder className="h-6 w-6 stroke-[2.5px]" />
+              <button key={topic.id} onClick={() => setActiveTopicId(topic.id)} className="flex flex-col items-start p-4 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[var(--color-primary)] hover:text-white transition-all text-left group">
+                <div className="p-2 bg-gray-100 border-2 border-[var(--color-border)] text-[var(--color-text)] rounded-xl mb-3 shadow-[2px_2px_0px_0px_var(--color-border)] group-hover:bg-[var(--color-surface)] group-hover:text-[var(--color-primary)]">
+                  <Folder className="h-5 w-5 stroke-[2.5px]" />
                 </div>
-                <h3 className="text-[var(--color-text)] group-hover:text-white font-black text-lg uppercase tracking-wide mb-1 line-clamp-1">{topic.title}</h3>
-                <span className="text-xs font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider">{count} items</span>
+                <h3 className="text-[var(--color-text)] group-hover:text-white font-black text-sm uppercase tracking-wide mb-1 line-clamp-1">{topic.title}</h3>
+                <span className="text-[10px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider">{count} items</span>
               </button>
             )
           })}
@@ -382,7 +382,7 @@ function ResearchContent() {
                     const suggestedTopics = !item.topicId ? getSuggestedTopics(item.title || "", item.content || "") : [];
 
                     return (
-                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-4 sm:mb-5 w-full" : "w-full"} relative group bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none flex flex-col justify-between transition-all duration-300 !overflow-visible ${item.isPinned ? 'ring-[4px] ring-black bg-[var(--color-primary)]' : ''}`}>
+                      <AnimatedCard key={item.id} className={`${view === "grid" ? "break-inside-avoid mb-4 sm:mb-5 w-full" : "w-full"} relative group bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] shadow-[4px_4px_0px_0px_var(--color-border)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_var(--color-border)] active:translate-x-1 active:translate-y-1 active:shadow-none flex flex-col justify-between transition-all duration-300 !overflow-visible ${item.isPinned ? 'ring-2 ring-black bg-[var(--color-primary)]' : ''}`}>
 
                         {/* Action Menu Toggle (Mobile & Hover) */}
                         <div className={`absolute top-3 right-3 z-20 ${item.isPinned || openMenuId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
@@ -458,18 +458,18 @@ function ResearchContent() {
 
                         {/* Flush Image at the Top */}
                         {item.imageUrl && (isImage || isLink) && (
-                          <div className="w-full relative h-48 sm:h-64 shrink-0 overflow-hidden rounded-t-[16px] border-b-4 border-[var(--color-border)] bg-[var(--color-surface)]">
+                          <div className="w-full relative h-32 sm:h-40 shrink-0 overflow-hidden rounded-t-[14px] border-b-2 border-[var(--color-border)] bg-[var(--color-surface)]">
                             <img src={item.imageUrl} alt={item.title || "Image"} className="w-full h-full object-cover" style={{ objectPosition: "top" }} />
                           </div>
                         )}
 
                         {/* Content Area */}
-                        <div className="p-4 sm:p-6">
-                          <div className="flex items-center gap-2 mb-3 sm:mb-4 pr-16 sm:pr-24">
+                        <div className="p-3 sm:p-4">
+                          <div className="flex items-center gap-2 mb-2 sm:mb-3 pr-12 sm:pr-16">
                             {item.domain && (
-                              <div className="flex items-center gap-1.5 sm:gap-2 overflow-hidden bg-gray-100 border-2 border-[var(--color-border)] px-2 py-1 rounded-[8px] shadow-[2px_2px_0px_0px_var(--color-border)]">
-                                <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-4 h-4 rounded-[4px]" alt="" />
-                                <span className="text-[10px] sm:text-xs font-black text-[var(--color-text)] uppercase tracking-widest truncate">{item.domain}</span>
+                              <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden bg-gray-100 border-2 border-[var(--color-border)] px-1.5 py-0.5 rounded-[6px] shadow-[1px_1px_0px_0px_var(--color-border)]">
+                                <img src={`https://www.google.com/s2/favicons?domain=${item.domain}&sz=32`} className="w-3 h-3 rounded-[3px]" alt="" />
+                                <span className="text-[9px] sm:text-[10px] font-black text-[var(--color-text)] uppercase tracking-widest truncate">{item.domain}</span>
                               </div>
                             )}
                             {item.topicId && searchQuery && (
@@ -503,12 +503,12 @@ function ResearchContent() {
 
                           {/* OCR Text Display */}
                           {item.ocrText && (
-                            <div className="mt-4 p-3 bg-gray-100 rounded-xl border-4 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
-                              <div className="flex items-center justify-between mb-2">
-                                <p className="text-[10px] text-[var(--color-text)] uppercase font-black tracking-widest flex items-center gap-1.5"><FileText className="h-4 w-4 stroke-[2.5px]" /> Extracted Text</p>
+                            <div className="mt-3 p-2 bg-gray-100 rounded-lg border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                              <div className="flex items-center justify-between mb-1.5">
+                                <p className="text-[9px] text-[var(--color-text)] uppercase font-black tracking-widest flex items-center gap-1"><FileText className="h-3 w-3 stroke-[2.5px]" /> Extracted Text</p>
                                 <CopyButton text={item.ocrText || ""} />
                               </div>
-                              <p className="text-xs font-bold text-gray-700 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
+                              <p className="text-[11px] font-bold text-gray-700 line-clamp-3 italic leading-relaxed">"{item.ocrText}"</p>
                             </div>
                           )}
 
@@ -599,8 +599,8 @@ function ResearchContent() {
       {/* PRO CLIPPER SHARE MODAL */}
       {shareItem && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-[var(--color-surface)] border-[4px] border-[var(--color-border)] rounded-[24px] overflow-hidden shadow-[8px_8px_0px_0px_var(--color-border)] animate-in slide-in-from-bottom-8 duration-300">
-            <div className="p-5 border-b-[4px] border-[var(--color-border)] bg-[var(--color-bg)]">
+          <div className="w-full max-w-md bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] overflow-hidden shadow-[8px_8px_0px_0px_var(--color-border)] animate-in slide-in-from-bottom-8 duration-300">
+            <div className="p-4 border-b-2 border-[var(--color-border)] bg-[var(--color-bg)]">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-black text-[var(--color-text)] uppercase tracking-widest flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse border-2 border-[var(--color-border)]" />
