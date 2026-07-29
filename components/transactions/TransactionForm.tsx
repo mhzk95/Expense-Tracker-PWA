@@ -888,10 +888,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   <AnimatePresence>
                     {showCategoryDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 5 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 5 }}
-                        className="absolute z-[70] left-0 w-[calc(200%+12px)] mt-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  overflow-hidden max-h-60 flex flex-col"
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute z-[70] left-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  overflow-hidden max-h-60 flex flex-col"
                       >
                         <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-[var(--color-surfaceHover)]">
                           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text)] stroke-[3px]" />
@@ -1020,10 +1020,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   <AnimatePresence>
                     {showAccountDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute z-[60] right-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.length === 0 ? (
                           <div className="text-slate-500 text-[11px] p-2 text-center">No accounts</div>
@@ -1083,10 +1083,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   <AnimatePresence>
                     {showAccountDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] left-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute z-[60] left-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         {accounts.map((acc) => {
                           const isSelected = acc.id === accountId;
@@ -1140,10 +1140,10 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                   <AnimatePresence>
                     {showToAccountDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute z-[60] right-0 w-[calc(200%+12px)] mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute z-[60] right-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  p-2 flex flex-col gap-1 max-h-[220px] overflow-y-auto scrollbar-none"
                       >
                         <option value="" disabled>Select destination</option>
                         {accounts.filter(a => a.id !== accountId).map((acc) => {
