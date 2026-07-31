@@ -37,7 +37,7 @@ export function getSurfaceClasses(surf: SurfaceStyle): string {
   };
 
   const bgColors: Record<string, string> = {
-    primary: "bg-[var(--theme-primary,var(--color-primary))] text-black",
+    primary: "bg-[var(--color-primary)] text-black",
     secondary: "bg-[var(--theme-surface,var(--color-surface))] text-[var(--theme-text,var(--color-text))]",
     danger: "bg-red-500 text-white",
     ghost: "bg-transparent text-[var(--theme-text,var(--color-text))]",
@@ -51,7 +51,7 @@ export function getSurfaceClasses(surf: SurfaceStyle): string {
   
   if (surf.material === "flat") {
      const flatColors: Record<string, string> = {
-        primary: "bg-transparent text-[var(--theme-primary,var(--color-primary))]",
+        primary: "bg-transparent text-[var(--color-primary)]",
         secondary: "bg-transparent text-[var(--theme-text,var(--color-text))]",
         danger: "bg-transparent text-red-500",
         ghost: "bg-transparent text-[var(--theme-text,var(--color-text))]",
@@ -63,7 +63,7 @@ export function getSurfaceClasses(surf: SurfaceStyle): string {
 
   if (surf.material === "textured") {
     const texturedColors: Record<string, string> = {
-      primary: "bg-[var(--theme-primary,var(--color-primary))] text-black",
+      primary: "bg-[var(--color-primary)] text-black",
       secondary: "bg-[var(--theme-surface,var(--color-surface))] text-[var(--theme-text,var(--color-text))]",
       danger: "bg-[var(--color-danger)] text-white",
       surface: "bg-[var(--theme-surface,var(--color-surface))] text-[var(--theme-text,var(--color-text))]",
@@ -88,8 +88,8 @@ export function getInteractionClasses(int: InteractionStyle, isBrutalistContext:
   };
   const focuses = {
     none: "focus-visible:outline-none focus:ring-0",
-    ring: "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,var(--color-primary))]",
-    "brutal-shift": "focus-visible:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_#facc15] focus:-translate-y-1 focus:-translate-x-1"
+    ring: "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
+    "brutal-shift": "focus-visible:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_var(--color-primary)] focus:-translate-y-1 focus:-translate-x-1"
   };
   
   const focusClass = int.focus ? focuses[int.focus] : focuses.none;

@@ -24,8 +24,11 @@ import {
   Trash2,
   Link as LinkIcon,
   MoreVertical,
+  Clock,
+  ChevronRight
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/helpers";
+import { cn } from "@/lib/utils/helpers";
 
 // ─── Audio Player ─────────────────────────────────────────────────────────────
 
@@ -62,43 +65,47 @@ function AudioPlayer({ fileId, durationMs, waveformData }: {
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      await audioRef.current.play().catch(() => {});
+      await audioRef.current.play().catch(() => { });
       setPlaying(true);
     }
   };
 
   useEffect(() => () => { audioRef.current?.pause(); }, []);
 
-  const bars = waveformData && waveformData.length > 0 ? waveformData : Array.from({ length: 24 }, () => Math.random() * 0.6 + 0.2);
-  const barCount = 24;
+  const bars = waveformData && waveformData.length > 0 ? waveformData : Array.from({ length: 32 }, () => Math.random() * 0.6 + 0.2);
+  const barCount = 32;
   const step = Math.max(1, Math.floor(bars.length / barCount));
   const displayBars = Array.from({ length: barCount }, (_, i) => bars[i * step] ?? 0.3);
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className="flex items-center gap-2 mt-3 bg-[var(--color-surface)] rounded-[16px] px-3 py-2 border-2 border-[var(--color-border)]  w-fit max-w-full overflow-hidden">
-      <button
+    <div className="flex items-center gap-3 mt-4 bg-[var(--color-bg)] rounded-[16px] px-3 py-2.5 border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] w-full overflow-hidden relative">
+      <motion.button
+        whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px 0px var(--color-border)" }}
         onClick={(e) => { e.stopPropagation(); toggle(); }}
-        className="w-8 h-8 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-primary)] active:translate-x-0.5 active:translate-y-0.5 hover:bg-violet-500 flex items-center justify-center flex-shrink-0 transition-all  active:shadow-none"
+        className="w-10 h-10 rounded-xl border-[3px] border-[var(--color-border)] bg-[var(--color-primary)] shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center flex-shrink-0 transition-colors"
       >
         {playing
-          ? <Pause className="w-4 h-4 text-white stroke-[3px]" />
-          : <Play className="w-4 h-4 text-white fill-white stroke-[3px]" />
+          ? <Pause className="w-5 h-5 text-black stroke-[4px]" />
+          : <Play className="w-5 h-5 text-black fill-black stroke-[3px]" />
         }
-      </button>
+      </motion.button>
 
       {/* Waveform bars */}
-      <div className="flex items-center gap-[2px] h-5 ml-1">
+      <div className="flex items-center justify-between gap-[2px] h-6 flex-1 px-1">
         {displayBars.map((amp, i) => (
           <div
             key={i}
-            className={`w-[3px] rounded-full transition-colors ${i < activeCount ? "bg-[var(--color-primary)]" : "bg-gray-300"}`}
-            style={{ height: `${Math.max(4, amp * 20)}px` }}
+            className={cn(
+              "w-[4px] rounded-full transition-colors duration-75",
+              i < activeCount ? "bg-[var(--color-primary)]" : "bg-[var(--color-border)] opacity-30"
+            )}
+            style={{ height: `${Math.max(4, amp * 24)}px` }}
           />
         ))}
       </div>
 
-      <span className="text-xs font-black text-[var(--color-text)] flex-shrink-0 ml-2 tracking-wide">
+      <span className="text-[10px] sm:text-xs font-black uppercase text-[var(--color-text)] flex-shrink-0 ml-1 tracking-widest bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] px-2 py-1 rounded-md">
         {formatDuration(durationMs ?? 0)}
       </span>
     </div>
@@ -130,23 +137,21 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
   const tags = entry.tags || [];
 
   return (
-    <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8 group w-full relative">
-      {/* Left Column: Time & Timeline Line */}
-      <div className="w-[55px] sm:w-[75px] flex-shrink-0 flex flex-col items-end relative">
-        <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-2.5 w-full justify-end pr-2">
-          <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[var(--color-text)] flex-shrink-0 whitespace-nowrap">{time}</span>
-          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-[var(--color-border)] bg-[var(--color-surface)] z-10 flex-shrink-0" />
+    <div className="w-full mb-6">
+      <Card
+        variant="surface"
+        className="flex flex-col relative transition-all duration-200 border-[3px] border-[var(--color-border)] rounded-[20px] overflow-visible p-0 bg-[var(--color-surface)]"
+      >
+        {/* Header Ribbon (Time) */}
+        <div className="absolute -top-3 -left-3 z-10 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] rounded-lg px-3 py-1 flex items-center gap-1.5 rotate-[-2deg]">
+          <Clock className="w-3.5 h-3.5 text-black stroke-[3px]" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-black whitespace-nowrap">{time}</span>
         </div>
-        {/* The continuous line extending down */}
-        <div className="absolute right-[5px] sm:right-[7px] top-6 sm:top-7 bottom-[-24px] sm:bottom-[-32px] w-[3px] bg-black" />
-      </div>
 
-      {/* Right Column: Card */}
-      <Card variant="surface" className="flex-1 min-w-0 p-3 sm:p-4 flex gap-3 sm:gap-4 relative transition-all duration-300 border-2 border-[var(--color-border)] rounded-[16px] overflow-hidden hover:bg-[var(--color-surfaceHover)]">
-        {/* Cover Image Thumbnail (Left) */}
+        {/* Polaroid Image */}
         {photos.length > 0 && (
           <div
-            className="w-[80px] h-[90px] sm:w-[110px] sm:h-[120px] bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex-shrink-0 cursor-pointer relative rounded-[12px] sm:rounded-[16px] overflow-hidden "
+            className="w-full h-[220px] sm:h-[300px] border-b-[3px] border-[var(--color-border)] cursor-pointer relative overflow-hidden rounded-t-[17px]"
             onClick={() => setLightbox(true)}
           >
             <TelegramLazyImage
@@ -157,91 +162,104 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
               photoIndex={0}
             />
             {photos.length > 1 && (
-              <div className="absolute bottom-1 right-1 bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] text-[var(--color-text)] text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg ">
-                +{photos.length - 1}
+              <div className="absolute bottom-3 right-3 bg-[var(--color-primary)] border-[3px] border-[var(--color-border)] text-black text-[12px] font-black uppercase tracking-widest px-3 py-1 rounded-xl shadow-[2px_2px_0px_0px_var(--color-border)]">
+                +{photos.length - 1} Photos
               </div>
             )}
           </div>
         )}
 
-        {/* Content (Right) */}
-        <div className="flex-1 min-w-0 py-1 pr-1">
+        {/* Content Box */}
+        <div className={cn("p-5 sm:p-6", !photos.length && "pt-8")}>
           {/* Title & Menu */}
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[var(--color-text)] font-black text-lg uppercase tracking-wide text-balance truncate">
-              {entry.title || (entry.event || "Memory")}
+          <div className="flex items-start justify-between gap-3 relative">
+            <h3 className="text-[var(--color-text)] font-black text-xl sm:text-2xl uppercase tracking-wide text-balance">
+              {entry.title || (entry.event || "Untitled Memory")}
             </h3>
             <div className="relative flex-shrink-0">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.9, x: 1, y: 1, boxShadow: "0px 0px 0px 0px var(--color-border)" }}
                 onClick={() => setShowMenu(v => !v)}
-                className="p-1 text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] border-[2px] border-transparent hover:border-[var(--color-border)] rounded-lg transition-all"
+                className="w-10 h-10 flex items-center justify-center bg-[var(--color-surfaceHover)] border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] rounded-xl transition-colors"
               >
-                <MoreVertical className="w-5 h-5 stroke-[2.5px]" />
-              </button>
-              {showMenu && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-20" 
-                    onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
-                  />
-                  <div className="absolute right-0 top-8 z-30 bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] rounded-xl min-w-[140px] overflow-hidden py-1 animate-in fade-in duration-100">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
-                      className="flex items-center gap-2 w-full px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-[var(--color-surfaceHover)] transition-colors"
+                <MoreVertical className="w-5 h-5 stroke-[3px] text-[var(--color-text)]" />
+              </motion.button>
+
+              <AnimatePresence>
+                {showMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-20"
+                      onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, x: 20, y: -20 }}
+                      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8, x: 20, y: -20 }}
+                      transition={{ type: "spring", bounce: 0.5, duration: 0.4 }}
+                      className="absolute right-0 top-12 z-30 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] rounded-[16px] overflow-hidden origin-top-right min-w-[160px]"
                     >
-                      <Trash2 className="w-4 h-4 stroke-[2.5px] text-red-500" /> Delete
-                    </button>
-                  </div>
-                </>
-              )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(); setShowMenu(false); }}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4 stroke-[3px]" /> Delete
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
           {/* Location */}
           {locationDisplay && (
-            <div className="flex items-center gap-1.5 mt-1">
-              <MapPin className="w-4 h-4 text-[var(--color-text)] stroke-[3px] flex-shrink-0" />
-              <span className="text-xs font-bold text-gray-700 truncate">{locationDisplay}</span>
+            <div className="flex items-center gap-2 mt-2">
+              <MapPin className="w-4 h-4 text-[var(--color-primary)] stroke-[3px] flex-shrink-0" />
+              <span className="text-sm font-bold text-[var(--color-text)] opacity-80 truncate">{locationDisplay}</span>
             </div>
           )}
 
           {/* Description */}
           {entry.content && (
-            <p className="text-sm font-medium text-[var(--color-text)] mt-2 line-clamp-2 leading-relaxed">
-              {entry.content}
-            </p>
-          )}
-
-          {/* Tags */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {tags.map(tag => (
-                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text)] bg-[var(--color-surfaceHover)] px-2 py-1 rounded-md border-2 border-[var(--color-border)] ">
-                  #{tag}
-                </span>
-              ))}
+            <div className="mt-4 bg-[var(--color-bg)] border-[3px] border-[var(--color-border)] rounded-[12px] p-4 shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+              <p className="text-sm sm:text-base font-bold text-[var(--color-text)] leading-relaxed whitespace-pre-wrap">
+                {entry.content}
+              </p>
             </div>
           )}
 
           {/* Audio player */}
           {entry.audioFileId && (
-            <AudioPlayer
-              fileId={entry.audioFileId}
-              durationMs={entry.audioDurationMs}
-              waveformData={entry.waveformData}
-            />
+            <div className="mt-4">
+              <AudioPlayer
+                fileId={entry.audioFileId}
+                durationMs={entry.audioDurationMs}
+                waveformData={entry.waveformData}
+              />
+            </div>
           )}
 
-          {/* Linked transaction */}
-          {linkedTxn && (
-            <div className="mt-3 py-2 px-3 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl  flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <LinkIcon className="w-4 h-4 text-[var(--color-text)] stroke-[2.5px] flex-shrink-0" />
-                <span className="text-xs font-bold text-gray-800 truncate">{linkedTxn.description}</span>
-              </div>
-              <span className="text-sm font-black text-[var(--color-text)] flex-shrink-0 ml-2">
-                {formatCurrency(linkedTxn.amount, linkedTxn.currency)}
-              </span>
+          {/* Tags & Linked Transaction Row */}
+          {(tags.length > 0 || linkedTxn) && (
+            <div className="flex flex-wrap items-center gap-2 mt-5 pt-5 border-t-[3px] border-dashed border-[var(--color-border)]">
+              {tags.map(tag => (
+                <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-black bg-[#a855f7] px-3 py-1.5 rounded-full border-[3px] border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)]">
+                  #{tag}
+                </span>
+              ))}
+
+              {linkedTxn && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-[#22c55e] border-[3px] border-[var(--color-border)] rounded-full shadow-[2px_2px_0px_0px_var(--color-border)] max-w-full">
+                  <LinkIcon className="w-3.5 h-3.5 text-black stroke-[3px] flex-shrink-0" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black truncate max-w-[100px]">
+                    {linkedTxn.description}
+                  </span>
+                  <span className="text-[10px] font-black text-black ml-1 bg-white/30 px-1.5 py-0.5 rounded-md border-2 border-black/20">
+                    {formatCurrency(linkedTxn.amount, linkedTxn.currency)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -250,19 +268,29 @@ function EntryCard({ entry, linkedTxn, onDelete }: {
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setLightbox(false)}
         >
-          <button className="absolute top-5 right-5 p-2 bg-[var(--color-surface)]/10 hover:bg-[var(--color-surface)]/20 rounded-full text-white">
-            <X className="w-5 h-5" />
-          </button>
-          <TelegramLazyImage
-            url={photos[0]}
-            alt="Full"
-            className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            entryId={entry.id}
-            photoIndex={0}
-          />
+          <motion.button
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-5 right-5 p-3 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-full text-black z-50"
+          >
+            <X className="w-6 h-6 stroke-[4px]" />
+          </motion.button>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", bounce: 0.4 }}
+          >
+            <TelegramLazyImage
+              url={photos[0]}
+              alt="Full"
+              className="max-w-full max-h-[85vh] object-contain rounded-[16px] border-[4px] border-white"
+              entryId={entry.id}
+              photoIndex={0}
+            />
+          </motion.div>
         </div>
       )}
     </div>
@@ -297,7 +325,6 @@ export default function JournalPage() {
   const { transactions, loading: txLoading } = useTransactions();
   const loading = journalLoading || txLoading;
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -320,12 +347,88 @@ export default function JournalPage() {
 
   const groups = groupByDate(filteredEntries);
 
-  return (
-    <div className="pb-32 min-h-screen relative overflow-hidden flex flex-col">
+  // Floating Date Pill Logic
+  const [activeDate, setActiveDate] = useState<string | null>(null);
+  const [showPill, setShowPill] = useState(false);
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      // Get scroll top from either window (mobile) or the scrolling element (desktop)
+      const target = e.target as HTMLElement | Document | Window;
+      let currentScroll = 0;
       
-      {/* Header Area */}
-      <div className="pt-4 pb-4 px-2 sm:px-4">
-        <PageHeader 
+      if (target === document || target === window) {
+        currentScroll = window.scrollY || document.documentElement.scrollTop;
+      } else {
+        currentScroll = (target as HTMLElement).scrollTop || 0;
+      }
+
+      // Track active date based on visible elements
+      // The active date is the FIRST group whose bottom edge is still visible (below the header)
+      const elements = Array.from(document.querySelectorAll(".journal-date-group"));
+      const activeElement = elements.find(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.bottom > 140; // 140px threshold accounts for header + some padding
+      });
+
+      if (activeElement) {
+        setActiveDate(activeElement.getAttribute("data-date"));
+      }
+
+      if (currentScroll > 80) {
+        setShowPill(true);
+        if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+        scrollTimeout.current = setTimeout(() => setShowPill(false), 3000);
+      } else {
+        setShowPill(false);
+      }
+    };
+    
+    // Use capture phase to catch scroll events from any scrollable container OR window
+    window.addEventListener("scroll", handleScroll, true);
+    
+    // Trigger once on mount to set initial active date (only runs once now)
+    handleScroll({ target: document } as unknown as Event);
+    
+    return () => window.removeEventListener("scroll", handleScroll, true);
+  }, []);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.4 } }
+  };
+
+  return (
+    <div className="pb-32 relative">
+      <div className="w-full">
+        {/* Dynamic Global Date Pill */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ 
+            opacity: showPill && activeDate ? 1 : 0, 
+            y: showPill && activeDate ? 0 : -20 
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="fixed top-20 left-0 right-0 z-50 flex justify-center pointer-events-none"
+        >
+          <span className="bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black text-[var(--color-text)] uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--color-border)]">
+            {activeDate}
+          </span>
+        </motion.div>
+
+        <PageHeader
           title="Journal"
           subtitle={loading ? "Loading..." : `${entries.length} memories`}
           action={
@@ -335,7 +438,7 @@ export default function JournalPage() {
                 size="icon"
                 onClick={() => setShowSearch(v => !v)}
               >
-                <Search className="w-5 h-5 stroke-[2.5px]" />
+                <Search className="w-5 h-5 stroke-[3px]" />
               </Button>
               <Button
                 variant="primary"
@@ -351,128 +454,125 @@ export default function JournalPage() {
         />
 
         {/* Search bar (collapsible) */}
-        {showSearch && (
-          <div className="relative mt-4 mb-2 animate-in slide-in-from-top-2 fade-in duration-200">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 stroke-[2.5px]" />
-            <Input
-              autoFocus
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search memories..."
-              className="w-full pl-12 pr-12 font-bold"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors z-10"
-              >
-                <X className="w-5 h-5 stroke-[2.5px]" />
-              </button>
-            )}
-          </div>
-        )}
+        <AnimatePresence>
+          {showSearch && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              className="relative overflow-hidden"
+            >
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black stroke-[3px]" />
+                <Input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="SEARCH MEMORIES..."
+                  className="w-full pl-12 pr-12 font-black uppercase tracking-widest placeholder:text-gray-400"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] rounded-lg transition-colors z-10"
+                  >
+                    <X className="w-5 h-5 stroke-[3px]" />
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tag pills */}
         {allTags.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mt-2">
-            <Button
-              variant={!selectedTag ? "primary" : "secondary"}
-              size="sm"
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mt-4 pt-1">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSelectedTag(null)}
-              className="flex-shrink-0 uppercase tracking-wider"
+              className={cn(
+                "flex-shrink-0 px-4 py-2 rounded-full border-[3px] border-[var(--color-border)] text-xs font-black uppercase tracking-widest transition-all",
+                !selectedTag
+                  ? "bg-[var(--color-primary)] text-black shadow-[3px_3px_0px_0px_var(--color-border)]"
+                  : "bg-[var(--color-surface)] text-gray-400 shadow-[2px_2px_0px_0px_var(--color-border)] hover:text-[var(--color-text)]"
+              )}
             >
               All
-            </Button>
+            </motion.button>
             {allTags.map(tag => (
-              <Button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 key={tag}
-                variant={selectedTag === tag ? "primary" : "secondary"}
-                size="sm"
                 onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
-                className="flex-shrink-0 uppercase tracking-wider"
+                className={cn(
+                  "flex-shrink-0 px-4 py-2 rounded-full border-[3px] border-[var(--color-border)] text-xs font-black uppercase tracking-widest transition-all",
+                  selectedTag === tag
+                    ? "bg-[#a855f7] text-black shadow-[3px_3px_0px_0px_var(--color-border)]"
+                    : "bg-[var(--color-surface)] text-gray-400 shadow-[2px_2px_0px_0px_var(--color-border)] hover:text-[var(--color-text)]"
+                )}
               >
                 #{tag}
-              </Button>
+              </motion.button>
             ))}
           </div>
         )}
-      </div>
 
-      {/* Timeline Feed */}
-      <div className="px-1 sm:px-4 pt-4 sm:pt-6 overflow-hidden flex-1">
         {loading ? (
-          <div className="flex flex-col gap-6 px-2 sm:px-0">
+          <div className="flex flex-col gap-8 mt-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex gap-3">
-                <div className="w-[60px] flex-shrink-0" />
-                <div className="flex-1 h-[130px] brutal-card animate-pulse" />
-              </div>
+              <div key={i} className="w-full h-[250px] bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[20px] animate-pulse shadow-[4px_4px_0px_0px_var(--color-border)]" />
             ))}
           </div>
         ) : filteredEntries.length === 0 ? (
-          <div className="text-center py-20 px-4">
-            <div className="w-24 h-24 bg-[var(--color-surface)] rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
-              <span className="text-4xl">📔</span>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", bounce: 0.5 }}
+            className="text-center py-24 px-4 bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] rounded-[24px] mt-6"
+          >
+            <div className="w-24 h-24 bg-[var(--color-primary)] rounded-full flex items-center justify-center mx-auto mb-6 border-[3px] border-[var(--color-border)]">
+              <span className="text-5xl">📸</span>
             </div>
-            <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-xl mb-2">No memories yet</h3>
-            <p className="text-gray-500 font-bold text-sm mb-8">Capture your first memory with a photo, voice note, or reflection.</p>
-            <button
+            <h3 className="text-[var(--color-text)] font-black uppercase tracking-widest text-2xl mb-3">Void is Empty</h3>
+            <p className="text-gray-400 font-bold text-sm mb-8 px-6">Capture your first brutal memory with a photo, voice note, or reflection.</p>
+            <motion.button
+              whileTap={{ scale: 0.95, x: 2, y: 2, boxShadow: "0px 0px 0px 0px var(--color-border)" }}
               onClick={() => setIsFormOpen(true)}
-              className="px-6 py-3 bg-[var(--color-primary)] text-black font-black uppercase tracking-wider rounded-xl border-2 border-[var(--color-border)] hover:brightness-110 active:scale-95 transition-all"
+              className="px-8 py-4 bg-[var(--color-surface)] text-[var(--color-text)] font-black uppercase tracking-widest text-sm rounded-xl border-[3px] border-[var(--color-border)] transition-colors hover:bg-[var(--color-surfaceHover)]"
             >
-              Capture a memory
-            </button>
-          </div>
+              Add Memory
+            </motion.button>
+          </motion.div>
         ) : (
-          <div>
-            {groups.map(group => {
-              const isCollapsed = collapsedDays[group.label];
-              return (
-                <div key={group.label} className="mb-2 relative">
-                  {/* Date label */}
-                  <button 
-                    onClick={() => setCollapsedDays(prev => ({ ...prev, [group.label]: !prev[group.label] }))}
-                    className="flex items-center gap-3 mb-6 ml-[65px] sm:ml-[85px] w-full text-left group/btn"
-                  >
-                    <span className="text-xs font-black text-[var(--color-text)] group-hover/btn:text-gray-700 transition-colors uppercase tracking-widest flex items-center gap-1">
-                      {group.label}
-                    </span>
-                    <div className="flex-1 h-1 bg-black group-hover/btn:bg-gray-800 transition-colors mr-4 sm:mr-8 rounded-full" />
-                  </button>
-
-                  {/* Entries (Animated) */}
-                  <AnimatePresence initial={false}>
-                    {!isCollapsed && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        {group.entries.map((entry, idx) => (
-                          <EntryCard
-                            key={entry.id}
-                            entry={entry}
-                            linkedTxn={entry.linkedTransactionId
-                              ? transactions.find(t => t.id === entry.linkedTransactionId)
-                              : null
-                            }
-                            onDelete={() => deleteEntry(entry.id)}
-                          />
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+          <div className="mt-6">
+            {groups.map(group => (
+              <div key={group.label} data-date={group.label} className="mb-10 relative journal-date-group">
+                {/* Entries */}
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  variants={containerVariants}
+                  className="flex flex-col gap-6"
+                >
+                  {group.entries.map((entry, idx) => (
+                    <motion.div key={entry.id} variants={itemVariants}>
+                      <EntryCard
+                        entry={entry}
+                        linkedTxn={entry.linkedTransactionId
+                          ? transactions.find(t => t.id === entry.linkedTransactionId)
+                          : null
+                        }
+                        onDelete={() => deleteEntry(entry.id)}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            ))}
           </div>
         )}
       </div>
-
-      {/* Floating Action Button Removed (Moved to header) */}
 
       {/* New Entry Sheet */}
       <AdaptiveOverlay

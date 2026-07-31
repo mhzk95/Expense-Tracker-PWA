@@ -19,7 +19,7 @@ const ICON_MAP: Record<string, string> = {
   ShieldAlert: "nav-journal",
   Settings: "action-settings",
   Menu: "nav-more",
-  Link2: "nav-journal",
+  Link2: "nav-research",
   Bell: "nav-journal"
 };
 
@@ -58,17 +58,17 @@ export function PWABottomNavigation() {
               className="fixed left-4 right-4 z-40 overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-[32px]"
               style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
             >
-              <div className="p-5 flex items-center justify-between border-b-[3px] border-[var(--color-border)] bg-[var(--color-primary)]">
-                <h3 className="font-black text-black uppercase tracking-widest text-lg">More Options</h3>
+              <div className="p-3 sm:p-4 flex items-center justify-between border-b-[3px] border-[var(--color-border)] bg-[var(--color-primary)]">
+                <h3 className="font-black text-black uppercase tracking-widest text-base">More Options</h3>
                 <motion.button
                   whileTap={{ scale: 0.9, rotate: 90 }}
                   onClick={() => setShowMoreMenu(false)}
-                  className="h-10 w-10 rounded-full border-[3px] border-black bg-white flex items-center justify-center text-black hover:bg-gray-200 transition-colors"
+                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border-[3px] border-black bg-white flex items-center justify-center text-black hover:bg-gray-200 transition-colors"
                 >
-                  <X className="h-6 w-6 stroke-[4px]" />
+                  <X className="h-5 w-5 sm:h-6 sm:w-6 stroke-[4px]" />
                 </motion.button>
               </div>
-              <div className="p-4 space-y-3 bg-[var(--color-bg)] max-h-[50vh] overflow-y-auto">
+              <div className="p-3 space-y-2 bg-[var(--color-bg)] max-h-[50vh] overflow-y-auto">
                 {moreItems.map((item, i) => {
                   const iconName = ICON_MAP[item.icon] as any;
                   const isActive = pathname.startsWith(item.href);
@@ -82,32 +82,32 @@ export function PWABottomNavigation() {
                       <Link
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-4 px-4 py-3 rounded-[20px] border-[3px] border-[var(--color-border)] transition-colors group",
+                          "flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-[16px] border-[3px] border-[var(--color-border)] transition-colors group",
                           isActive
-                            ? "bg-[var(--color-primary)] shadow-[4px_4px_0px_0px_var(--color-border)] text-black"
-                            : "bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+                            ? "bg-[var(--color-primary)] shadow-[2px_2px_0px_0px_var(--color-border)] text-black"
+                            : "bg-[var(--color-surface)] shadow-[2px_2px_0px_0px_var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                         )}
                       >
                         <div className={cn(
-                          "h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-[3px] border-[var(--color-border)]",
+                          "h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center shrink-0 border-[3px] border-[var(--color-border)]",
                           isActive ? "bg-white text-black" : "bg-[var(--color-surfaceHover)] text-[var(--color-text)]"
                         )}>
-                          {iconName && <ThemeIcon name={iconName} className="h-6 w-6 stroke-[3px]" />}
+                          {iconName && <ThemeIcon name={iconName} className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3px]" />}
                         </div>
                         <div className="flex-1">
                           <div className={cn(
-                            "text-base font-black uppercase tracking-wider",
+                            "text-sm sm:text-base font-black uppercase tracking-wider",
                             isActive ? "text-black" : "text-[var(--color-text)]"
                           )}>
                             {item.label}
                           </div>
                           <div className={cn(
-                            "text-xs font-bold mt-0.5",
-                            isActive ? "text-black/70" : "text-gray-500"
+                            "text-[10px] sm:text-xs font-bold mt-0.5 truncate max-w-[200px]",
+                            isActive ? "text-black/70" : "text-[var(--color-text)] opacity-70"
                           )}>{item.description}</div>
                         </div>
                         <ChevronRight className={cn(
-                          "h-6 w-6 stroke-[4px]",
+                          "h-5 w-5 sm:h-6 sm:w-6 stroke-[4px]",
                           isActive ? "text-black" : "text-[var(--color-text)]"
                         )} />
                       </Link>

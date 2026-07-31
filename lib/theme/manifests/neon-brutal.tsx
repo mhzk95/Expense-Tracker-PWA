@@ -15,10 +15,10 @@ export const neonBrutalTheme: ThemeManifest = {
     visualStyle: "brutalist",
     material: "solid",
     edgeTreatment: "rounded",
-    depth: "elevated"
+    depth: "flat"
   },
   componentPresets: {
-    button: { variant: "neobrutalist", backgroundAsset: "bg-neon-yellow" },
+    button: { variant: "neobrutalist" },
     card: { variant: "neobrutalist", colorIntentMapping: "border" },
     navigation: { variant: "floating" },
     input: { variant: "bordered" }
