@@ -891,7 +891,7 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="absolute z-[70] left-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]  overflow-hidden max-h-60 flex flex-col"
+                        className="absolute z-[70] left-0 bottom-[calc(100%+4px)] w-[calc(200%+12px)] bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] overflow-hidden max-h-[380px] flex flex-col shadow-[4px_4px_0px_0px_var(--color-border)]"
                       >
                         <div className="relative p-3 border-b-[4px] border-[var(--color-border)] bg-[var(--color-surfaceHover)]">
                           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text)] stroke-[3px]" />
