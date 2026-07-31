@@ -24,7 +24,10 @@ export const Card = ({
   isInteractive?: boolean;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }) => {
-  const style = useComponentStyle("card", { isInteractive: isInteractive || !!onClick, semanticVariant: variant });
+  const style = useComponentStyle("card", { 
+    isInteractive: isInteractive === false ? false : (isInteractive || !!onClick), 
+    semanticVariant: variant 
+  });
   const { manifest } = useTheme();
 
   let bgAssetKey = style.surface.backgroundAsset;

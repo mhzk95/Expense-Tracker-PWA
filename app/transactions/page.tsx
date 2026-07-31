@@ -639,7 +639,7 @@ export default function TransactionsPage() {
                           >
                             <Card
                               variant={isSelected ? "primary" : "surface"}
-                              isInteractive
+                              isInteractive={false}
                               className={cn(
                                 "p-0 relative overflow-hidden transition-transform",
                                 isSelected ? "scale-[0.98]" : "",

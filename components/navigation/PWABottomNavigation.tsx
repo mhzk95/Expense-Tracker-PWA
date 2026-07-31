@@ -1,22 +1,13 @@
 "use client";
 
-/**
- * PWABottomNavigation — App-like bottom tab bar for standalone PWA mode.
- * Neo-Brutalist Redesign: Floating pill, thick borders, solid colors.
- */
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BOTTOM_NAV_ITEMS, NAV_ITEMS } from "@/lib/constants/app";
 import { cn } from "@/lib/utils/helpers";
-import { X, ChevronRight, Bell } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { ThemeIcon } from "@/components/ui/ThemeIcon";
-import { ThemeDecal } from "@/components/ui/ThemeDecal";
-import { Button } from "@/components/ui/Button";
-import { useComponentStyle } from "@/hooks/useComponentStyle";
-import { getGeometryClasses, getSurfaceClasses } from "@/lib/theme/style-mapper";
-import { useTheme } from "@/components/providers/ThemeProvider";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ICON_MAP: Record<string, string> = {
   LayoutDashboard: "nav-home",
@@ -44,169 +35,190 @@ export function PWABottomNavigation() {
     (navItem) => !BOTTOM_NAV_ITEMS.some((bottomItem) => bottomItem.id === navItem.id)
   );
 
-  const navStyle = useComponentStyle("navigation");
-  const cardStyle = useComponentStyle("card");
-  const { manifest } = useTheme();
-
-  const navAssetStyles: React.CSSProperties = {
-    ...(navStyle.surface.maskAsset && manifest.assets?.[navStyle.surface.maskAsset] ? { WebkitMaskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, maskImage: `url('${manifest.assets[navStyle.surface.maskAsset].src}')`, WebkitMaskSize: '100% 100%', maskSize: '100% 100%', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat' } : {}),
-    ...(navStyle.surface.backgroundAsset && manifest.assets?.[navStyle.surface.backgroundAsset] ? { backgroundImage: `url('${manifest.assets[navStyle.surface.backgroundAsset].src}')`, backgroundSize: 'cover', backgroundPosition: 'center' } : {})
-  };
-
   return (
     <>
-      {/* ── "More" Overlay Menu ─────────────────────────────────────────── */}
-      {showMoreMenu && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-30 bg-black/80 animate-in fade-in duration-200"
-            onClick={() => setShowMoreMenu(false)}
-          />
-          
-          {/* Menu Sheet */}
-          <div 
-            className={cn(
-              "fixed left-4 right-4 z-40 overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-200",
-              getGeometryClasses(cardStyle.geometry),
-              getSurfaceClasses(cardStyle.surface)
-            )}
-            style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
-          >
-            <div className="p-4 flex items-center justify-between border-b border-black/10 dark:border-white/10">
-              <h3 className="font-black text-[var(--color-text)] uppercase tracking-wider text-lg">More Options</h3>
-              <Button 
-                onClick={() => setShowMoreMenu(false)}
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-              >
-                <X className="h-6 w-6 stroke-[3px]" />
-              </Button>
-            </div>
-            <div className="p-3 space-y-2 bg-[var(--color-bg)]">
-              {moreItems.map((item) => {
-                const iconName = ICON_MAP[item.icon] as any;
-                const isActive = pathname.startsWith(item.href);
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group border-2",
-                      isActive 
-                        ? "bg-[var(--theme-primary,var(--color-primary))] border-[var(--color-border)] shadow-brutal text-white" 
-                        : "bg-[var(--theme-surface,var(--color-surface))] border-transparent text-[var(--color-text)] hover:border-[var(--color-border)] hover:shadow-brutal"
-                    )}
-                  >
-                    <div className={cn(
-                      "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 border-2",
-                      isActive ? "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)]" : "bg-[var(--color-surface-hover)] border-transparent text-[var(--color-text)] group-hover:border-[var(--color-border)]"
-                    )}>
-                      {iconName && <ThemeIcon name={iconName} className="h-6 w-6 stroke-[2.5px]" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className={cn(
-                        "text-base font-bold",
-                        isActive ? "text-white" : "text-[var(--color-text)]"
-                      )}>
-                        {item.label}
-                      </div>
-                      <div className={cn(
-                        "text-xs font-semibold mt-0.5",
-                        isActive ? "text-white/80" : "text-gray-600"
-                      )}>{item.description}</div>
-                    </div>
-                    <ChevronRight className={cn(
-                      "h-6 w-6 stroke-[3px]",
-                      isActive ? "text-white" : "text-[var(--color-text)]"
-                    )} />
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      <AnimatePresence>
+        {showMoreMenu && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowMoreMenu(false)}
+            />
 
-      {/* ── Bottom Navigation Bar ───────────────────────────────────────── */}
-      <div 
-        className={cn(
-          "fixed bottom-4 left-4 right-4 z-40",
-          navStyle.layout === "docked" && "bottom-0 left-0 right-0"
+            {/* Slide-up Menu Sheet */}
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed left-4 right-4 z-40 overflow-hidden bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[8px_8px_0px_0px_var(--color-border)] rounded-[32px]"
+              style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+            >
+              <div className="p-5 flex items-center justify-between border-b-[3px] border-[var(--color-border)] bg-[var(--color-primary)]">
+                <h3 className="font-black text-black uppercase tracking-widest text-lg">More Options</h3>
+                <motion.button
+                  whileTap={{ scale: 0.9, rotate: 90 }}
+                  onClick={() => setShowMoreMenu(false)}
+                  className="h-10 w-10 rounded-full border-[3px] border-black bg-white flex items-center justify-center text-black hover:bg-gray-200 transition-colors"
+                >
+                  <X className="h-6 w-6 stroke-[4px]" />
+                </motion.button>
+              </div>
+              <div className="p-4 space-y-3 bg-[var(--color-bg)] max-h-[50vh] overflow-y-auto">
+                {moreItems.map((item, i) => {
+                  const iconName = ICON_MAP[item.icon] as any;
+                  const isActive = pathname.startsWith(item.href);
+                  return (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-4 px-4 py-3 rounded-[20px] border-[3px] border-[var(--color-border)] transition-colors group",
+                          isActive
+                            ? "bg-[var(--color-primary)] shadow-[4px_4px_0px_0px_var(--color-border)] text-black"
+                            : "bg-[var(--color-surface)] shadow-[4px_4px_0px_0px_var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-[3px] border-[var(--color-border)]",
+                          isActive ? "bg-white text-black" : "bg-[var(--color-surfaceHover)] text-[var(--color-text)]"
+                        )}>
+                          {iconName && <ThemeIcon name={iconName} className="h-6 w-6 stroke-[3px]" />}
+                        </div>
+                        <div className="flex-1">
+                          <div className={cn(
+                            "text-base font-black uppercase tracking-wider",
+                            isActive ? "text-black" : "text-[var(--color-text)]"
+                          )}>
+                            {item.label}
+                          </div>
+                          <div className={cn(
+                            "text-xs font-bold mt-0.5",
+                            isActive ? "text-black/70" : "text-gray-500"
+                          )}>{item.description}</div>
+                        </div>
+                        <ChevronRight className={cn(
+                          "h-6 w-6 stroke-[4px]",
+                          isActive ? "text-black" : "text-[var(--color-text)]"
+                        )} />
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </>
         )}
-        style={{ paddingBottom: navStyle.layout === "docked" ? "env(safe-area-inset-bottom)" : 0 }}
+      </AnimatePresence>
+
+      {/* ── Pill-Based Neo-Brutalist Bottom Navigation ───────────────────────────────────────── */}
+      <div
+        className="fixed bottom-4 left-0 right-0 z-40 pointer-events-none flex justify-center px-2"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <nav
-          className={cn(
-            getGeometryClasses(navStyle.geometry),
-            getSurfaceClasses(navStyle.surface),
-            "h-[68px] sm:h-[72px]"
-          )}
-          style={{
-            ...navAssetStyles,
-            padding: '4px' // Subtle padding inside nav to contain elements
-          }}
+        <motion.nav
+          layout
+          transition={{ type: "spring", bounce: 0.5, duration: 0.5 }}
+          className="h-[60px] sm:h-[72px] w-auto max-w-[calc(100vw-1rem)] flex items-center justify-center gap-1.5 p-1.5 pointer-events-auto bg-[var(--color-surface)] border-[3px] border-[var(--color-border)] shadow-[4px_4px_0px_0px_var(--color-border)] sm:shadow-[6px_6px_0px_0px_var(--color-border)] rounded-full"
           aria-label="Bottom navigation"
         >
-          <div className="flex items-stretch h-full">
-            {BOTTOM_NAV_ITEMS.map((item) => {
-              const iconName = ICON_MAP[item.icon] as any;
-              const isMoreBtn = item.id === "more";
-              
-              const isMoreItemActive = moreItems.some(mi => pathname.startsWith(mi.href));
-              const isActive = isMoreBtn 
-                ? (showMoreMenu || isMoreItemActive)
-                : (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
+          {BOTTOM_NAV_ITEMS.map((item) => {
+            const iconName = ICON_MAP[item.icon] as any;
+            const isMoreBtn = item.id === "more";
 
-              const content = (
-                <div className={cn(
-                  "flex flex-col items-center justify-center w-full h-full relative z-10 rounded-xl transition-all duration-200 mx-1",
-                  isActive 
-                    ? "bg-[var(--color-primary)] text-black border-2 border-[var(--color-border)] shadow-[2px_2px_0px_0px_var(--color-border)] my-1" 
-                    : "text-gray-500 hover:text-[var(--color-text)]"
-                )}>
-                  <span className="flex items-center justify-center">
-                    {iconName && <ThemeIcon name={iconName} className="h-5 w-5 sm:h-6 sm:w-6 stroke-[3px]" />}
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 sm:mt-1">
-                    {item.label}
-                  </span>
-                </div>
-              );
+            const isMoreItemActive = moreItems.some(mi => pathname.startsWith(mi.href));
+            const isActive = isMoreBtn
+              ? (showMoreMenu || isMoreItemActive)
+              : (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
 
-              const commonClasses = cn(
-                "flex-1 flex items-center justify-center relative transition-transform duration-150 active:scale-95 h-full"
-              );
-
-              if (isMoreBtn) {
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setShowMoreMenu(!showMoreMenu)}
-                    className={commonClasses}
-                    aria-label="More options"
-                    aria-expanded={showMoreMenu}
+            const InnerContent = () => (
+              <AnimatePresence mode="wait">
+                {isActive ? (
+                  <motion.div
+                    key="active"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ type: "spring", bounce: 0.6, duration: 0.5 }}
+                    className="flex items-center gap-1.5"
                   >
-                    {content}
-                  </button>
-                );
-              }
+                    <span className="text-black font-black text-lg leading-none mt-[-2px]">•</span>
+                    <span className="text-black font-black uppercase tracking-widest text-[10px] sm:text-[11px] whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="inactive"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ type: "spring", bounce: 0.6, duration: 0.5 }}
+                    className="flex items-center justify-center w-full h-full"
+                  >
+                    {iconName && <ThemeIcon name={iconName} className="h-5 w-5 stroke-[3px]" />}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            );
 
+            if (isMoreBtn) {
               return (
-                <Link
+                <motion.button
+                  layout
+                  transition={{ type: "spring", bounce: 0.5, duration: 0.5 }}
                   key={item.id}
-                  href={item.href}
-                  className={commonClasses}
-                  aria-current={isActive ? "page" : undefined}
-                  aria-label={item.label}
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px 0px var(--color-border)" }}
+                  className={cn(
+                    "h-[44px] sm:h-[52px] flex items-center justify-center rounded-full border-[3px] border-[var(--color-border)] transition-colors duration-200 overflow-hidden shrink-0",
+                    isActive
+                      ? "bg-[var(--color-primary)] shadow-[2px_2px_0px_0px_var(--color-border)] sm:shadow-[3px_3px_0px_0px_var(--color-border)] px-3 sm:px-4"
+                      : "w-[44px] sm:w-[52px] bg-[var(--color-surfaceHover)] text-[var(--color-text)] shadow-[2px_2px_0px_0px_var(--color-border)] sm:shadow-[3px_3px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)]"
+                  )}
+                  aria-label="More options"
+                  aria-expanded={showMoreMenu}
                 >
-                  {content}
-                </Link>
+                  <InnerContent />
+                </motion.button>
               );
-            })}
-          </div>
-        </nav>
+            }
+
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className="shrink-0"
+                aria-current={isActive ? "page" : undefined}
+                aria-label={item.label}
+                passHref
+              >
+                <motion.div
+                  layout
+                  transition={{ type: "spring", bounce: 0.5, duration: 0.5 }}
+                  whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px 0px var(--color-border)" }}
+                  className={cn(
+                    "h-[44px] sm:h-[52px] flex items-center justify-center rounded-full border-[3px] border-[var(--color-border)] transition-colors duration-200 cursor-pointer overflow-hidden shrink-0",
+                    isActive
+                      ? "bg-[var(--color-primary)] shadow-[2px_2px_0px_0px_var(--color-border)] sm:shadow-[3px_3px_0px_0px_var(--color-border)] px-3 sm:px-4"
+                      : "w-[44px] sm:w-[52px] bg-[var(--color-surfaceHover)] text-[var(--color-text)] shadow-[2px_2px_0px_0px_var(--color-border)] sm:shadow-[3px_3px_0px_0px_var(--color-border)] hover:bg-[var(--color-bg)]"
+                  )}
+                >
+                  <InnerContent />
+                </motion.div>
+              </Link>
+            );
+          })}
+        </motion.nav>
       </div>
     </>
   );
