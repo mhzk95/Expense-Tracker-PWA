@@ -22,12 +22,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 export default function TransactionsPage() {
-  const { transactions: rawTransactions, loading: txLoading, updateTransaction, deleteTransaction } = useTransactions();
+  const { 
+    transactions: rawTransactions, 
+    loading: txLoading, 
+    loadingMore,
+    hasMore,
+    loadMore,
+    updateTransaction, 
+    deleteTransaction 
+  } = useTransactions();
   const { categories, loading: catLoading } = useCategories();
   const { accounts, loading: accLoading } = useAccounts();
   const { manifest: activeManifest } = useTheme();
 
   const loading = txLoading || catLoading || accLoading;
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasMore || loadingMore || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: "250px" }
+    );
+
+    const currentEl = observerRef.current;
+    if (currentEl) {
+      observer.observe(currentEl);
+    }
+
+    return () => {
+      if (currentEl) {
+        observer.unobserve(currentEl);
+      }
+    };
+  }, [hasMore, loadingMore, loading, loadMore]);
 
   const [editingTxn, setEditingTxn] = useState<TransactionEntity | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -135,17 +169,24 @@ export default function TransactionsPage() {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
-  const getNetTotal = (txns: TransactionEntity[]) => {
-    return txns.reduce((acc, t) => {
-      if (t.type === "expense") return acc - t.amount;
-      if (t.type === "income") return acc + t.amount;
-      return acc;
-    }, 0);
-  };
+  const todayExpenses = todayTxns.filter(t => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
+  const todayIncomes = todayTxns.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const todayNet = todayIncomes - todayExpenses;
 
-  const todayTotal = getNetTotal(todayTxns);
-  const monthTotal = getNetTotal(monthTxns);
+  const monthExpenses = monthTxns.filter(t => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
+  const monthIncomes = monthTxns.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const monthNet = monthIncomes - monthExpenses;
   const currentMonthName = now.toLocaleString('default', { month: 'short' });
+
+  const hasActiveFilters = Boolean(searchQuery || selectedCategory || selectedType || selectedDateRange || showOnlyNeedsReview);
+
+  const handleClearAllFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory(null);
+    setSelectedType(null);
+    setSelectedDateRange(null);
+    setShowOnlyNeedsReview(false);
+  };
 
   const transactions = [...rawTransactions]
     .filter((t) => {
@@ -153,7 +194,6 @@ export default function TransactionsPage() {
       if (selectedType && t.type !== selectedType) return false;
       if (selectedCategory && t.categoryId !== selectedCategory) return false;
       if (selectedDateRange) {
-        const now = new Date();
         const txDate = new Date(t.date);
         if (selectedDateRange === "today") {
           if (txDate.toDateString() !== now.toDateString()) return false;
@@ -181,7 +221,7 @@ export default function TransactionsPage() {
   // Collapse notes on scroll or click outside
   useEffect(() => {
     const handleCollapse = () => {
-      // Intentionally left empty or remove event listeners entirely if we no longer need collapse on scroll
+      // Intentionally left empty
     };
     window.addEventListener("scroll", handleCollapse, { passive: true });
     document.addEventListener("click", handleCollapse);
@@ -191,8 +231,6 @@ export default function TransactionsPage() {
     };
   }, []);
 
-
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -201,183 +239,252 @@ export default function TransactionsPage() {
         action={<AddTransactionAction />}
       />
 
-      {/* Top Cards */}
+      {/* Top Summary Cards */}
       {!loading && (
         <div className="grid grid-cols-2 gap-3">
-          {/* Today */}
+          {/* Today Card */}
           <Card
             variant="surface"
             isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'today' ? null : 'today')}
             className={cn(
-              "p-3 flex flex-col relative overflow-hidden group text-left transition-transform",
-              selectedDateRange === 'today' ? "scale-[0.98]" : ""
+              "p-3.5 flex flex-col relative overflow-hidden group text-left transition-all border-2 border-[var(--color-border)] rounded-[20px]",
+              selectedDateRange === 'today' 
+                ? "ring-2 ring-emerald-500 bg-emerald-500/10 shadow-brutal-sm" 
+                : "bg-[var(--color-surface)] hover:bg-[var(--color-surfaceHover)]"
             )}
-            style={{ 
-              borderColor: '#1f2937', 
-              boxShadow: selectedDateRange === 'today' ? 'inset 0 0 0 2px #10b981' : '3px 3px 0px 0px #10b981',
-              borderWidth: '2px'
-            }}
           >
-            <div className="flex flex-col gap-2.5 w-full relative z-10">
+            <div className="flex flex-col gap-2 w-full relative z-10">
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-[10px] bg-emerald-500 flex items-center justify-center text-black shrink-0">
-                  <Calendar className="w-5 h-5 stroke-[2.5px]" />
+                <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-black shrink-0 border border-black/20">
+                  <Calendar className="w-4 h-4 stroke-[2.5px]" />
                 </div>
-                <span className="text-emerald-500 font-bold opacity-60">--</span>
+                {selectedDateRange === 'today' ? (
+                  <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    {todayTxns.length} txns
+                  </span>
+                )}
               </div>
-              <div className="flex flex-col overflow-hidden mt-1">
+              <div className="flex flex-col overflow-hidden mt-0.5">
                 <span className="text-[10px] uppercase font-black tracking-widest text-emerald-500">Today</span>
-                <span className="text-[28px] font-black tracking-tighter truncate leading-none mt-1 font-numbers text-white">
-                  {todayTotal < 0 ? "-" : ""}₹{Math.abs(todayTotal).toFixed(2)}
+                <span className="text-[24px] font-black tracking-tight truncate leading-none mt-1 font-numbers tabular-nums text-[var(--color-text)]">
+                  {todayNet < 0 ? "−" : todayNet > 0 ? "+" : ""}₹{Math.abs(todayNet).toFixed(2)}
                 </span>
-                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">0 Spent</span>
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">
+                  ₹{todayExpenses.toFixed(2)} spent
+                </span>
               </div>
-            </div>
-            <div className="mt-3 pt-3 border-t-2 border-dashed border-gray-800 w-full flex justify-start relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border border-emerald-500/30 px-2 py-0.5 rounded flex items-center justify-center">
-                {todayTxns.length} Expenses
-              </span>
             </div>
           </Card>
 
-          {/* Month */}
+          {/* Month Card */}
           <Card
             variant="surface"
             isInteractive
             onClick={() => setSelectedDateRange(prev => prev === 'month' ? null : 'month')}
             className={cn(
-              "p-3 flex flex-col relative overflow-hidden group text-left transition-transform",
-              selectedDateRange === 'month' ? "scale-[0.98]" : ""
+              "p-3.5 flex flex-col relative overflow-hidden group text-left transition-all border-2 border-[var(--color-border)] rounded-[20px]",
+              selectedDateRange === 'month' 
+                ? "ring-2 ring-purple-500 bg-purple-500/10 shadow-brutal-sm" 
+                : "bg-[var(--color-surface)] hover:bg-[var(--color-surfaceHover)]"
             )}
-            style={{ 
-              borderColor: '#1f2937', 
-              boxShadow: selectedDateRange === 'month' ? 'inset 0 0 0 2px #a855f7' : '3px 3px 0px 0px #a855f7',
-              borderWidth: '2px'
-            }}
           >
-            <div className="flex flex-col gap-2.5 w-full relative z-10">
+            <div className="flex flex-col gap-2 w-full relative z-10">
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-[10px] bg-purple-500 flex items-center justify-center text-black shrink-0">
-                  <Calendar className="w-5 h-5 stroke-[2.5px]" />
+                <div className="w-9 h-9 rounded-xl bg-purple-500 flex items-center justify-center text-white shrink-0 border border-black/20">
+                  <Calendar className="w-4 h-4 stroke-[2.5px]" />
                 </div>
-                <span className="text-[10px] text-red-500 font-bold tracking-widest">↑ 12%</span>
+                {selectedDateRange === 'month' ? (
+                  <span className="text-[9px] font-black uppercase tracking-widest text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    {monthTxns.length} txns
+                  </span>
+                )}
               </div>
-              <div className="flex flex-col overflow-hidden mt-1">
-                <span className="text-[10px] uppercase font-black tracking-widest text-purple-400">{currentMonthName} Total</span>
-                <span className="text-[28px] font-black tracking-tighter truncate leading-none mt-1 font-numbers text-white">
-                  {monthTotal < 0 ? "-" : ""}₹{Math.abs(monthTotal).toFixed(2)}
+              <div className="flex flex-col overflow-hidden mt-0.5">
+                <span className="text-[10px] uppercase font-black tracking-widest text-purple-400">{currentMonthName} Net</span>
+                <span className="text-[24px] font-black tracking-tight truncate leading-none mt-1 font-numbers tabular-nums text-[var(--color-text)]">
+                  {monthNet < 0 ? "−" : monthNet > 0 ? "+" : ""}₹{Math.abs(monthNet).toFixed(2)}
                 </span>
-                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">Spent</span>
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500">
+                  ₹{monthExpenses.toFixed(2)} spent
+                </span>
               </div>
-            </div>
-            <div className="mt-3 pt-3 border-t-2 border-dashed border-gray-800 w-full flex justify-start relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded flex items-center justify-center">
-                {monthTxns.length} Expenses
-              </span>
             </div>
           </Card>
         </div>
       )}
 
-      {/* Unified Search and filter toolbar + panel container to prevent layout jerking */}
-      <div className="space-y-0">
-        {/* Search and filter toolbar */}
-        <div className="flex flex-col gap-3">
-          {/* Search Row */}
-          <div className="flex items-stretch gap-2 w-full h-[48px]">
-            <div className="relative flex-1 h-full">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => {
-                  setTimeout(() => setIsSearchFocused(false), 200);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addSearchToHistory(searchQuery);
-                  }
-                }}
-                placeholder="Search transactions..."
-                className="h-full px-10 text-[13px] font-bold border-2 border-gray-800 bg-[#16181d] text-white focus:border-gray-600 transition-all rounded-xl"
-              />
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              </div>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
-                  aria-label="Clear search"
-                >
-                  <X className="h-4 w-4 stroke-[3px]" />
-                </button>
-              )}
-            </div>
-
-            <button
-              onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-              className={cn(
-                "flex items-center justify-center w-[48px] h-full rounded-xl border-2 transition-all select-none shrink-0 font-bold",
-                showFiltersPanel || selectedType || selectedCategory || selectedDateRange
-                  ? "bg-emerald-500 text-black border-emerald-500"
-                  : "bg-[#16181d] text-gray-400 border-gray-800 hover:border-gray-600"
-              )}
-              title="Filter transactions"
-              aria-label="Filter transactions"
-            >
-              <Filter className="h-4 w-4 stroke-[2.5px]" />
-            </button>
-          </div>
-
-          {/* Action Buttons Row */}
-          <div className="grid grid-cols-2 gap-3 mt-1">
-            <button
-              onClick={() => {
-                if (selectedTxIds.size > 0 || isSelectMode) {
-                  setSelectedTxIds(new Set());
-                  setIsSelectMode(false);
-                } else {
-                  setIsSelectMode(true);
+      {/* Unified Search and filter toolbar */}
+      <div className="space-y-3">
+        {/* Search Row */}
+        <div className="flex items-stretch gap-2 w-full h-[48px]">
+          <div className="relative flex-1 h-full">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => {
+                setTimeout(() => setIsSearchFocused(false), 200);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  addSearchToHistory(searchQuery);
                 }
               }}
-              className={cn(
-                "h-[48px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
-                isSelectMode ? "border-emerald-500 bg-emerald-500/10" : "border-gray-800 bg-[#16181d]"
-              )}
-            >
-              <CheckSquare className="w-4 h-4 stroke-[2.5px] text-emerald-500" />
-              <span className="text-[11px] font-black uppercase tracking-widest text-white">
-                Select Multiple
+              placeholder="Search transactions..."
+              className="w-full h-full pl-10 pr-10 text-xs font-bold border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] focus:border-[var(--color-primary)] outline-none transition-all rounded-xl placeholder:text-gray-500"
+            />
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--color-text)] transition-colors p-1"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4 stroke-[3px]" />
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+            className={cn(
+              "flex items-center justify-center w-[48px] h-full rounded-xl border-2 transition-all select-none shrink-0 font-bold",
+              showFiltersPanel || selectedType || selectedCategory || selectedDateRange
+                ? "bg-[var(--color-primary)] text-white border-[var(--color-border)]"
+                : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)]"
+            )}
+            title="Filter transactions"
+            aria-label="Filter transactions"
+          >
+            <Filter className="h-4 w-4 stroke-[2.5px]" />
+          </button>
+        </div>
+
+        {/* Action Buttons Row */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => {
+              if (selectedTxIds.size > 0 || isSelectMode) {
+                setSelectedTxIds(new Set());
+                setIsSelectMode(false);
+              } else {
+                setIsSelectMode(true);
+              }
+            }}
+            aria-label={isSelectMode ? "Exit selection mode" : "Select multiple transactions"}
+            className={cn(
+              "h-[44px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+              isSelectMode 
+                ? "border-emerald-500 bg-emerald-500/10 text-emerald-500" 
+                : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+            )}
+          >
+            <CheckSquare className="w-4 h-4 stroke-[2.5px] text-emerald-500" />
+            <span className="text-[11px] font-black uppercase tracking-widest">
+              Select Multiple
+            </span>
+          </button>
+
+          <button
+            onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
+            aria-label={showOnlyNeedsReview ? "Show all transactions" : "Filter needs review only"}
+            className={cn(
+              "h-[44px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+              showOnlyNeedsReview 
+                ? "border-yellow-400 bg-yellow-400/10 text-yellow-400" 
+                : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+            )}
+          >
+            <Zap className={cn("w-4 h-4 stroke-[2.5px]", showOnlyNeedsReview ? "text-yellow-400" : "text-yellow-500")} />
+            <span className="text-[11px] font-black uppercase tracking-widest">
+              Needs Review {needsReviewCount > 0 && `(${needsReviewCount})`}
+            </span>
+          </button>
+        </div>
+
+        {/* Active Filters Bar */}
+        {hasActiveFilters && (
+          <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none flex-wrap">
+            <span className="text-[9px] uppercase font-black tracking-widest text-gray-500 mr-1">Active:</span>
+
+            {searchQuery && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
+                "{searchQuery}"
+                <button onClick={() => setSearchQuery("")} aria-label="Remove search filter" className="hover:text-red-500">
+                  <X className="w-3 h-3 stroke-[3px]" />
+                </button>
               </span>
-            </button>
+            )}
+
+            {selectedType && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] capitalize">
+                {selectedType}
+                <button onClick={() => setSelectedType(null)} aria-label="Remove type filter" className="hover:text-red-500">
+                  <X className="w-3 h-3 stroke-[3px]" />
+                </button>
+              </span>
+            )}
+
+            {selectedCategory && (() => {
+              const cat = categories.find(c => c.id === selectedCategory);
+              return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
+                  {cat?.name || "Category"}
+                  <button onClick={() => setSelectedCategory(null)} aria-label="Remove category filter" className="hover:text-red-500">
+                    <X className="w-3 h-3 stroke-[3px]" />
+                  </button>
+                </span>
+              );
+            })()}
+
+            {selectedDateRange && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
+                {selectedDateRange === "today" ? "Today" : selectedDateRange === "week" ? "Last 7 Days" : "Last 30 Days"}
+                <button onClick={() => setSelectedDateRange(null)} aria-label="Remove date filter" className="hover:text-red-500">
+                  <X className="w-3 h-3 stroke-[3px]" />
+                </button>
+              </span>
+            )}
+
+            {showOnlyNeedsReview && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-yellow-400/20 border border-yellow-400/50 text-yellow-400">
+                Needs Review
+                <button onClick={() => setShowOnlyNeedsReview(false)} aria-label="Remove needs review filter" className="hover:text-red-500">
+                  <X className="w-3 h-3 stroke-[3px]" />
+                </button>
+              </span>
+            )}
 
             <button
-              onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
-              className={cn(
-                "h-[48px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
-                showOnlyNeedsReview ? "border-yellow-400 bg-yellow-400/10" : "border-gray-800 bg-[#16181d]"
-              )}
+              onClick={handleClearAllFilters}
+              className="text-[10px] font-black uppercase tracking-wider text-red-500 hover:text-red-400 ml-1 py-1"
             >
-              <Zap className={cn("w-4 h-4 stroke-[2.5px]", showOnlyNeedsReview ? "text-yellow-400" : "text-yellow-500")} />
-              <span className="text-[11px] font-black uppercase tracking-widest text-white">
-                Needs Review
-              </span>
+              Reset All
             </button>
           </div>
-        </div>
+        )}
 
         {/* Search History Row */}
         {isSearchFocused && searchQuery === "" && searchHistory.length > 0 && (
           <div className="flex items-center gap-1.5 overflow-x-auto py-2 scrollbar-none">
-            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-500 pr-1 flex-shrink-0">Recent:</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-500 pr-1 flex-shrink-0">Recent:</span>
             {searchHistory.map((q) => (
               <button
                 key={q}
                 onClick={() => setSearchQuery(q)}
-                className="px-2.5 py-0.5 rounded-full text-[10px] bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all flex-shrink-0 active:scale-95 select-none"
+                className="px-2.5 py-0.5 rounded-full text-[10px] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] transition-all flex-shrink-0 active:scale-95 select-none font-bold"
               >
                 {q}
               </button>
@@ -404,11 +511,11 @@ export default function TransactionsPage() {
               transition={{ duration: 0.15 }}
               className="overflow-hidden"
             >
-              <div className="pt-3">
-                <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px] p-5 space-y-5 ">
+              <div className="pt-1">
+                <div className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[20px] p-4 space-y-4">
                   {/* Type filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Type</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-2">Type</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[
                         { label: "All", value: null },
@@ -420,9 +527,9 @@ export default function TransactionsPage() {
                           key={opt.label}
                           onClick={() => setSelectedType(opt.value)}
                           className={cn(
-                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
+                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-2 transition-all",
                             selectedType === opt.value
-                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white"
                               : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
                         >
@@ -434,7 +541,7 @@ export default function TransactionsPage() {
 
                   {/* Date filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Date Range</span>
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-2">Date Range</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[
                         { label: "All Time", value: null },
@@ -446,9 +553,9 @@ export default function TransactionsPage() {
                           key={opt.label}
                           onClick={() => setSelectedDateRange(opt.value)}
                           className={cn(
-                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
+                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-2 transition-all",
                             selectedDateRange === opt.value
-                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                              ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white"
                               : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
                         >
@@ -460,14 +567,14 @@ export default function TransactionsPage() {
 
                   {/* Category filter */}
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-3">Category</span>
-                    <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text)] block mb-2">Category</span>
+                    <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 scrollbar-none">
                       <button
                         onClick={() => setSelectedCategory(null)}
                         className={cn(
-                          "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
+                          "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-2 transition-all",
                           selectedCategory === null
-                            ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white "
+                            ? "bg-[var(--color-primary)] border-[var(--color-border)] text-white"
                             : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                         )}
                       >
@@ -478,13 +585,14 @@ export default function TransactionsPage() {
                           key={cat.id}
                           onClick={() => setSelectedCategory(cat.id)}
                           className={cn(
-                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-[2px] transition-all",
+                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider border-2 transition-all flex items-center gap-1.5",
                             selectedCategory === cat.id
-                              ? "border-[var(--color-border)] text-[var(--color-text)] "
+                              ? "border-[var(--color-border)] text-black"
                               : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
                           )}
-                          style={selectedCategory === cat.id ? { backgroundColor: cat.color } : {}}
+                          style={selectedCategory === cat.id ? { backgroundColor: cat.color || "var(--color-primary)" } : {}}
                         >
+                          <span className="w-2 h-2 rounded-full border border-black/40" style={{ backgroundColor: cat.color }} />
                           {cat.name}
                         </button>
                       ))}
@@ -492,15 +600,11 @@ export default function TransactionsPage() {
                   </div>
 
                   {/* Clear filters action */}
-                  {(selectedType !== null || selectedCategory !== null || selectedDateRange !== null) && (
+                  {hasActiveFilters && (
                     <div className="flex justify-end pt-1">
                       <button
-                        onClick={() => {
-                          setSelectedType(null);
-                          setSelectedCategory(null);
-                          setSelectedDateRange(null);
-                        }}
-                        className="text-[11px] font-black uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors"
+                        onClick={handleClearAllFilters}
+                        className="text-[11px] font-black uppercase tracking-wider text-red-500 hover:text-red-400 transition-colors"
                       >
                         Clear All Filters
                       </button>
@@ -517,7 +621,7 @@ export default function TransactionsPage() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-[var(--color-surface)] border-2 border-[var(--color-border)] ">
+            <div key={i} className="brutal-card px-4 py-2.5 flex items-center gap-3 animate-pulse bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px]">
               <div className="h-12 w-12 rounded-xl bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)]" />
               <div className="flex-1 space-y-1.5">
                 <div className="h-4 w-24 bg-[var(--color-surfaceHover)] border-2 border-[var(--color-border)] rounded-full" />
@@ -527,12 +631,27 @@ export default function TransactionsPage() {
             </div>
           ))}
         </div>
-      ) : transactions.length === 0 ? (
+      ) : rawTransactions.length === 0 ? (
         <EmptyState
           title="No transactions yet"
           description="Add your first income or expense to get started."
           action={<AddTransactionAction />}
         />
+      ) : transactions.length === 0 ? (
+        <div className="py-12 px-4 text-center bg-[var(--color-surface)] border-2 border-dashed border-[var(--color-border)] rounded-[24px] space-y-3">
+          <p className="text-base font-black uppercase tracking-wide text-[var(--color-text)]">
+            No Matching Transactions
+          </p>
+          <p className="text-xs font-bold text-gray-500 max-w-xs mx-auto">
+            No transactions match your current search or filter criteria.
+          </p>
+          <button
+            onClick={handleClearAllFilters}
+            className="px-4 py-2 rounded-xl bg-[var(--color-primary)] text-white border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all active:scale-95"
+          >
+            Clear All Filters
+          </button>
+        </div>
       ) : (
         <div className="pb-32">
           {(() => {
@@ -585,12 +704,12 @@ export default function TransactionsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col items-end">
-                      <span className="text-[13px] font-black tracking-tighter text-white font-numbers">
-                        {group.total < 0 ? "-" : ""}₹{Math.abs(group.total).toFixed(2)}
+                      <span className="text-[13px] font-black tracking-tight text-[var(--color-text)] font-numbers tabular-nums">
+                        {group.total < 0 ? "−" : group.total > 0 ? "+" : ""}₹{Math.abs(group.total).toFixed(2)}
                       </span>
                       <span className="text-[9px] font-bold uppercase tracking-widest mt-0.5 text-gray-500">{group.txns.length} Transaction{group.txns.length !== 1 ? 's' : ''}</span>
                     </div>
-                    <ChevronDown className={cn("w-4 h-4 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-white" : "text-gray-500")} />
+                    <ChevronDown className={cn("w-4 h-4 stroke-[3px] transition-transform", !collapsedGroups.has(group.key) ? "rotate-180 text-[var(--color-text)]" : "text-gray-500")} />
                   </div>
                 </div>
 
@@ -641,9 +760,9 @@ export default function TransactionsPage() {
                               variant={isSelected ? "primary" : "surface"}
                               isInteractive={false}
                               className={cn(
-                                "p-0 relative overflow-hidden transition-transform",
-                                isSelected ? "scale-[0.98]" : "",
-                                txn.needsReview && "needs-review-card bg-yellow-400/10"
+                                "p-0 relative overflow-hidden transition-transform border-2 border-[var(--color-border)] rounded-[18px]",
+                                isSelected ? "scale-[0.98] ring-2 ring-[var(--color-primary)]" : "",
+                                txn.needsReview && "needs-review-card bg-yellow-400/10 border-yellow-400/60"
                               )}
                               style={{ 
                                 WebkitTouchCallout: "none"
@@ -665,7 +784,7 @@ export default function TransactionsPage() {
                                 }
                               }}
                             >
-                              <div className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left">
+                              <div className="flex items-center w-full px-3.5 py-3 h-[68px] gap-3 relative z-10 text-left">
                                 {/* Left Color Accent Strip */}
                                 <div 
                                   className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
@@ -674,20 +793,20 @@ export default function TransactionsPage() {
                                 
                                 {/* Checkbox (visible in select mode) */}
                                 {(isSelectMode || selectedTxIds.size > 0) && (
-                                  <div className="flex-shrink-0 ml-1 mr-1 relative z-10">
+                                  <div className="flex-shrink-0 ml-0.5 mr-1 relative z-10">
                                     {isSelected ? (
-                                      <div className="h-6 w-6 rounded-lg bg-emerald-500 border-2 border-emerald-500 flex items-center justify-center text-black">
+                                      <div className="h-6 w-6 rounded-lg bg-[var(--color-primary)] border-2 border-[var(--color-border)] flex items-center justify-center text-white">
                                         <Check className="h-4 w-4 stroke-[4px]" />
                                       </div>
                                     ) : (
-                                      <div className="h-6 w-6 rounded-lg border-2 border-gray-600 bg-transparent" />
+                                      <div className="h-6 w-6 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)]" />
                                     )}
                                   </div>
                                 )}
 
                                 {/* Icon */}
                                 <div
-                                  className={cn("flex-shrink-0 w-11 h-11 rounded-[10px] flex items-center justify-center relative z-10", !(isSelectMode || selectedTxIds.size > 0) && "ml-1")}
+                                  className={cn("flex-shrink-0 w-11 h-11 rounded-[12px] flex items-center justify-center relative z-10 border border-black/20", !(isSelectMode || selectedTxIds.size > 0) && "ml-0.5")}
                                   style={{
                                     backgroundColor: baseColor,
                                     color: "#000"
@@ -704,7 +823,7 @@ export default function TransactionsPage() {
 
                                 {/* Details */}
                                 <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
-                                  <h3 className="text-[13px] font-black uppercase truncate leading-tight text-white pt-0.5">
+                                  <h3 className="text-[13px] font-black uppercase truncate leading-tight text-[var(--color-text)] pt-0.5">
                                     {txn.payee || txn.description || "No Title"}
                                   </h3>
 
@@ -722,8 +841,8 @@ export default function TransactionsPage() {
                                   <div className="flex items-center gap-1">
                                     <span
                                       className={cn(
-                                        "text-[15px] font-black tracking-tighter text-right leading-none font-numbers",
-                                        isIncome ? "text-emerald-500" : "text-white"
+                                        "text-[15px] font-black tracking-tight text-right leading-none font-numbers tabular-nums",
+                                        isIncome ? "text-emerald-500" : isTransfer ? "text-blue-400" : "text-[var(--color-text)]"
                                       )}
                                     >
                                       {isIncome ? "+" : isTransfer ? "" : "−"}₹{Math.abs(txn.amount).toFixed(2)}
@@ -731,8 +850,8 @@ export default function TransactionsPage() {
                                     <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
                                   </div>
                                   {txn.needsReview && (
-                                    <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border-2 border-black px-2 py-0.5 rounded flex items-center gap-1 mt-1">
-                                      <Zap className="w-3 h-3" /> Review
+                                    <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-2 py-0.5 rounded flex items-center gap-1 mt-1">
+                                      <Zap className="w-3 h-3 fill-black" /> Review
                                     </span>
                                   )}
                                 </div>
@@ -747,6 +866,28 @@ export default function TransactionsPage() {
               </div>
             ));
           })()}
+
+          {/* Sentinel for infinite scroll */}
+          <div ref={observerRef} className="h-6 w-full pointer-events-none" />
+
+          {/* Loading More Indicator */}
+          {loadingMore && (
+            <div className="py-4 flex justify-center items-center gap-2.5">
+              <div className="w-4 h-4 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-[var(--color-text)]">
+                Loading older transactions...
+              </span>
+            </div>
+          )}
+
+          {/* Reached End of List */}
+          {!hasMore && rawTransactions.length > 0 && !loading && (
+            <div className="py-6 text-center">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-[var(--color-surface)] border-2 border-[var(--color-border)] px-4 py-1.5 rounded-full">
+                ✓ All transactions loaded
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -863,6 +1004,13 @@ export default function TransactionsPage() {
       <TransactionDetailSheet
         txn={selectedTxn}
         onClose={() => setSelectedTxn(null)}
+        onEdit={(txn) => {
+          setEditingTxn(txn);
+          setIsEditOpen(true);
+        }}
+        onDelete={(id) => {
+          deleteTransaction(id);
+        }}
       />
     </div>
   );

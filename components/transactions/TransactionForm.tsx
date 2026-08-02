@@ -341,7 +341,38 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   };
 
   useEffect(() => {
-    if (editingTransaction) return;
+    if (editingTransaction) {
+      setType(editingTransaction.type || "expense");
+      setAmount(editingTransaction.amount?.toString() || "");
+      setDescription(editingTransaction.description || "");
+      setNote(editingTransaction.note || "");
+      setPayee(editingTransaction.payee || "");
+      setLocation(editingTransaction.location || "");
+      setIsLocationManuallySet(!!editingTransaction.location);
+      if (editingTransaction.date) {
+        const dObj = new Date(editingTransaction.date);
+        if (!isNaN(dObj.getTime())) {
+          setDate(formatDateYYYYMMDD(dObj));
+          setTime(formatTimeHHMM(dObj));
+        }
+      }
+      setCategoryId(editingTransaction.categoryId || "");
+      setAccountId(editingTransaction.accountId || "");
+      setToAccountId(editingTransaction.toAccountId || "");
+      setNeedsReview(editingTransaction.needsReview || false);
+      if (editingTransaction.location) {
+        try {
+          const loc = JSON.parse(editingTransaction.location);
+          setLocationInput(loc.display || loc.city || loc.place_name || editingTransaction.location);
+        } catch {
+          setLocationInput(editingTransaction.location);
+        }
+      } else {
+        setLocationInput("");
+      }
+      return;
+    }
+
     const draft = sessionStorage.getItem("tx_draft");
     if (draft) {
       try {
@@ -586,13 +617,13 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         description: rawDesc || (type === "transfer" ? "Transfer" : "Quick Entry"),
         date: combinedDateTime,
         note: note.trim(),
-        categoryId: type === "transfer" ? undefined : (categoryId || "other"),
+        categoryId: type === "transfer" ? "" : (categoryId || "other"),
         accountId,
-        toAccountId: type === "transfer" ? toAccountId : undefined,
+        toAccountId: type === "transfer" ? toAccountId : "",
         needsReview,
         status: editingTransaction?.status || "completed",
-        payee: type === "transfer" ? undefined : (rawPayee || undefined),
-        location: location.trim() || undefined,
+        payee: type === "transfer" ? "" : rawPayee,
+        location: location.trim(),
       };
 
       if (editingTransaction) {

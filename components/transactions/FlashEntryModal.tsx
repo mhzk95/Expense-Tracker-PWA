@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, MapPin, Zap } from "lucide-react";
-import { vibrate } from "@/lib/utils/helpers";
+import { Loader2, MapPin, Zap, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { vibrate, cn } from "@/lib/utils/helpers";
 import { useTransactions } from "@/hooks/useTransactions";
 import { resolveLocationFromCoordinates } from "@/lib/utils/location";
 import { ThemeDecal } from "@/components/ui/ThemeDecal";
@@ -18,14 +18,16 @@ interface FlashEntryModalProps {
 }
 
 export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntryModalProps) {
-  const { addTransaction, updateTransaction } = useTransactions();
+  const { addTransaction } = useTransactions();
   const [amount, setAmount] = useState("");
+  const [txType, setTxType] = useState<"expense" | "income">("expense");
   const [isCapturing, setIsCapturing] = useState(false);
 
   // Reset when opened
   useEffect(() => {
     if (isOpen) {
       setAmount("");
+      setTxType("expense");
       setIsCapturing(false);
     }
   }, [isOpen]);
@@ -37,12 +39,14 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
     } else if (val === "⌫") {
       setAmount((prev) => prev.slice(0, -1));
     } else {
+      if (val === "." && amount.includes(".")) return;
+      if (amount.length >= 8) return;
       setAmount((prev) => prev + val);
     }
   };
 
   const handleSave = async () => {
-    if (!amount || isNaN(Number(amount))) return;
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return;
     
     setIsCapturing(true);
     vibrate([50]);
@@ -53,7 +57,7 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
 
     try {
       const pos = await new Promise<GeolocationPosition>((res, rej) => 
-        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000, maximumAge: 10000 })
+        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000, maximumAge: 10000 })
       );
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
@@ -74,11 +78,11 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
     await addTransaction({
       id: tempId,
       amount: Number(amount),
-      type: "expense",
+      type: txType,
       currency: "INR",
-      description: "Quick Entry",
+      description: txType === "expense" ? "Flash Expense" : "Flash Income",
       date: now.toISOString(),
-      categoryId: "other", // Default or generic
+      categoryId: "other",
       accountId: defaultAccountId,
       location: locationString,
       status: "completed",
@@ -97,7 +101,7 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={onClose}
         >
           <motion.div
@@ -107,61 +111,98 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
             onClick={e => e.stopPropagation()}
             className="w-full max-w-sm"
           >
-            <Card className="relative overflow-hidden">
-            <ThemeDecal slot="stat-card-tr" />
-            
-            {/* Header */}
-            <div className="bg-[var(--color-primary)] p-4 flex items-center justify-between border-b border-black/10 relative z-10">
-              <div className="flex items-center gap-2 text-white font-black uppercase tracking-wider">
-                <Zap className="w-5 h-5 fill-white stroke-[2px]" />
-                <span className="font-display">Flash Entry</span>
-              </div>
-              <Badge variant="default">
-                <MapPin className="w-3 h-3 stroke-[3px] mr-1" /> Auto-GPS
-              </Badge>
-            </div>
-
-            {/* Amount Display */}
-            <div className="p-8 text-center bg-[var(--color-surface-hover)] border-b-[length:var(--theme-border-width)] border-[var(--theme-border-style)] border-[var(--color-border)] relative z-10">
-              <span className="text-5xl font-display font-black text-[var(--color-text)] tracking-tight">
-                <span className="text-[var(--color-text)]/50 mr-2 text-4xl">₹</span>
-                {amount || "0"}
-              </span>
-            </div>
-
-            {/* Keypad */}
-            <div className="p-5 relative z-10">
-              <div className="grid grid-cols-3 gap-3">
-                {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"].map((btn) => (
-                  <Button
-                    key={btn}
-                    variant="secondary"
-                    onClick={() => handleKeypadPress(btn)}
-                    className="h-14 text-xl font-numbers font-black"
-                  >
-                    {btn}
-                  </Button>
-                ))}
-              </div>
+            <Card className="relative overflow-hidden border-2 border-[var(--color-border)] rounded-[24px]">
+              <ThemeDecal slot="stat-card-tr" />
               
-              <div className="grid grid-cols-2 gap-3 mt-5">
-                <Button
-                  variant="ghost"
-                  onClick={onClose}
-                  className="h-14 uppercase tracking-wider"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSave}
-                  disabled={!amount || isCapturing}
-                  className="h-14 uppercase tracking-wider"
-                >
-                  {isCapturing ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Fast"}
-                </Button>
+              {/* Header */}
+              <div className="bg-[var(--color-primary)] p-3.5 flex items-center justify-between border-b-2 border-[var(--color-border)] relative z-10">
+                <div className="flex items-center gap-2 text-white font-black uppercase tracking-wider text-sm">
+                  <Zap className="w-4 h-4 fill-white stroke-[2px]" />
+                  <span className="font-display">Flash Entry</span>
+                </div>
+                <Badge variant="default" className="text-[10px] py-0.5">
+                  <MapPin className="w-3 h-3 stroke-[2.5px] mr-1" /> Auto-GPS
+                </Badge>
               </div>
-            </div>
+
+              {/* Type Switcher Pill */}
+              <div className="p-3 bg-[var(--color-surface)] border-b border-[var(--color-border)] flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    vibrate([10]);
+                    setTxType("expense");
+                  }}
+                  className={cn(
+                    "flex-1 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all flex items-center justify-center gap-1.5",
+                    txType === "expense"
+                      ? "bg-rose-500 text-white border-rose-600 shadow-sm"
+                      : "bg-[var(--color-surface)] border-transparent text-gray-400 hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <ArrowDownLeft className="w-3.5 h-3.5" />
+                  Expense
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    vibrate([10]);
+                    setTxType("income");
+                  }}
+                  className={cn(
+                    "flex-1 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all flex items-center justify-center gap-1.5",
+                    txType === "income"
+                      ? "bg-emerald-500 text-black border-emerald-600 shadow-sm"
+                      : "bg-[var(--color-surface)] border-transparent text-gray-400 hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  Income
+                </button>
+              </div>
+
+              {/* Amount Display */}
+              <div className="p-6 text-center bg-[var(--color-surfaceHover)] border-b-2 border-[var(--color-border)] relative z-10">
+                <span className="text-4xl font-display font-black text-[var(--color-text)] tracking-tight font-numbers tabular-nums">
+                  <span className="text-gray-500 mr-1.5 text-3xl font-normal">₹</span>
+                  {amount || "0"}
+                </span>
+              </div>
+
+              {/* Keypad */}
+              <div className="p-4 relative z-10">
+                <div className="grid grid-cols-3 gap-2">
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"].map((btn) => (
+                    <Button
+                      key={btn}
+                      variant="secondary"
+                      onClick={() => handleKeypadPress(btn)}
+                      className="h-12 text-lg font-numbers font-black tabular-nums border-2 border-[var(--color-border)] rounded-xl active:scale-95"
+                    >
+                      {btn}
+                    </Button>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2.5 mt-4">
+                  <Button
+                    variant="ghost"
+                    onClick={onClose}
+                    className="h-12 uppercase tracking-wider text-xs font-black border-2 border-[var(--color-border)] rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={!amount || Number(amount) <= 0 || isCapturing}
+                    className="h-12 uppercase tracking-wider text-xs font-black rounded-xl border-2 border-[var(--color-border)] shadow-none"
+                  >
+                    {isCapturing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Fast"}
+                  </Button>
+                </div>
+              </div>
             </Card>
           </motion.div>
         </motion.div>
@@ -169,3 +210,4 @@ export function FlashEntryModal({ isOpen, onClose, defaultAccountId }: FlashEntr
     </AnimatePresence>
   );
 }
+
