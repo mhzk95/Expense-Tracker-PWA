@@ -22,7 +22,15 @@ export function SplitExpenseSection({
   isGroupExpense,
   onToggleGroupExpense,
 }: SplitExpenseSectionProps) {
-  const [splitMode, setSplitMode] = useState<"equally" | "exact">("equally");
+  const [splitMode, setSplitMode] = useState<"equally" | "exact">(() => {
+    if (splits && splits.length > 0 && totalAmount > 0) {
+      const count = splits.length + 1;
+      const perPerson = Math.floor((totalAmount / count) * 100) / 100;
+      const isAnyDifferent = splits.some((s) => Math.abs(s.amount - perPerson) > 0.05);
+      if (isAnyDifferent) return "exact";
+    }
+    return "equally";
+  });
   const [friendNameInput, setFriendNameInput] = useState("");
   const [recentFriends, setRecentFriends] = useState<string[]>([]);
 

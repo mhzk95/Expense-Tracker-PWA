@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
 import { Card } from "@/components/ui/Card";
 import { MarqueeText } from "@/components/ui/MarqueeText";
+import { SplitVectorBadge } from "@/components/transactions/SplitVectorBadge";
 import { useMemo } from "react";
 
 export function RecentTransactions() {
@@ -77,20 +78,32 @@ export function RecentTransactions() {
             const hasNote = Boolean(txn.note && txn.note.trim().length > 0);
             const hasLocation = Boolean(txn.location && txn.location.trim().length > 0);
 
+            const isSplit = Boolean(txn.splits && txn.splits.length > 0);
+
             return (
               <Card
                 key={txn.id}
                 variant="surface"
                 className={cn(
                   "group relative overflow-hidden transition-all duration-200 border-2 border-[var(--color-border)] rounded-[18px]",
-                  txn.needsReview && "border-[#facc15]"
+                  txn.needsReview && "border-[#facc15]",
+                  isSplit && "border-amber-500/50 bg-gradient-to-r from-amber-500/[0.05] via-transparent to-transparent"
                 )}
               >
                 <div className="flex items-center w-full px-3.5 py-3 h-[72px] gap-3 relative z-10 text-left">
                   {/* Left Color Accent Strip */}
                   <div 
-                    className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
-                    style={{ backgroundColor: txn.needsReview ? '#facc15' : baseColor }} 
+                    className={cn(
+                      "absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0",
+                      isSplit && "w-1.5"
+                    )}
+                    style={{ 
+                      backgroundColor: isSplit 
+                        ? '#f59e0b' 
+                        : txn.needsReview 
+                        ? '#facc15' 
+                        : baseColor 
+                    }} 
                   />
 
                   {/* Type icon */}
@@ -139,7 +152,7 @@ export function RecentTransactions() {
                     </div>
                   </div>
 
-                  {/* Amount + Review Badge */}
+                  {/* Amount + Review / Split Badges */}
                   <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
                     <div className="flex items-center gap-1">
                       <span
@@ -151,11 +164,18 @@ export function RecentTransactions() {
                         {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
                       </span>
                     </div>
-                    {txn.needsReview && (
-                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-2 py-0.5 rounded flex items-center gap-1 mt-1">
-                        <Zap className="w-3 h-3 fill-black" /> Review
-                      </span>
-                    )}
+
+                    <div className="flex items-center gap-1 mt-1">
+                      {txn.needsReview && (
+                        <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-1.5 py-0.5 rounded flex items-center gap-1">
+                          <Zap className="w-2.5 h-2.5 fill-black" /> Review
+                        </span>
+                      )}
+
+                      {txn.splits && txn.splits.length > 0 && (
+                        <SplitVectorBadge splits={txn.splits} />
+                      )}
+                    </div>
                   </div>
                 </div>
               </Card>

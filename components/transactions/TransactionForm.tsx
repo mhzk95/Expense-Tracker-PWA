@@ -366,6 +366,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
       setAccountId(editingTransaction.accountId || "");
       setToAccountId(editingTransaction.toAccountId || "");
       setNeedsReview(editingTransaction.needsReview || false);
+      setSplits(editingTransaction.splits || []);
+      setNetAmount(editingTransaction.netAmount);
+      setIsGroupExpense(
+        Boolean(editingTransaction.isGroupExpense || (editingTransaction.splits && editingTransaction.splits.length > 0))
+      );
       if (editingTransaction.location) {
         try {
           const loc = JSON.parse(editingTransaction.location);
@@ -1502,7 +1507,12 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             currency="INR"
             splits={splits}
             isGroupExpense={isGroupExpense}
-            onToggleGroupExpense={setIsGroupExpense}
+            onToggleGroupExpense={(enabled) => {
+              setIsGroupExpense(enabled);
+              if (enabled) {
+                setNeedsReview(true);
+              }
+            }}
             onChange={(updatedSplits, userShare) => {
               setSplits(updatedSplits);
               setNetAmount(userShare);

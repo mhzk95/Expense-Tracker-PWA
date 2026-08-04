@@ -65,9 +65,11 @@ export async function POST(request: Request) {
       // Because the payload contains the full object state (including isDeleted),
       // we can safely use upsert for all CREATE, UPDATE, and DELETE actions.
       switch (entity) {
-        case "TRANSACTION":
-          syncQueries.push(prisma.transaction.upsert({ where: { id: itemData.id }, create: itemData, update: itemData }));
+        case "TRANSACTION": {
+          const { splits, netAmount, isGroupExpense, ...txFields } = itemData;
+          syncQueries.push(prisma.transaction.upsert({ where: { id: txFields.id }, create: txFields, update: txFields }));
           break;
+        }
         case "JOURNAL":
           syncQueries.push(prisma.journal.upsert({ where: { id: itemData.id }, create: itemData, update: itemData }));
           break;

@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { FlashEntryModal } from "@/components/transactions/FlashEntryModal";
 import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
+import { SplitVectorBadge } from "@/components/transactions/SplitVectorBadge";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
@@ -825,9 +826,9 @@ export default function TransactionsPage() {
                         const secondarySubtitle = hasDistinctPayeeAndDesc ? txn.description : null;
                         const hasNote = Boolean(txn.note && txn.note.trim().length > 0);
                         const hasLocation = Boolean(txn.location && txn.location.trim().length > 0);
-
                         const txDate = new Date(txn.date);
                         const timeStr = txDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                        const isSplit = Boolean(txn.splits && txn.splits.length > 0);
 
                         return (
                           <SwipeToDelete
@@ -841,149 +842,148 @@ export default function TransactionsPage() {
                             deleteMessage={`Delete "${primaryTitle}"?`}
                           >
                             <Card
-                              variant={isSelected ? "primary" : "surface"}
-                              isInteractive={false}
-                              className={cn(
-                                "p-0 relative overflow-hidden transition-transform border-2 border-[var(--color-border)] rounded-[18px]",
-                                isSelected ? "scale-[0.98] ring-2 ring-[var(--color-primary)]" : "",
-                                txn.needsReview && "needs-review-card bg-yellow-400/10 border-yellow-400/60"
-                              )}
-                              style={{ 
-                                WebkitTouchCallout: "none"
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (isSelectMode || selectedTxIds.size > 0) {
-                                  const newSelected = new Set(selectedTxIds);
-                                  if (newSelected.has(txn.id)) {
-                                    newSelected.delete(txn.id);
-                                  } else {
-                                    newSelected.add(txn.id);
-                                  }
-                                  setSelectedTxIds(newSelected);
-                                  vibrate([10]);
-                                } else {
-                                  setSelectedTxn(txn);
-                                  vibrate([20]);
-                                }
-                              }}
-                            >
-                              <div className="flex items-center w-full px-3.5 py-3 h-[72px] gap-3 relative z-10 text-left">
-                                {/* Left Color Accent Strip */}
-                                <div 
-                                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
-                                  style={{ backgroundColor: txn.needsReview ? '#facc15' : baseColor }} 
-                                />
-                                
-                                {/* Checkbox (visible in select mode) */}
-                                {(isSelectMode || selectedTxIds.size > 0) && (
-                                  <div className="flex-shrink-0 ml-0.5 mr-1 relative z-10">
-                                    {isSelected ? (
-                                      <div className="h-6 w-6 rounded-lg bg-[var(--color-primary)] border-2 border-[var(--color-border)] flex items-center justify-center text-white">
-                                        <Check className="h-4 w-4 stroke-[4px]" />
-                                      </div>
-                                    ) : (
-                                      <div className="h-6 w-6 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)]" />
-                                    )}
-                                  </div>
+                                variant={isSelected ? "primary" : "surface"}
+                                isInteractive={false}
+                                className={cn(
+                                  "p-0 relative overflow-hidden transition-all border-2 border-[var(--color-border)] rounded-[18px]",
+                                  isSelected ? "scale-[0.98] ring-2 ring-[var(--color-primary)]" : "",
+                                  txn.needsReview && "needs-review-card bg-yellow-400/10 border-yellow-400/60",
+                                  isSplit && "border-amber-500/50 bg-gradient-to-r from-amber-500/[0.05] via-transparent to-transparent shadow-sm"
                                 )}
-
-                                {/* Icon */}
-                                <div
-                                  className={cn("flex-shrink-0 w-11 h-11 rounded-[12px] flex items-center justify-center relative z-10 border border-black/20", !(isSelectMode || selectedTxIds.size > 0) && "ml-0.5")}
-                                  style={{
-                                    backgroundColor: baseColor,
-                                    color: "#000"
-                                  }}
-                                >
-                                  {(() => {
-                                    if (isTransfer) {
-                                      return <ArrowLeftRight className="w-5 h-5 stroke-[2.5px]" />;
+                                style={{ 
+                                  WebkitTouchCallout: "none"
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (isSelectMode || selectedTxIds.size > 0) {
+                                    const newSelected = new Set(selectedTxIds);
+                                    if (newSelected.has(txn.id)) {
+                                      newSelected.delete(txn.id);
+                                    } else {
+                                      newSelected.add(txn.id);
                                     }
-                                    const IconComp = getCategoryIcon(category?.icon);
-                                    return <IconComp className="w-5 h-5 stroke-[2.5px]" />;
-                                  })()}
-                                </div>
-
-                                {/* Details */}
-                                <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
-                                  <h3 className="text-[13px] font-black uppercase truncate leading-tight text-[var(--color-text)] pt-0.5">
-                                    {primaryTitle}
-                                  </h3>
-
-                                  {secondarySubtitle && (
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase truncate leading-tight mt-0.5">
-                                      {secondarySubtitle}
-                                    </p>
+                                    setSelectedTxIds(newSelected);
+                                    vibrate([10]);
+                                  } else {
+                                    setSelectedTxn(txn);
+                                    vibrate([20]);
+                                  }
+                                }}
+                              >
+                                <div className="flex items-center w-full px-3.5 py-3 h-[72px] gap-3 relative z-10 text-left">
+                                  {/* Left Color Accent Strip */}
+                                  <div 
+                                    className={cn(
+                                      "absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0",
+                                      isSplit && "w-1.5"
+                                    )}
+                                    style={{ 
+                                      backgroundColor: isSplit 
+                                        ? '#f59e0b' 
+                                        : txn.needsReview 
+                                        ? '#facc15' 
+                                        : baseColor 
+                                    }} 
+                                  />
+                                  
+                                  {/* Checkbox (visible in select mode) */}
+                                  {(isSelectMode || selectedTxIds.size > 0) && (
+                                    <div className="flex-shrink-0 ml-0.5 mr-1 relative z-10">
+                                      {isSelected ? (
+                                        <div className="h-6 w-6 rounded-lg bg-[var(--color-primary)] border-2 border-[var(--color-border)] flex items-center justify-center text-white">
+                                          <Check className="h-4 w-4 stroke-[4px]" />
+                                        </div>
+                                      ) : (
+                                        <div className="h-6 w-6 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)]" />
+                                      )}
+                                    </div>
                                   )}
 
-                                  <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5 flex items-center gap-2">
-                                    {isTransfer ? (
-                                      <span className="truncate text-blue-400 flex items-center gap-1 font-bold">
-                                        {sourceAccount?.name || "Account"} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetAccount?.name || "Target"}
-                                      </span>
-                                    ) : (
-                                      <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                                  {/* Icon */}
+                                  <div
+                                    className={cn("flex-shrink-0 w-11 h-11 rounded-[12px] flex items-center justify-center relative z-10 border border-black/20", !(isSelectMode || selectedTxIds.size > 0) && "ml-0.5")}
+                                    style={{
+                                      backgroundColor: baseColor,
+                                      color: "#000"
+                                    }}
+                                  >
+                                    {(() => {
+                                      if (isTransfer) {
+                                        return <ArrowLeftRight className="w-5 h-5 stroke-[2.5px]" />;
+                                      }
+                                      const IconComp = getCategoryIcon(category?.icon);
+                                      return <IconComp className="w-5 h-5 stroke-[2.5px]" />;
+                                    })()}
+                                  </div>
+
+                                  {/* Details */}
+                                  <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
+                                    <h3 className="text-[13px] font-black uppercase truncate leading-tight text-[var(--color-text)] pt-0.5">
+                                      {primaryTitle}
+                                    </h3>
+
+                                    {secondarySubtitle && (
+                                      <p className="text-[10px] font-bold text-gray-400 uppercase truncate leading-tight mt-0.5">
+                                        {secondarySubtitle}
+                                      </p>
                                     )}
 
-                                    <div className="flex items-center gap-1.5 text-gray-500 font-bold shrink-0">
-                                      <span className="flex items-center gap-0.5">
-                                        <Clock className="w-2.5 h-2.5" />
-                                        {timeStr}
+                                    <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5 flex items-center gap-2">
+                                      {isTransfer ? (
+                                        <span className="truncate text-blue-400 flex items-center gap-1 font-bold">
+                                          {sourceAccount?.name || "Account"} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetAccount?.name || "Target"}
+                                        </span>
+                                      ) : (
+                                        <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                                      )}
+
+                                      <div className="flex items-center gap-1.5 text-gray-500 font-bold shrink-0">
+                                        <span className="flex items-center gap-0.5">
+                                          <Clock className="w-2.5 h-2.5" />
+                                          {timeStr}
+                                        </span>
+                                        {hasLocation && <MapPin className="w-2.5 h-2.5 text-amber-400/80" />}
+                                        {hasNote && <FileText className="w-2.5 h-2.5 text-purple-400/80" />}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Amount & Review / Split Badges */}
+                                  <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
+                                    <div className="flex items-center gap-1">
+                                      <span
+                                        className={cn(
+                                          "text-[15px] font-black tracking-tight text-right leading-none font-numbers tabular-nums",
+                                          isIncome ? "text-emerald-500" : isTransfer ? "text-blue-400" : "text-[var(--color-text)]"
+                                        )}
+                                      >
+                                        {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
                                       </span>
-                                      {hasLocation && <MapPin className="w-2.5 h-2.5 text-amber-400/80" />}
-                                      {hasNote && <FileText className="w-2.5 h-2.5 text-purple-400/80" />}
+                                      <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
+                                    </div>
+
+                                    {/* Net Share for Split Expenses */}
+                                    {txn.splits && txn.splits.length > 0 && txn.netAmount !== undefined && txn.netAmount !== txn.amount && (
+                                      <span className="text-[9px] font-bold text-gray-500 block font-numbers tabular-nums mt-0.5">
+                                        Share: ₹{txn.netAmount.toFixed(0)}
+                                      </span>
+                                    )}
+
+                                    {/* Needs Review or Split Status Badges */}
+                                    <div className="flex items-center gap-1 mt-1">
+                                      {txn.needsReview && (
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                          <Zap className="w-2.5 h-2.5 fill-black" /> Review
+                                        </span>
+                                      )}
+
+                                      {txn.splits && txn.splits.length > 0 && (
+                                        <SplitVectorBadge splits={txn.splits} />
+                                      )}
                                     </div>
                                   </div>
                                 </div>
-
-                                {/* Amount & Review / Split Badges */}
-                                <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
-                                  <div className="flex items-center gap-1">
-                                    <span
-                                      className={cn(
-                                        "text-[15px] font-black tracking-tight text-right leading-none font-numbers tabular-nums",
-                                        isIncome ? "text-emerald-500" : isTransfer ? "text-blue-400" : "text-[var(--color-text)]"
-                                      )}
-                                    >
-                                      {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
-                                    </span>
-                                    <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
-                                  </div>
-
-                                  {/* Net Share for Split Expenses */}
-                                  {txn.splits && txn.splits.length > 0 && txn.netAmount !== undefined && txn.netAmount !== txn.amount && (
-                                    <span className="text-[9px] font-bold text-gray-500 block font-numbers tabular-nums mt-0.5">
-                                      Share: ₹{txn.netAmount.toFixed(0)}
-                                    </span>
-                                  )}
-
-                                  {/* Needs Review or Split Status Badges */}
-                                  <div className="flex items-center gap-1 mt-1">
-                                    {txn.needsReview && (
-                                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                                        <Zap className="w-2.5 h-2.5 fill-black" /> Review
-                                      </span>
-                                    )}
-
-                                    {txn.splits && txn.splits.length > 0 && (() => {
-                                      const unsettledTotal = txn.splits.filter((p) => !p.isSettled).reduce((s, p) => s + (p.amount || 0), 0);
-                                      return (
-                                        <span className={cn(
-                                          "text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border flex items-center gap-1",
-                                          unsettledTotal > 0
-                                            ? "bg-amber-400/10 border-amber-400/40 text-amber-500"
-                                            : "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
-                                        )}>
-                                          <Users className="w-2.5 h-2.5 stroke-[2.5px]" />
-                                          {unsettledTotal > 0 ? `₹${unsettledTotal.toFixed(0)} owed` : "Settled"}
-                                        </span>
-                                      );
-                                    })()}
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
+                              </Card>
                           </SwipeToDelete>
                         );
                       })}
