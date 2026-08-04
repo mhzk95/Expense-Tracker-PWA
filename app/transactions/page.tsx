@@ -18,15 +18,11 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { FlashEntryModal } from "@/components/transactions/FlashEntryModal";
 import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
-import { 
-  SplitDataIndicator, 
-  SplitDataVariant 
-} from "@/components/transactions/SplitDataIndicator";
+import { SplitDonutRing } from "@/components/transactions/SplitDataIndicator";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 export default function TransactionsPage() {
-  const [splitVariant, setSplitVariant] = useState<SplitDataVariant>("recovery-bar");
   const { 
     transactions: rawTransactions, 
     loading: txLoading, 
@@ -704,37 +700,6 @@ export default function TransactionsPage() {
         </AnimatePresence>
       </div>
 
-      {/* Split Animation Preview Switcher Toolbar (Data-Driven Visuals) */}
-      <div className="mb-4 p-2.5 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-[16px] flex items-center justify-between gap-2 overflow-x-auto shadow-sm">
-        <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 whitespace-nowrap pl-1 flex items-center gap-1">
-          ⚡ Split Style:
-        </span>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {[
-            { id: "recovery-bar", label: "📊 Recovery Bar" },
-            { id: "avatar-beacons", label: "👥 Avatars" },
-            { id: "donut-ring", label: "🍩 Donut Ring" },
-            { id: "split-capsule", label: "🏷️ Capsule" },
-          ].map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => {
-                setSplitVariant(opt.id as SplitDataVariant);
-                vibrate([10]);
-              }}
-              className={cn(
-                "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border-2 transition-all cursor-pointer",
-                splitVariant === opt.id
-                  ? "bg-amber-400 text-black border-black/40 shadow-sm scale-[1.03]"
-                  : "bg-[var(--color-bg)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] opacity-70"
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Transaction list */}
       {loading ? (
         <div className="space-y-3">
@@ -1010,14 +975,12 @@ export default function TransactionsPage() {
                                       </span>
                                     )}
 
-                                    {/* Data-Driven Split Indicator Variant */}
+                                    {/* Minimalist Data-Driven Donut Ring */}
                                     {isSplit && (
-                                      <SplitDataIndicator
+                                      <SplitDonutRing
                                         splits={txn.splits}
                                         netAmount={txn.netAmount}
                                         totalAmount={txn.amount}
-                                        currency={txn.currency}
-                                        variant={splitVariant}
                                       />
                                     )}
                                   </div>

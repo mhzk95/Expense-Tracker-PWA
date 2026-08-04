@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
 import { Card } from "@/components/ui/Card";
 import { MarqueeText } from "@/components/ui/MarqueeText";
-import { SplitDataIndicator } from "@/components/transactions/SplitDataIndicator";
+import { SplitDonutRing } from "@/components/transactions/SplitDataIndicator";
 import { useMemo } from "react";
 
 export function RecentTransactions() {
@@ -173,12 +173,10 @@ export function RecentTransactions() {
                       )}
 
                       {txn.splits && txn.splits.length > 0 && (
-                        <SplitDataIndicator
+                        <SplitDonutRing
                           splits={txn.splits}
                           netAmount={txn.netAmount}
                           totalAmount={txn.amount}
-                          currency={txn.currency}
-                          variant="recovery-bar"
                         />
                       )}
                     </div>
