@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, hexToRgb, vibrate, cn, getCategoryIcon } from "@/lib/utils/helpers";
-import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown, Clock, ChevronRight, CheckSquare, Zap } from "lucide-react";
+import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown, Clock, ChevronRight, CheckSquare, Zap, FileText, ArrowRight } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -728,19 +728,21 @@ export default function TransactionsPage() {
                           category = categories.find((c) => c.name.toLowerCase() === (txn as any).category?.toLowerCase());
                         }
 
+                        const sourceAccount = accounts.find((a) => a.id === txn.accountId);
+                        const targetAccount = accounts.find((a) => a.id === txn.toAccountId);
                         const isIncome = txn.type === "income";
                         const isTransfer = txn.type === "transfer";
-                        const baseColor = category?.color || "#8b5cf6";
+                        const baseColor = category?.color || (isTransfer ? "#60a5fa" : "#8b5cf6");
 
                         const isSelected = selectedTxIds.has(txn.id);
 
-                        let locDisplay = txn.location;
-                        try {
-                          if (txn.location) {
-                            const loc = JSON.parse(txn.location);
-                            locDisplay = loc.display || loc.place_name || "Location saved";
-                          }
-                        } catch { }
+                        const hasDistinctPayeeAndDesc = Boolean(
+                          txn.payee && txn.description && txn.payee.toLowerCase().trim() !== txn.description.toLowerCase().trim()
+                        );
+                        const primaryTitle = txn.payee || txn.description || (isTransfer ? "Account Transfer" : "Transaction");
+                        const secondarySubtitle = hasDistinctPayeeAndDesc ? txn.description : null;
+                        const hasNote = Boolean(txn.note && txn.note.trim().length > 0);
+                        const hasLocation = Boolean(txn.location && txn.location.trim().length > 0);
 
                         const txDate = new Date(txn.date);
                         const timeStr = txDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -754,7 +756,7 @@ export default function TransactionsPage() {
                               setIsEditOpen(true);
                             }}
                             glowColor={baseColor}
-                            deleteMessage={`Delete "${txn.description}"?`}
+                            deleteMessage={`Delete "${primaryTitle}"?`}
                           >
                             <Card
                               variant={isSelected ? "primary" : "surface"}
@@ -784,7 +786,7 @@ export default function TransactionsPage() {
                                 }
                               }}
                             >
-                              <div className="flex items-center w-full px-3.5 py-3 h-[68px] gap-3 relative z-10 text-left">
+                              <div className="flex items-center w-full px-3.5 py-3 h-[72px] gap-3 relative z-10 text-left">
                                 {/* Left Color Accent Strip */}
                                 <div 
                                   className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
@@ -824,15 +826,32 @@ export default function TransactionsPage() {
                                 {/* Details */}
                                 <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
                                   <h3 className="text-[13px] font-black uppercase truncate leading-tight text-[var(--color-text)] pt-0.5">
-                                    {txn.payee || txn.description || "No Title"}
+                                    {primaryTitle}
                                   </h3>
 
-                                  <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">
-                                    <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
-                                    <span className="truncate block text-gray-500 flex items-center gap-1 mt-0.5">
-                                      <Clock className="w-3 h-3" />
-                                      {timeStr}
-                                    </span>
+                                  {secondarySubtitle && (
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase truncate leading-tight mt-0.5">
+                                      {secondarySubtitle}
+                                    </p>
+                                  )}
+
+                                  <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5 flex items-center gap-2">
+                                    {isTransfer ? (
+                                      <span className="truncate text-blue-400 flex items-center gap-1 font-bold">
+                                        {sourceAccount?.name || "Account"} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetAccount?.name || "Target"}
+                                      </span>
+                                    ) : (
+                                      <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                                    )}
+
+                                    <div className="flex items-center gap-1.5 text-gray-500 font-bold shrink-0">
+                                      <span className="flex items-center gap-0.5">
+                                        <Clock className="w-2.5 h-2.5" />
+                                        {timeStr}
+                                      </span>
+                                      {hasLocation && <MapPin className="w-2.5 h-2.5 text-amber-400/80" />}
+                                      {hasNote && <FileText className="w-2.5 h-2.5 text-purple-400/80" />}
+                                    </div>
                                   </div>
                                 </div>
 
@@ -845,7 +864,7 @@ export default function TransactionsPage() {
                                         isIncome ? "text-emerald-500" : isTransfer ? "text-blue-400" : "text-[var(--color-text)]"
                                       )}
                                     >
-                                      {isIncome ? "+" : isTransfer ? "" : "−"}₹{Math.abs(txn.amount).toFixed(2)}
+                                      {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
                                     </span>
                                     <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
                                   </div>

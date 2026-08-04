@@ -6,8 +6,9 @@
  */
 
 import { useCategories } from "@/hooks/useCategories";
+import { useAccounts } from "@/hooks/useAccounts";
 import { formatCurrency, formatDate, hexToRgb, getCategoryIcon } from "@/lib/utils/helpers";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, Zap, MapPin, FileText, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/helpers";
 import Link from "next/link";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -18,13 +19,14 @@ import { useMemo } from "react";
 export function RecentTransactions() {
   const { transactions, loading: txLoading } = useTransactions();
   const { categories, loading: catLoading } = useCategories();
+  const { accounts, loading: accLoading } = useAccounts();
 
   // Transactions are already sorted descending by date in the repository
   const recent = useMemo(() => {
     return transactions.slice(0, 5);
   }, [transactions]);
 
-  const loading = txLoading || catLoading;
+  const loading = txLoading || catLoading || accLoading;
 
   return (
     <div className="flex flex-col gap-3 h-full">
@@ -38,8 +40,6 @@ export function RecentTransactions() {
           View all
         </Link>
       </div>
-
-
 
       {/* Transaction rows */}
       <div className="space-y-3 flex-1 flex flex-col justify-start">
@@ -62,22 +62,31 @@ export function RecentTransactions() {
         ) : (
           recent.map((txn) => {
             const category = categories.find((c) => c.id === txn.categoryId);
+            const sourceAccount = accounts.find((a) => a.id === txn.accountId);
+            const targetAccount = accounts.find((a) => a.id === txn.toAccountId);
             const isIncome = txn.type === "income";
             const isTransfer = txn.type === "transfer";
 
-            const baseColor = category?.color || "#8b5cf6";
+            const baseColor = category?.color || (isTransfer ? "#60a5fa" : "#8b5cf6");
+
+            const hasDistinctPayeeAndDesc = Boolean(
+              txn.payee && txn.description && txn.payee.toLowerCase().trim() !== txn.description.toLowerCase().trim()
+            );
+            const primaryTitle = txn.payee || txn.description || (isTransfer ? "Account Transfer" : "Transaction");
+            const secondarySubtitle = hasDistinctPayeeAndDesc ? txn.description : null;
+            const hasNote = Boolean(txn.note && txn.note.trim().length > 0);
+            const hasLocation = Boolean(txn.location && txn.location.trim().length > 0);
 
             return (
               <Card
                 key={txn.id}
                 variant="surface"
                 className={cn(
-                  "group relative overflow-hidden transition-all duration-200 border-2 border-[var(--color-border)]",
+                  "group relative overflow-hidden transition-all duration-200 border-2 border-[var(--color-border)] rounded-[18px]",
                   txn.needsReview && "border-[#facc15]"
                 )}
-                style={{ borderRadius: '16px' }}
               >
-                <div className="flex items-center w-full px-3 py-3 h-[68px] gap-3 relative z-10 text-left">
+                <div className="flex items-center w-full px-3.5 py-3 h-[72px] gap-3 relative z-10 text-left">
                   {/* Left Color Accent Strip */}
                   <div 
                     className="absolute left-0 top-3 bottom-3 w-1 rounded-r-md z-0" 
@@ -86,7 +95,7 @@ export function RecentTransactions() {
 
                   {/* Type icon */}
                   <div
-                    className="flex-shrink-0 w-11 h-11 rounded-[10px] flex items-center justify-center relative z-10 ml-1"
+                    className="flex-shrink-0 w-11 h-11 rounded-[12px] flex items-center justify-center relative z-10 ml-0.5 border border-black/20"
                     style={{ 
                       backgroundColor: baseColor,
                       color: "#000"
@@ -103,14 +112,30 @@ export function RecentTransactions() {
 
                   {/* Description + category */}
                   <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10 h-full">
-                    <h3 className="text-[13px] font-black uppercase truncate leading-tight text-white pt-0.5">
-                      {txn.payee || txn.description || "No Title"}
+                    <h3 className="text-[13px] font-black uppercase truncate leading-tight text-[var(--color-text)] pt-0.5">
+                      {primaryTitle}
                     </h3>
-                    <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">
-                      <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
-                      <span className="truncate block text-gray-500 mt-0.5">
-                        {formatDate(txn.date, "medium")}
-                      </span>
+                    
+                    {secondarySubtitle && (
+                      <p className="text-[10px] font-bold text-gray-400 uppercase truncate leading-tight mt-0.5">
+                        {secondarySubtitle}
+                      </p>
+                    )}
+
+                    <div className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5 flex items-center gap-2">
+                      {isTransfer ? (
+                        <span className="truncate text-blue-400 flex items-center gap-1 font-bold">
+                          {sourceAccount?.name || "Account"} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetAccount?.name || "Target"}
+                        </span>
+                      ) : (
+                        <span className="truncate block" style={{ color: baseColor }}>{category?.name ?? "Uncategorized"}</span>
+                      )}
+
+                      <div className="flex items-center gap-1.5 text-gray-500 font-bold shrink-0">
+                        <span>{formatDate(txn.date, "medium")}</span>
+                        {hasLocation && <MapPin className="w-2.5 h-2.5 text-amber-400/80" />}
+                        {hasNote && <FileText className="w-2.5 h-2.5 text-purple-400/80" />}
+                      </div>
                     </div>
                   </div>
 
@@ -119,16 +144,16 @@ export function RecentTransactions() {
                     <div className="flex items-center gap-1">
                       <span
                         className={cn(
-                          "text-[15px] font-black tracking-tighter text-right leading-none font-numbers",
-                          isIncome ? "text-emerald-500" : "text-white"
+                          "text-[15px] font-black tracking-tight text-right leading-none font-numbers tabular-nums",
+                          isIncome ? "text-emerald-500" : isTransfer ? "text-blue-400" : "text-[var(--color-text)]"
                         )}
                       >
-                        {isIncome ? "+" : isTransfer ? "" : "−"}₹{Math.abs(txn.amount).toFixed(2)}
+                        {isIncome ? "+" : isTransfer ? "" : "−"}{formatCurrency(txn.amount, txn.currency)}
                       </span>
                     </div>
                     {txn.needsReview && (
-                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border-2 border-black px-2 py-0.5 rounded flex items-center gap-1 mt-1">
-                        Review
+                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-2 py-0.5 rounded flex items-center gap-1 mt-1">
+                        <Zap className="w-3 h-3 fill-black" /> Review
                       </span>
                     )}
                   </div>
