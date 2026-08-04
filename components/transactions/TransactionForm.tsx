@@ -10,8 +10,9 @@ import {
   Camera, Loader2, Sparkles, MapPin, X, ChevronLeft, ChevronDown, Search, Plus, Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TransactionEntity } from "@/lib/db/indexeddb";
+import { TransactionEntity, TransactionSplitParticipant } from "@/lib/db/indexeddb";
 import { resolveLocationFromCoordinates, parseGoogleMapsUrl } from "@/lib/utils/location";
+import { SplitExpenseSection } from "./SplitExpenseSection";
 
 interface TransactionFormProps {
   onSuccess: () => void;
@@ -68,6 +69,11 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
   const [accountId, setAccountId] = useState(editingTransaction?.accountId || "");
   const [toAccountId, setToAccountId] = useState(editingTransaction?.toAccountId || "");
   const [needsReview, setNeedsReview] = useState(editingTransaction?.needsReview || false);
+  const [splits, setSplits] = useState<TransactionSplitParticipant[]>(editingTransaction?.splits || []);
+  const [netAmount, setNetAmount] = useState<number | undefined>(editingTransaction?.netAmount);
+  const [isGroupExpense, setIsGroupExpense] = useState<boolean>(
+    editingTransaction?.isGroupExpense || (editingTransaction?.splits && editingTransaction.splits.length > 0) || false
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -624,6 +630,9 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
         status: editingTransaction?.status || "completed",
         payee: type === "transfer" ? "" : rawPayee,
         location: location.trim(),
+        splits: isGroupExpense ? splits : undefined,
+        netAmount: isGroupExpense ? (netAmount !== undefined ? netAmount : Number(evaluatedAmount)) : undefined,
+        isGroupExpense: Boolean(isGroupExpense && splits.length > 0),
       };
 
       if (editingTransaction) {
@@ -1485,6 +1494,21 @@ export function TransactionForm({ onSuccess, editingTransaction }: TransactionFo
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Split with Friends Section (Expenses only) */}
+        {type === "expense" && (
+          <SplitExpenseSection
+            totalAmount={parseFloat(evaluateExpression(amount) || amount) || 0}
+            currency="INR"
+            splits={splits}
+            isGroupExpense={isGroupExpense}
+            onToggleGroupExpense={setIsGroupExpense}
+            onChange={(updatedSplits, userShare) => {
+              setSplits(updatedSplits);
+              setNetAmount(userShare);
+            }}
+          />
+        )}
 
         {/* Needs Review Toggle - relative z-10 */}
         <div className="relative z-10 flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-[16px] border-2 border-[var(--color-border)]">

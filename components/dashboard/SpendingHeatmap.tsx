@@ -21,12 +21,13 @@ export function SpendingHeatmap() {
         map.set(d.toISOString().split('T')[0], 0);
      }
      
-     transactions.forEach(t => {
-        if (t.type !== "expense") return;
-        const dateStr = t.date.split('T')[0];
-        if (map.has(dateStr)) {
-           map.set(dateStr, map.get(dateStr)! + t.amount);
-        }
+     transactions.forEach((t) => {
+       if (t.type !== "expense") return;
+       const dateStr = t.date.split("T")[0];
+       if (map.has(dateStr)) {
+         const amount = t.netAmount !== undefined ? t.netAmount : t.amount;
+         map.set(dateStr, map.get(dateStr)! + amount);
+       }
      });
      
      const formattedData = Array.from(map.entries()).map(([date, amount]) => ({ date, amount }));

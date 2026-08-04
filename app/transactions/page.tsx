@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, hexToRgb, vibrate, cn, getCategoryIcon } from "@/lib/utils/helpers";
-import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown, Clock, ChevronRight, CheckSquare, Zap, FileText, ArrowRight } from "lucide-react";
+import { ArrowLeftRight, Filter, MapPin, X, Check, Trash2, Tag, Calendar, ChevronDown, Clock, ChevronRight, CheckSquare, Zap, FileText, ArrowRight, Users } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -68,6 +68,7 @@ export default function TransactionsPage() {
   const [selectedTxn, setSelectedTxn] = useState<TransactionEntity | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showOnlyNeedsReview, setShowOnlyNeedsReview] = useState(false);
+  const [showOnlySplits, setShowOnlySplits] = useState(false);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -169,16 +170,30 @@ export default function TransactionsPage() {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
-  const todayExpenses = todayTxns.filter(t => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
-  const todayIncomes = todayTxns.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const todayExpenses = todayTxns
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + (t.netAmount !== undefined ? t.netAmount : t.amount), 0);
+  const todayIncomes = todayTxns.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
   const todayNet = todayIncomes - todayExpenses;
 
-  const monthExpenses = monthTxns.filter(t => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
-  const monthIncomes = monthTxns.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const monthExpenses = monthTxns
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + (t.netAmount !== undefined ? t.netAmount : t.amount), 0);
+  const monthIncomes = monthTxns.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
   const monthNet = monthIncomes - monthExpenses;
-  const currentMonthName = now.toLocaleString('default', { month: 'short' });
+  const currentMonthName = now.toLocaleString("default", { month: "short" });
 
-  const hasActiveFilters = Boolean(searchQuery || selectedCategory || selectedType || selectedDateRange || showOnlyNeedsReview);
+  // Group Split Metrics
+  const splitTxns = rawTransactions.filter((t) => t.splits && t.splits.length > 0);
+  const totalPendingReceivables = splitTxns.reduce((acc, t) => {
+    const pending = t.splits?.filter((p) => !p.isSettled).reduce((s, p) => s + p.amount, 0) || 0;
+    return acc + pending;
+  }, 0);
+  const pendingSplitsCount = splitTxns.filter((t) => t.splits?.some((p) => !p.isSettled)).length;
+
+  const hasActiveFilters = Boolean(
+    searchQuery || selectedCategory || selectedType || selectedDateRange || showOnlyNeedsReview || showOnlySplits
+  );
 
   const handleClearAllFilters = () => {
     setSearchQuery("");
@@ -186,11 +201,13 @@ export default function TransactionsPage() {
     setSelectedType(null);
     setSelectedDateRange(null);
     setShowOnlyNeedsReview(false);
+    setShowOnlySplits(false);
   };
 
   const transactions = [...rawTransactions]
     .filter((t) => {
       if (showOnlyNeedsReview && !t.needsReview) return false;
+      if (showOnlySplits && (!t.splits || t.splits.length === 0)) return false;
       if (selectedType && t.type !== selectedType) return false;
       if (selectedCategory && t.categoryId !== selectedCategory) return false;
       if (selectedDateRange) {
@@ -212,7 +229,8 @@ export default function TransactionsPage() {
         const matchesDesc = t.description?.toLowerCase().includes(query);
         const matchesPayee = t.payee?.toLowerCase().includes(query);
         const matchesNote = t.note?.toLowerCase().includes(query);
-        return matchesDesc || matchesPayee || matchesNote;
+        const matchesParticipant = t.splits?.some((p) => p.name.toLowerCase().includes(query));
+        return matchesDesc || matchesPayee || matchesNote || Boolean(matchesParticipant);
       }
       return true;
     })
@@ -322,6 +340,45 @@ export default function TransactionsPage() {
         </div>
       )}
 
+      {/* Pending Group Receivables Banner */}
+      {!loading && totalPendingReceivables > 0 && (
+        <div 
+          onClick={() => {
+            setShowOnlySplits(!showOnlySplits);
+            vibrate([15]);
+          }}
+          className={cn(
+            "p-4 rounded-[20px] border-2 cursor-pointer transition-all flex items-center justify-between gap-3 shadow-brutal-sm",
+            showOnlySplits
+              ? "bg-amber-400 border-[var(--color-border)] text-black"
+              : "bg-amber-400/10 border-amber-400 text-[var(--color-text)] hover:bg-amber-400/20"
+          )}
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-400 border border-black/30 flex items-center justify-center text-black shrink-0">
+              <Users className="w-5 h-5 stroke-[2.5px]" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-black uppercase tracking-widest block text-amber-500">
+                Pending Group Receivables
+              </span>
+              <p className="text-sm font-black uppercase tracking-tight truncate">
+                ₹{totalPendingReceivables.toFixed(2)} to collect ({pendingSplitsCount} {pendingSplitsCount === 1 ? 'split' : 'splits'})
+              </p>
+            </div>
+          </div>
+
+          <span className={cn(
+            "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border shrink-0",
+            showOnlySplits 
+              ? "bg-black text-white border-black" 
+              : "bg-amber-400 text-black border-black/30"
+          )}>
+            {showOnlySplits ? "Active" : "View"}
+          </span>
+        </div>
+      )}
+
       {/* Unified Search and filter toolbar */}
       <div className="space-y-3">
         {/* Search Row */}
@@ -340,7 +397,7 @@ export default function TransactionsPage() {
                   addSearchToHistory(searchQuery);
                 }
               }}
-              placeholder="Search transactions..."
+              placeholder="Search by payee, note, or friend name..."
               className="w-full h-full pl-10 pr-10 text-xs font-bold border-2 border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] focus:border-[var(--color-primary)] outline-none transition-all rounded-xl placeholder:text-gray-500"
             />
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
@@ -373,7 +430,7 @@ export default function TransactionsPage() {
         </div>
 
         {/* Action Buttons Row */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => {
               if (selectedTxIds.size > 0 || isSelectMode) {
@@ -385,15 +442,15 @@ export default function TransactionsPage() {
             }}
             aria-label={isSelectMode ? "Exit selection mode" : "Select multiple transactions"}
             className={cn(
-              "h-[44px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+              "h-[42px] rounded-xl flex items-center justify-center gap-1.5 border-2 transition-all px-2",
               isSelectMode 
                 ? "border-emerald-500 bg-emerald-500/10 text-emerald-500" 
                 : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
             )}
           >
-            <CheckSquare className="w-4 h-4 stroke-[2.5px] text-emerald-500" />
-            <span className="text-[11px] font-black uppercase tracking-widest">
-              Select Multiple
+            <CheckSquare className="w-3.5 h-3.5 stroke-[2.5px] text-emerald-500 shrink-0" />
+            <span className="text-[10px] font-black uppercase tracking-wider truncate">
+              Select
             </span>
           </button>
 
@@ -401,15 +458,31 @@ export default function TransactionsPage() {
             onClick={() => setShowOnlyNeedsReview(!showOnlyNeedsReview)}
             aria-label={showOnlyNeedsReview ? "Show all transactions" : "Filter needs review only"}
             className={cn(
-              "h-[44px] rounded-xl flex items-center justify-center gap-2 border-2 transition-all",
+              "h-[42px] rounded-xl flex items-center justify-center gap-1.5 border-2 transition-all px-2",
               showOnlyNeedsReview 
                 ? "border-yellow-400 bg-yellow-400/10 text-yellow-400" 
                 : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
             )}
           >
-            <Zap className={cn("w-4 h-4 stroke-[2.5px]", showOnlyNeedsReview ? "text-yellow-400" : "text-yellow-500")} />
-            <span className="text-[11px] font-black uppercase tracking-widest">
-              Needs Review {needsReviewCount > 0 && `(${needsReviewCount})`}
+            <Zap className={cn("w-3.5 h-3.5 stroke-[2.5px] shrink-0", showOnlyNeedsReview ? "text-yellow-400" : "text-yellow-500")} />
+            <span className="text-[10px] font-black uppercase tracking-wider truncate">
+              Review {needsReviewCount > 0 && `(${needsReviewCount})`}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setShowOnlySplits(!showOnlySplits)}
+            aria-label={showOnlySplits ? "Show all transactions" : "Filter group splits only"}
+            className={cn(
+              "h-[42px] rounded-xl flex items-center justify-center gap-1.5 border-2 transition-all px-2",
+              showOnlySplits 
+                ? "border-amber-400 bg-amber-400/10 text-amber-400" 
+                : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+            )}
+          >
+            <Users className={cn("w-3.5 h-3.5 stroke-[2.5px] shrink-0", showOnlySplits ? "text-amber-400" : "text-amber-500")} />
+            <span className="text-[10px] font-black uppercase tracking-wider truncate">
+              Splits {splitTxns.length > 0 && `(${splitTxns.length})`}
             </span>
           </button>
         </div>
@@ -418,6 +491,15 @@ export default function TransactionsPage() {
         {hasActiveFilters && (
           <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none flex-wrap">
             <span className="text-[9px] uppercase font-black tracking-widest text-gray-500 mr-1">Active:</span>
+
+            {showOnlySplits && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-400/20 border border-amber-400 text-amber-500">
+                Group Splits
+                <button onClick={() => setShowOnlySplits(false)} aria-label="Remove splits filter" className="hover:text-red-500">
+                  <X className="w-3 h-3 stroke-[3px]" />
+                </button>
+              </span>
+            )}
 
             {searchQuery && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
@@ -855,7 +937,7 @@ export default function TransactionsPage() {
                                   </div>
                                 </div>
 
-                                {/* Amount & Review Badge */}
+                                {/* Amount & Review / Split Badges */}
                                 <div className="text-right flex flex-col items-end justify-center h-full relative z-10">
                                   <div className="flex items-center gap-1">
                                     <span
@@ -868,11 +950,37 @@ export default function TransactionsPage() {
                                     </span>
                                     <ChevronRight className="w-4 h-4 text-gray-500 stroke-[3px]" />
                                   </div>
-                                  {txn.needsReview && (
-                                    <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-2 py-0.5 rounded flex items-center gap-1 mt-1">
-                                      <Zap className="w-3 h-3 fill-black" /> Review
+
+                                  {/* Net Share for Split Expenses */}
+                                  {txn.splits && txn.splits.length > 0 && txn.netAmount !== undefined && txn.netAmount !== txn.amount && (
+                                    <span className="text-[9px] font-bold text-gray-500 block font-numbers tabular-nums mt-0.5">
+                                      Share: ₹{txn.netAmount.toFixed(0)}
                                     </span>
                                   )}
+
+                                  {/* Needs Review or Split Status Badges */}
+                                  <div className="flex items-center gap-1 mt-1">
+                                    {txn.needsReview && (
+                                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                        <Zap className="w-2.5 h-2.5 fill-black" /> Review
+                                      </span>
+                                    )}
+
+                                    {txn.splits && txn.splits.length > 0 && (() => {
+                                      const unsettledTotal = txn.splits.filter((p) => !p.isSettled).reduce((s, p) => s + (p.amount || 0), 0);
+                                      return (
+                                        <span className={cn(
+                                          "text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border flex items-center gap-1",
+                                          unsettledTotal > 0
+                                            ? "bg-amber-400/10 border-amber-400/40 text-amber-500"
+                                            : "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
+                                        )}>
+                                          <Users className="w-2.5 h-2.5 stroke-[2.5px]" />
+                                          {unsettledTotal > 0 ? `₹${unsettledTotal.toFixed(0)} owed` : "Settled"}
+                                        </span>
+                                      );
+                                    })()}
+                                  </div>
                                 </div>
                               </div>
                             </Card>

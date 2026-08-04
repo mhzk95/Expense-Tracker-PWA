@@ -9,7 +9,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { 
   MapPin, CreditCard, Flag, Repeat, ChevronRight, Edit3, Trash2, CheckCircle2, 
   Zap, Copy, Check, ExternalLink, ArrowRight, ArrowDownLeft, ArrowUpRight, 
-  ArrowLeftRight, Calendar, Clock, FileText, Share2, Tag, ShieldCheck
+  ArrowLeftRight, Calendar, Clock, FileText, Share2, Tag, ShieldCheck, Users, MessageSquare
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
@@ -206,6 +206,47 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
       setActionNotice("Note saved");
       setTimeout(() => setActionNotice(null), 2000);
     }
+  };
+
+  const handleToggleParticipantSettled = async (participantId: string) => {
+    if (!txn || !txn.splits) return;
+    vibrate([20]);
+    const updatedSplits = txn.splits.map((s) => {
+      if (s.id === participantId) {
+        const nextSettled = !s.isSettled;
+        return {
+          ...s,
+          isSettled: nextSettled,
+          settledAt: nextSettled ? new Date().toISOString() : undefined,
+        };
+      }
+      return s;
+    });
+
+    const targetParticipant = txn.splits.find((s) => s.id === participantId);
+    const isNowSettled = !targetParticipant?.isSettled;
+
+    await updateTransaction(txn.id, {
+      splits: updatedSplits,
+    });
+
+    setActionNotice(
+      isNowSettled 
+        ? `${targetParticipant?.name || 'Share'} marked as Paid!` 
+        : `${targetParticipant?.name || 'Share'} marked as Pending`
+    );
+    setTimeout(() => setActionNotice(null), 2500);
+  };
+
+  const handleCopyPaymentRequest = (participantName?: string, shareAmount?: number) => {
+    vibrate([15]);
+    const title = txn.payee || txn.description || "our group expense";
+    const amountStr = shareAmount ? `₹${shareAmount}` : formatCurrency(txn.amount, txn.currency);
+    const msg = `Hey ${participantName || "there"}! Your share for ${title} is ${amountStr}. Total bill was ${formatCurrency(txn.amount, txn.currency)}.`;
+
+    navigator.clipboard.writeText(msg);
+    setActionNotice("Payment request copied to clipboard!");
+    setTimeout(() => setActionNotice(null), 2500);
   };
 
   const handleDelete = async () => {
@@ -476,6 +517,125 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
               </div>
             )}
           </div>
+
+          {/* Group Split & IOUs Card */}
+          {txn.splits && txn.splits.length > 0 && (() => {
+            const totalFriendsOwed = txn.splits.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const settledFriendsAmount = txn.splits.filter((p) => p.isSettled).reduce((sum, p) => sum + (p.amount || 0), 0);
+            const userShare = txn.netAmount !== undefined ? txn.netAmount : Math.max(0, txn.amount - totalFriendsOwed);
+            const recoveryPercent = totalFriendsOwed > 0 ? Math.round((settledFriendsAmount / totalFriendsOwed) * 100) : 100;
+            const isAllSettled = recoveryPercent === 100;
+
+            return (
+              <div className="bg-[var(--color-surface)] rounded-[22px] p-4 border-2 border-[var(--color-border)] space-y-3.5 shadow-brutal-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)] flex items-center justify-center text-black border border-black/20">
+                      <Users className="w-4 h-4 stroke-[2.5px]" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+                        Group Split & IOUs
+                      </h4>
+                      <p className="text-[10px] font-bold text-gray-500">
+                        {txn.splits.length} {txn.splits.length === 1 ? "friend" : "friends"} split
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] ${
+                    isAllSettled ? "bg-emerald-400 text-black" : "bg-amber-300 text-black"
+                  }`}>
+                    {isAllSettled ? "Fully Settled" : `${recoveryPercent}% Recovered`}
+                  </span>
+                </div>
+
+                {/* Recovery Progress Bar */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-wider text-gray-500">
+                    <span>Recovered: {formatCurrency(settledFriendsAmount, txn.currency)}</span>
+                    <span>Remaining: {formatCurrency(totalFriendsOwed - settledFriendsAmount, txn.currency)}</span>
+                  </div>
+                  <div className="h-2.5 w-full bg-[var(--color-bg)] rounded-full overflow-hidden border border-[var(--color-border)]">
+                    <div 
+                      className="h-full bg-emerald-400 transition-all duration-300"
+                      style={{ width: `${recoveryPercent}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Net Breakdown Pills */}
+                <div className="grid grid-cols-2 gap-2 text-center">
+                  <div className="bg-[var(--color-bg)] p-2 rounded-xl border border-[var(--color-border)]">
+                    <span className="text-[9px] uppercase font-black tracking-wider text-gray-500 block">Your True Share</span>
+                    <span className="text-xs font-black font-numbers tabular-nums text-emerald-500">
+                      {formatCurrency(userShare, txn.currency)}
+                    </span>
+                  </div>
+                  <div className="bg-[var(--color-bg)] p-2 rounded-xl border border-[var(--color-border)]">
+                    <span className="text-[9px] uppercase font-black tracking-wider text-gray-500 block">Total Friends Owe</span>
+                    <span className="text-xs font-black font-numbers tabular-nums text-amber-500">
+                      {formatCurrency(totalFriendsOwed, txn.currency)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Participants Breakdown */}
+                <div className="space-y-2 pt-1 border-t border-[var(--color-border)]/60">
+                  {txn.splits.map((p) => {
+                    const initials = p.name.slice(0, 2).toUpperCase();
+                    return (
+                      <div 
+                        key={p.id}
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] gap-2"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className={`w-7 h-7 rounded-lg border border-[var(--color-border)] flex items-center justify-center text-[10px] font-black text-black shrink-0 ${
+                            p.isSettled ? "bg-emerald-400" : "bg-amber-300"
+                          }`}>
+                            {initials}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-xs font-black text-[var(--color-text)] block truncate">
+                              {p.name}
+                            </span>
+                            <span className="text-[10px] font-numbers tabular-nums font-bold text-gray-500">
+                              {formatCurrency(p.amount, txn.currency)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Copy Request */}
+                          <button
+                            type="button"
+                            onClick={() => handleCopyPaymentRequest(p.name, p.amount)}
+                            className="p-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-gray-400 hover:text-[var(--color-text)] transition-colors"
+                            title="Copy payment request message"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* 1-Tap Toggle Settle */}
+                          <button
+                            type="button"
+                            onClick={() => handleToggleParticipantSettled(p.id)}
+                            className={`px-2.5 py-1 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 ${
+                              p.isSettled
+                                ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20"
+                                : "bg-amber-400 border-amber-500 text-black hover:bg-amber-500"
+                            }`}
+                          >
+                            {p.isSettled ? "✓ Paid" : "Mark Paid"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Location & Geolocation Card */}
           {locationDisplay && (

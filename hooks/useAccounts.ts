@@ -23,6 +23,7 @@ export function useAccounts() {
                             a.id !== cachedAccounts![i]?.id || 
                             a.balance !== cachedAccounts![i]?.balance || 
                             a.name !== cachedAccounts![i]?.name ||
+                            a.isDefault !== cachedAccounts![i]?.isDefault ||
                             a.excludeFromNetWorth !== cachedAccounts![i]?.excludeFromNetWorth
                           );
 
@@ -59,6 +60,10 @@ export function useAccounts() {
     await accountsRepository.update(id, updates);
   };
 
+  const setDefaultAccount = async (id: string) => {
+    await accountsRepository.setDefault(id);
+  };
+
   const deleteAccount = async (id: string) => {
     await accountsRepository.softDelete(id);
   };
@@ -68,6 +73,7 @@ export function useAccounts() {
     loading,
     addAccount,
     updateAccount,
+    setDefaultAccount,
     deleteAccount,
   };
 }

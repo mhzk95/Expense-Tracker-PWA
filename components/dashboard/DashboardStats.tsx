@@ -42,7 +42,12 @@ export function DashboardStats() {
   const prevMonthTxns = getMonthlyTransactions(prevMonth, prevYear);
 
   const calculateTotal = (txns: any[], type: string) =>
-    txns.filter((t) => t.type === type).reduce((s, t) => s + t.amount, 0);
+    txns
+      .filter((t) => t.type === type)
+      .reduce(
+        (s, t) => s + (type === "expense" && t.netAmount !== undefined ? t.netAmount : t.amount),
+        0
+      );
 
   const monthlyIncome = calculateTotal(currentMonthTxns, "income");
   const monthlyExpenses = calculateTotal(currentMonthTxns, "expense");

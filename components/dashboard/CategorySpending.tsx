@@ -22,13 +22,16 @@ export function CategorySpending() {
       const d = new Date(t.date);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-    const total = expenses.reduce((s, t) => s + t.amount, 0);
+    const total = expenses.reduce(
+      (s, t) => s + (t.netAmount !== undefined ? t.netAmount : t.amount),
+      0
+    );
 
     // Group by category
     const grouped = expenses.reduce((acc, t) => {
       const catId = t.categoryId || "other";
       if (!acc[catId]) acc[catId] = 0;
-      acc[catId] += t.amount;
+      acc[catId] += t.netAmount !== undefined ? t.netAmount : t.amount;
       return acc;
     }, {} as Record<string, number>);
 

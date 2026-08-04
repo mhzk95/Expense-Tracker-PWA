@@ -32,7 +32,10 @@ export default function AnalyticsPage() {
     .reduce((s, t) => s + t.amount, 0);
 
   const expenses = transactions.filter((t) => t.type === "expense");
-  const totalExpenses = expenses.reduce((s, t) => s + t.amount, 0);
+  const totalExpenses = expenses.reduce(
+    (s, t) => s + (t.netAmount !== undefined ? t.netAmount : t.amount),
+    0
+  );
 
   const netCashFlow = totalIncome - totalExpenses;
 
@@ -40,7 +43,7 @@ export default function AnalyticsPage() {
   const groupedExpenses = expenses.reduce((acc, t) => {
     const catId = t.categoryId || "other";
     if (!acc[catId]) acc[catId] = 0;
-    acc[catId] += t.amount;
+    acc[catId] += t.netAmount !== undefined ? t.netAmount : t.amount;
     return acc;
   }, {} as Record<string, number>);
 

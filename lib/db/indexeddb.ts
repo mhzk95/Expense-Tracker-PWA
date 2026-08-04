@@ -1,5 +1,15 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
+export interface TransactionSplitParticipant {
+  id: string;
+  name: string;
+  amount: number;
+  isSettled: boolean;
+  settledAt?: string;
+  settledTransactionId?: string;
+  note?: string;
+}
+
 export interface TransactionEntity {
   id: string;
   amount: number;
@@ -16,6 +26,9 @@ export interface TransactionEntity {
   isDeleted: boolean;
   payee?: string;
   location?: string;
+  splits?: TransactionSplitParticipant[];
+  netAmount?: number;
+  isGroupExpense?: boolean;
 }
 
 export interface AccountEntity {
@@ -27,6 +40,7 @@ export interface AccountEntity {
   status: string;
   institution?: string;
   lastFour?: string;
+  notes?: string;
   color?: string;
   icon?: string;
   includeInNetWorth: boolean;

@@ -64,6 +64,24 @@ export const accountsRepository = {
     }
   },
 
+  async setDefault(id: string): Promise<void> {
+    const db = await getDB();
+    const allAccounts = await db.getAll("accounts");
+    
+    for (const acc of allAccounts) {
+      const shouldBeDefault = acc.id === id;
+      if (acc.isDefault !== shouldBeDefault) {
+        const updated = { ...acc, isDefault: shouldBeDefault };
+        await db.put("accounts", updated);
+        await pushSyncAction("ACCOUNT", "UPDATE", updated);
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("db:accounts:changed"));
+    }
+  },
+
   async softDelete(id: string): Promise<void> {
     const db = await getDB();
     const existing = await db.get("accounts", id);
