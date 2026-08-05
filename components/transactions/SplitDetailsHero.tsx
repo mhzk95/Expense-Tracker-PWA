@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { TransactionSplitParticipant, TransactionEntity } from "@/lib/db/indexeddb";
 import { formatCurrency, vibrate } from "@/lib/utils/helpers";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { 
   Users, Check, MessageSquare, Sparkles, User
 } from "lucide-react";
@@ -96,8 +97,37 @@ export function SplitDetailsHero({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const listVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 350,
+        damping: 26,
+      },
+    },
+  };
+
   return (
-    <div className="bg-[var(--color-surface)] rounded-[24px] p-4.5 border-2 border-[var(--color-border)] shadow-brutal space-y-4 overflow-hidden relative">
+    <motion.div 
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="bg-[var(--color-surface)] rounded-[24px] p-4.5 border-2 border-[var(--color-border)] shadow-brutal space-y-4 overflow-hidden relative"
+    >
       {/* Background Subtle Gradient Glow */}
       <div 
         className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-3xl pointer-events-none opacity-20 transition-colors duration-500"
@@ -107,9 +137,14 @@ export function SplitDetailsHero({
       {/* Header / Title Bar */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-amber-400 text-black border-2 border-black flex items-center justify-center shadow-sm shrink-0">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="w-8 h-8 rounded-xl bg-amber-400 text-black border-2 border-black flex items-center justify-center shadow-sm shrink-0"
+          >
             <Users className="w-4 h-4 stroke-[2.5px]" />
-          </div>
+          </motion.div>
           <div>
             <h4 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
               Group Split Breakdown
@@ -123,7 +158,8 @@ export function SplitDetailsHero({
         {/* Live Settlement Status Pill */}
         <motion.div
           layout
-          animate={isAllSettled ? { scale: [1, 1.05, 1] } : {}}
+          animate={isAllSettled ? { scale: [1, 1.06, 1] } : {}}
+          transition={{ type: "spring", stiffness: 350, damping: 20 }}
           className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider border-2 border-black flex items-center gap-1.5 shadow-sm transition-colors duration-300 ${
             isAllSettled 
               ? "bg-emerald-400 text-black" 
@@ -138,7 +174,10 @@ export function SplitDetailsHero({
           ) : (
             <>
               <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />
-              <span>{recoveryPercent}% Recovered</span>
+              <AnimatedNumber 
+                value={recoveryPercent} 
+                formatFn={(v) => `${Math.round(v)}% Recovered`}
+              />
             </>
           )}
         </motion.div>
@@ -160,7 +199,7 @@ export function SplitDetailsHero({
             />
 
             {/* 1. Your Net Share Arc (Emerald) */}
-            <circle
+            <motion.circle
               cx="60"
               cy="60"
               r={radius}
@@ -168,29 +207,35 @@ export function SplitDetailsHero({
               stroke="#10b981"
               strokeWidth="10"
               strokeLinecap="round"
-              strokeDasharray={`${userStroke} ${circumference}`}
-              strokeDashoffset="0"
-              className="transition-all duration-500 ease-out"
+              initial={{ strokeDasharray: `0 ${circumference}` }}
+              animate={{ 
+                strokeDasharray: `${userStroke} ${circumference}`,
+                strokeDashoffset: 0
+              }}
+              transition={{ type: "spring", stiffness: 120, damping: 20 }}
             />
 
             {/* 2. Settled Friends Arc (Electric Mint) */}
             {settledStroke > 0 && (
-              <circle
+              <motion.circle
                 cx="60"
                 cy="60"
                 r={radius}
                 fill="none"
                 stroke="#34d399"
                 strokeWidth="10"
-                strokeDasharray={`${settledStroke} ${circumference}`}
-                strokeDashoffset={-userStroke}
-                className="transition-all duration-500 ease-out"
+                initial={{ strokeDasharray: `0 ${circumference}` }}
+                animate={{ 
+                  strokeDasharray: `${settledStroke} ${circumference}`,
+                  strokeDashoffset: -userStroke
+                }}
+                transition={{ type: "spring", stiffness: 120, damping: 20 }}
               />
             )}
 
             {/* 3. Pending Friends Arc (Solar Amber with Glow) */}
             {pendingStroke > 0 && (
-              <circle
+              <motion.circle
                 cx="60"
                 cy="60"
                 r={radius}
@@ -198,9 +243,12 @@ export function SplitDetailsHero({
                 stroke="#f59e0b"
                 strokeWidth="10"
                 strokeLinecap="round"
-                strokeDasharray={`${pendingStroke} ${circumference}`}
-                strokeDashoffset={-(userStroke + settledStroke)}
-                className="transition-all duration-500 ease-out"
+                initial={{ strokeDasharray: `0 ${circumference}` }}
+                animate={{ 
+                  strokeDasharray: `${pendingStroke} ${circumference}`,
+                  strokeDashoffset: -(userStroke + settledStroke)
+                }}
+                transition={{ type: "spring", stiffness: 120, damping: 20 }}
               />
             )}
           </svg>
@@ -239,14 +287,11 @@ export function SplitDetailsHero({
               </motion.div>
             ) : (
               <div className="flex flex-col items-center">
-                <motion.span 
-                  key={recoveryPercent}
-                  initial={{ scale: 0.85, opacity: 0.5 }}
-                  animate={{ scale: 1, opacity: 1 }}
+                <AnimatedNumber
+                  value={recoveryPercent}
+                  formatFn={(v) => `${Math.round(v)}%`}
                   className="text-lg font-black font-numbers tracking-tight text-[var(--color-text)]"
-                >
-                  {recoveryPercent}%
-                </motion.span>
+                />
                 <span className="text-[8px] font-black text-amber-400 uppercase tracking-widest">
                   {pendingParticipants.length} Due
                 </span>
@@ -257,36 +302,51 @@ export function SplitDetailsHero({
 
         {/* Financial Stat Pills */}
         <div className="flex-1 w-full grid grid-cols-2 gap-2">
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col justify-center">
+          <motion.div 
+            whileHover={{ y: -1 }}
+            className="p-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col justify-center transition-colors"
+          >
             <span className="text-[8.5px] uppercase font-black tracking-wider text-gray-400 flex items-center gap-1 mb-0.5">
               <User className="w-2.5 h-2.5 text-emerald-400" />
               Your True Share
             </span>
-            <span className="text-xs font-black font-numbers tabular-nums text-emerald-400">
-              {formatCurrency(userShare, txn.currency)}
-            </span>
+            <AnimatedNumber
+              value={userShare}
+              formatFn={(v) => formatCurrency(v, txn.currency)}
+              className="text-xs font-black font-numbers tabular-nums text-emerald-400"
+            />
             <span className="text-[8px] text-gray-500 font-bold">
               ({Math.round((userShare / validTotal) * 100)}% of total)
             </span>
-          </div>
+          </motion.div>
 
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col justify-center">
+          <motion.div 
+            whileHover={{ y: -1 }}
+            className="p-2.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col justify-center transition-colors"
+          >
             <span className="text-[8.5px] uppercase font-black tracking-wider text-gray-400 flex items-center gap-1 mb-0.5">
               <Users className="w-2.5 h-2.5 text-amber-400" />
               Friends Owed
             </span>
-            <span className="text-xs font-black font-numbers tabular-nums text-amber-400">
-              {formatCurrency(pendingFriendsAmount, txn.currency)}
-            </span>
+            <AnimatedNumber
+              value={pendingFriendsAmount}
+              formatFn={(v) => formatCurrency(v, txn.currency)}
+              className="text-xs font-black font-numbers tabular-nums text-amber-400"
+            />
             <span className="text-[8px] text-gray-500 font-bold">
               {settledParticipants.length}/{localSplits.length} Settled
             </span>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Participants Cards (Optimized for Name Visibility) */}
-      <div className="space-y-2 relative z-10">
+      {/* Participants Cards (Optimized for Name Visibility & Spring Stagger) */}
+      <motion.div 
+        variants={listVariants}
+        initial="hidden"
+        animate="show"
+        className="space-y-2 relative z-10"
+      >
         <div className="flex items-center justify-between px-1">
           <span className="text-[9.5px] uppercase font-black tracking-wider text-gray-400">
             Participant Breakdown
@@ -302,8 +362,10 @@ export function SplitDetailsHero({
           return (
             <motion.div
               key={p.id || idx}
+              variants={cardVariants}
               layout
-              className={`p-2.5 rounded-xl border-2 transition-all duration-300 flex items-center justify-between gap-2.5 ${
+              whileTap={{ scale: 0.98 }}
+              className={`p-2.5 rounded-xl border-2 transition-colors duration-300 flex items-center justify-between gap-2.5 ${
                 p.isSettled
                   ? "bg-emerald-500/[0.06] border-emerald-500/40"
                   : "bg-[var(--color-bg)] border-[var(--color-border)] hover:border-amber-400/60"
@@ -311,36 +373,48 @@ export function SplitDetailsHero({
             >
               {/* Left: Avatar + Full Name & Amount */}
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                {/* Initial Avatar (Compact) */}
-                <div
+                {/* Initial Avatar */}
+                <motion.div
+                  layout
                   className={`w-7 h-7 rounded-lg border border-black flex items-center justify-center font-black text-[10px] text-black shrink-0 relative shadow-xs transition-colors duration-300 ${
                     p.isSettled ? "bg-emerald-400" : "bg-amber-400"
                   }`}
                 >
                   {initials}
                   {p.isSettled && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-black text-emerald-400 flex items-center justify-center border border-emerald-400">
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                      className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-black text-emerald-400 flex items-center justify-center border border-emerald-400"
+                    >
                       <Check className="w-2 h-2 stroke-[4px]" />
-                    </div>
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
 
-                {/* Name & Amount (Wide & clear) */}
+                {/* Name & Amount */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-xs font-black text-[var(--color-text)] uppercase leading-snug break-words">
                       {p.name}
                     </span>
                     {p.isSettled && (
-                      <span className="text-[7.5px] font-black uppercase text-emerald-400 bg-emerald-500/20 px-1 py-0.2 rounded border border-emerald-500/30 shrink-0">
+                      <motion.span 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-[7.5px] font-black uppercase text-emerald-400 bg-emerald-500/20 px-1 py-0.2 rounded border border-emerald-500/30 shrink-0"
+                      >
                         Paid
-                      </span>
+                      </motion.span>
                     )}
                   </div>
                   <div className="flex items-center gap-1 mt-0.5">
-                    <span className="text-[11px] font-black font-numbers tabular-nums text-[var(--color-text)]">
-                      {formatCurrency(p.amount, txn.currency)}
-                    </span>
+                    <AnimatedNumber
+                      value={p.amount}
+                      formatFn={(v) => formatCurrency(v, txn.currency)}
+                      className="text-[11px] font-black font-numbers tabular-nums text-[var(--color-text)]"
+                    />
                     {p.settledAt && (
                       <span className="text-[8.5px] text-gray-500 font-bold truncate">
                         • {new Date(p.settledAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
@@ -352,45 +426,84 @@ export function SplitDetailsHero({
 
               {/* Right: Compact Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
-                {/* Copy Request Message Button (Compact Icon) */}
-                <button
+                {/* Copy Request Message Button */}
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => handleCopy(p.name, p.amount, p.id)}
-                  className="w-7 h-7 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-xs"
+                  className="w-7 h-7 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] flex items-center justify-center transition-colors cursor-pointer shadow-xs"
                   title="Copy payment request message for WhatsApp/GPay"
                 >
-                  {copiedId === p.id ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3px]" />
-                  ) : (
-                    <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
-                  )}
-                </button>
+                  <AnimatePresence mode="wait">
+                    {copiedId === p.id ? (
+                      <motion.div
+                        key="copied"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3px]" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="msg"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
 
-                {/* 1-Tap Toggle Settle Status Button (Compact Pill) */}
-                <button
+                {/* 1-Tap Toggle Settle Status Button with Morphing Animation */}
+                <motion.button
                   type="button"
+                  layout
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 25 }}
                   onClick={() => handleToggle(p.id)}
                   disabled={togglingId === p.id}
-                  className={`px-2.5 py-1 rounded-lg border-2 border-black text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center gap-1 shadow-xs ${
+                  className={`px-2.5 py-1 rounded-lg border-2 border-black text-[9px] font-black uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 shadow-xs ${
                     p.isSettled
                       ? "bg-emerald-400 text-black hover:bg-emerald-500"
                       : "bg-amber-400 text-black hover:bg-amber-500"
                   }`}
                 >
-                  {p.isSettled ? (
-                    <>
-                      <Check className="w-2.5 h-2.5 stroke-[3px]" />
-                      <span>Settled</span>
-                    </>
-                  ) : (
-                    <span>Mark Paid</span>
-                  )}
-                </button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    {p.isSettled ? (
+                      <motion.div
+                        key="settled"
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.15 }}
+                        className="flex items-center gap-1"
+                      >
+                        <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                        <span>Settled</span>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="mark-paid"
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <span>Mark Paid</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </div>
             </motion.div>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
