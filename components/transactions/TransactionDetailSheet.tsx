@@ -330,26 +330,18 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
-        className="absolute inset-0 bg-black/75 backdrop-blur-xs pointer-events-auto"
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm pointer-events-auto"
         onClick={onClose}
       />
 
       {/* Main Bottom Sheet */}
       <motion.div
-        initial={{ y: "100%", opacity: 0.9 }}
-        animate={{ y: isDeleting ? "100%" : 0, opacity: 1 }}
-        exit={{ y: "100%", opacity: 0.9 }}
-        transition={{ type: "spring", damping: 28, stiffness: 280, mass: 0.8 }}
-        drag="y"
-        dragConstraints={{ top: 0 }}
-        dragElastic={0.15}
-        onDragEnd={(_, info) => {
-          if (info.offset.y > 110 || info.velocity.y > 450) {
-            onClose();
-          }
-        }}
-        className="w-full sm:max-w-md bg-[var(--color-bg)] border-t-2 border-l-2 border-r-2 sm:border-2 border-[var(--color-border)] rounded-t-[32px] sm:rounded-[32px] pointer-events-auto flex flex-col max-h-[92dvh] relative z-10 shadow-2xl overflow-hidden"
+        initial={{ y: "100%" }}
+        animate={{ y: isDeleting ? "100%" : 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 28, stiffness: 300, mass: 0.8 }}
+        className="w-full sm:max-w-md bg-[var(--color-bg)] border-t-2 border-l-2 border-r-2 sm:border-2 border-[var(--color-border)] rounded-t-[32px] sm:rounded-[32px] pointer-events-auto flex flex-col max-h-[90vh] relative z-10 shadow-2xl overflow-hidden"
       >
         {/* Sticky Collapsing Header Bar (Apple Music / Apple Wallet Style) */}
         <div className="sticky top-0 z-30 bg-[var(--color-bg)]/95 backdrop-blur-md border-b border-[var(--color-border)] px-4 py-2.5 flex items-center justify-between transition-all">
