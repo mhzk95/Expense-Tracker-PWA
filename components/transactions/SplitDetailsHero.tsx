@@ -159,7 +159,7 @@ export function SplitDetailsHero({
         <motion.div
           layout
           animate={isAllSettled ? { scale: [1, 1.06, 1] } : {}}
-          transition={{ type: "spring", stiffness: 350, damping: 20 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider border-2 border-black flex items-center gap-1.5 shadow-sm transition-colors duration-300 ${
             isAllSettled 
               ? "bg-emerald-400 text-black" 
