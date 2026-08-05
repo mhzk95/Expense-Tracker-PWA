@@ -179,12 +179,7 @@ export function SplitExpenseSection({
             const nextState = !isGroupExpense;
             onToggleGroupExpense(nextState);
             vibrate([10]);
-            if (nextState && splits.length === 0) {
-              // Add a default friend or prompt
-              if (recentFriends.length > 0) {
-                handleAddFriend(recentFriends[0]);
-              }
-            } else if (!nextState) {
+            if (!nextState) {
               onChange([], totalAmount);
             }
           }}

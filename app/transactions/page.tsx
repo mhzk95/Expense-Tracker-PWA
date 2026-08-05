@@ -970,8 +970,11 @@ export default function TransactionsPage() {
                                   {/* Needs Review and Data-Driven Split Indicators */}
                                   <div className="flex items-center gap-1.5 mt-1">
                                     {txn.needsReview && (
-                                      <span className="text-[9px] font-black uppercase tracking-wider text-black bg-yellow-400 border border-black/30 px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0">
-                                        <Zap className="w-2.5 h-2.5 fill-black" /> Review
+                                      <span 
+                                        className="w-4 h-4 rounded-full bg-yellow-400 border border-black/40 flex items-center justify-center shrink-0 shadow-xs"
+                                        title="Needs Review"
+                                      >
+                                        <Zap className="w-2.5 h-2.5 fill-black text-black" />
                                       </span>
                                     )}
 

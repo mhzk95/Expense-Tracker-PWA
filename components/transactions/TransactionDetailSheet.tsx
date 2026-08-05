@@ -48,6 +48,7 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
   const { accounts } = useAccounts();
   const { updateTransaction, addTransaction, deleteTransaction } = useTransactions();
   const [mounted, setMounted] = useState(false);
+  const [activeTxn, setActiveTxn] = useState<TransactionEntity | null>(txn);
   const [currentNote, setCurrentNote] = useState(txn?.note || "");
   const [isFlagged, setIsFlagged] = useState(Boolean(txn?.needsReview));
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -59,6 +60,7 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
   }, []);
 
   useEffect(() => {
+    setActiveTxn(txn);
     if (txn) {
       setCurrentNote(txn.note || "");
       setIsFlagged(Boolean(txn.needsReview));
@@ -76,9 +78,10 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
 
   if (!mounted || !txn) return null;
 
-  const category = categories.find((c) => c.id === txn.categoryId);
-  const sourceAccount = accounts.find((a) => a.id === txn.accountId);
-  const targetAccount = accounts.find((a) => a.id === txn.toAccountId);
+  const currentEntity = activeTxn || txn;
+  const category = categories.find((c) => c.id === currentEntity.categoryId);
+  const sourceAccount = accounts.find((a) => a.id === currentEntity.accountId);
+  const targetAccount = accounts.find((a) => a.id === currentEntity.toAccountId);
   
   const baseColor = category?.color || "#8b5cf6";
   const IconComp = getCategoryIcon(category?.icon);
@@ -210,9 +213,10 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
   };
 
   const handleToggleParticipantSettled = async (participantId: string) => {
-    if (!txn || !txn.splits) return;
+    const targetEntity = activeTxn || txn;
+    if (!targetEntity || !targetEntity.splits) return;
     vibrate([20]);
-    const updatedSplits = txn.splits.map((s) => {
+    const updatedSplits = targetEntity.splits.map((s) => {
       if (s.id === participantId) {
         const nextSettled = !s.isSettled;
         return {
@@ -224,10 +228,16 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
       return s;
     });
 
-    const targetParticipant = txn.splits.find((s) => s.id === participantId);
+    const targetParticipant = targetEntity.splits.find((s) => s.id === participantId);
     const isNowSettled = !targetParticipant?.isSettled;
 
-    await updateTransaction(txn.id, {
+    // Immediate local state update
+    setActiveTxn({
+      ...targetEntity,
+      splits: updatedSplits,
+    });
+
+    await updateTransaction(targetEntity.id, {
       splits: updatedSplits,
     });
 
@@ -520,9 +530,9 @@ export function TransactionDetailSheet({ txn, onClose, onEdit, onDelete }: Props
           </div>
 
           {/* Group Split Hero Section */}
-          {txn.splits && txn.splits.length > 0 && (
+          {(activeTxn || txn).splits && (activeTxn || txn).splits!.length > 0 && (
             <SplitDetailsHero
-              txn={txn}
+              txn={activeTxn || txn}
               onToggleParticipantSettled={handleToggleParticipantSettled}
               onCopyPaymentRequest={handleCopyPaymentRequest}
             />

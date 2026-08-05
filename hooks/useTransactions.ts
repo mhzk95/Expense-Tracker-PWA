@@ -29,7 +29,10 @@ function areTransactionsIdentical(a?: TransactionEntity, b?: TransactionEntity):
     Boolean(a.needsReview) === Boolean(b.needsReview) &&
     (a.payee || "") === (b.payee || "") &&
     (a.location || "") === (b.location || "") &&
-    Boolean(a.isDeleted) === Boolean(b.isDeleted)
+    Boolean(a.isDeleted) === Boolean(b.isDeleted) &&
+    a.netAmount === b.netAmount &&
+    Boolean(a.isGroupExpense) === Boolean(b.isGroupExpense) &&
+    JSON.stringify(a.splits || []) === JSON.stringify(b.splits || [])
   );
 }
 
