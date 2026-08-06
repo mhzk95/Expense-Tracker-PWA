@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useAnalyticsEngine, DrillDownFilter } from "@/hooks/useAnalyticsEngine";
+import { useAnalyticsEngine } from "@/hooks/useAnalyticsEngine";
 import { AnalyticsTimeFilter } from "@/components/analytics/AnalyticsTimeFilter";
 import { AnalyticsKpiGrid } from "@/components/analytics/AnalyticsKpiGrid";
 import { CashFlowTrendChart } from "@/components/analytics/CashFlowTrendChart";
@@ -15,9 +15,28 @@ import { AnalyticsInsights } from "@/components/analytics/AnalyticsInsights";
 import { AnalyticsDrillDownSheet } from "@/components/analytics/AnalyticsDrillDownSheet";
 import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
 import { TransactionEntity } from "@/lib/db/indexeddb";
-import { formatCurrency, vibrate } from "@/lib/utils/helpers";
-import { Download, Sparkles } from "lucide-react";
+import { vibrate } from "@/lib/utils/helpers";
+import { Download } from "lucide-react";
 import toast from "react-hot-toast";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: "easeOut" as const },
+  },
+};
 
 export default function AnalyticsPage() {
   const {
@@ -82,11 +101,11 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 pb-8">
+      <div className="space-y-4 sm:space-y-6 pb-16 sm:pb-20">
         <PageHeader title="Analytics" subtitle="Aggregating financial intelligence..." />
         <div className="space-y-4 animate-pulse">
           <div className="h-12 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="h-28 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
             ))}
@@ -102,71 +121,84 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="space-y-6 pb-12">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-4 sm:space-y-6 pb-20 sm:pb-24"
+    >
       {/* Page Header with Export Action */}
-      <PageHeader
-        title="Analytics"
-        subtitle="Multi-dimensional financial intelligence & cash flow trends"
-        action={
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-[var(--color-surface)] border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] text-[var(--color-text)] transition-all cursor-pointer shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5 stroke-[2.5px]" />
-            <span className="hidden sm:inline">Export CSV</span>
-          </motion.button>
-        }
-      />
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          title="Analytics"
+          subtitle="Multi-dimensional financial intelligence & cash flow trends"
+          action={
+            <motion.button
+              whileTap={{ scale: 0.94 }}
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-[var(--color-surface)] border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] text-[var(--color-text)] transition-all cursor-pointer shadow-sm min-h-[36px]"
+            >
+              <Download className="w-3.5 h-3.5 stroke-[2.5px]" />
+              <span className="hidden sm:inline">Export CSV</span>
+            </motion.button>
+          }
+        />
+      </motion.div>
 
       {/* 1. Time Horizon Filter & Period Switcher */}
-      <AnalyticsTimeFilter
-        activeKey={timeRangeKey}
-        onSelectKey={setTimeRangeKey}
-        isComparisonActive={isComparisonActive}
-        onToggleComparison={() => setIsComparisonActive(!isComparisonActive)}
-        currentRange={summary.currentRange}
-        prevRange={summary.prevRange}
-        categories={categories}
-        selectedCategoryIds={selectedCategoryIds}
-        onToggleCategory={toggleCategoryFilter}
-        onResetFilters={resetFilters}
-        customStart={customStart}
-        customEnd={customEnd}
-        onSetCustomDates={(start, end) => {
-          setCustomStart(start);
-          setCustomEnd(end);
-        }}
-      />
+      <motion.div variants={itemVariants}>
+        <AnalyticsTimeFilter
+          activeKey={timeRangeKey}
+          onSelectKey={setTimeRangeKey}
+          isComparisonActive={isComparisonActive}
+          onToggleComparison={() => setIsComparisonActive(!isComparisonActive)}
+          currentRange={summary.currentRange}
+          prevRange={summary.prevRange}
+          categories={categories}
+          selectedCategoryIds={selectedCategoryIds}
+          onToggleCategory={toggleCategoryFilter}
+          onResetFilters={resetFilters}
+          customStart={customStart}
+          customEnd={customEnd}
+          onSetCustomDates={(start, end) => {
+            setCustomStart(start);
+            setCustomEnd(end);
+          }}
+        />
+      </motion.div>
 
       {/* 2. Executive KPI Bento Grid */}
-      <AnalyticsKpiGrid
-        summary={summary}
-        isComparisonActive={isComparisonActive}
-        onSelectSplitShortcut={() => {
-          setDrillDownTarget({
-            type: "split",
-            name: "Group Split Transactions",
-            color: "#38bdf8",
-          });
-        }}
-      />
+      <motion.div variants={itemVariants}>
+        <AnalyticsKpiGrid
+          summary={summary}
+          isComparisonActive={isComparisonActive}
+          onSelectSplitShortcut={() => {
+            setDrillDownTarget({
+              type: "split",
+              name: "Group Split Transactions",
+              color: "#38bdf8",
+            });
+          }}
+        />
+      </motion.div>
 
       {/* 3. Interactive SVG Cash Flow Wave & Trendline */}
-      <CashFlowTrendChart
-        data={summary.timeSeries}
-        onSelectPoint={(point) => {
-          setDrillDownTarget({
-            type: "point",
-            id: point.date,
-            name: `Transactions on ${point.label}`,
-            color: "#facc15",
-          });
-        }}
-      />
+      <motion.div variants={itemVariants}>
+        <CashFlowTrendChart
+          data={summary.timeSeries}
+          onSelectPoint={(point) => {
+            setDrillDownTarget({
+              type: "point",
+              id: point.date,
+              name: `Transactions on ${point.label}`,
+              color: "#facc15",
+            });
+          }}
+        />
+      </motion.div>
 
       {/* 4. Category Donut & Merchant Pareto Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
         <div className="lg:col-span-7">
           <CategoryDonutChart
             categories={summary.categories}
@@ -197,10 +229,10 @@ export default function AnalyticsPage() {
             }}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* 5. Temporal Rhythm Matrix & Split Debt Recovery Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
         <div className="lg:col-span-6">
           <SpendingTimeMatrix
             dayOfWeek={summary.dayOfWeek}
@@ -228,10 +260,12 @@ export default function AnalyticsPage() {
             }}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* 6. Smart Financial Insights & Anomaly Alerts */}
-      <AnalyticsInsights insights={summary.insights} />
+      <motion.div variants={itemVariants}>
+        <AnalyticsInsights insights={summary.insights} />
+      </motion.div>
 
       {/* 7. Interactive Drill-Down Bottom Sheet */}
       <AnalyticsDrillDownSheet
@@ -251,6 +285,6 @@ export default function AnalyticsPage() {
           onClose={() => setSelectedTxnForDetails(null)}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { SplitAnalyticsSummary } from "@/lib/analytics/engine";
 import { formatCurrency, vibrate, getInitials } from "@/lib/utils/helpers";
-import { Users, CheckCircle2, Clock, ArrowUpRight } from "lucide-react";
+import { Users, CheckCircle2, Clock } from "lucide-react";
 
 interface SplitRecoveryAnalyticsProps {
   splits: SplitAnalyticsSummary;
@@ -34,25 +34,25 @@ export function SplitRecoveryAnalytics({
   };
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] space-y-4">
+    <div className="p-3.5 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] space-y-3.5">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b-2 border-dashed border-[var(--color-border)]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded-lg bg-blue-400 text-black border border-black/20">
+            <span className="p-1 rounded-lg bg-blue-400 text-black border border-black/20 shrink-0">
               <Users className="w-3.5 h-3.5 stroke-[2.5px]" />
             </span>
             <h3 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
-              Split Expenses & Debt Recovery
+              Split Expenses & Debt
             </h3>
           </div>
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
-            Group outlays, friend receivables, and settlement progress
+            Group outlays, friend receivables, and status
           </p>
         </div>
 
         <span
-          className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${
+          className={`text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full border shrink-0 ${
             totalPendingReceivables === 0
               ? "bg-emerald-400/20 border-emerald-500 text-emerald-400"
               : "bg-amber-400/20 border-amber-500 text-amber-400"
@@ -67,49 +67,49 @@ export function SplitRecoveryAnalytics({
           No group split expenses recorded in this period.
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {/* Recovery Stats Bento */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div className="p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
               <span className="text-[9px] font-black uppercase tracking-wider text-gray-400 block">
                 Total Group Outlay
               </span>
-              <span className="text-sm font-display font-black text-[var(--color-text)]">
+              <span className="text-xs sm:text-sm font-display font-black text-[var(--color-text)] block">
                 {formatCurrency(totalGroupExpensesOutlay)}
               </span>
-              <span className="text-[8px] font-bold text-gray-500 block mt-0.5">
-                Your share: {formatCurrency(totalYourNetShare)}
+              <span className="text-[8px] font-bold text-gray-500 block truncate">
+                Net: {formatCurrency(totalYourNetShare)}
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
               <span className="text-[9px] font-black uppercase tracking-wider text-gray-400 block">
-                Recovered / Paid Back
+                Recovered
               </span>
-              <span className="text-sm font-display font-black text-emerald-400">
+              <span className="text-xs sm:text-sm font-display font-black text-emerald-400 block">
                 {formatCurrency(totalRecovered)}
               </span>
-              <span className="text-[8px] font-bold text-gray-500 block mt-0.5">
+              <span className="text-[8px] font-bold text-gray-500 block truncate">
                 {recoveryPercentage.toFixed(0)}% recovery rate
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)]">
               <span className="text-[9px] font-black uppercase tracking-wider text-gray-400 block">
-                Pending Receivables
+                Receivables
               </span>
-              <span className="text-sm font-display font-black text-amber-400">
+              <span className="text-xs sm:text-sm font-display font-black text-amber-400 block">
                 {formatCurrency(totalPendingReceivables)}
               </span>
-              <span className="text-[8px] font-bold text-gray-500 block mt-0.5">
-                From {unsettledFriendsCount} participant(s)
+              <span className="text-[8px] font-bold text-gray-500 block truncate">
+                {unsettledFriendsCount} friend(s) owe
               </span>
             </div>
           </div>
 
           {/* Recovery Progress Bar */}
           <div className="space-y-1">
-            <div className="flex justify-between text-[10px] font-black uppercase tracking-wider text-gray-400">
+            <div className="flex justify-between text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-gray-400">
               <span>Settlement Progress</span>
               <span className="font-numbers">{recoveryPercentage.toFixed(1)}%</span>
             </div>
@@ -133,35 +133,35 @@ export function SplitRecoveryAnalytics({
                 <motion.div
                   key={friend.participantName}
                   onClick={() => handleFriendClick(friend.participantName)}
-                  whileHover={{ scale: 1.01 }}
-                  className={`p-2.5 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+                  whileTap={{ scale: 0.98 }}
+                  className={`p-2.5 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between gap-2 ${
                     friend.isFullySettled
                       ? "bg-[var(--color-bg)] border-[var(--color-border)] opacity-80"
                       : "bg-[var(--color-bg)] border-amber-500/60 shadow-xs"
                   }`}
                 >
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div className="w-6 h-6 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary)] shrink-0">
                       {getInitials(friend.participantName)}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate block">
                         {friend.participantName}
                       </span>
-                      <span className="text-[9px] font-bold text-gray-500">
-                        {friend.txCount} split txns · Total {formatCurrency(friend.totalOwed)}
+                      <span className="text-[9px] font-bold text-gray-500 truncate block">
+                        {friend.txCount} splits · Total {formatCurrency(friend.totalOwed)}
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right shrink-0">
                     {friend.isFullySettled ? (
-                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-400/15 text-emerald-400 border border-emerald-500/40">
+                      <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded-md bg-emerald-400/15 text-emerald-400 border border-emerald-500/40">
                         <CheckCircle2 className="w-2.5 h-2.5" />
                         Settled
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400/15 text-amber-400 border border-amber-500/40 font-numbers">
+                      <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded-md bg-amber-400/15 text-amber-400 border border-amber-500/40 font-numbers">
                         <Clock className="w-2.5 h-2.5" />
                         Owes {formatCurrency(friend.pendingAmount)}
                       </span>

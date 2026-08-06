@@ -19,15 +19,15 @@ interface AnalyticsInsightsProps {
 export function AnalyticsInsights({ insights }: AnalyticsInsightsProps) {
   if (!insights || insights.length === 0) {
     return (
-      <div className="p-4 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] flex items-center gap-3">
-        <div className="p-2 rounded-xl bg-emerald-400/20 text-emerald-400 border border-emerald-500/40">
+      <div className="p-3.5 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-emerald-400/20 text-emerald-400 border border-emerald-500/40 shrink-0">
           <CheckCircle2 className="w-5 h-5" />
         </div>
-        <div>
-          <h4 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
+        <div className="min-w-0">
+          <h4 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate">
             Balanced Financial Health
           </h4>
-          <p className="text-[11px] text-gray-400 font-bold">
+          <p className="text-[10px] sm:text-[11px] text-gray-400 font-bold leading-relaxed">
             No unusual spending spikes or critical cash flow anomalies detected for this period.
           </p>
         </div>
@@ -74,9 +74,9 @@ export function AnalyticsInsights({ insights }: AnalyticsInsightsProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       <div className="flex items-center gap-2 px-1">
-        <span className="p-1 rounded-lg bg-[var(--color-primary)] text-black border border-black/20">
+        <span className="p-1 rounded-lg bg-[var(--color-primary)] text-black border border-black/20 shrink-0">
           <Sparkles className="w-3.5 h-3.5 stroke-[2.5px]" />
         </span>
         <h3 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
@@ -84,7 +84,7 @@ export function AnalyticsInsights({ insights }: AnalyticsInsightsProps) {
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
         {insights.map((insight, idx) => {
           const style = getInsightStyle(insight.type);
           const Icon = style.icon;
@@ -95,6 +95,7 @@ export function AnalyticsInsights({ insights }: AnalyticsInsightsProps) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: idx * 0.05 }}
+              whileTap={{ scale: 0.98 }}
               className={`p-3.5 rounded-2xl border-2 ${style.border} ${style.bg} shadow-sm space-y-2 flex flex-col justify-between`}
             >
               <div className="flex items-center justify-between gap-2">
@@ -109,14 +110,14 @@ export function AnalyticsInsights({ insights }: AnalyticsInsightsProps) {
 
                 {insight.metric && (
                   <span
-                    className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md border font-numbers shrink-0 ${style.badge}`}
+                    className={`text-[8px] sm:text-[9px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded-md border font-numbers shrink-0 ${style.badge}`}
                   >
                     {insight.metric}
                   </span>
                 )}
               </div>
 
-              <p className="text-[11px] font-bold text-gray-400 leading-relaxed">
+              <p className="text-[10px] sm:text-[11px] font-bold text-gray-400 leading-relaxed">
                 {insight.description}
               </p>
             </motion.div>

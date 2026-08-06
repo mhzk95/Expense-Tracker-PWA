@@ -12,7 +12,7 @@ import {
   X, 
   Check, 
   ChevronDown,
-  Sparkles
+  Clock
 } from "lucide-react";
 
 interface AnalyticsTimeFilterProps {
@@ -87,11 +87,10 @@ export function AnalyticsTimeFilter({
   const activeFiltersCount = selectedCategoryIds.length;
 
   return (
-    <div className="space-y-3">
-      {/* Top Bar: Time Range Pills & Quick Controls */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        {/* Horizontal Scrollable Time Range Selector */}
-        <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl overflow-x-auto scrollbar-none shadow-sm">
+    <div className="space-y-2.5">
+      {/* 1. Time Range Selector Track */}
+      <div className="w-full overflow-hidden bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl p-1 shadow-sm">
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-0.5 px-0.5 touch-pan-x">
           {TIME_RANGES.map((item) => {
             const isActive = activeKey === item.key;
             return (
@@ -99,7 +98,7 @@ export function AnalyticsTimeFilter({
                 key={item.key}
                 type="button"
                 onClick={() => handleRangeClick(item.key)}
-                className={`relative px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors shrink-0 cursor-pointer ${
+                className={`relative px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors shrink-0 cursor-pointer min-h-[36px] flex items-center justify-center ${
                   isActive
                     ? "text-black"
                     : "text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] opacity-75 hover:opacity-100"
@@ -117,10 +116,11 @@ export function AnalyticsTimeFilter({
             );
           })}
 
+          {/* Custom Date Range Pill */}
           <button
             type="button"
             onClick={() => handleRangeClick("CUSTOM")}
-            className={`relative px-2.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors shrink-0 cursor-pointer flex items-center gap-1 ${
+            className={`relative px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors shrink-0 cursor-pointer min-h-[36px] flex items-center gap-1.5 ${
               activeKey === "CUSTOM"
                 ? "text-black"
                 : "text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] opacity-75 hover:opacity-100"
@@ -133,13 +133,37 @@ export function AnalyticsTimeFilter({
                 transition={{ type: "spring", stiffness: 450, damping: 30 }}
               />
             )}
-            <Calendar className="w-3 h-3 relative z-10" />
+            <Calendar className="w-3.5 h-3.5 relative z-10" />
             <span className="relative z-10">Custom</span>
           </button>
         </div>
+      </div>
 
-        {/* Right Actions: Comparison Toggle & Category Filter Button */}
-        <div className="flex items-center gap-2">
+      {/* 2. Secondary Control Bar (Compare Toggle, Category Filter, and Date Range Info) */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+        {/* Date Range Sub-label & Comparison Window Info */}
+        <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider px-1">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse shrink-0" />
+            <span className="truncate">
+              {currentRange.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} —{" "}
+              {currentRange.end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </span>
+          </div>
+
+          {isComparisonActive && activeKey !== "ALL" && (
+            <div className="text-[10px] text-amber-500/90 dark:text-amber-400/90 flex items-center gap-1">
+              <span>vs</span>
+              <span className="truncate">
+                {prevRange.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} —{" "}
+                {prevRange.end.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons: Compare + Categories */}
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
           {/* Comparison Mode Toggle */}
           <motion.button
             type="button"
@@ -148,15 +172,17 @@ export function AnalyticsTimeFilter({
               vibrate([15]);
               onToggleComparison();
             }}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer shadow-sm ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer shadow-sm min-h-[38px] ${
               isComparisonActive
                 ? "bg-amber-400/15 border-amber-500 text-amber-500 dark:text-amber-400"
                 : "bg-[var(--color-surface)] border-[var(--color-border)] text-gray-500 hover:text-[var(--color-text)]"
             }`}
           >
-            <ArrowLeftRight className="w-3.5 h-3.5 stroke-[2.5px]" />
-            <span className="hidden sm:inline">Compare</span>
-            <span className="text-[10px] opacity-75">{isComparisonActive ? "ON" : "OFF"}</span>
+            <ArrowLeftRight className="w-3.5 h-3.5 stroke-[2.5px] shrink-0" />
+            <span>Compare</span>
+            <span className="text-[9px] px-1 py-0.2 rounded bg-black/20 font-black">
+              {isComparisonActive ? "ON" : "OFF"}
+            </span>
           </motion.button>
 
           {/* Category Filter Trigger */}
@@ -167,43 +193,22 @@ export function AnalyticsTimeFilter({
               vibrate([15]);
               setShowCategoryDrawer(!showCategoryDrawer);
             }}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer shadow-sm ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 transition-all cursor-pointer shadow-sm min-h-[38px] ${
               activeFiltersCount > 0
                 ? "bg-[var(--color-primary)] text-black border-[var(--color-border)] font-black"
                 : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
             }`}
           >
-            <Filter className="w-3.5 h-3.5 stroke-[2.5px]" />
-            <span>Categories</span>
+            <Filter className="w-3.5 h-3.5 stroke-[2.5px] shrink-0" />
+            <span className="truncate">Categories</span>
             {activeFiltersCount > 0 && (
-              <span className="w-4 h-4 rounded-full bg-black text-white text-[10px] flex items-center justify-center font-black">
+              <span className="w-4 h-4 rounded-full bg-black text-white text-[9px] flex items-center justify-center font-black shrink-0">
                 {activeFiltersCount}
               </span>
             )}
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showCategoryDrawer ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform shrink-0 ${showCategoryDrawer ? "rotate-180" : ""}`} />
           </motion.button>
         </div>
-      </div>
-
-      {/* Active Date Range Sub-label & Comparison Window Info */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-        <div className="flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
-          <span>
-            {currentRange.start.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} —{" "}
-            {currentRange.end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-          </span>
-        </div>
-
-        {isComparisonActive && activeKey !== "ALL" && (
-          <div className="text-[10px] text-amber-500/90 dark:text-amber-400/90 flex items-center gap-1">
-            <span>vs</span>
-            <span>
-              {prevRange.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} —{" "}
-              {prevRange.end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Expandable Category Multi-Select Filter Tray */}
@@ -229,24 +234,25 @@ export function AnalyticsTimeFilter({
                   }}
                   className="text-[10px] font-black text-rose-500 hover:underline uppercase tracking-wider cursor-pointer"
                 >
-                  Reset Filter
+                  Reset All
                 </button>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
               {categories.map((cat) => {
                 const isSelected = selectedCategoryIds.includes(cat.id);
                 const CatIcon = getCategoryIcon(cat.icon);
                 return (
-                  <button
+                  <motion.button
                     key={cat.id}
                     type="button"
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       vibrate([15]);
                       onToggleCategory(cat.id);
                     }}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border-2 transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border-2 transition-all cursor-pointer min-h-[32px] ${
                       isSelected
                         ? "border-black shadow-sm"
                         : "border-[var(--color-border)] hover:bg-[var(--color-surfaceHover)] opacity-70 hover:opacity-100"
@@ -256,10 +262,10 @@ export function AnalyticsTimeFilter({
                       color: isSelected ? "#000" : "var(--color-text)",
                     }}
                   >
-                    <CatIcon className="w-3.5 h-3.5 stroke-[2.5px]" />
-                    <span className="truncate max-w-[120px]">{cat.name}</span>
-                    {isSelected && <Check className="w-3 h-3 stroke-[3px]" />}
-                  </button>
+                    <CatIcon className="w-3.5 h-3.5 stroke-[2.5px] shrink-0" />
+                    <span className="truncate max-w-[130px]">{cat.name}</span>
+                    {isSelected && <Check className="w-3 h-3 stroke-[3px] shrink-0" />}
+                  </motion.button>
                 );
               })}
             </div>
@@ -307,7 +313,7 @@ export function AnalyticsTimeFilter({
                     value={tempStart}
                     onChange={(e) => setTempStart(e.target.value)}
                     required
-                    className="w-full px-3 py-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl text-xs font-bold text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]"
+                    className="w-full px-3 py-2.5 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl text-xs font-bold text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] min-h-[44px]"
                   />
                 </div>
 
@@ -320,7 +326,7 @@ export function AnalyticsTimeFilter({
                     value={tempEnd}
                     onChange={(e) => setTempEnd(e.target.value)}
                     required
-                    className="w-full px-3 py-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl text-xs font-bold text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]"
+                    className="w-full px-3 py-2.5 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl text-xs font-bold text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] min-h-[44px]"
                   />
                 </div>
 
@@ -328,13 +334,13 @@ export function AnalyticsTimeFilter({
                   <button
                     type="button"
                     onClick={() => setShowCustomModal(false)}
-                    className="flex-1 py-2 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-wider text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)]"
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] text-xs font-black uppercase tracking-wider text-[var(--color-text)] hover:bg-[var(--color-surfaceHover)] min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-2 rounded-xl bg-[var(--color-primary)] text-black border-2 border-black text-xs font-black uppercase tracking-wider shadow-sm hover:opacity-95"
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--color-primary)] text-black border-2 border-black text-xs font-black uppercase tracking-wider shadow-sm hover:opacity-95 min-h-[44px]"
                   >
                     Apply Range
                   </button>

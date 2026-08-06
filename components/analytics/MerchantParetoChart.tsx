@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MerchantAnalyticsItem } from "@/lib/analytics/engine";
 import { formatCurrency, vibrate, getInitials } from "@/lib/utils/helpers";
-import { Store, ArrowUpRight, ReceiptText } from "lucide-react";
+import { Store, ArrowUpRight } from "lucide-react";
 
 interface MerchantParetoChartProps {
   merchants: MerchantAnalyticsItem[];
@@ -25,12 +25,12 @@ export function MerchantParetoChart({
   };
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] space-y-4">
+    <div className="p-3.5 sm:p-5 rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)] space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b-2 border-dashed border-[var(--color-border)]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded-lg bg-emerald-400 text-black border border-black/20">
+            <span className="p-1 rounded-lg bg-emerald-400 text-black border border-black/20 shrink-0">
               <Store className="w-3.5 h-3.5 stroke-[2.5px]" />
             </span>
             <h3 className="text-xs font-black uppercase tracking-wider text-[var(--color-text)]">
@@ -42,7 +42,7 @@ export function MerchantParetoChart({
           </p>
         </div>
 
-        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[var(--color-bg)] border border-[var(--color-border)] text-gray-400">
+        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[var(--color-bg)] border border-[var(--color-border)] text-gray-400 shrink-0">
           Top {merchants.length}
         </span>
       </div>
@@ -53,24 +53,24 @@ export function MerchantParetoChart({
         </div>
       ) : (
         <div className="space-y-2">
-          {merchants.map((merchant, idx) => (
+          {merchants.map((merchant) => (
             <motion.div
               key={merchant.name}
               onClick={() => handleMerchantClick(merchant)}
-              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
               className="p-2.5 rounded-xl bg-[var(--color-bg)] border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] transition-all cursor-pointer group"
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   <div className="w-6 h-6 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary)] shrink-0">
                     {getInitials(merchant.name)}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <span className="text-xs font-black uppercase tracking-wider text-[var(--color-text)] truncate block">
                       {merchant.name}
                     </span>
                     {merchant.topCategoryName && (
-                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+                      <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider truncate block">
                         {merchant.topCategoryName}
                       </span>
                     )}
@@ -78,7 +78,7 @@ export function MerchantParetoChart({
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="text-xs font-display font-black text-[var(--color-text)]">
+                  <span className="text-xs font-display font-black text-[var(--color-text)] block">
                     {formatCurrency(merchant.amount)}
                   </span>
                   <span className="text-[9px] font-black text-amber-400 font-numbers block">
@@ -98,8 +98,8 @@ export function MerchantParetoChart({
                   />
                 </div>
                 <div className="flex justify-between text-[9px] font-bold text-gray-500 uppercase tracking-wider">
-                  <span>{merchant.txCount} orders · Avg {formatCurrency(merchant.avgAmount)}</span>
-                  <span className="text-[var(--color-primary)] group-hover:underline flex items-center gap-0.5">
+                  <span className="truncate">{merchant.txCount} orders · Avg {formatCurrency(merchant.avgAmount)}</span>
+                  <span className="text-[var(--color-primary)] group-hover:underline flex items-center gap-0.5 shrink-0">
                     Inspect <ArrowUpRight className="w-2.5 h-2.5" />
                   </span>
                 </div>
