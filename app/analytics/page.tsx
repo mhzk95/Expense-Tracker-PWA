@@ -1,153 +1,256 @@
 "use client";
 
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useTransactions } from "@/hooks/useTransactions";
-import { useCategories } from "@/hooks/useCategories";
-import { formatCurrency } from "@/lib/utils/helpers";
-import { TrendingDown, TrendingUp, Filter } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { useAnalyticsEngine, DrillDownFilter } from "@/hooks/useAnalyticsEngine";
+import { AnalyticsTimeFilter } from "@/components/analytics/AnalyticsTimeFilter";
+import { AnalyticsKpiGrid } from "@/components/analytics/AnalyticsKpiGrid";
+import { CashFlowTrendChart } from "@/components/analytics/CashFlowTrendChart";
+import { CategoryDonutChart } from "@/components/analytics/CategoryDonutChart";
+import { MerchantParetoChart } from "@/components/analytics/MerchantParetoChart";
+import { SpendingTimeMatrix } from "@/components/analytics/SpendingTimeMatrix";
+import { SplitRecoveryAnalytics } from "@/components/analytics/SplitRecoveryAnalytics";
+import { AnalyticsInsights } from "@/components/analytics/AnalyticsInsights";
+import { AnalyticsDrillDownSheet } from "@/components/analytics/AnalyticsDrillDownSheet";
+import { TransactionDetailSheet } from "@/components/transactions/TransactionDetailSheet";
+import { TransactionEntity } from "@/lib/db/indexeddb";
+import { formatCurrency, vibrate } from "@/lib/utils/helpers";
+import { Download, Sparkles } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function AnalyticsPage() {
-  const { transactions, loading: txLoading } = useTransactions();
-  const { categories, loading: catLoading } = useCategories();
-  
-  const loading = txLoading || catLoading;
+  const {
+    loading,
+    timeRangeKey,
+    setTimeRangeKey,
+    isComparisonActive,
+    setIsComparisonActive,
+    customStart,
+    setCustomStart,
+    customEnd,
+    setCustomEnd,
+    selectedCategoryIds,
+    toggleCategoryFilter,
+    resetFilters,
+    drillDownTarget,
+    setDrillDownTarget,
+    drillDownTransactions,
+    summary,
+    categories,
+  } = useAnalyticsEngine();
+
+  const [selectedTxnForDetails, setSelectedTxnForDetails] = useState<TransactionEntity | null>(null);
+
+  // Handle Export CSV Snapshot
+  const handleExportCSV = () => {
+    vibrate([25]);
+    try {
+      const rows = [
+        ["ExpenseTracker Analytics Snapshot"],
+        [`Time Period: ${summary.currentRange.label} (${summary.currentRange.start.toISOString().split("T")[0]} to ${summary.currentRange.end.toISOString().split("T")[0]})`],
+        [""],
+        ["Executive Summary"],
+        ["Total Income", summary.totalIncome.toString()],
+        ["Total Expenses", summary.totalExpenses.toString()],
+        ["Net Cash Flow", summary.netCashFlow.toString()],
+        ["Savings Rate (%)", summary.savingsRate.toString()],
+        ["Daily Average Burn", summary.dailyAverageExpense.toString()],
+        ["Total Transactions", summary.txCount.toString()],
+        [""],
+        ["Category Breakdown", "Amount", "Share (%)", "Transaction Count"],
+        ...summary.categories.map((c) => [c.name, c.amount.toString(), c.percentage.toFixed(1), c.txCount.toString()]),
+        [""],
+        ["Top Merchants", "Amount", "Share (%)", "Orders Count"],
+        ...summary.merchants.map((m) => [m.name, m.amount.toString(), m.percentage.toFixed(1), m.txCount.toString()]),
+      ];
+
+      const csvContent = "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `ExpenseTracker_Analytics_${timeRangeKey}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Analytics snapshot exported to CSV");
+    } catch (e) {
+      toast.error("Failed to export analytics snapshot");
+    }
+  };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <PageHeader title="Analytics" subtitle="Loading insights..." />
-        <div className="animate-pulse flex flex-col gap-6">
-          <div className="h-40 bg-[var(--color-surfaceHover)] border-4 border-gray-300 rounded-[24px]" />
-          <div className="h-64 bg-[var(--color-surfaceHover)] border-4 border-gray-300 rounded-[24px]" />
+      <div className="space-y-6 pb-8">
+        <PageHeader title="Analytics" subtitle="Aggregating financial intelligence..." />
+        <div className="space-y-4 animate-pulse">
+          <div className="h-12 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-28 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
+            ))}
+          </div>
+          <div className="h-64 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="h-64 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
+            <div className="h-64 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl" />
+          </div>
         </div>
       </div>
     );
   }
 
-  // Calculate totals
-  const totalIncome = transactions
-    .filter((t) => t.type === "income")
-    .reduce((s, t) => s + t.amount, 0);
-
-  const expenses = transactions.filter((t) => t.type === "expense");
-  const totalExpenses = expenses.reduce(
-    (s, t) => s + (t.netAmount !== undefined ? t.netAmount : t.amount),
-    0
-  );
-
-  const netCashFlow = totalIncome - totalExpenses;
-
-  // Group expenses by category
-  const groupedExpenses = expenses.reduce((acc, t) => {
-    const catId = t.categoryId || "other";
-    if (!acc[catId]) acc[catId] = 0;
-    acc[catId] += t.netAmount !== undefined ? t.netAmount : t.amount;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const sortedCategories = Object.entries(groupedExpenses)
-    .sort(([, a], [, b]) => b - a)
-    .map(([catId, amount]) => {
-      const categoryInfo = categories.find((c) => c.id === catId);
-      return {
-        id: catId,
-        name: categoryInfo?.name || "Other",
-        color: categoryInfo?.color || "#94a3b8",
-        icon: categoryInfo?.icon,
-        amount,
-        percentage: totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0,
-      };
-    });
-
   return (
-    <div className="space-y-6 pb-6">
+    <div className="space-y-6 pb-12">
+      {/* Page Header with Export Action */}
       <PageHeader
         title="Analytics"
-        subtitle="Insights based on your local cash flow"
+        subtitle="Multi-dimensional financial intelligence & cash flow trends"
         action={
-          <Button variant="secondary" size="sm" className="gap-1.5 uppercase tracking-widest">
-            <Filter className="h-4 w-4 stroke-[2.5px]" />
-            All Time
-          </Button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-[var(--color-surface)] border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] text-[var(--color-text)] transition-all cursor-pointer shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5 stroke-[2.5px]" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </motion.button>
         }
       />
 
-      {/* Cash Flow Summary */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-success,#10b981)]">
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
-              <TrendingUp className="h-4 w-4 stroke-[3px] text-emerald-500" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Income</span>
-          </div>
-          <p className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] tabular-nums tracking-tighter leading-none">{formatCurrency(totalIncome)}</p>
-        </Card>
+      {/* 1. Time Horizon Filter & Period Switcher */}
+      <AnalyticsTimeFilter
+        activeKey={timeRangeKey}
+        onSelectKey={setTimeRangeKey}
+        isComparisonActive={isComparisonActive}
+        onToggleComparison={() => setIsComparisonActive(!isComparisonActive)}
+        currentRange={summary.currentRange}
+        prevRange={summary.prevRange}
+        categories={categories}
+        selectedCategoryIds={selectedCategoryIds}
+        onToggleCategory={toggleCategoryFilter}
+        onResetFilters={resetFilters}
+        customStart={customStart}
+        customEnd={customEnd}
+        onSetCustomDates={(start, end) => {
+          setCustomStart(start);
+          setCustomEnd(end);
+        }}
+      />
 
-        <Card variant="surface" className="flex flex-col justify-center p-4 min-h-[100px] border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-danger,#ef4444)]">
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className="p-1.5 rounded-lg border-2 border-[var(--color-border)] bg-[var(--color-surface)] ">
-              <TrendingDown className="h-4 w-4 stroke-[3px] text-red-500" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Total Expenses</span>
-          </div>
-          <p className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] tabular-nums tracking-tighter leading-none">{formatCurrency(totalExpenses)}</p>
-        </Card>
+      {/* 2. Executive KPI Bento Grid */}
+      <AnalyticsKpiGrid
+        summary={summary}
+        isComparisonActive={isComparisonActive}
+        onSelectSplitShortcut={() => {
+          setDrillDownTarget({
+            type: "split",
+            name: "Group Split Transactions",
+            color: "#38bdf8",
+          });
+        }}
+      />
+
+      {/* 3. Interactive SVG Cash Flow Wave & Trendline */}
+      <CashFlowTrendChart
+        data={summary.timeSeries}
+        onSelectPoint={(point) => {
+          setDrillDownTarget({
+            type: "point",
+            id: point.date,
+            name: `Transactions on ${point.label}`,
+            color: "#facc15",
+          });
+        }}
+      />
+
+      {/* 4. Category Donut & Merchant Pareto Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <CategoryDonutChart
+            categories={summary.categories}
+            totalSpent={summary.totalExpenses}
+            onSelectCategory={(cat) => {
+              if (cat.id !== "others") {
+                setDrillDownTarget({
+                  type: "category",
+                  id: cat.id,
+                  name: cat.name,
+                  color: cat.color,
+                });
+              }
+            }}
+          />
+        </div>
+
+        <div className="lg:col-span-5">
+          <MerchantParetoChart
+            merchants={summary.merchants}
+            totalSpent={summary.totalExpenses}
+            onSelectMerchant={(merchant) => {
+              setDrillDownTarget({
+                type: "merchant",
+                name: merchant.name,
+                color: "#10b981",
+              });
+            }}
+          />
+        </div>
       </div>
 
-      <Card variant="surface" className="p-4 flex items-center justify-between border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-primary,#facc15)]">
-        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Net Cash Flow</span>
-        <span className={`text-xl font-display font-black tabular-nums tracking-tighter px-3 py-1 border-2 border-[var(--color-border)] rounded-xl  ${netCashFlow >= 0 ? 'bg-emerald-400 text-black' : 'bg-red-400 text-black'}`}>
-          {netCashFlow > 0 ? "+" : ""}{formatCurrency(netCashFlow)}
-        </span>
-      </Card>
-
-      {/* Spending Breakdown */}
-      <Card variant="surface" className="p-4 sm:p-6 border-2 border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-border)]">
-        <div className="flex items-center justify-between mb-6 pb-3 border-b-2 border-dashed border-[var(--color-border)]">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none">Spending Breakdown</h3>
+      {/* 5. Temporal Rhythm Matrix & Split Debt Recovery Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-6">
+          <SpendingTimeMatrix
+            dayOfWeek={summary.dayOfWeek}
+            totalSpent={summary.totalExpenses}
+            onSelectDay={(day) => {
+              setDrillDownTarget({
+                type: "day",
+                id: day.dayIndex.toString(),
+                name: `Expenses on ${day.dayName}s`,
+                color: "#818cf8",
+              });
+            }}
+          />
         </div>
-        
-        {totalExpenses === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">No expenses recorded yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {sortedCategories.map((cat) => (
-              <div key={cat.id} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="w-3.5 h-3.5 rounded-full border-[2px] border-[var(--color-border)]"
-                      style={{ backgroundColor: cat.color }}
-                    />
-                    <span className="text-xs font-black uppercase tracking-widest text-[var(--color-text)]">{cat.name}</span>
-                  </div>
-                  <div className="text-right flex items-center gap-3">
-                    <span className="text-[10px] font-black text-gray-500">{Math.round(cat.percentage)}%</span>
-                    <span className="text-[15px] font-numbers font-black text-[var(--color-text)] tabular-nums tracking-tighter">
-                      {formatCurrency(cat.amount)}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="h-2 w-full bg-[var(--color-surface)] border-[2px] border-[var(--color-border)] rounded-full overflow-hidden shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.1)]">
-                  <div
-                    className="h-full border-r-[2px] border-[var(--color-border)] transition-all duration-1000 ease-out"
-                    style={{
-                      width: `${cat.percentage}%`,
-                      backgroundColor: cat.color,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
+
+        <div className="lg:col-span-6">
+          <SplitRecoveryAnalytics
+            splits={summary.splits}
+            onSelectSplitFriend={(friendName) => {
+              setDrillDownTarget({
+                type: "split",
+                name: `Splits with ${friendName}`,
+                color: "#38bdf8",
+              });
+            }}
+          />
+        </div>
+      </div>
+
+      {/* 6. Smart Financial Insights & Anomaly Alerts */}
+      <AnalyticsInsights insights={summary.insights} />
+
+      {/* 7. Interactive Drill-Down Bottom Sheet */}
+      <AnalyticsDrillDownSheet
+        filter={drillDownTarget}
+        transactions={drillDownTransactions}
+        categories={categories}
+        onClose={() => setDrillDownTarget(null)}
+        onSelectTransaction={(txn) => {
+          setSelectedTxnForDetails(txn);
+        }}
+      />
+
+      {/* 8. Transaction Detail Modal (if clicked from drill-down) */}
+      {selectedTxnForDetails && (
+        <TransactionDetailSheet
+          txn={selectedTxnForDetails}
+          onClose={() => setSelectedTxnForDetails(null)}
+        />
+      )}
     </div>
   );
 }
